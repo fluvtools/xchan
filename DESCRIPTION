@@ -1,6 +1,6 @@
 Package: sxchan
 Title: Simple Channel Cross Sections
-Version: 0.1.0
+Version: 0.1.0.9000
 Authors@R: 
     c(
     person("Vincenzo", "Coia", email = "vcoia@bgcengineering.ca", 
