@@ -4,11 +4,11 @@ Version: 0.1.0
 Authors@R: 
     c(
     person("Vincenzo", "Coia", email = "vcoia@bgcengineering.ca", 
-           role = "aut"),
+           role = c("aut", "cre")),
     person("Jane", "Wang", email = "jwang@bgcengineering.ca",
            role = "aut"),
     person("Lucy", "MacKenzie", email = "lmackenzie@bgcengineering.ca",
-           role = c("aut", "cre")),
+           role = "aut"),
     person("Brett", "Eaton", email = "beaton@bgcengineering.ca",
            role = c("aut")),
     person("Sarah", "Davidson", email = "sdavidson@bgcengineering.ca",
