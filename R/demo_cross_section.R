@@ -111,12 +111,30 @@ widen_right <- function(xs, dw) {
   xs
 }
 
+xs_width <- function(xs) {
+  xs$right$bank[1] - xs$left$bank[1]
+}
+
+lb_height <- function(xs) {
+  xs$left$bank[2] - xs$left$thalweg[2]
+}
+
+rb_height <- function(xs) {
+  xs$right$bank[2] - xs$right$thalweg[2]
+}
+
 # Experiment
 my_xs <- xt_cross_section(coords, 1, 12)
 plot_(my_xs)
 
+xs_width(my_xs)
+rb_height(my_xs)
+
 bigger_xs <- widen_right(my_xs, 2)
 plot_(bigger_xs, add = TRUE)
+
+xs_width(bigger_xs)
+rb_height(bigger_xs)
 
 plot_(widen_right(bigger_xs, 3), add = TRUE)
 plot_(widen_left(bigger_xs, 3), add = TRUE)
