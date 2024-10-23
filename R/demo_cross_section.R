@@ -18,63 +18,105 @@ coords <- matrix(c(
   24, 8.5   # extended flat floodplain
 ), ncol = 2, byrow = TRUE)
 
+
+#' Get thalwegs
+get_thalwegs <- function(mat) {
+  mat[mat[, 2] == min(mat[, 2]), , drop = FALSE]
+}
+
+#' get point on cross section
+get_points <- function(mat, x) {
+  y <- approx(mat[, 1], mat[, 2], x)$y
+  cbind(x, y)
+}
+
 #' Inject bankpoint, potentially splitting a linesegment into two
 #' if x doesn't already land on a node.
 inject_bankpoint <- function(mat, x) {
-  if (is.na(x) || length(x) != 1) stop("Expecting one x value.")
-  if (x %in% mat[, 1]) return(mat)
-  y <- approx(mat[, 1], mat[, 2], x)$y
-  new_mat <- rbind(mat, c(x, y))
+  x <- x[!(x %in% mat[, 1])]
+  if (length(x) == 0) return(mat)
+  new_points <- get_points(mat, x)
+  new_mat <- rbind(mat, new_points)
   new_mat[order(new_mat[, 1]), ]
 }
 
-#' Get thalweg
-get_thalweg <- function(mat) {
-  mat[mat[, 2] == min(mat[, 2]), ]
+#' Make cross section
+xt_cross_section <- function(mat, x_lb, x_rb) {
+  mat <- inject_bankpoint(mat, c(x_lb, x_rb))
+  thalwegs <- get_thalwegs(mat)
+  x_thalwegs <- thalwegs[, 1]
+  coords_left <- mat[mat[, 1] <= min(x_thalwegs), ]
+  coords_right <- mat[mat[, 1] >= max(x_thalwegs), ]
+  lb_thalwegs <- get_thalwegs(coords_left)
+  rb_thalwegs <- get_thalwegs(coords_right)
+  list(
+    left = list(
+      multiline = coords_left,
+      bank = get_points(coords_left, x_lb),
+      thalweg = get_thalwegs(coords_left)
+    ),
+    right = list(
+      multiline = coords_right,
+      bank = get_points(coords_right, x_rb),
+      thalweg = get_thalwegs(coords_right)
+    )
+  )
 }
 
-# Separate into left and right/
-y_thalweg <- min(coords[, 2])
-x_thalwegs <- coords[, 1][coords[, 2] == y_thalweg]
-coords_left <- coords[coords[, 1] <= min(x_thalwegs), ]
-coords_right <- coords[coords[, 1] >= max(x_thalwegs), ]
-xs_left <- st_multilinestring(list(coords_left))
-xs_right <- st_multilinestring(list(coords_right))
-plot(st_sfc(xs_left, xs_right))
-plot(xs_left, add = TRUE, col = "blue")
-plot(xs_right, add = TRUE, col = "red")
+plot_ <- function(xs, add = FALSE) {
+  if (!add) {
+    plot(sf::st_sfc(
+      sf::st_multilinestring(list(xs$left$multiline)),
+      sf::st_multilinestring(list(xs$right$multiline))
+    ))
+  }
+  plot(sf::st_sfc(sf::st_multilinestring(list(xs$left$multiline))), add = TRUE, col = "blue")
+  plot(sf::st_sfc(sf::st_multilinestring(list(xs$right$multiline))), add = TRUE, col = "red")
+  plot(sf::st_linestring(rbind(xs$left$thalweg, xs$right$thalweg)), add = TRUE)
+  plot(sf::st_point(xs$left$bank), add = TRUE, col = "blue")
+  plot(sf::st_point(xs$right$bank), add = TRUE, col = "red")
+}
 
-# Specify x values of LB and RB
-x_lb <- 1
-x_rb <- 12
+widen_left <- function(xs, dw) {
+  if (dw == 0) return(xs)
+  original_x <- xs$left$bank[1]
+  new_x <- original_x - dw
+  # Inject the new x value into the banks.
+  bank <- inject_bankpoint(xs$left$multiline, new_x)
+  # Get the bankpoint
+  bankpoint <- get_point(bank, new_x)
+  new_y <- bankpoint[2]
+  # Move the lower points of the bank over, but not past the new bankpoint.
+  bank[bank[, 2] < new_y, 1] <- pmax(bank[bank[, 2] < new_y, 1] - dw, new_x)
+  xs$left$multiline <- bank
+  xs$left$bank <- bankpoint
+  xs$left$thalweg[1] <- xs$left$thalweg[1] - dw
+  xs
+}
 
-coords_left <- inject_bankpoint(coords_left, x_lb)
-coords_right <- inject_bankpoint(coords_right, x_rb)
+widen_right <- function(xs, dw) {
+  if (dw == 0) return(xs)
+  original_x <- xs$right$bank[1]
+  new_x <- original_x + dw
+  # Inject the new x value into the banks.
+  bank <- inject_bankpoint(xs$right$multiline, new_x)
+  # Get the bankpoint
+  bankpoint <- get_point(bank, new_x)
+  new_y <- bankpoint[2]
+  # Move the lower points of the bank over, but not past the new bankpoint.
+  bank[bank[, 2] < new_y, 1] <- pmin(bank[bank[, 2] < new_y, 1] + dw, new_x)
+  xs$right$multiline <- bank
+  xs$right$bank <- bankpoint
+  xs$right$thalweg[1] <- xs$right$thalweg[1] + dw
+  xs
+}
 
-# Interpolation finds the corresponding y values:
-pt_lb <- st_point(c(1, 9))
-pt_rb <- st_point(c(12, 6))
+# Experiment
+my_xs <- xt_cross_section(coords, 1, 12)
+plot_(my_xs)
 
-plot(pt_lb, add = TRUE, col = "blue")
-plot(pt_rb, add = TRUE, col = "red")
+bigger_xs <- widen_right(my_xs, 2)
+plot_(bigger_xs, add = TRUE)
 
-# Widen right bank: inject the new point and grab the new bankline first.
-dw <- 4
-
-x_rb_new <- x_rb + dw
-coords_right_new <- coords_right
-coords_right_new <- inject_bankpoint(coords_right_new, x_rb_new)
-
-pt_rb_new <- st_point(coords_right_new[coords_right_new[, 1] == x_rb_new, ])
-
-# Do the erosion:
-coords_right_new[coords_right_new[, 1] <= pt_rb[1], 1] <- coords_right_new[coords_right_new[, 1] <= pt_rb[1], 1] + dw
-xs_right_new <- st_multilinestring(list(coords_right_new))
-
-# Plot
-plot(xs_right_new, add = TRUE, col = "green4")
-plot(pt_rb_new, add = TRUE, col = "green4")
-
-# Add Bottom
-bottom_new <- rbind(get_thalweg(coords_right_new), get_thalweg(coords_left))
-plot(st_linestring(bottom_new), add = TRUE)
+plot_(widen_right(bigger_xs, 3), add = TRUE)
+plot_(widen_left(bigger_xs, 3), add = TRUE)
