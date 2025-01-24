@@ -42,6 +42,14 @@ inject_bankpoint <- function(mat, x) {
 #'
 #' plot_(widen_right(bigger_xs, 3), add = TRUE)
 #' plot_(widen_left(bigger_xs, 3), add = TRUE)
+#'
+#' library(testthat)
+#' test_that("left and right bank widths add up to full width.", {
+#'   w <- xs_width(my_xs)
+#'   wl <- lb_width(my_xs)
+#'   wr <- rb_width(my_xs)
+#'   expect_equal(w, wl + wr)
+#' })
 #' @export
 xt_cross_section <- function(mat, x_lb, x_rb) {
   mat <- inject_bankpoint(mat, c(x_lb, x_rb))
@@ -51,7 +59,7 @@ xt_cross_section <- function(mat, x_lb, x_rb) {
   coords_right <- mat[mat[, 1] >= max(x_thalwegs), ]
   lb_thalwegs <- get_thalwegs(coords_left)
   rb_thalwegs <- get_thalwegs(coords_right)
-  list(
+  l <- list(
     left = list(
       multiline = coords_left,
       bank = get_points(coords_left, x_lb),
@@ -63,21 +71,27 @@ xt_cross_section <- function(mat, x_lb, x_rb) {
       thalweg = get_thalwegs(coords_right)
     )
   )
+  new_sxc2d(l)
+}
+
+new_sxc2d <- function(l, ..., class = character()) {
+  original_class <- class(l)
+  structure(l, ..., class = c(class, "sxc2d", original_class))
 }
 
 #' @export
-plot_ <- function(xs, add = FALSE) {
+plot.sxc2d <- function(x, ..., add = FALSE) {
   if (!add) {
     plot(sf::st_sfc(
-      sf::st_multilinestring(list(xs$left$multiline)),
-      sf::st_multilinestring(list(xs$right$multiline))
+      sf::st_multilinestring(list(x$left$multiline)),
+      sf::st_multilinestring(list(x$right$multiline))
     ))
   }
-  plot(sf::st_sfc(sf::st_multilinestring(list(xs$left$multiline))), add = TRUE, col = "blue")
-  plot(sf::st_sfc(sf::st_multilinestring(list(xs$right$multiline))), add = TRUE, col = "red")
-  plot(sf::st_linestring(rbind(xs$left$thalweg, xs$right$thalweg)), add = TRUE)
-  plot(sf::st_point(xs$left$bank), add = TRUE, col = "blue")
-  plot(sf::st_point(xs$right$bank), add = TRUE, col = "red")
+  plot(sf::st_sfc(sf::st_multilinestring(list(x$left$multiline))), add = TRUE, col = "blue")
+  plot(sf::st_sfc(sf::st_multilinestring(list(x$right$multiline))), add = TRUE, col = "red")
+  plot(sf::st_linestring(rbind(x$left$thalweg, x$right$thalweg)), add = TRUE)
+  plot(sf::st_point(x$left$bank), add = TRUE, col = "blue")
+  plot(sf::st_point(x$right$bank), add = TRUE, col = "red")
 }
 
 #' @export
@@ -122,9 +136,26 @@ xs_width <- function(xs) {
 }
 
 #' @export
+lb_width <- function(xs) {
+  xs$left$thalweg[1] - xs$left$bank[1]
+}
+
+#' @export
+rb_width <- function(xs) {
+  xs$right$bank[1] - xs$right$thalweg[1]
+}
+
+#' @export
 lb_height <- function(xs) {
   xs$left$bank[2] - xs$left$thalweg[2]
 }
+
+test_that("left and right bank widths add up to full width.", {
+  w <- xs_width(my_xs)
+  wl <- lb_width(my_xs)
+  wr <- rb_width(my_xs)
+  expect_equal(w, wl + wr)
+})
 
 #' @export
 rb_height <- function(xs) {
