@@ -26,7 +26,8 @@ URL: https://stochagbem.github.io/sxchan/
 Imports:
     sf,
     centerline,
-    vctrs
+    vctrs,
+    ggplot2
 Suggests: 
     testthat (>= 3.0.0),
     units
