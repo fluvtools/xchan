@@ -5,9 +5,9 @@
 \alias{xt_widen_times}
 \title{Widen cross sections}
 \usage{
-xt_widen_by(object, by)
+xt_widen_by(object, by, side = c("both", "left", "right"))
 
-xt_widen_times(object, times)
+xt_widen_times(object, times, side = c("both", "left", "right"))
 }
 \arguments{
 \item{object}{A cross section object.}
@@ -15,6 +15,11 @@ xt_widen_times(object, times)
 \item{by}{Amount to widen the channel by, using units in common with the
 cross sectional units. Negative values will narrow cross sections. Either
 a vector of length equal to the number of cross sections, or length 1.}
+
+\item{side}{Which side of the cross section to widen by? One of
+\code{"both"} (splits the change in width equally between both sides),
+\code{"left"}, or \code{"right"} (applies the width change to one side of the
+channel).}
 
 \item{times}{Multiplicative factor to widen the channel by. Values less than
 1 will narrow cross sections. Either
@@ -24,4 +29,7 @@ a vector of length equal to the number of cross sections, or length 1.}
 Widen or narrow a collection of cross sections. \code{xt_widen_by()} widens
 (narrows) by unit length; \code{xt_widen_times()} widens (narrows) by
 a multiplicative factor.
+}
+\author{
+Vincenzo Coia, Heba Abdelmoaty
 }
