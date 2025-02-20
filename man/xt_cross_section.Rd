@@ -24,4 +24,12 @@ rb_height(bigger_xs)
 
 plot_(widen_right(bigger_xs, 3), add = TRUE)
 plot_(widen_left(bigger_xs, 3), add = TRUE)
+
+library(testthat)
+test_that("left and right bank widths add up to full width.", {
+  w <- xs_width(my_xs)
+  wl <- lb_width(my_xs)
+  wr <- rb_width(my_xs)
+  expect_equal(w, wl + wr)
+})
 }
