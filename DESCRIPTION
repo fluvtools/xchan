@@ -8,7 +8,7 @@ Authors@R:
     person("Jane", "Wang", email = "jwang@bgcengineering.ca",
            role = "aut"),
     person("Heba", "Abdelmoaty",
-           role = "aut"),
+           role = "aut")
     )
 Description: Create and manipulate watercourse geometries for 
     geomorphology applications, with a 

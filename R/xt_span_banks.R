@@ -37,6 +37,9 @@ xt_span_banks <- function(pt, angle, bankline) {
 span_banks_engine <- function(
     pt, angle, bankline, maxd, intersect, reposition
 ) {
+  if (!identical(bankline, sf::st_geometry(bankline))) {
+    stop("bankline input must be a geometry.")
+  }
   pt_coord <- sf::st_coordinates(pt)
   # Move the whole channel so that first_pt is at the origin
   bl_moved <- bankline - pt_coord
