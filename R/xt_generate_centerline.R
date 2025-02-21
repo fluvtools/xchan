@@ -6,5 +6,5 @@
 #' @details Wraps `centerline::cnt_path_guess()`.
 #' @export
 xt_generate_centerline <- function(bankline) {
-  sf::st_geometry(centerline::cnt_path_guess(bankline))
+  sf::st_geometry(centerline::cnt_path_guess(bankline, keep = 1))
 }
