@@ -1,25 +1,25 @@
 erode_right_xs <- function(XsecLine, pt_n, dem, extent, width){
 
   # Compute total cross-section length
-  extended_length <- as.numeric(st_length(XsecLine))
+  extended_length <- as.numeric(sf::st_length(XsecLine))
 
   # Extract start and end points manually
-  start_point <- st_cast(st_geometry(XsecLine), "POINT")[1]
-  end_point <- st_cast(st_geometry(XsecLine), "POINT")[length(st_geometry(XsecLine))]
+  start_point <- sf::st_cast(sf::st_geometry(XsecLine), "POINT")[1]
+  end_point <- sf::st_cast(sf::st_geometry(XsecLine), "POINT")[length(sf::st_geometry(XsecLine))]
 
   # Generate sampled points along the line
-  sampled_points <- st_line_sample(XsecLine, n = pt_n)
+  sampled_points <- sf::st_line_sample(XsecLine, n = pt_n)
 
   # Combine start, sampled, and end points
   all_points <- c(
-    st_geometry(start_point),
-    st_geometry(st_cast(sampled_points, "POINT")),
-    st_geometry(end_point)
+    sf::st_geometry(start_point),
+    sf::st_geometry(sf::st_cast(sampled_points, "POINT")),
+    sf::st_geometry(end_point)
   )
 
   # Convert all points into a valid sf object
-  all_points_sf <- st_as_sf(data.frame(id = 1:length(all_points)), geometry = st_sfc(all_points, crs = st_crs(XsecLine)))
-  coords_matrix <- as.matrix(st_coordinates(all_points_sf)[, 1:2])
+  all_points_sf <- sf::st_as_sf(data.frame(id = 1:length(all_points)), geometry = sf::st_sfc(all_points, crs = sf::st_crs(XsecLine)))
+  coords_matrix <- as.matrix(sf::st_coordinates(all_points_sf)[, 1:2])
 
   # Extract elevation values from the DEM
   elevations <- terra::extract(dem, coords_matrix)[, 1]
@@ -33,12 +33,12 @@ erode_right_xs <- function(XsecLine, pt_n, dem, extent, width){
 
   # Compute segment-wise distances
   line_segments <- lapply(1:(nrow(cross_section) - 1), function(j) {
-    st_linestring(rbind(coords_matrix[j, ], coords_matrix[j + 1, ]))
+    sf::st_linestring(rbind(coords_matrix[j, ], coords_matrix[j + 1, ]))
   })
 
   # Convert to sf object
-  line_segments_sf <- st_sfc(line_segments, crs = st_crs(XsecLine))
-  segment_lengths <- as.numeric(st_length(line_segments_sf))
+  line_segments_sf <- sf::st_sfc(line_segments, crs = sf::st_crs(XsecLine))
+  segment_lengths <- as.numeric(sf::st_length(line_segments_sf))
 
   # Compute cumulative distances
   cumulative_distances <- c(0, cumsum(segment_lengths))
