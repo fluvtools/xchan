@@ -33,3 +33,21 @@ widen_right <- function(xs, dw) {
   xs$right$thalweg[1] <- xs$right$thalweg[1] + dw
   xs
 }
+
+#' @export
+widen <- function(xs, dw, side = c("both", "left", "right")) {
+  side <- match.arg(side)
+  if (side == "both") {
+    dw_left <- dw / 2
+    dw_right <- dw / 2
+  } else if (side == "left") {
+    dw_left <- dw
+    dw_right <- 0
+  } else {
+    dw_left <- 0
+    dw_right <- dw
+  }
+  xs |>
+    widen_right(xs, dw_right) |>
+    widen_left(xs, dw_left)
+}
