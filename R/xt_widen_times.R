@@ -7,7 +7,7 @@
 xt_widen_times <- function(object, times, side = c("both", "left", "right")) UseMethod("xt_widen_times")
 
 #' @export
-xt_widen_times.sf <- function(object, times, side) {
+xt_widen_times.sf <- function(object, times, side = c("both", "left", "right")) {
   xs <- sf::st_geometry(object)
   if (!is_sxc(xs)) {
     stop(
@@ -21,7 +21,7 @@ xt_widen_times.sf <- function(object, times, side) {
 }
 
 #' @export
-xt_widen_times.sxc <- function(object, times, side) {
+xt_widen_times.sxc <- function(object, times, side = c("both", "left", "right")) {
   side <- match.arg(side)
   n <- length(object)
   times <- vctrs::vec_recycle(times, n)
