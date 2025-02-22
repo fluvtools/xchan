@@ -48,6 +48,6 @@ widen <- function(xs, dw, side = c("both", "left", "right")) {
     dw_right <- dw
   }
   xs |>
-    widen_right(xs, dw_right) |>
-    widen_left(xs, dw_left)
+    widen_right(dw_right) |>
+    widen_left(dw_left)
 }
