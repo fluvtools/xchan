@@ -17,7 +17,7 @@
 xt_widen_by <- function(object, by, side = c("both", "left", "right")) UseMethod("xt_widen_by")
 
 #' @export
-xt_widen_by.sf <- function(object, by, side) {
+xt_widen_by.sf <- function(object, by, side = c("both", "left", "right")) {
   xs <- sf::st_geometry(object)
   if (!is_sxc(xs)) {
     stop(
@@ -31,7 +31,7 @@ xt_widen_by.sf <- function(object, by, side) {
 }
 
 #' @export
-xt_widen_by.sxc <- function(object, by, side) {
+xt_widen_by.sxc <- function(object, by, side = c("both", "left", "right")) {
   n <- length(object)
   by <- vctrs::vec_recycle(by, n)
   l <- xt_width(object)
