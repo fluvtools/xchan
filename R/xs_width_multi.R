@@ -19,20 +19,20 @@ xs_width_multi <- function(xs1d, xs2d) {
 xs_width_multi <- function(coords, XsecLine) {
 
   # Ensure the line has a CRS
-  if (is.null(st_crs(XsecLine))) {
-    st_crs(XsecLine) <- 3157  # Assign CRS if missing
+  if (is.null(sf::st_crs(XsecLine))) {
+    sf::st_crs(XsecLine) <- 3157  # Assign CRS if missing
   }
 
   # Ensure sampled_points has the same CRS
-  bank_points <- st_multipoint(as.matrix(coords[, c("X", "Y")]))
-  bank_points <- st_sfc(bank_points, crs = 3157)  # Convert to `sfc` with CRS
+  bank_points <- sf::st_multipoint(as.matrix(coords[, c("X", "Y")]))
+  bank_points <- sf::st_sfc(bank_points, crs = 3157)  # Convert to `sfc` with CRS
 
   # Convert all points into a valid sf object
-  bank_points_sf <- st_as_sf(data.frame(id = 1:length(bank_points)),
-                             geometry = st_sfc(
-                               bank_points, crs = st_crs(XsecLine))
-                             )
-  coords_matrix <- as.matrix(st_coordinates(bank_points_sf)[, 1:2])
+  bank_points_sf <- sf::st_as_sf(
+    data.frame(id = 1:length(bank_points)),
+    geometry = sf::st_sfc(bank_points, crs = sf::st_crs(XsecLine))
+  )
+  coords_matrix <- as.matrix(sf::st_coordinates(bank_points_sf)[, 1:2])
   # Extract elevation values from the DEM at these coordinates
   # Create dataframe
   cross_section <- data.frame(
