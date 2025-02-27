@@ -4,17 +4,24 @@
 \alias{xs_width_multi}
 \title{Calculate XS width when there are islands or not}
 \usage{
-xs_width_multi(coords, XsecLine, dem)
+xs_width_multi(coords, XsecLine)
+
+xs_width_multi(coords, XsecLine)
 }
 \arguments{
 \item{coords}{The second entry from the output of \code{get_islandxs()};
 A list of bank coordinates for each cross section.}
 
 \item{XsecLine}{Planimetric (1D) cross sections; object of class \code{sxc}.}
-
-\item{dem}{DEM.}
+}
+\value{
+A vector of widths, of length equal to the common lengths
+of the inputs, \code{coords} and \code{XsecLine}.
 }
 \description{
+Calculate XS width when there are islands or not
+
+Workhorse for the \code{xs_width_multi()} function.
 Handles multiple cross sections; no need to run the function one at
 a time.
 }
