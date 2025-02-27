@@ -6,6 +6,10 @@
 \usage{
 get_points(mat, x)
 }
+\value{
+A matrix of points. Column one contains distances along the cross
+section; column two, the elevations.
+}
 \description{
 get point on cross section
 }

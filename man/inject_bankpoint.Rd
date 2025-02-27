@@ -6,7 +6,23 @@
 \usage{
 inject_bankpoint(mat, x)
 }
+\arguments{
+\item{mat}{Matrix of nodes of distances along the cross section
+(column one) and elevation (column two).}
+
+\item{x}{Distance along cross section to add a new node to.}
+}
+\value{
+The original matrix of nodes, with an additional
+node correspoding to x in there.
+}
 \description{
-Inject bankpoint, potentially splitting a linesegment into two
+Inject a point into a 2D cross section matrix,
+potentially splitting a linesegment into two
 if x doesn't already land on a node.
+}
+\details{
+I should have named this function differently, because it doesn't
+inject a bankpoint into a 2D cross section. It just extends the
+matrix of nodes.
 }
