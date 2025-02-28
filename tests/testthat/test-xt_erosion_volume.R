@@ -14,7 +14,7 @@ test_that("Eroded volume is correct when eroding into a gully.", {
     ),
     x_lb = 4, x_rb = 6
   )
-  plot(xs)
+  # plot(xs)
   ## Try gradually increasing the distance, comparing against known volumes.
   area0.5 <- 0.5 * 1 / 2
   expect_equal(xt_erosion_volume_left(xs, 0.5), area0.5)
@@ -33,7 +33,7 @@ test_that("Eroded volume is correct when eroding into a gully.", {
   gone_area <- xt_erosion_volume_left(xs, dw)
   expect_lt(xs$left$thalweg[2], xs$left$bank[2])
   xs <- suppressWarnings(xt_widen_left_2d(xs, dw))
-  plot(xs)
+  # plot(xs)
   expect_gt(xs$left$thalweg[2], xs$left$bank[2])
   expect_equal(xt_erosion_volume_left(xs, 0.25), 0)
   expect_equal(xt_erosion_volume_left(xs, 0.5), 0)
@@ -61,7 +61,7 @@ test_that("Right erosion works, too.", {
     ),
     x_lb = -6, x_rb = -4
   )
-  plot(xs)
+  # plot(xs)
   ## Try gradually increasing the distance, comparing against known volumes.
   area0.5 <- 0.5 * 1 / 2
   expect_equal(xt_erosion_volume_right(xs, 0.5), area0.5)
@@ -80,7 +80,7 @@ test_that("Right erosion works, too.", {
   gone_area <- xt_erosion_volume_right(xs, dw)
   expect_lt(xs$right$thalweg[2], xs$right$bank[2])
   xs <- suppressWarnings(xt_widen_right_2d(xs, dw))
-  plot(xs)
+  # plot(xs)
   expect_gt(xs$right$thalweg[2], xs$right$bank[2])
   expect_equal(xt_erosion_volume_right(xs, 0.25), 0)
   expect_equal(xt_erosion_volume_right(xs, 0.5), 0)
