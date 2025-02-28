@@ -25,6 +25,7 @@ xt_widen_times.sxc <- function(object, times, side = c("both", "left", "right"))
   side <- match.arg(side)
   n <- length(object)
   times <- vctrs::vec_recycle(times, n)
+  times <- units::drop_units(times)
   for (i in seq_len(n)) {
     xs <- object[[i]]
     coords <- st_coordinates(xs)

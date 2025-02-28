@@ -29,20 +29,22 @@ xt_cross_section <- function(mat, x_lb, x_rb) {
   mat_subset <- mat[mat[, 1] >= x_lb & mat[, 1] <= x_rb, , drop = FALSE]
   thalwegs <- get_thalwegs(mat_subset)
   x_thalwegs <- thalwegs[, 1]
-  coords_left <- mat[mat[, 1] <= min(x_thalwegs), ]
-  coords_right <- mat[mat[, 1] >= max(x_thalwegs), ]
-  lb_thalwegs <- get_thalwegs(coords_left)
-  rb_thalwegs <- get_thalwegs(coords_right)
+  coords_left <- mat[mat[, 1] <= min(x_thalwegs), , drop = FALSE]
+  coords_right <- mat[mat[, 1] >= max(x_thalwegs), , drop = FALSE]
+  coords_left_bed <- coords_left[coords_left[, 1] >= x_lb, , drop = FALSE]
+  coords_right_bed <- coords_right[coords_right[, 1] <= x_rb, , drop = FALSE]
+  lb_thalwegs <- get_thalwegs(coords_left_bed)
+  rb_thalwegs <- get_thalwegs(coords_right_bed)
   l <- list(
     left = list(
       multiline = coords_left,
       bank = get_points(coords_left, x_lb),
-      thalweg = get_thalwegs(coords_left)
+      thalweg = lb_thalwegs
     ),
     right = list(
       multiline = coords_right,
       bank = get_points(coords_right, x_rb),
-      thalweg = get_thalwegs(coords_right)
+      thalweg = rb_thalwegs
     )
   )
   new_sxc2d(l)

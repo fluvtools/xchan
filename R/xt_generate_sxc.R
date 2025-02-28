@@ -4,7 +4,9 @@
 #' apart.
 #' @param n The number of cross sections to calculate.
 #' @param bankline An sf object with banklines.
-#' @return An "sxc" object.
+#' @param centerline Centerline multilinestring object. If NULL (the default),
+#' will be generated automatically using `xt_generate_centerline()`.
+#' @return An "sxc" object, with CRS equal to that of the banklines object.
 #' @details This function takes the definition of "cross section" relative
 #' to a point in the channel to be the line segment intersecting the point
 #' whose bank-to-bank segment width is the smallest. Note that this does not
@@ -39,8 +41,13 @@
 #' # Inherits spatial properties of the bankline polygon, such as CRS:
 #' sf::st_crs(cross)
 #' @export
-xt_generate_sxc <- function(bankline, n) {
-  cl <- xt_generate_centerline(bankline)
+xt_generate_sxc <- function(bankline, n, centerline = NULL) {
+  if (is.null(centerline)) {
+    cl <- xt_generate_centerline(bankline)
+  } else {
+    cl <- centerline
+  }
+  lr <- split_bankline(bankline, centerline = cl)
   len <- sum(sf::st_length(cl))
   pts <- sf::st_line_sample(cl, density = n / len)
   # Only take points that are not empty, and split apart multipoints
@@ -84,5 +91,16 @@ xt_generate_sxc <- function(bankline, n) {
   }
   ## Combine list of segments in xs into a single sf geometry
   geoms <- sf::st_as_sfc(xs)
+  sf::st_crs(geoms) <- sf::st_crs(bankline)
+  for (i in seq_along(pts)) {
+    cat(i, "\n")
+    this_xs <- geoms[i]
+    d1 <- sf::st_distance(sf::st_cast(this_xs, "POINT")[1], lr$left)
+    d2 <- sf::st_distance(sf::st_cast(this_xs, "POINT")[2], lr$left)
+    if (d2 < d1) {
+      geoms[i] <- sf::st_reverse(geoms[i])
+    }
+  }
+  attr(geoms, "left_to_right") <- TRUE
   xt_sxc(geoms)
 }
