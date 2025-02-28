@@ -24,10 +24,11 @@ Imports:
     centerline,
     vctrs,
     ggplot2,
-    dplyr
-Suggests: 
-    testthat (>= 3.0.0),
+    dplyr,
+    lwgeom,
     units
+Suggests: 
+    testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Depends: 
     R (>= 2.10)

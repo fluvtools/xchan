@@ -4,15 +4,18 @@
 \alias{xt_generate_sxc}
 \title{Calculate Cross Sections from Banklines}
 \usage{
-xt_generate_sxc(bankline, n)
+xt_generate_sxc(bankline, n, centerline = NULL)
 }
 \arguments{
 \item{bankline}{An sf object with banklines.}
 
 \item{n}{The number of cross sections to calculate.}
+
+\item{centerline}{Centerline multilinestring object. If NULL (the default),
+will be generated automatically using \code{xt_generate_centerline()}.}
 }
 \value{
-An "sxc" object.
+An "sxc" object, with CRS equal to that of the banklines object.
 }
 \description{
 Calculate cross sections from banklines that are roughly equally spaced
