@@ -4,7 +4,9 @@
 #' a vector of length equal to the number of cross sections, or length 1.
 #' @author Vincenzo Coia, Heba Abdelmoaty
 #' @export
-xt_widen_times <- function(object, times, side = c("both", "left", "right")) UseMethod("xt_widen_times")
+xt_widen_times <- function(
+    object, times, side = c("both", "left", "right")
+) UseMethod("xt_widen_times")
 
 #' @export
 xt_widen_times.sf <- function(object, times, side = c("both", "left", "right")) {

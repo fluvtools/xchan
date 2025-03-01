@@ -93,7 +93,6 @@ xt_generate_sxc <- function(bankline, n, centerline = NULL) {
   geoms <- sf::st_as_sfc(xs)
   sf::st_crs(geoms) <- sf::st_crs(bankline)
   for (i in seq_along(pts)) {
-    cat(i, "\n")
     this_xs <- geoms[i]
     d1 <- sf::st_distance(sf::st_cast(this_xs, "POINT")[1], lr$left)
     d2 <- sf::st_distance(sf::st_cast(this_xs, "POINT")[2], lr$left)
