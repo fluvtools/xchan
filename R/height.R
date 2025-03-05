@@ -1,11 +1,11 @@
 #' @export
 lb_height <- function(xs) {
-  xs$left$bank[2] - xs$left$thalweg[2]
+  max(xs$left$bank[2] - xs$left$thalweg[2], 0)
 }
 
 #' @export
 rb_height <- function(xs) {
-  xs$right$bank[2] - xs$right$thalweg[2]
+  max(xs$right$bank[2] - xs$right$thalweg[2], 0)
 }
 
 # test_that("left and right bank widths add up to full width.", {
