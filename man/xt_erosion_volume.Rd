@@ -6,11 +6,11 @@
 \alias{xt_erosion_volume_left}
 \title{Get Eroded Volume (Area)}
 \usage{
-xt_erosion_volume(xs, dw, prop_left = 0.5)
+xt_erosion_volume(xs, dw, prop_left = 0.5, error_on_overflow = TRUE)
 
-xt_erosion_volume_right(xs, dw)
+xt_erosion_volume_right(xs, dw, error_on_overflow = TRUE)
 
-xt_erosion_volume_left(xs, dw)
+xt_erosion_volume_left(xs, dw, error_on_overflow = TRUE)
 }
 \arguments{
 \item{xs}{2D cross section.}
@@ -19,6 +19,18 @@ xt_erosion_volume_left(xs, dw)
 
 \item{prop_left}{Proportion of \emph{width} change to apply to the left side
 channel; the right side channel gets \code{1 - prop_left} of the change in width.}
+
+\item{error_on_overflow}{Logical; should an error be thrown if asked
+to calculate erosion volume beyond cross section extent? \code{TRUE} if so
+(the default). If \code{FALSE}, returns the maximum volume up to the extent.
+See return value for distinguishing between the two values.}
+}
+\value{
+A numeric vector of erosion volumes associated with the specified
+width change. A \code{censored} attribute contains a logical vector with length
+equal to that of \code{xs} indicating whether the calculated width is right-censored.
+If \code{TRUE}, then \code{dw} extends beyond the cross section extent, and the actual
+erosion volume is at least as big as the indicated value.
 }
 \description{
 This function takes the original x-sec object and the eroded one resulting
