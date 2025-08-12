@@ -62,7 +62,7 @@ xt_erosion_volume_left <- function(xs, dw, error_on_overflow = TRUE) {
     }
   }
   y_thalweg <- xs$left$thalweg[2]
-  left_nodes <- inject_bankpoint(left_nodes, x_new)
+  left_nodes <- inject_2d_points(left_nodes, x_new)
   x_in_between <- left_nodes[, 1] >= x_new & left_nodes[, 1] <= x_old
   between_nodes <- left_nodes[x_in_between, , drop = FALSE]
   n <- nrow(between_nodes)

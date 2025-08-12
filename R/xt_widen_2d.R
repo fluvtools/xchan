@@ -26,8 +26,8 @@ xt_widen_left_2d <- function(xs, dw) {
   x_old <- xs$left$bank[1]
   x_new <- x_old - dw
   left_nodes <- xs$left$multiline
-  left_nodes <- inject_bankpoint(left_nodes, x_new)
-  xs$left$bank <- get_points(left_nodes, x_new)
+  left_nodes <- inject_2d_points(left_nodes, x_new)
+  xs$left$bank <- get_2d_points(left_nodes, x_new)
   if (xs$left$bank[2] < xs$left$thalweg[2]) {
     warning(
       "River has eroded into a part of the floodplain that's lower in ",
