@@ -19,8 +19,17 @@
 #' the height of the new bank ignores this bed topography, and is determined
 #' by the outermost point.
 #' @rdname xt_widen_2d
-#' @export
-xt_widen_left_2d <- function(xs, dw) {
+xt_widen_width_2d <- function(xs, dw, prop_left) {
+  checkmate::assert_numeric(dw, 0)
+  checkmate::assert_numeric(prop_left, 0, 1, len = 1)
+  dw_left <- prop_left * dw
+  dw_right <- dw - dw_left
+  xs <- xt_widen_width_2d_right(xs, dw_right)
+  xt_widen_width_2d_left(xs, dw_left)
+}
+
+#' @rdname xt_widen_2d
+xt_widen_width_2d_left <- function(xs, dw) {
   checkmate::assert_numeric(dw, 0, len = 1, any.missing = FALSE)
   if (dw == 0) return(xs)
   x_old <- xs$left$bank[1]
@@ -49,22 +58,10 @@ xt_widen_left_2d <- function(xs, dw) {
 }
 
 #' @rdname xt_widen_2d
-#' @export
-xt_widen_right_2d <- function(xs, dw) {
+xt_widen_width_2d_right <- function(xs, dw) {
   checkmate::assert_numeric(dw, 0, len = 1)
   if (dw == 0) return(xs)
   xs <- flip_xs2d(xs)
   xs <- xt_widen_left_2d(xs, dw)
   flip_xs2d(xs)
-}
-
-#' @rdname xt_widen_2d
-#' @export
-xt_widen_2d <- function(xs, dw, prop_left = 0.5) {
-  checkmate::assert_numeric(dw, 0, len = 1)
-  checkmate::assert_numeric(prop_left, 0, 1, len = 1)
-  dw_left <- prop_left * dw
-  dw_right <- dw - dw_left
-  xs <- xt_widen_right_2d(xs, dw_right)
-  xt_widen_left_2d(xs, dw_left)
 }
