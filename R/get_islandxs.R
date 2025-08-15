@@ -8,7 +8,6 @@
 #'   provides (x, y) points of all banks, including island banks.
 #' @details Uses CRS of 3157. Should change when formalizing the package.
 #' @author Heba A
-#' @export
 get_islandxs <- function(polygon, line){
   polygon_sf <- sf::st_sf(geometry = polygon)
 

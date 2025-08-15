@@ -1,5 +1,5 @@
 #' @export
-plot.sxc2d <- function(x, ..., add = FALSE) {
+plot.sxc2d <- function(x, ..., add = FALSE, exaggerate = 1) {
   if (!add) {
     plot(sf::st_sfc(
       sf::st_multilinestring(list(x$left$multiline)),
@@ -13,8 +13,7 @@ plot.sxc2d <- function(x, ..., add = FALSE) {
   plot(sf::st_point(x$right$bank), add = TRUE, col = "red")
 }
 
-#' @export
-plot_2dxs <- function(XsecLine, dem, pt_n, extent) {
+plot_2dxs <- function(XsecLine, dem, pt_n, extent, exaggerate) {
   # Compute total cross-section length
   extended_length <- as.numeric(sf::st_length(XsecLine))
 

@@ -11,7 +11,7 @@ split_bankline(bankline, centerline = NULL)
 
 \item{centerline}{A multiline object representing the channel
 centerline. If \code{NULL} (the default), this is auto-generated using
-\code{xt_generate_centerline()}.}
+the centerline package.}
 }
 \value{
 A list of two multilines: entry \code{"left"} represents the left bank,
@@ -24,10 +24,8 @@ as per the example.
 I suspect this algorithm may fail in some cases.
 }
 \examples{
-cl <- xt_generate_centerline(demo_bankline)
-lr <- split_bankline(demo_bankline, cl)
+lr <- split_bankline(demo_bankline)
 plot(demo_bankline)
-plot(cl, add = TRUE)
 plot(lr$left, add = TRUE, col = "red")
 plot(lr$right, add = TRUE, col = "blue")
 }

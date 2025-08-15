@@ -7,7 +7,7 @@
 #' valid properties. The naming "sxc" is inspired by the sf package,
 #' which names geometries that have features "sfc".
 #' @rdname new_sx
-new_sxc <- function(l, ..., class = character()) {
+new_channel <- function(l, ..., class = character()) {
   original_class <- class(l)
   structure(l, ..., class = c(class, "sxc", original_class))
 }

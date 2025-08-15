@@ -3,13 +3,13 @@
 #' my_xs <- xt_cross_section(coords, 1, 12)
 #' plot_(my_xs)
 #'
-#' xs_width(my_xs)
+#' xt_width(my_xs)
 #' rb_height(my_xs)
 #'
 #' bigger_xs <- widen_right(my_xs, 2)
 #' plot_(bigger_xs, add = TRUE)
 #'
-#' xs_width(bigger_xs)
+#' xt_width(bigger_xs)
 #' rb_height(bigger_xs)
 #'
 #' plot_(widen_right(bigger_xs, 3), add = TRUE)
@@ -17,13 +17,13 @@
 #'
 #' library(testthat)
 #' test_that("left and right bank widths add up to full width.", {
-#'   w <- xs_width(my_xs)
+#'   w <- xt_width(my_xs)
 #'   wl <- lb_width(my_xs)
 #'   wr <- rb_width(my_xs)
 #'   expect_equal(w, wl + wr)
 #' })
 #' @export
-xt_cross_section <- function(mat, x_lb, x_rb) {
+xt_xs2d <- function(mat, x_lb, x_rb) {
   mat <- inject_2d_points(mat, c(x_lb, x_rb))
   # Subset the matrix to only include points between x_lb and x_rb
   mat_subset <- mat[mat[, 1] >= x_lb & mat[, 1] <= x_rb, , drop = FALSE]
@@ -47,10 +47,9 @@ xt_cross_section <- function(mat, x_lb, x_rb) {
       thalweg = rb_thalwegs
     )
   )
-  new_sxc2d(l)
+  new_xs2d(l)
 }
 
-new_sxc2d <- function(l, ..., class = character()) {
-  original_class <- class(l)
-  structure(l, ..., class = c(class, "sxc2d", original_class))
+new_xs2d <- function(l, ..., class = character()) {
+  structure(l, ..., class = c(class, "xs2d"))
 }

@@ -1,9 +1,3 @@
-#' @rdname xt_widen
-#' @param times Multiplicative factor to widen the channel by. Values less than
-#' 1 will narrow cross sections. Either
-#' a vector of length equal to the number of cross sections, or length 1.
-#' @author Vincenzo Coia, Heba Abdelmoaty
-#' @export
 xt_widen_times <- function(
     object, times, side = c("both", "left", "right")
 ) UseMethod("xt_widen_times")

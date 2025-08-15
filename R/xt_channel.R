@@ -49,10 +49,10 @@
 #' st_geometry(b2)
 #' @rdname xt_sxc
 #' @export
-xt_sxc <- function(x, ...) UseMethod("xt_sxc")
+xt_channel <- function(plan, profile, ...) UseMethod("xt_sxc")
 
 #' @export
-xt_sxc.default <- function(x, ...) {
+xt_channel.default <- function(x, ...) {
   if (any(x <= 0)) stop("Must have a positive width.")
   ## Construct an sfc object with linestring geometry of specified widths.
   segs <- list()
@@ -64,7 +64,7 @@ xt_sxc.default <- function(x, ...) {
 }
 
 #' @export
-xt_sxc.sfc <- function(x, ...) {
+xt_channel.sfc <- function(x, ...) {
   is_multi <- vapply(
     x, \(x_) inherits(x_, "MULTILINESTRING"), FUN.VALUE = logical(1L)
   )
@@ -76,13 +76,13 @@ xt_sxc.sfc <- function(x, ...) {
 }
 
 #' @export
-xt_sxc.sfg <- function(x, ...) {
+xt_channel.sfg <- function(x, ...) {
   sfc <- sf::st_sfc(x)
   xt_sxc(sfc, ...)
 }
 
 #' @export
-xt_sxc.sxc <- function(x, ...) {
+xt_channel.sxc <- function(x, ...) {
   geom <- sf::st_sfc(x, ...)
   new_sxc(geom)
 }

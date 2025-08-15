@@ -26,3 +26,8 @@ xt_width.sxc <- function(object) {
   class(object) <- class(object)[-1] # sf weirdness
   sf::st_length(object)
 }
+
+#' @export
+xt_width.sxc_2d <- function(xs) {
+  xs$right$bank[1] - xs$left$bank[1]
+}

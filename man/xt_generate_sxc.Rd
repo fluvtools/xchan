@@ -12,7 +12,7 @@ xt_generate_sxc(bankline, n, centerline = NULL)
 \item{n}{The number of cross sections to calculate.}
 
 \item{centerline}{Centerline multilinestring object. If NULL (the default),
-will be generated automatically using \code{xt_generate_centerline()}.}
+will be generated automatically using the centerline package.}
 }
 \value{
 An "sxc" object, with CRS equal to that of the banklines object.

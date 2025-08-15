@@ -2,20 +2,14 @@
 % Please edit documentation in R/xt_erosion_volume.R
 \name{xt_erosion_volume}
 \alias{xt_erosion_volume}
-\alias{xt_erosion_volume_right}
-\alias{xt_erosion_volume_left}
-\title{Get Eroded Volume (Area)}
+\title{Convert Between Erosion Width and Volume (Area)}
 \usage{
-xt_erosion_volume(xs, dw, prop_left = 0.5, error_on_overflow = TRUE)
-
-xt_erosion_volume_right(xs, dw, error_on_overflow = TRUE)
-
-xt_erosion_volume_left(xs, dw, error_on_overflow = TRUE)
+xt_erosion_volume(xs, width, prop_left = 0.5, error_on_overflow = TRUE)
 }
 \arguments{
 \item{xs}{2D cross section.}
 
-\item{dw}{Change in width; single positive numeric.}
+\item{width}{Change in width; single positive numeric.}
 
 \item{prop_left}{Proportion of \emph{width} change to apply to the left side
 channel; the right side channel gets \code{1 - prop_left} of the change in width.}
@@ -29,7 +23,7 @@ See return value for distinguishing between the two values.}
 A numeric vector of erosion volumes associated with the specified
 width change. A \code{censored} attribute contains a logical vector with length
 equal to that of \code{xs} indicating whether the calculated width is right-censored.
-If \code{TRUE}, then \code{dw} extends beyond the cross section extent, and the actual
+If \code{TRUE}, then \code{width} extends beyond the cross section extent, and the actual
 erosion volume is at least as big as the indicated value.
 }
 \description{
