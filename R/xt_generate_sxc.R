@@ -5,7 +5,7 @@
 #' @param n The number of cross sections to calculate.
 #' @param bankline An sf object with banklines.
 #' @param centerline Centerline multilinestring object. If NULL (the default),
-#' will be generated automatically using `xt_generate_centerline()`.
+#' will be generated automatically using the centerline package.
 #' @return An "sxc" object, with CRS equal to that of the banklines object.
 #' @details This function takes the definition of "cross section" relative
 #' to a point in the channel to be the line segment intersecting the point
@@ -43,7 +43,7 @@
 #' @export
 xt_generate_sxc <- function(bankline, n, centerline = NULL) {
   if (is.null(centerline)) {
-    cl <- xt_generate_centerline(bankline)
+    cl <- sf::st_geometry(centerline::cnt_path_guess(bankline, keep = 1))
   } else {
     cl <- centerline
   }

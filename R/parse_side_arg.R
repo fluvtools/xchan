@@ -9,7 +9,7 @@
 #' proportion for each cross section.
 parse_side_arg <- function(side, cross_sections) {
   if (is.character(side)) {
-    fn <- paste0("distribute_p_", side)
+    fn <- paste0("distribute_erosion_", side)
     side <- rlang::exec(fn)
   }
   checkmate::assert_list(side, types = "numeric", len = 1)

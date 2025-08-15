@@ -7,21 +7,18 @@
 #' @param bankline Bankline polygon.
 #' @param centerline A multiline object representing the channel
 #' centerline. If `NULL` (the default), this is auto-generated using
-#' `xt_generate_centerline()`.
+#' the centerline package.
 #' @returns A list of two multilines: entry `"left"` represents the left bank,
 #' entry `"right"` represents the right bank. The original `bankline` object
 #' could be retrieved by combining both multilines together.
 #' @examples
-#' cl <- xt_generate_centerline(demo_bankline)
-#' lr <- split_bankline(demo_bankline, cl)
+#' lr <- split_bankline(demo_bankline)
 #' plot(demo_bankline)
-#' plot(cl, add = TRUE)
 #' plot(lr$left, add = TRUE, col = "red")
 #' plot(lr$right, add = TRUE, col = "blue")
-#' @export
 split_bankline <- function(bankline, centerline = NULL) {
   if (is.null(centerline)) {
-    centerline <- xt_generate_centerline(bankline)
+    centerline <- sf::st_geometry(centerline::cnt_path_guess(bankline, keep = 1))
   }
 
   # Get the intersection of the bankline and centerline

@@ -11,25 +11,29 @@
 #'   cross sections.
 #' @param side A specification for how to distribute the widening, such as
 #' "both" (the default), "left", or "right". For more granularity, use
-#' `distribute_p_*()` functions to distribute proportions for each bank. See
-#' details.
+#' `distribute_erosion_*()` functions to distribute proportions for each bank.
+#' See details.
 #' @details
 #' Distributing the widening between the left and right banks through the
-#' `side` argument is always done by running a `distribute_p_*()` function;
-#' for simplicity, a character string can be passed to `side` that replaces
-#' `*` and uses the function defaults. Options are:
+#' `side` argument is always done by running a `distribute_erosion_*()`
+#' function; for simplicity, a character string can be passed to `side` that
+#' replaces `*` and uses the function defaults. Options are:
 #'   \itemize{
-#'     \item "left" or `distribute_p_left()`: specify how much of the widening
-#'           applies on the left bank.
-#'     \item "right" or `distribute_p_right()`: specify how much of the widening
-#'           applies on the right bank.
-#'     \item "both" or `distribute_p_both()`: specify how much of the widening
-#'           applies to both banks.
+#'     \item "left" or `distribute_erosion_left()`: specify how much of the
+#'           widening applies on the left bank.
+#'     \item "right" or `distribute_erosion_right()`: specify how much of the
+#'           widening applies on the right bank.
+#'     \item "both" or `distribute_erosion_both()`: specify how much of the
+#'           widening applies to both banks.
 #'   }
 #' @note
 #' While the ellipsis `...` is currently not used, it forces the `width` and
 #' `volume` arguments to be named to ensure deliberate specification.
 #' @return A modified cross section object.
+#' @examples
+#' xt_widen(demo_channel, width = 10)
+#' xt_widen(demo_channel, width = 10, side = distribute_erosion_left(0.75))
+#' xt_widen(demo_channel, volume = 5, side = "right")
 #' @export
 xt_widen <- function(cross_section, ..., width, volume, side = "both") {
   UseMethod("xt_widen")
@@ -72,3 +76,4 @@ xt_widen.sx <- function(cross_section, ..., width, volume, side = "both") {
   xt_geometry_plan(cross_section) <- plan
   cross_section
 }
+

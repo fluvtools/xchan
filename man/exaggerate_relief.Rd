@@ -19,5 +19,5 @@ The original cross section, with exaggerated elevations
 \description{
 Sometimes it's hard to see vertical relief in a plot of a 2D cross
 section. This function exaggerates the relief by stretching it
-by a multiplicative factor.
+by a multiplicative factor, used in the plotting functions.
 }

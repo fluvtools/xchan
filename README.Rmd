@@ -42,6 +42,9 @@ library(sf)
 
 ### Constructing cross section objects
 
+Flow direction is from the perspective of someone looking downstream, as is the typical convention in hydrology.
+
+
 Cross section objects can be made using the function `xt_sxc()`, where "sxc" stands for "spatial cross-section column".
 
 1. Simply specify cross section width if you're not interested in the spatial arrangement of the cross sections:
@@ -84,10 +87,8 @@ You can generate cross sections and a centerline:
 
 ```{r}
 demo_cross <- xt_generate_sxc(demo_bankline, n = 50)
-demo_center <- xt_generate_centerline(demo_bankline)
 plot(demo_bankline)
 plot(demo_cross, add = TRUE, col = "blue")
-plot(demo_center, add = TRUE)
 ```
 
 You can widen the cross sections, either by a constant amount or one per cross section:

@@ -9,7 +9,6 @@
 #' @param x Numeric vector; distance along cross section to add a new node to.
 #' @returns The original matrix of nodes, with a additional
 #' nodes correspoding to `x`, with linearly interpolated elevation.
-#' @export
 inject_2d_points <- function(mat, x) {
   x_mat <- mat[, 1]
   x <- x[!(x %in% x_mat)]

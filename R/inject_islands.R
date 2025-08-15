@@ -10,7 +10,6 @@
 #' @returns The original `sxc` object, with additional island bankpoints in between
 #' the left and right bank points, where applicable. If there are no islands, the
 #' cross section remains unchanged.
-#' @export
 inject_islands <- function(sxc, banklines){
   checkmate::assert_class(sxc, "sxc")
   checkmate::assert_class(banklines, "sfc")
