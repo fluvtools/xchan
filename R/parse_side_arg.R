@@ -9,13 +9,17 @@
 #' proportion for each cross section.
 parse_side_arg <- function(side, cross_sections) {
   if (is.character(side)) {
-    fn <- paste0("distribute_erosion_", side)
+    fn <- paste0("splitter_", side)
     side <- rlang::exec(fn)
   }
-  checkmate::assert_list(side, types = "numeric", len = 1)
-  prop_left <- side[[1]]
+  checkmate::assert_class(side, "sxchan_splitter")
+  prop_left <- side(cross_sections)
+  prop_left <- vctrs::vec_recycle(prop_left, size = length(cross_sections))
   checkmate::assert_numeric(
-    prop_left, lower = 0, upper = 1, any.missing = FALSE
+    prop_left,
+    lower = 0,
+    upper = 1,
+    any.missing = FALSE
   )
-  vctrs::vec_recycle(prop_left, size = xt_n_sections(cross_sections))
+  prop_left
 }

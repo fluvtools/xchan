@@ -18,10 +18,15 @@ and cannot be used with \code{volume}.}
 numeric value and cannot be used with \code{width}. Only applicable for 2D
 cross sections.}
 
-\item{side}{A specification for how to distribute the widening, such as
-"both" (the default), "left", or "right". For more granularity, use
-\verb{distribute_erosion_*()} functions to distribute proportions for each bank.
-See details.}
+\item{side}{A specification for how to distribute the widening between
+left and right banks. Built-in splitters include "left", "right", and "both".
+
+A splitter object is a function of cross sections that determines the amount
+of erosion occurring on the left bank (by convention) for each cross section.
+Existing schemes have the naming convention \verb{splitter_<name>} and are
+determined by parameters. You can call them
+directly, e.g. \code{splitter_left(0.75)}, or by their name using the default
+parameters. You can create your own splitter with \code{new_splitter()}.}
 }
 \value{
 A modified cross section object.
@@ -30,26 +35,15 @@ A modified cross section object.
 Widens a cross section by a specified width or volume,
 distributing the change according to a given scheme.
 }
-\details{
-Distributing the widening between the left and right banks through the
-\code{side} argument is always done by running a \verb{distribute_erosion_*()}
-function; for simplicity, a character string can be passed to \code{side} that
-replaces \code{*} and uses the function defaults. Options are:
-\itemize{
-\item "left" or \code{distribute_erosion_left()}: specify how much of the
-widening applies on the left bank.
-\item "right" or \code{distribute_erosion_right()}: specify how much of the
-widening applies on the right bank.
-\item "both" or \code{distribute_erosion_both()}: specify how much of the
-widening applies to both banks.
-}
-}
 \note{
 While the ellipsis \code{...} is currently not used, it forces the \code{width} and
 \code{volume} arguments to be named to ensure deliberate specification.
 }
 \examples{
 xt_widen(demo_channel, width = 10)
-xt_widen(demo_channel, width = 10, side = distribute_erosion_left(0.75))
+xt_widen(demo_channel, width = 10, side = splitter_left(0.75))
 xt_widen(demo_channel, volume = 5, side = "right")
+}
+\seealso{
+\code{\link[=splitter_left]{splitter_left()}}, \code{\link[=splitter_right]{splitter_right()}}, \code{\link[=splitter_both]{splitter_both()}}
 }
