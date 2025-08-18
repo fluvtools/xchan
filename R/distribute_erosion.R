@@ -1,8 +1,10 @@
-#' Distribute channel erosion between left and right banks
+#' Split channel erosion between left and right banks
 #'
 #' A family of helper functions to define how widening proportions are
-#' distributed between left and right banks.
+#' allocated between left and right banks.
 #'
+#' @param fun A function that takes cross_sections and returns left bank proportions
+#' @param name Optional name for the splitter
 #' @param prop Numeric vector of values between 0 and 1 indicating how much
 #' of the widening to apply to the specified bank. Length 1 for constant
 #' proportion for all cross sections; length equal to the number of
@@ -14,38 +16,20 @@
 #' @details
 #' While these functions are different ways of specifying the same thing,
 #' they are included for completeness. An advantage of using
-#' the `distribute_erosion_both()` function is that is conducts an internal
+#' the `splitter_both()` function is that it conducts an internal
 #' check that the proportions for the left and right banks sum to 1.
-#' @return A list object with a `prop_left` element, which is a numeric vector
-#' indicating the proportion of the widening to apply to the left bank.
-#' @rdname distribute_erosion_schemes
+#' @return A splitter object that can be used to specify how erosion is
+#' distributed between left and right banks.
+#' @rdname splitter_schemes
 #' @export
-distribute_erosion_left <- function(prop = 1) {
-  checkmate::assert_numeric(prop, lower = 0, upper = 1, any.missing = FALSE)
-  list(prop_left = prop)
-}
+new_splitter <- function(fun, name = NULL) {
+  checkmate::assert_function(fun)
+  checkmate::assert_character(name, len = 1, null.ok = TRUE)
 
-#' @rdname distribute_erosion_schemes
-#' @export
-distribute_erosion_right <- function(prop = 1) {
-  checkmate::assert_numeric(prop, lower = 0, upper = 1, any.missing = FALSE)
-  # Invert the proportions for the left-side scheme.
-  distribute_erosion_left(prop = 1 - prop)
-}
-
-#' @rdname distribute_erosion_schemes
-#' @export
-distribute_erosion_both <- function(prop_left = 0.5, prop_right = 0.5) {
-  checkmate::assert_numeric(
-    prop_left, lower = 0, upper = 1, any.missing = FALSE
+  structure(
+    fun,
+    name = name,
+    class = append("sxchan_splitter", class(fun))
   )
-  checkmate::assert_numeric(
-    prop_right, lower = 0, upper = 1, any.missing = FALSE
-  )
-
-  if (!isTRUE(all.equal(prop_left + prop_right, rep(1, length(prop_left))))) {
-    stop("Proportions for `prop_left` and `prop_right` must sum to 1.")
-  }
-
-  list(prop_left = prop_left)
 }
+

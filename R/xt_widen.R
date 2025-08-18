@@ -9,30 +9,23 @@
 #' @param volume The total volume to remove to widen the cross section. Must be a
 #'   numeric value and cannot be used with `width`. Only applicable for 2D
 #'   cross sections.
-#' @param side A specification for how to distribute the widening, such as
-#' "both" (the default), "left", or "right". For more granularity, use
-#' `distribute_erosion_*()` functions to distribute proportions for each bank.
-#' See details.
-#' @details
-#' Distributing the widening between the left and right banks through the
-#' `side` argument is always done by running a `distribute_erosion_*()`
-#' function; for simplicity, a character string can be passed to `side` that
-#' replaces `*` and uses the function defaults. Options are:
-#'   \itemize{
-#'     \item "left" or `distribute_erosion_left()`: specify how much of the
-#'           widening applies on the left bank.
-#'     \item "right" or `distribute_erosion_right()`: specify how much of the
-#'           widening applies on the right bank.
-#'     \item "both" or `distribute_erosion_both()`: specify how much of the
-#'           widening applies to both banks.
-#'   }
+#' @param side A specification for how to distribute the widening between
+#' left and right banks. Built-in splitters include "left", "right", and "both".
+#'
+#' A splitter object is a function of cross sections that determines the amount
+#' of erosion occurring on the left bank (by convention) for each cross section.
+#' Existing schemes have the naming convention `splitter_<name>` and are
+#' determined by parameters. You can call them
+#' directly, e.g. `splitter_left(0.75)`, or by their name using the default
+#' parameters. You can create your own splitter with `new_splitter()`.
 #' @note
 #' While the ellipsis `...` is currently not used, it forces the `width` and
 #' `volume` arguments to be named to ensure deliberate specification.
 #' @return A modified cross section object.
+#' @seealso [splitter_left()], [splitter_right()], [splitter_both()]
 #' @examples
 #' xt_widen(demo_channel, width = 10)
-#' xt_widen(demo_channel, width = 10, side = distribute_erosion_left(0.75))
+#' xt_widen(demo_channel, width = 10, side = splitter_left(0.75))
 #' xt_widen(demo_channel, volume = 5, side = "right")
 #' @export
 xt_widen <- function(cross_section, ..., width, volume, side = "both") {
