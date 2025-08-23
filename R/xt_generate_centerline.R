@@ -1,9 +1,39 @@
-#' Function to calculate a centerline from bankline polygon
+#' Generate centerline from channel
 #'
-#' @param channel Channel
-#' @returns A centerline.
-#' @details Wraps `centerline::cnt_path_guess()`.
+#' Generate a centerline by connecting the midpoints of planimetric cross sections.
+#'
+#' @param channel Channel object with planimetric cross sections
+#' @returns An sf LINESTRING representing the centerline
+#' @details This function extracts the planimetric cross sections from the channel
+#' object and connects their midpoints to create a centerline. The centerline
+#' represents the approximate flow path through the channel.
+#' @examples
+#' centerline <- xt_centerline(channel)
+#' plot(centerline, col = "red", lwd = 2)
 #' @export
 xt_generate_centerline <- function(channel) {
-  stop("TO DO -- connect the midpoints of the plan view cross sections.")
+  if (!is_channel(channel)) {
+    stop("Input must be a channel object")
+  }
+
+  plan <- xt_column_plan(channel)
+  if (is.null(plan)) {
+    stop("Channel object must have planimetric cross sections")
+  }
+
+  # Extract midpoints of each cross section
+  midpoints <- lapply(plan, function(xs) {
+    coords <- sf::st_coordinates(xs)
+    midpoint_idx <- ceiling(nrow(coords) / 2)
+    sf::st_point(coords[midpoint_idx, 1:2])
+  })
+
+  # Convert to sf points
+  midpoint_sfc <- sf::st_sfc(midpoints, crs = sf::st_crs(plan))
+
+  # Create centerline by connecting midpoints
+  centerline_coords <- sf::st_coordinates(midpoint_sfc)
+  centerline <- sf::st_linestring(centerline_coords)
+
+  sf::st_sfc(centerline, crs = sf::st_crs(plan))
 }

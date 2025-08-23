@@ -24,17 +24,17 @@
 #' @rdname xt_as_sf
 #' @export
 xt_as_sfc <- function(channel, what = c("plan", "profile", "3d")) {
-  checkmate::assert_class(channel, "xs_channel")
+  checkmate::assert_class(channel, "sxchan")
   what <- rlang::arg_match(what)
 
-  plan <- xt_geometry_plan(channel)
+  plan <- xt_column_plan(channel)
   if (what == "plan") {
     # Plan view cross sections are already sfc.
     checkmate::assert_class(plan, "sfc")
     return(plan)
   }
 
-  profile <- xt_geometry_profile(channel)
+  profile <- xt_column_profile(channel)
   if (is.null(profile)) {
     stop("Profile geometry is not available for this channel object.")
   }
@@ -44,18 +44,18 @@ xt_as_sfc <- function(channel, what = c("plan", "profile", "3d")) {
     for (i in seq_along(profile)) {
       prof <- profile[[i]]
 
-      # Extract multiline coordinates from left and right sides
-      left_multiline <- prof$left$multiline
-      right_multiline <- prof$right$multiline
+      # Extract coordinates from left and right sides
+      left_coords <- prof$left$coordinates
+      right_coords <- prof$right$coordinates
 
       # Create multiline objects for left and right sides
-      left_geom <- sf::st_multilinestring(list(left_multiline))
-      right_geom <- sf::st_multilinestring(list(right_multiline))
+      left_geom <- sf::st_multilinestring(list(left_coords))
+      right_geom <- sf::st_multilinestring(list(right_coords))
 
       # Combine into a single multiline geometry
       combined_geom <- sf::st_multilinestring(list(
-        left_multiline,
-        right_multiline
+        left_coords,
+        right_coords
       ))
 
       profile_geoms[[i]] <- combined_geom
@@ -71,11 +71,11 @@ xt_as_sfc <- function(channel, what = c("plan", "profile", "3d")) {
 #' @rdname xt_as_sf
 #' @export
 xt_as_sf <- function(channel, what = c("plan", "profile", "3d"), geom_col = "geometry") {
-  checkmate::assert_class(channel, "xs_channel")
+  checkmate::assert_class(channel, "sxchan")
   what <- rlang::arg_match(what)
   geometry <- xt_as_sfc(channel, what = what)
-  xt_geometry_plan(channel) <- NULL
-  xt_geometry_profile(channel) <- NULL
+  xt_column_plan(channel) <- NULL
+  xt_column_profile(channel) <- NULL
   channel[[geom_col]] <- geometry
   sf::st_as_sf(channel, sf_column_name = geom_col)
 }

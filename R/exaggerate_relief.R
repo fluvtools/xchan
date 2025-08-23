@@ -12,11 +12,11 @@
 exaggerate_relief <- function(xs2d, times = 1) {
   checkmate::assert_numeric(times, 0, len = 1)
   ymin <- xs2d$left$thalweg[2]
-  xs2d$left$multiline[, 2]  <- ymin + times * (xs2d$left$multiline[, 2] - ymin)
-  xs2d$left$bank[2]         <- ymin + times * (xs2d$left$bank[2] - ymin)
+  xs2d$left$coordinates[, 2]  <- ymin + times * (xs2d$left$coordinates[, 2] - ymin)
+  xs2d$left$bank_point[2]         <- ymin + times * (xs2d$left$bank_point[2] - ymin)
   xs2d$left$thalweg[2]      <- ymin + times * (xs2d$left$thalweg[2] - ymin)
-  xs2d$right$multiline[, 2] <- ymin + times * (xs2d$right$multiline[, 2] - ymin)
-  xs2d$right$bank[2]        <- ymin + times * (xs2d$right$bank[2] - ymin)
+  xs2d$right$coordinates[, 2] <- ymin + times * (xs2d$right$coordinates[, 2] - ymin)
+  xs2d$right$bank_point[2]        <- ymin + times * (xs2d$right$bank_point[2] - ymin)
   xs2d$right$thalweg[2]     <- ymin + times * (xs2d$right$thalweg[2] - ymin)
   xs2d
 }

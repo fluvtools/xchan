@@ -4,12 +4,10 @@
 \alias{xt_n_sections}
 \title{Get the number of cross sections}
 \usage{
-xt_n_sections(x, ...)
+xt_n_sections(channel)
 }
 \arguments{
-\item{x}{A cross sections object of class \code{sx}, \code{sx_1d}, or \code{sx_2d}.}
-
-\item{...}{Additional arguments passed to methods.}
+\item{channel}{An object of class \code{sxchan} representing a channel.}
 }
 \value{
 A single integer representing the number of cross sections.

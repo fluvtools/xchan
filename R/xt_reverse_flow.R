@@ -14,7 +14,7 @@
 #' correspond to the left bank of the channel.
 #' @export
 xt_reverse_flow <- function(channel) {
-  xt_geometry_plan(channel) <- flip_xs1d(xt_geometry_plan(channel))
-  xt_geometry_profile(channel) <- flip_xs2d(xt_geometry_profile(channel))
+  xt_column_plan(channel) <- flip_xs1d(xt_column_plan(channel))
+  xt_column_profile(channel) <- flip_xs2d(xt_column_profile(channel))
   channel
 }

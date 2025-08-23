@@ -27,7 +27,7 @@ splitter_left <- function(prop = 1) {
   f <- function(cross_sections) {
     vctrs::vec_recycle(prop, size = length(cross_sections))
   }
-  new_splitter(f, name = "left")
+  structure(f, name = "left", params = list(prop = prop), class = "sxchan_splitter")
 }
 
 #' @rdname splitters
@@ -37,7 +37,7 @@ splitter_right <- function(prop = 1) {
   f <- function(cross_sections) {
     vctrs::vec_recycle(1 - prop, size = length(cross_sections))
   }
-  new_splitter(f, name = "right")
+  structure(f, name = "right", params = list(prop = prop), class = "sxchan_splitter")
 }
 
 #' @rdname splitters
@@ -57,5 +57,5 @@ splitter_both <- function(prop_left = 0.5, prop_right = 0.5) {
   f <- function(cross_sections) {
     vctrs::vec_recycle(prop_left, size = length(cross_sections))
   }
-  new_splitter(f, name = "both")
+  structure(f, name = "both", params = list(prop_left = prop_left, prop_right = prop_right), class = "sxchan_splitter")
 }

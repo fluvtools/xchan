@@ -2,19 +2,25 @@
 % Please edit documentation in R/xt_generate_centerline.R
 \name{xt_generate_centerline}
 \alias{xt_generate_centerline}
-\title{Function to calculate a centerline from bankline polygon}
+\title{Generate centerline from channel}
 \usage{
 xt_generate_centerline(channel)
 }
 \arguments{
-\item{channel}{Channel}
+\item{channel}{Channel object with planimetric cross sections}
 }
 \value{
-A centerline.
+An sf LINESTRING representing the centerline
 }
 \description{
-Function to calculate a centerline from bankline polygon
+Generate a centerline by connecting the midpoints of planimetric cross sections.
 }
 \details{
-Wraps \code{centerline::cnt_path_guess()}.
+This function extracts the planimetric cross sections from the channel
+object and connects their midpoints to create a centerline. The centerline
+represents the approximate flow path through the channel.
+}
+\examples{
+centerline <- xt_centerline(channel)
+plot(centerline, col = "red", lwd = 2)
 }

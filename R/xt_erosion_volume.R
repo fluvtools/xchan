@@ -1,32 +1,53 @@
-#' Convert Between Erosion Width and Volume (Area)
+#' Calculate Erosion Volume from Width Change
 #'
-#' This function takes the original x-sec object and the eroded one resulting
-#' from whether (erode_left_xs) or (erode_right_xs)
+#' This function calculates the erosion volume for each cross-section in a channel
+#' given a specified width change, distributing the change according to a given scheme.
 #'
-#' @param xs 2D cross section.
-#' @param width Change in width; single positive numeric.
-#' @param prop_left Proportion of *width* change to apply to the left side
-#' channel; the right side channel gets `1 - prop_left` of the change in width.
+#' @param channel Channel object
+#' @param width Change in width; single positive numeric or vector matching number of cross-sections.
+#' @param side A specification for how to distribute the widening between
+#' left and right banks. Built-in splitters include "left", "right", and "both".
 #' @param error_on_overflow Logical; should an error be thrown if asked
 #' to calculate erosion volume beyond cross section extent? `TRUE` if so
 #' (the default). If `FALSE`, returns the maximum volume up to the extent.
-#' See return value for distinguishing between the two values.
-#' @returns A numeric vector of erosion volumes associated with the specified
-#' width change. A `censored` attribute contains a logical vector with length
-#' equal to that of `xs` indicating whether the calculated width is right-censored.
-#' If `TRUE`, then `width` extends beyond the cross section extent, and the actual
-#' erosion volume is at least as big as the indicated value.
-#' @rdname xt_erosion_volume
+#' @returns A numeric vector of erosion volumes for each cross-section in the channel.
+#' @examples
+#' xt_erosion_volume(channel, width = 10, side = "left")
+#' xt_erosion_volume(channel, width = 10, side = splitter_left(0.75))
 #' @export
-xt_erosion_volume <- function(xs, width, prop_left = 0.5, error_on_overflow = TRUE) {
-  dw_left <- width * prop_left
-  dw_right <- width - dw_left
-  v1 <- xt_erosion_volume_left(xs, dw_left, error_on_overflow = error_on_overflow)
-  xs <- flip_xs2d(xs)
-  v2 <- xt_erosion_volume_left(xs, dw_right, error_on_overflow = error_on_overflow)
-  v <- v1 + v2
-  attr(v, "censored") <- attr(v1, "censored") | attr(v2, "censored")
-  v
+xt_erosion_volume <- function(channel, width, side = "both", error_on_overflow = TRUE) {
+  checkmate::assert_class(channel, "sxchan")
+  
+  profile <- xt_column_profile(channel)
+  if (is.null(profile)) {
+    stop("Channel object must have profile cross sections")
+  }
+  
+  # Parse side argument to get proportions
+  prop_left <- parse_side_arg(side, channel)
+  
+  # Recycle width to match number of cross-sections
+  width <- vctrs::vec_recycle(width, length(profile))
+  
+  # Calculate erosion volume for each cross-section
+  volumes <- numeric(length(profile))
+  censored <- logical(length(profile))
+  
+  for (i in seq_along(profile)) {
+    xs <- profile[[i]]
+    dw_left <- width[i] * prop_left[i]
+    dw_right <- width[i] - dw_left
+    
+    v1 <- xt_erosion_volume_left(xs, dw_left, error_on_overflow = error_on_overflow)
+    xs_flipped <- flip_xs2d(xs)
+    v2 <- xt_erosion_volume_left(xs_flipped, dw_right, error_on_overflow = error_on_overflow)
+    
+    volumes[i] <- v1 + v2
+    censored[i] <- attr(v1, "censored") || attr(v2, "censored")
+  }
+  
+  attr(volumes, "censored") <- censored
+  volumes
 }
 
 xt_erosion_volume_left <- function(xs, width, error_on_overflow = TRUE) {
@@ -36,9 +57,9 @@ xt_erosion_volume_left <- function(xs, width, error_on_overflow = TRUE) {
     attr(a, "censored") <- FALSE
     return(a)
   }
-  x_old <- xs$left$bank[1]
+  x_old <- xs$left$bank_point[1]
   x_new <- x_old - width
-  left_nodes <- xs$left$multiline
+  left_nodes <- xs$left$coordinates
   x_extent <- min(left_nodes[, 1])
   censored <- FALSE
   if (x_new < x_extent) {

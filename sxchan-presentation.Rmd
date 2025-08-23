@@ -1,0 +1,266 @@
+---
+title: "sxchan: Channel Cross-Section Analysis in R"
+subtitle: "Package Design Overview"
+author: "Vincenzo Coia"
+date: "`r Sys.Date()`"
+output:
+  ioslides_presentation:
+    css: styles.css
+    logo: null
+    smaller: true
+    widescreen: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+library(sxchan)
+```
+
+## Overview
+
+**sxchan** - A modern R package for channel cross-section analysis
+
+**gbem** - Contains the "engines" for erosion: reads from sxchan channels; modifies sxchan channels.
+![](https://stochagbem.github.io/gbem/logo.png)
+
+Tasks:
+
+- Solve GBEM issue that relies on max erosion extent to get constrained erosion.
+- Refactor to not piggyback on `sf` objects.
+- Make package "complete" so as to submit to CRAN.
+
+
+## The Channel Object
+
+Channel objects are just data frames (like `sf` objects). Each row is a cross section. Columns:
+
+- Column for planimetric cross-sections (`sfc_LINESTRING`)
+- Column for profile cross-sections (`xs_profile` objects)
+- Ad hoc variables to your liking (e.g., d84, roughness, ...)
+
+At least one of the plan or profile columns must be present.
+
+| XS#| plan (sfc_LINESTRING) | profile (xs_profile) | d84 (numeric) | roughness (numeric) |
+|----|-----------------------|----------------------|---------------|---------------------|
+| 1  | LINESTRING(...)       | xs_profile(...)      | 45            | 0.035               |
+| 2  | LINESTRING(...)       | xs_profile(...)      | 50            | 0.030               |
+| 3  | LINESTRING(...)       | xs_profile(...)      | 40            | 0.040               |
+| .. | ...                   | ...                  | ...           | ...                 |
+| n  | LINESTRING(...)       | xs_profile(...)      | 55            | 0.025               |
+
+
+## Creating Channel Objects: From Scratch
+
+Low level constructor by assembling parts. Examples:
+
+```
+# From simple widths
+channel <- xt_channel(c(10, 15, 20))
+
+# From existing geometries
+channel <- xt_channel(linestrings)
+
+# If you also somehow have a profile object
+channel <- xt_channel(linestrings, profiles)
+```
+
+## Creating Channel Objects: Generated
+
+### Plan view first
+
+More commonly, create plan view from banklines. Options:
+
+```
+channel <- xt_generate_plan(banks, spacing = units::set_units(10, "m"))
+channel <- xt_generate_plan(banks, n = 100)
+channel <- xt_generate_plan(banks, at = units::set_units(0:100, "m"))
+```
+
+Can specify manual centerline if you have it:
+
+```
+channel <- xt_generate_plan(banks, n = 100, centerline = my_centerline)
+```
+
+## Creating Channel Objects: Generated
+
+### Then profile view
+
+Then, sample a DEM to create profile cross-sections:
+
+```
+channel <- xt_generate_profile(
+  channel, 
+  dem,
+  extent_multiplier = 2,  # OR, extent_distance
+  sample_n = 100          # OR, sample_distance
+)
+```
+
+❓ Should there be a `side = ` specification?
+
+
+
+## Viewing
+
+You can plot different views of the channel using base R plotting:
+
+```
+plot(channel, what = "plan")
+plot(channel, what = "profile") # 🤔
+plot(channel, what = "3d")
+plot(channel, what = ..., extent = c("banks", "frame")) # 🤔
+```
+
+## Exporting
+
+Similarly: export to spatial object understood by `sf` package in case you want to do something you can't do with sxchan:
+
+```
+xt_as_sf(channel, what = "plan")
+xt_as_sf(channel, what = "profile") # 🤔
+xt_as_sf(channel, what = "3d")
+xt_as_sf(channel, what = ..., extent = c("banks", "frame")) # 🤔
+
+## Also available:
+xt_as_sfc(...)
+```
+
+<!-- ## Plan and Profile -->
+
+<!-- Internally, the plan and profile _columns_ can be pulled from the data frames like so: -->
+
+<!-- ``` -->
+<!-- xt_plan(channel) -->
+<!-- xt_profile(channel) -->
+<!-- ``` -->
+
+<!-- And, replaced like so: -->
+
+<!-- ``` -->
+<!-- xt_plan(channel) <- NEW_THING -->
+<!-- xt_profile(channel) <- NEW_THING -->
+<!-- ``` -->
+
+<!-- **QUESTION**: should users have access to this functionality? Is it easy to make `NEW_THING`? -->
+
+<!-- **Design Decision**: Users should ideally just work with the channel object. BUT... I wonder if specific profile views would be of interest. `xt_profile(channel, 4)`? -->
+
+## Generating from Channels
+
+Already saw _channel_ generators: `xt_generate_plan()` and `xt_generate_profile()`.
+
+Other things (especially useful after eroding the channel):
+
+- `xt_generate_banks(channel, ...)` - Generate banklines from channel.
+- `xt_generate_centerline(channel, ...)` - Generate centerline from channel.
+
+Interface will allow for different methods in the future. Maybe like this:
+
+```
+xt_generate_banks(channel, method = "linear")  # 🤔
+xt_generate_banks(channel, method = banks_spline(smoothness = 0.4))  # 🤔
+```
+
+## Channel Calculations
+
+- `xt_n_sections(channel)` - Number of cross-sections
+- `xt_width(channel)` - Width of each cross-section
+- `xt_width_active(channel)` - Without islands / bars.
+- `xt_distance_ds(channel, centerline = NULL)` - Distance along the channel
+- `xt_gradient(channel, .before = 1L, .after = 1L, .complete = FALSE)` - Gradient.
+
+## Channel Calculations: Bank Height
+
+```
+xt_height_lb(channel)         # Height of left bank
+xt_height_rb(channel)         # Height of right bank
+xt_height(channel, .f = min)  # Aggregate based on function .f
+```
+
+❓ Should we include cross-sectional area?
+
+## Channel Calculations: Erosion
+
+How much erosion volume for a given width?
+
+```
+xt_erosion_volume(channel, width = 10, side = "left")
+> Vector of erosion widths for each cross-section.
+```
+
+How much erosion width for a given volume? **NEW**
+
+```
+xt_erosion_width(channel, volume = 50, side = splitter_left(0.75))
+> Vector of erosion volumes for each cross-section.
+```
+
+✅ Solves the GBEM issue of needing max possible erosion to get constrained erosion.
+
+❓ Should dredging have this level of granularity?
+
+
+These allow for channel widening by either volume or width specification.
+
+```
+xt_widen(channel, width = 10)
+xt_widen(channel, volume = 50)
+```
+
+
+
+## Sides
+
+Widening specification: simple
+
+```
+xt_widen(channel, width = 10, side = "both")
+xt_widen(channel, width = 10, side = "left")
+xt_widen(channel, width = 10, side = "right")
+```
+
+## Sides: splitters
+
+Widening specification: flexible specification (all these put 75% erosion on left bank).
+
+```
+xt_widen(channel, width = 10, side = splitter_left(prop = 0.75))
+xt_widen(channel, width = 10, side = splitter_right(prop = 0.25))
+xt_widen(channel, width = 10, side = splitter_both(prop_left = 0.75, prop_right = 0.25))
+```
+
+"Splitters" abstract away the mechanism by which erosion is allocated. Better than saying `side = 0.75`.
+
+```
+splitter_for_coldwater <- splitter_XYZ(kernel = "tricube", shape = 0.5)
+xt_widen(channel, width = 10, side = splitter_for_coldwater)
+```
+
+Splitters are functions of the channel object, returning a vector of left proportions (one for each cross section).
+
+```{r}
+splitter_left()
+```
+
+**QUESTION**: Should `prop_left + prop_right = 1` always? What if bedrock is exposed on either side?
+
+
+
+## Sides: splitters
+
+You can make a new splitter, too:
+
+```
+splitter_vc <- new_splitter(
+  fun = function(channel) {
+    <your code here>
+    <possibly with parameters>
+  }, 
+  name = "Vincenzo's Splitter", 
+  params = list(alpha = 1, beta = 2)
+)
+
+xt_widen(channel, width = 10, side = "vc")
+xt_widen(channel, width = 10, side = splitter_vc(beta = 1))
+```
