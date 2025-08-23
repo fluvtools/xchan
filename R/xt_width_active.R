@@ -4,31 +4,50 @@
 #' is the width of the cross section occupied by water, not land. This is relevant when
 #' there are islands / bars within the river.
 #'
-#' @param sxc A list of planimetric (1-dimensional) cross sections; i.e., and object of
-#' class `"sxc"`.
-#' @returns A numeric vector of length equal to the length of the input `sxc` containing the
-#' active widths of each cross section.
+#' @param channel Channel object
+#' @returns A numeric vector of length equal to the number of cross-sections in the channel
+#' containing the active widths of each cross section.
 #' @export
-xt_width_active <- function(sxc) {
-  checkmate::assert_class(sxc, "sxc")
-  if (length(sxc) == 0) return(sxc)
-  widths <- numeric()
-  for (i in seq_along(sxc)) {
-    line <- sxc[[i]]
-    coords <- sf::st_coordinates(line)
-    distances <- sqrt(diff(coords[, 1])^2 + diff(coords[, 2])^2)
-    n_sections <- length(distances)
-    if (n_sections %% 2 != 1) {
-      stop(
-        "Cross section number ", i, " contains ", length(distances),
-        " sections.\n",
-        "Expecting alternating water and land, and therefore an odd ",
-        "number of sections."
-      )
-    }
-    ind <- seq_len((n_sections + 1) / 2) * 2 - 1
-    widths[i] <- sum(distances[ind])
+xt_width_active <- function(channel) {
+  checkmate::assert_class(channel, "sxchan")
+  
+  profile <- xt_column_profile(channel)
+  if (is.null(profile)) {
+    stop("Channel object must have profile cross sections")
   }
+  
+  widths <- numeric(length(profile))
+  
+  for (i in seq_along(profile)) {
+    xs <- profile[[i]]
+    
+    # Get all coordinates from both left and right sides
+    left_coords <- xs$left$coordinates
+    right_coords <- xs$right$coordinates
+    
+    # Combine coordinates and sort by distance
+    all_coords <- rbind(left_coords, right_coords)
+    all_coords <- all_coords[order(all_coords[, 1]), , drop = FALSE]
+    
+    # Find bank points (where water transitions to land)
+    # Bank points are where the elevation changes significantly
+    # We'll use a simple approach: find points where elevation is close to bank elevation
+    left_bank_elev <- xs$left$bank_point[2]
+    right_bank_elev <- xs$right$bank_point[2]
+    
+    # Find points that are close to bank elevations (within tolerance)
+    tolerance <- 0.1  # meters
+    left_bank_indices <- which(abs(all_coords[, 2] - left_bank_elev) < tolerance)
+    right_bank_indices <- which(abs(all_coords[, 2] - right_bank_elev) < tolerance)
+    
+    # Get the leftmost and rightmost bank points
+    left_bank_dist <- all_coords[min(left_bank_indices), 1]
+    right_bank_dist <- all_coords[max(right_bank_indices), 1]
+    
+    # Calculate active width (water width)
+    widths[i] <- right_bank_dist - left_bank_dist
+  }
+  
   widths
 }
 

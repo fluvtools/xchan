@@ -2,31 +2,30 @@
 % Please edit documentation in R/xt_erosion_volume.R
 \name{xt_erosion_volume}
 \alias{xt_erosion_volume}
-\title{Convert Between Erosion Width and Volume (Area)}
+\title{Calculate Erosion Volume from Width Change}
 \usage{
-xt_erosion_volume(xs, width, prop_left = 0.5, error_on_overflow = TRUE)
+xt_erosion_volume(channel, width, side = "both", error_on_overflow = TRUE)
 }
 \arguments{
-\item{xs}{2D cross section.}
+\item{channel}{Channel object}
 
-\item{width}{Change in width; single positive numeric.}
+\item{width}{Change in width; single positive numeric or vector matching number of cross-sections.}
 
-\item{prop_left}{Proportion of \emph{width} change to apply to the left side
-channel; the right side channel gets \code{1 - prop_left} of the change in width.}
+\item{side}{A specification for how to distribute the widening between
+left and right banks. Built-in splitters include "left", "right", and "both".}
 
 \item{error_on_overflow}{Logical; should an error be thrown if asked
 to calculate erosion volume beyond cross section extent? \code{TRUE} if so
-(the default). If \code{FALSE}, returns the maximum volume up to the extent.
-See return value for distinguishing between the two values.}
+(the default). If \code{FALSE}, returns the maximum volume up to the extent.}
 }
 \value{
-A numeric vector of erosion volumes associated with the specified
-width change. A \code{censored} attribute contains a logical vector with length
-equal to that of \code{xs} indicating whether the calculated width is right-censored.
-If \code{TRUE}, then \code{width} extends beyond the cross section extent, and the actual
-erosion volume is at least as big as the indicated value.
+A numeric vector of erosion volumes for each cross-section in the channel.
 }
 \description{
-This function takes the original x-sec object and the eroded one resulting
-from whether (erode_left_xs) or (erode_right_xs)
+This function calculates the erosion volume for each cross-section in a channel
+given a specified width change, distributing the change according to a given scheme.
+}
+\examples{
+xt_erosion_volume(channel, width = 10, side = "left")
+xt_erosion_volume(channel, width = 10, side = splitter_left(0.75))
 }

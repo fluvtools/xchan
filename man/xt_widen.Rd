@@ -2,26 +2,25 @@
 % Please edit documentation in R/xt_widen.R
 \name{xt_widen}
 \alias{xt_widen}
-\title{Widen a river cross section}
+\title{Widen a channel}
 \usage{
-xt_widen(cross_section, ..., width, volume, side = "both")
+xt_widen(channel, ..., width, volume, side = "both")
 }
 \arguments{
-\item{cross_section}{An object of class \code{sx} or a subclass like \code{sx_1d} or \code{sx_2d}.}
+\item{channel}{Channel object}
 
-\item{...}{Additional arguments. Not currently used, but required for S3 dispatch.}
+\item{...}{Additional arguments (ignored)}
 
-\item{width}{The total width to add to the cross section. Must be a numeric value
+\item{width}{The total width to add to the channel. Must be a numeric value
 and cannot be used with \code{volume}.}
 
-\item{volume}{The total volume to remove to widen the cross section. Must be a
-numeric value and cannot be used with \code{width}. Only applicable for 2D
-cross sections.}
+\item{volume}{The total volume to remove to widen the channel. Must be a
+numeric value and cannot be used with \code{width}.}
 
 \item{side}{A specification for how to distribute the widening between
 left and right banks. Built-in splitters include "left", "right", and "both".
 
-A splitter object is a function of cross sections that determines the amount
+A splitter object is a function of channels that determines the amount
 of erosion occurring on the left bank (by convention) for each cross section.
 Existing schemes have the naming convention \verb{splitter_<name>} and are
 determined by parameters. You can call them
@@ -29,21 +28,17 @@ directly, e.g. \code{splitter_left(0.75)}, or by their name using the default
 parameters. You can create your own splitter with \code{new_splitter()}.}
 }
 \value{
-A modified cross section object.
+A modified channel object
 }
 \description{
-Widens a cross section by a specified width or volume,
-distributing the change according to a given scheme.
+Widen a channel
 }
 \note{
 While the ellipsis \code{...} is currently not used, it forces the \code{width} and
 \code{volume} arguments to be named to ensure deliberate specification.
 }
 \examples{
-xt_widen(demo_channel, width = 10)
-xt_widen(demo_channel, width = 10, side = splitter_left(0.75))
-xt_widen(demo_channel, volume = 5, side = "right")
-}
-\seealso{
-\code{\link[=splitter_left]{splitter_left()}}, \code{\link[=splitter_right]{splitter_right()}}, \code{\link[=splitter_both]{splitter_both()}}
+xt_widen(channel, width = 10)
+xt_widen(channel, width = 10, side = splitter_left(0.75))
+xt_widen(channel, volume = 5, side = "right")
 }

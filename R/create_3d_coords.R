@@ -16,7 +16,6 @@
 #' # plan_coords: matrix with x,y coordinates from plan view
 #' # profile_data: matrix with distance,elevation from profile
 #' # coords_3d <- create_3d_coords(plan_coords, profile_data)
-#' @export
 create_3d_coords <- function(plan_line_segment, profile) {
   # Get distances and elevations from profile
   banks_x <- c(profile$left$banks[1], profile$right$banks[1])

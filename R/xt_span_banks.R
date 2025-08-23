@@ -22,7 +22,6 @@
 #' ## 0 degrees:
 #' span <- xt_span_banks(pt, angle = 0, bankline = demo_bankline)
 #' plot(span, add = TRUE, col = "blue")
-#' @export
 xt_span_banks <- function(pt, angle, bankline) {
   bb <- sf::st_bbox(bankline)
   maxd <- sqrt(

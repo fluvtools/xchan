@@ -2,7 +2,7 @@
 % Please edit documentation in R/is_channel.R
 \name{is_channel}
 \alias{is_channel}
-\title{Test if an object is a cross section set.}
+\title{Test if an object is a channel object.}
 \usage{
 is_channel(x)
 }
@@ -13,5 +13,5 @@ is_channel(x)
 Logical; TRUE if the test passes.
 }
 \description{
-Checks whether an object inherits the "sxc" class.
+Checks whether an object inherits the "sxchan" class.
 }

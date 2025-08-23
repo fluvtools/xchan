@@ -1,0 +1,160 @@
+#' Sample DEM to generate profile cross sections
+#'
+#' Generate profile cross sections for a channel object using a digital elevation model (DEM).
+#' This function samples the DEM along the planimetric cross sections and creates
+#' xs_profile objects for each cross section.
+#'
+#' @param channel Channel object with planimetric cross sections
+#' @param dem Digital elevation model (raster or terra object)
+#' @param extent_distance Distance to extend beyond banks (units)
+#' @param extent_multiplier Multiplier of channel width to extend beyond banks
+#' @param sample_distance Distance between DEM sampling points (units)
+#' @param sample_multiplier Multiplier of channel width for sampling distance
+#' @returns Updated channel object with profile cross sections in the profile column
+#' @details This function extends the planimetric cross sections beyond the banks
+#' to create a "frame" for erosion analysis. The extent can be specified either as
+#' a fixed distance or as a multiplier of the channel width. Similarly, the sampling
+#' distance can be specified either as a fixed distance or as a multiplier of the
+#' channel width.
+#' @examples
+#' # Sample DEM with 50m extension and 1m sampling
+#' channel_with_profiles <- xt_generate_profile(channel, dem, extent_distance = 50, sample_distance = 1)
+#'
+#' # Sample DEM with 2x channel width extension and 0.1x width sampling
+#' channel_with_profiles <- xt_generate_profile(channel, dem, extent_multiplier = 2, sample_multiplier = 0.1)
+#' @export
+xt_generate_profile <- function(channel, dem, ..., extent_distance, extent_multiplier,
+                         sample_distance, sample_multiplier) {
+  ellipsis::check_dots_empty()
+
+  checkmate::assert_class(channel, "sxchan")
+
+  plan <- xt_column_plan(channel)
+  if (is.null(plan)) {
+    stop("Channel object must have planimetric cross sections")
+  }
+
+  # Validate extent parameters
+  extent_specified <- !missing(extent_distance) + !missing(extent_multiplier)
+  if (extent_specified != 1) {
+    stop("Exactly one of extent_distance or extent_multiplier must be specified")
+  }
+
+  # Validate sampling parameters
+  sample_specified <- !missing(sample_distance) + !missing(sample_multiplier)
+  if (sample_specified != 1) {
+    stop("Exactly one of sample_distance or sample_multiplier must be specified")
+  }
+
+  profiles <- list()
+
+  for (i in seq_along(plan)) {
+    xs_line <- plan[i]
+
+    # Calculate extent
+    if (!missing(extent_distance)) {
+      extent <- extent_distance
+    } else {
+      # Calculate channel width and multiply
+      width <- sf::st_length(xs_line)
+      extent <- width * extent_multiplier
+    }
+
+    # Calculate sampling distance
+    if (!missing(sample_distance)) {
+      sample_dist <- sample_distance
+    } else {
+      # Calculate sampling distance as multiplier of channel width
+      width <- sf::st_length(xs_line)
+      sample_dist <- width * sample_multiplier
+    }
+
+    # Extend the cross section line beyond banks
+    extended_line <- extend_cross_section(xs_line, extent)
+
+    # Sample DEM along extended line
+    profile_data <- sample_dem_along_line(extended_line, dem, sample_dist)
+
+    # Create xs_profile object
+    profile <- create_xs_profile(profile_data, xs_line)
+
+    profiles[[i]] <- profile
+  }
+
+  # Update channel object with profiles
+  xt_column_profile(channel) <- profiles
+  channel
+}
+
+# Helper function to extend cross section line
+extend_cross_section <- function(line, extent) {
+  coords <- sf::st_coordinates(line)
+  start_point <- coords[1, 1:2]
+  end_point <- coords[nrow(coords), 1:2]
+
+  # Calculate direction vector
+  direction <- end_point - start_point
+  length <- sqrt(sum(direction^2))
+  unit_direction <- direction / length
+
+  # Extend both ends
+  new_start <- start_point - unit_direction * extent
+  new_end <- end_point + unit_direction * extent
+
+  # Create extended line
+  extended_coords <- rbind(new_start, coords[, 1:2], new_end)
+  sf::st_linestring(extended_coords)
+}
+
+# Helper function to sample DEM along line
+sample_dem_along_line <- function(line, dem, sample_distance) {
+  # Sample points along line
+  line_length <- sf::st_length(line)
+  n_points <- ceiling(as.numeric(line_length / sample_distance))
+
+  if (n_points < 2) n_points <- 2
+
+  sample_points <- sf::st_line_sample(line, n = n_points)
+  sample_points <- sf::st_cast(sample_points, "POINT")
+
+  # Extract elevations from DEM
+  coords <- sf::st_coordinates(sample_points)
+  elevations <- terra::extract(dem, coords)[, 1]
+
+  # Calculate distances along line
+  distances <- seq(0, as.numeric(line_length), length.out = n_points)
+
+  # Return data frame
+  data.frame(
+    distance = distances,
+    elevation = elevations,
+    x = coords[, 1],
+    y = coords[, 2]
+  )
+}
+
+# Helper function to create xs_profile object
+create_xs_profile <- function(profile_data, original_line) {
+  # Find the center point (midpoint of original line)
+  original_coords <- sf::st_coordinates(original_line)
+  center_distance <- sf::st_length(original_line) / 2
+
+  # Adjust distances to be relative to center
+  profile_data$relative_distance <- profile_data$distance - center_distance
+
+  # Split into left and right sides
+  left_data <- profile_data[profile_data$relative_distance <= 0, ]
+  right_data <- profile_data[profile_data$relative_distance >= 0, ]
+
+  # Create xs_profile structure
+  list(
+    left = list(
+      coordinates = as.matrix(left_data[, c("relative_distance", "elevation")]),
+      bank_point = c(0, left_data$elevation[left_data$relative_distance == 0])
+    ),
+    right = list(
+      coordinates = as.matrix(right_data[, c("relative_distance", "elevation")]),
+      bank_point = c(0, right_data$elevation[right_data$relative_distance == 0])
+    )
+  )
+}

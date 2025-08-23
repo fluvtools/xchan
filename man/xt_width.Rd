@@ -4,18 +4,17 @@
 \alias{xt_width}
 \title{Get Channel Width}
 \usage{
-xt_width(object)
+xt_width(channel)
 }
 \arguments{
-\item{object}{Cross section.}
+\item{channel}{Channel object.}
 }
 \value{
-Cross section width; single numeric.
+Numeric vector of widths of the channel's cross sections.
 }
 \description{
-Get Channel Width
+Calculate the width of a channel object.
 }
 \examples{
-xs <- xt_sxc(1:3)
-xt_width(xs)
+xt_width(demo_channel)
 }

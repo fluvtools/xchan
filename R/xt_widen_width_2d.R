@@ -34,9 +34,9 @@ xt_widen_width_2d_left <- function(xs, dw) {
   if (dw == 0) return(xs)
   x_old <- xs$left$bank[1]
   x_new <- x_old - dw
-  left_nodes <- xs$left$multiline
+  left_nodes <- xs$left$coordinates
   left_nodes <- inject_2d_points(left_nodes, x_new)
-  xs$left$bank <- get_2d_points(left_nodes, x_new)
+  xs$left$bank_point <- get_2d_points(left_nodes, x_new)
   if (xs$left$bank[2] < xs$left$thalweg[2]) {
     warning(
       "River has eroded into a part of the floodplain that's lower in ",
@@ -53,7 +53,7 @@ xt_widen_width_2d_left <- function(xs, dw) {
   # to the new bankpoint.
   x_river_part <- left_nodes[, 1] >= x_old
   left_nodes[x_river_part, 1] <- left_nodes[x_river_part, 1] - dw
-  xs$left$multiline <- left_nodes
+  xs$left$coordinates <- left_nodes
   xs
 }
 
