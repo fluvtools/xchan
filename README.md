@@ -97,7 +97,7 @@ You can generate cross sections and a centerline:
 
 ``` r
 demo_cross <- xt_generate_sxc(demo_bankline, n = 50)
-demo_center <- xt_generate_centerline(demo_bankline)
+demo_center <- xt_trace_centerline(demo_bankline)
 plot(demo_bankline)
 plot(demo_cross, add = TRUE, col = "blue")
 plot(demo_center, add = TRUE)

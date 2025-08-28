@@ -1,6 +1,6 @@
-#' Generate centerline from channel
+#' Trace centerline from channel
 #'
-#' Generate a centerline by connecting the midpoints of planimetric cross sections.
+#' Trace a centerline by connecting the midpoints of planimetric cross sections.
 #'
 #' @param channel Channel object with planimetric cross sections
 #' @returns An sf LINESTRING representing the centerline
@@ -8,10 +8,10 @@
 #' object and connects their midpoints to create a centerline. The centerline
 #' represents the approximate flow path through the channel.
 #' @examples
-#' centerline <- xt_centerline(channel)
+#' centerline <- xt_trace_centerline(channel)
 #' plot(centerline, col = "red", lwd = 2)
 #' @export
-xt_generate_centerline <- function(channel) {
+xt_trace_centerline <- function(channel) {
   if (!is_channel(channel)) {
     stop("Input must be a channel object")
   }

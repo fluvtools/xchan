@@ -18,14 +18,14 @@ and cannot be used with \code{volume}.}
 numeric value and cannot be used with \code{width}.}
 
 \item{side}{A specification for how to distribute the widening between
-left and right banks. Built-in splitters include "left", "right", and "both".
+left and right banks. Built-in side functions include "left", "right", and "both".
 
-A splitter object is a function of channels that determines the amount
+A side object is a function of channels that determines the amount
 of erosion occurring on the left bank (by convention) for each cross section.
-Existing schemes have the naming convention \verb{splitter_<name>} and are
+Existing schemes have the naming convention \verb{side_<name>} and are
 determined by parameters. You can call them
-directly, e.g. \code{splitter_left(0.75)}, or by their name using the default
-parameters. You can create your own splitter with \code{new_splitter()}.}
+directly, e.g. \code{side_left(0.75)}, or by their name using the default
+parameters.}
 }
 \value{
 A modified channel object
@@ -39,6 +39,6 @@ While the ellipsis \code{...} is currently not used, it forces the \code{width} 
 }
 \examples{
 xt_widen(channel, width = 10)
-xt_widen(channel, width = 10, side = splitter_left(0.75))
+xt_widen(channel, width = 10, side = side_left(0.75))
 xt_widen(channel, volume = 5, side = "right")
 }
