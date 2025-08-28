@@ -11,7 +11,7 @@ xt_distance_ds(channel, flowline = NULL)
 
 \item{flowline}{Optional. An sf LINESTRING representing the line of flow,
 such as the centerline. If \code{NULL} (default), uses the centerline
-generated using \code{xt_generate_centerline(channel)} with its default settings.}
+generated using \code{xt_trace_centerline(channel)} with its default settings.}
 }
 \value{
 A numeric vector of distances downstream (along the line of flow)
@@ -28,8 +28,4 @@ if they are not already sorted.
 \examples{
 # Using the auto-generated flowline
 distances <- xt_distance_ds(demo_channel)
-
-# Using a custom flowline
-my_flowline <- xt_centerline(demo_channel)
-distances <- xt_distance_ds(demo_channel, my_flowline)
 }

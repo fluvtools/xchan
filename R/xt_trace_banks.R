@@ -1,20 +1,20 @@
-#' Generate banklines from channel
+#' Trace banklines from channel
 #'
-#' Generate bankline polygon by tracing the extents of planimetric cross sections.
+#' Trace bankline polygon by connecting bank points from planimetric cross sections.
 #'
 #' @param channel Channel object with planimetric cross sections
-#' @param tracer Tracer algorithm to use for bankline generation
+#' @param tracer Tracer algorithm to use for bankline tracing
 #' @param ... Additional parameters (ignored)
 #' @returns An sf POLYGON representing the banklines
 #' @details This function extracts the planimetric cross sections from the channel
 #' object and traces their extents to create a bankline polygon. The algorithm
 #' can be specified using the tracer parameter.
 #' @examples
-#' banks <- xt_generate_banks(channel, tracer = "linear")
-#' banks <- xt_generate_banks(channel, tracer = tracer_spline(degree = 3))
+#' banks <- xt_trace_banks(channel, tracer = "linear")
+#' banks <- xt_trace_banks(channel, tracer = tracer_spline(degree = 3))
 #' plot(banks, col = "lightblue")
 #' @export
-xt_generate_banks <- function(channel, tracer = "linear") {
+xt_trace_banks <- function(channel, tracer = "linear") {
   ellipsis::check_dots_empty()
   checkmate::assert_class(channel, "sxchan")
   

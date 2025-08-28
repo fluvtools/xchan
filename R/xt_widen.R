@@ -7,21 +7,21 @@
 #' @param volume The total volume to remove to widen the channel. Must be a
 #'   numeric value and cannot be used with `width`.
 #' @param side A specification for how to distribute the widening between
-#' left and right banks. Built-in splitters include "left", "right", and "both".
+#' left and right banks. Built-in side functions include "left", "right", and "both".
 #'
-#' A splitter object is a function of channels that determines the amount
+#' A side object is a function of channels that determines the amount
 #' of erosion occurring on the left bank (by convention) for each cross section.
-#' Existing schemes have the naming convention `splitter_<name>` and are
+#' Existing schemes have the naming convention `side_<name>` and are
 #' determined by parameters. You can call them
-#' directly, e.g. `splitter_left(0.75)`, or by their name using the default
-#' parameters. You can create your own splitter with `new_splitter()`.
+#' directly, e.g. `side_left(0.75)`, or by their name using the default
+#' parameters.
 #' @note
 #' While the ellipsis `...` is currently not used, it forces the `width` and
 #' `volume` arguments to be named to ensure deliberate specification.
 #' @returns A modified channel object
 #' @examples
 #' xt_widen(channel, width = 10)
-#' xt_widen(channel, width = 10, side = splitter_left(0.75))
+#' xt_widen(channel, width = 10, side = side_left(0.75))
 #' xt_widen(channel, volume = 5, side = "right")
 #' @export
 xt_widen <- function(channel, ..., width, volume, side = "both") {

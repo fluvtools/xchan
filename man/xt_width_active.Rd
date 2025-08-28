@@ -4,15 +4,14 @@
 \alias{xt_width_active}
 \title{Active Cross Section Widths}
 \usage{
-xt_width_active(sxc)
+xt_width_active(channel)
 }
 \arguments{
-\item{sxc}{A list of planimetric (1-dimensional) cross sections; i.e., and object of
-class \code{"sxc"}.}
+\item{channel}{Channel object}
 }
 \value{
-A numeric vector of length equal to the length of the input \code{sxc} containing the
-active widths of each cross section.
+A numeric vector of length equal to the number of cross-sections in the channel
+containing the active widths of each cross section.
 }
 \description{
 Calculate the "active" width of channel cross sections, where an "active" width

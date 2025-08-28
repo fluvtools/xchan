@@ -65,7 +65,7 @@ A core architectural decision is the consistent use of function factories for co
 
 This design provides several key advantages:
 
-**Consistent User Experience**: All configurable operations follow the same pattern. Users learn once how to use `method = "simple"` or `method = algorithm(parameters)`, and this knowledge transfers across splitters, tracers, and dredgers.
+**Consistent User Experience**: All configurable operations follow the same pattern. Users learn once how to use `method = "simple"` or `method = algorithm(parameters)`, and this knowledge transfers across side functions, tracers, and dredgers.
 
 **Parameter Capture**: Factory functions elegantly capture configuration parameters in closures, avoiding the need for complex parameter passing or global state.
 
@@ -73,19 +73,29 @@ This design provides several key advantages:
 
 **R Ecosystem Integration**: This pattern is widely used in the R ecosystem (e.g., `ggplot2` geoms, `dplyr` verbs, `scales` transforms), making the package feel familiar to R users.
 
-The package implements three factory systems:
+The package implements five function factory systems:
 
-**Splitters** for erosion allocation during channel widening, allowing users to specify how erosion is distributed between left and right banks. Built-in splitters handle common cases (e.g., "left", "right", "both"), while the `new_splitter()` function enables sophisticated erosion patterns based on bank properties, channel geometry, or environmental factors.
+**Specification Factories** create functions that define parameters and contexts for operations:
 
-**Tracers** for bankline generation from planimetric cross-sections, enabling different algorithms for connecting bank points into continuous banklines. Users can choose from simple linear connections for straight channels to sophisticated curve-fitting algorithms for meandering rivers.
+- **Side Factories** create functions that specify erosion allocation during channel widening, allowing users to define how erosion is distributed between left and right banks. Built-in factories handle common cases (e.g., "left", "right", "both"), enabling sophisticated erosion patterns based on bank properties, channel geometry, or environmental factors.
 
-**Dredgers** for channel modification operations, supporting different algorithms for creating new channel geometries. This includes rectangular dredging for simple cases and spline-based dredging for smooth curve generation based on surrounding topography.
+- **Elevation Factories** create functions for flexible elevation specification across all operations, enabling users to specify elevation sources from thalweg depths to water surface columns to custom calculations.
 
-**Elevations** for flexible elevation specification across all functions, enabling users to specify elevation sources from thalweg depths to water surface columns to custom calculations.
+**Operator Factories** create functions that perform actual operations on channels:
+
+- **Dredger Factories** create functions for channel modification operations, supporting different algorithms for creating new channel geometries. This includes rectangular dredging for simple cases and spline-based dredging for smooth curve generation based on surrounding topography.
+
+- **Tracer Factories** create functions for bankline generation from planimetric cross-sections, enabling different algorithms for connecting bank points into continuous banklines. Users can choose from simple linear connections for straight channels to sophisticated curve-fitting algorithms for meandering rivers.
+
+- **Extender Factories** create functions for extending the topographic frame beyond channel banks, enabling users to add floodplain topography for channel widening simulations. Built-in factories support flat extensions and sloped extensions with configurable gradients.
 
 The factory functions create "first-class citizens" - objects that can be passed as arguments, returned from functions, and composed together. This enables sophisticated parameter capture, such as embedding elevation specifications within dredger functions (e.g., `dredger_rectangle(depth = 5, wse = elevation_column("water_surface"))`), allowing each algorithm to capture its specific requirements while maintaining a consistent interface.
 
 This architectural approach transforms what could be a collection of disparate functions into a cohesive, extensible system that grows with user needs rather than requiring API changes.
+
+### Channel Frame Extension
+
+Channel frame extension adds topographic context beyond the banks to enable realistic channel widening simulations. The extender system supports flat extensions for simple floodplains and sloped extensions for realistic terrain gradients. Users can specify different extension patterns on left and right sides to model asymmetric topography, such as hills on one side and floodplains on the other.
 
 ## Channel Operations
 
@@ -125,13 +135,17 @@ channel_smooth <- xt_dredge(channel, method = dredger_spline(alpha = 0.3))
 plot(channel_rect, view = "3d")
 
 # Widen the channel with custom erosion allocation
-channel_widened <- xt_widen(channel, width = 10, side = splitter_left(prop = 0.75))
+channel_widened <- xt_widen(channel, width = 10, side = side_left(prop = 0.75))
 plot(channel_widened, view = "3d")
 
 # Generate derived geometries
 centerline <- xt_centerline(channel)
-banks <- xt_generate_banks(channel, tracer = "linear")
-banks_smooth <- xt_generate_banks(channel, tracer = tracer_spline(degree = 3))
+banks <- xt_trace_banks(channel, tracer = "linear")
+banks_smooth <- xt_trace_banks(channel, tracer = tracer_spline(degree = 3))
+
+# Extend topographic frame for widening simulations
+channel_extended <- xt_extend_frame(channel, extender = extender_flat(extent = 20))
+channel_asymmetric <- xt_extend_frame_left(channel, extender = extender_slope(extent = 30, slope = 0.05))
 
 # Analyze results
 heights <- xt_height(channel, .f = min)

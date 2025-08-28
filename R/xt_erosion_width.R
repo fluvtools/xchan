@@ -6,14 +6,14 @@
 #' @param channel Channel object
 #' @param volume Volume of erosion; single positive numeric or vector matching number of cross-sections.
 #' @param side A specification for how to distribute the widening between
-#' left and right banks. Built-in splitters include "left", "right", and "both".
+#' left and right banks. Built-in side functions include "left", "right", and "both".
 #' @param error_on_overflow Logical; should an error be thrown if asked
 #' to calculate erosion width beyond cross section extent? `TRUE` if so
 #' (the default). If `FALSE`, returns the maximum width up to the extent.
 #' @returns A numeric vector of erosion widths for each cross-section in the channel.
 #' @examples
 #' xt_erosion_width(channel, volume = 50, side = "left")
-#' xt_erosion_width(channel, volume = 50, side = splitter_left(0.75))
+#' xt_erosion_width(channel, volume = 50, side = side_left(0.75))
 #' @export
 xt_erosion_width <- function(channel, volume, side = "both", error_on_overflow = TRUE) {
   checkmate::assert_class(channel, "sxchan")

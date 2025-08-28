@@ -1,10 +1,10 @@
-#' Print method for sxchan_splitter objects
+#' Print method for sxchan_side objects
 #'
-#' @param x A splitter object
+#' @param x A side object
 #' @param ... Additional arguments (ignored)
 #' @exportS3Method base::print
-print.sxchan_splitter <- function(x, ...) {
-  cat("Splitter:", attr(x, "name"), "\n")
+print.sxchan_side <- function(x, ...) {
+  cat("Side:", attr(x, "name"), "\n")
   
   # Get function arguments
   args <- formals(x)

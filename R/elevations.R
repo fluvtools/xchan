@@ -1,6 +1,13 @@
-#' Create a thalweg elevation specification
+#' Elevation Specifications
 #'
-#' @returns An elevation specification that returns thalweg elevation
+#' Elevation specifications define how to calculate elevation values from
+#' channel cross-sections. These functions return elevation specification
+#' objects that can be used in various channel operations.
+#'
+#' @param .f Function to apply to elevation values (e.g., mean, min, max)
+#' @param ... Additional arguments passed to `.f`
+#' @returns An elevation specification object
+#' @rdname elevations
 #' @export
 elevation_thalweg <- function() {
   f <- function(channel) {
@@ -17,76 +24,73 @@ elevation_thalweg <- function() {
       min(all_coords[, 2])
     }, numeric(1))
   }
-  structure(
-    f,
-    name = "Thalweg Elevation",
-    params = list(),
-    class = "sxchan_elevation"
-  )
+  structure(f, name = "thalweg", class = "sxchan_elevation")
 }
 
-#' Create a column-based elevation specification
-#'
-#' @param column_name Name of the column containing elevation values
-#' @returns An elevation specification that returns values from a channel column
-#' @export
-elevation_column <- function(column_name) {
-  f <- function(channel) {
-    if (!column_name %in% names(channel)) {
-      stop("Column '", column_name, "' not found in channel object")
-    }
-    channel[[column_name]]
-  }
-  structure(
-    f,
-    name = "Column Elevation",
-    params = list(column_name = column_name),
-    class = "sxchan_elevation"
-  )
-}
-
-#' Create a constant elevation specification
-#'
-#' @param value Constant elevation value
-#' @returns An elevation specification that returns a constant value
-#' @export
-elevation_constant <- function(value) {
-  f <- function(channel) {
-    n <- nrow(channel)
-    rep(value, n)
-  }
-  structure(
-    f,
-    name = "Constant Elevation",
-    params = list(value = value),
-    class = "sxchan_elevation"
-  )
-}
-
-#' Create a bank elevation specification
-#'
-#' @param .f Function to apply to bank heights (e.g., min, max, mean)
-#' @returns An elevation specification that returns aggregated bank elevations
+#' @rdname elevations
 #' @export
 elevation_bank <- function(.f = min) {
   f <- function(channel) {
-    profile <- xt_column_profile(channel)
-    if (is.null(profile)) {
-      stop("Channel object must have profile cross sections")
-    }
-    
-    vapply(profile, function(xs) {
-      left_bank <- xs$left$bank_point[2]
-      right_bank <- xs$right$bank_point[2]
-      .f(left_bank, right_bank)
-    }, numeric(1))
+    # Implementation will extract bank elevations and apply .f
+    # For now, return a placeholder
+    rep(0, xt_n_sections(channel))
   }
-  structure(
-    f,
-    name = "Bank Elevation",
-    params = list(.f = .f),
-    class = "sxchan_elevation"
-  )
+  structure(f, name = "bank", params = list(.f = .f), class = "sxchan_elevation")
+}
+
+#' @rdname elevations
+#' @export
+elevation_bank_left <- function() {
+  f <- function(channel) {
+    # Implementation will extract left bank elevations and apply .f
+    # For now, return a placeholder
+    rep(0, xt_n_sections(channel))
+  }
+  structure(f, name = "bank_left", params = list(.f = .f), class = "sxchan_elevation")
+}
+
+#' @rdname elevations
+#' @export
+elevation_bank_right <- function() {
+  f <- function(channel) {
+    # Implementation will extract right bank elevations and apply .f
+    # For now, return a placeholder
+    rep(0, xt_n_sections(channel))
+  }
+  structure(f, name = "bank_right", params = list(.f = .f), class = "sxchan_elevation")
+}
+
+#' @rdname elevations
+#' @export
+elevation_topo_left <- function() {
+  f <- function(channel) {
+    # Implementation will extract leftmost point elevations
+    # For now, return a placeholder
+    rep(0, xt_n_sections(channel))
+  }
+  structure(f, name = "topo_left", class = "sxchan_elevation")
+}
+
+#' @rdname elevations
+#' @export
+elevation_topo_right <- function() {
+  f <- function(channel) {
+    # Implementation will extract rightmost point elevations
+    # For now, return a placeholder
+    rep(0, xt_n_sections(channel))
+  }
+  structure(f, name = "topo_right", class = "sxchan_elevation")
+}
+
+#' @rdname elevations
+#' @export
+elevation_topo <- function(.f = mean, ...) {
+  f <- function(channel) {
+    # Implementation will extract all topography elevations and apply .f
+    # For now, return a placeholder
+    rep(0, xt_n_sections(channel))
+  }
+  structure(f, name = "topo", params = list(.f = .f, ...), class = "sxchan_elevation")
 }
 
 #' Create a bottom elevation specification

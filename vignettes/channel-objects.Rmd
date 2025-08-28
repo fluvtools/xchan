@@ -1,0 +1,204 @@
+---
+title: "Channel Objects and Generation"
+author: "Vincenzo Coia"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Channel Objects and Generation}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(sxchan)
+library(sf)
+```
+
+# Channel Objects and Generation
+
+This vignette covers creating channel objects from different data sources and generating derived geometries.
+
+## Creating Channels from Different Inputs
+
+The `xt_channel()` function is an S3 generic that can work with various input types.
+
+### From Numeric Vectors (Widths)
+
+```{r numeric-input}
+# Create channel from width vector
+widths <- c(10, 12, 8, 15, 11, 9)
+channel <- xt_channel(widths)
+xt_width(channel)
+```
+
+### From Spatial Objects (sfc)
+
+```{r sfc-input}
+# Create planimetric cross-sections
+library(sf)
+
+# Create simple line geometries
+lines <- list(
+  st_linestring(matrix(c(0, 0, 10, 0), ncol = 2)),
+  st_linestring(matrix(c(0, 0, 12, 0), ncol = 2)),
+  st_linestring(matrix(c(0, 0, 8, 0), ncol = 2))
+)
+plan_sfc <- st_sfc(lines)
+
+# Create channel from sfc
+channel <- xt_channel(plan_sfc)
+xt_width(channel)
+```
+
+### From Data Frames
+
+```{r df-input}
+# Create data frame with plan and profile columns
+df <- data.frame(
+  station = c(0, 100, 200, 300, 400, 500),
+  width = c(10, 12, 8, 15, 11, 9),
+  roughness = c(0.03, 0.035, 0.025, 0.04, 0.03, 0.025)
+)
+
+# Create channel specifying column names
+channel <- xt_channel(df, plan_col = "width")
+channel
+```
+
+## Generating Channels from Banklines
+
+### From Bankline Polygons
+
+```{r bankline-generation}
+# Use demo bankline
+plot(demo_bankline, main = "Demo Bankline")
+
+# Generate planimetric cross-sections from bankline
+plan <- xt_generate_plan(demo_bankline, n = 20)
+plot(plan, add = TRUE, col = "blue")
+
+# Create channel from generated plan
+channel <- xt_channel(plan)
+```
+
+### From DEM Data
+
+```{r dem-generation}
+# Generate profile cross-sections from DEM
+# This would require a DEM raster
+# profile <- xt_generate_profile(channel, dem = my_dem)
+
+# For now, we'll create a simple example
+# channel_with_profile <- xt_channel(channel, profile_col = profile)
+```
+
+## Generating Derived Geometries
+
+### Centerlines
+
+```{r centerline}
+# Generate centerline from channel
+centerline <- xt_trace_centerline(channel)
+plot(channel, view = "plan")
+plot(centerline, add = TRUE, col = "red", lwd = 2)
+```
+
+### Banklines
+
+```{r banklines}
+# Generate banklines from channel
+banklines <- xt_trace_banks(channel)
+plot(channel, view = "plan")
+plot(banklines, add = TRUE, col = "green", lwd = 2)
+```
+
+## Correcting Streamflow Direction
+
+Sometimes the auto-generated streamflow direction may be incorrect:
+
+```{r reverse-flow}
+# Check current flow direction
+plot(channel, view = "plan")
+
+# Reverse flow direction if needed
+channel_reversed <- xt_reverse_flow(channel)
+plot(channel_reversed, view = "plan")
+```
+
+## Spatial Outputs
+
+### Converting to sf Objects
+
+```{r spatial-outputs}
+# Convert channel to sf objects
+plan_sf <- xt_as_sf(channel, type = "plan")
+profile_sf <- xt_as_sf(channel, type = "profile")
+# 3d_sf <- xt_as_sf(channel, type = "3d")  # if both plan and profile exist
+
+# Work with sf objects
+class(plan_sf)
+plot(plan_sf)
+```
+
+### Converting to sfc Objects
+
+```{r sfc-outputs}
+# Convert to sfc objects (geometry only)
+plan_sfc <- xt_as_sfc(channel, type = "plan")
+profile_sfc <- xt_as_sfc(channel, type = "profile")
+
+# Use in spatial operations
+st_length(plan_sfc)
+```
+
+## Channel Validation
+
+Check if objects are valid channels:
+
+```{r validation}
+# Check if object is a channel
+is_channel(channel)
+
+# Check if channel has specific components
+xt_has_plan(channel)
+xt_has_profile(channel)
+
+# Validate planimetric cross-sections
+xt_validate_plan(plan)
+```
+
+## Working with Channel Components
+
+### Accessing Channel Columns
+
+```{r column-access}
+# Get planimetric cross-sections
+plan <- xt_column_plan(channel)
+
+# Get profile cross-sections (if they exist)
+# profile <- xt_column_profile(channel)
+
+# Set new planimetric cross-sections
+new_plan <- plan * 1.2  # Scale by 20%
+xt_column_plan(channel) <- new_plan
+```
+
+## Summary
+
+This vignette covered:
+
+- Creating channels from different input types (numeric, sfc, data.frame)
+- Generating channels from banklines and DEMs
+- Creating derived geometries (centerlines, banklines)
+- Correcting streamflow direction
+- Converting channels to spatial objects
+- Validating and accessing channel components
+
+The next vignette will show you how to modify channels through widening and erosion operations.

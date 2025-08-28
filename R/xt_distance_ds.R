@@ -5,7 +5,7 @@
 #' @param channel A channel object with planimetric cross sections
 #' @param flowline Optional. An sf LINESTRING representing the line of flow,
 #' such as the centerline. If `NULL` (default), uses the centerline
-#' generated using `xt_generate_centerline(channel)` with its default settings.
+#' generated using `xt_trace_centerline(channel)` with its default settings.
 #' @returns A numeric vector of distances downstream (along the line of flow)
 #' for each cross section in `channel`, where 0 represents the start of the
 #' line of flow.
@@ -14,10 +14,6 @@
 #' @examples
 #' # Using the auto-generated flowline
 #' distances <- xt_distance_ds(demo_channel)
-#'
-#' # Using a custom flowline
-#' my_flowline <- xt_centerline(demo_channel)
-#' distances <- xt_distance_ds(demo_channel, my_flowline)
 #' @export
 xt_distance_ds <- function(channel, flowline = NULL) {
   if (!is_channel(channel)) {

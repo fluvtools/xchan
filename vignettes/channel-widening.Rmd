@@ -1,0 +1,244 @@
+---
+title: "Channel Widening and Erosion"
+author: "Vincenzo Coia"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Channel Widening and Erosion}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(sxchan)
+```
+
+# Channel Widening and Erosion
+
+This vignette covers modifying channels through widening operations and calculating erosion volumes.
+
+## Function Factory Pattern
+
+`sxchan` uses a function factory pattern to provide flexible and extensible operations. The factories fall into two categories:
+
+**Specification Factories** create functions that define parameters and contexts:
+- **Side Factories** (`side_*()`) - specify erosion allocation patterns
+- **Elevation Factories** (`elevation_*()`) - specify elevation sources and references
+
+**Operator Factories** create functions that perform actual operations:
+- **Dredger Factories** (`dredger_*()`) - perform channel modification operations  
+- **Tracer Factories** (`tracer_*()`) - perform bankline tracing operations
+- **Extender Factories** (`extender_*()`) - perform topographic frame extensions
+
+This pattern allows for sophisticated parameter capture and composition, such as embedding elevation specifications within dredger functions or extenders.
+
+## Basic Channel Widening
+
+The `xt_widen()` function allows you to modify channel cross-sections by adding width or removing volume.
+
+### Widening by Width
+
+```{r width-widening}
+# Create a simple channel
+channel <- xt_channel(c(10, 12, 8, 15, 11, 9))
+
+# Widen by adding 2 meters to each cross-section
+channel_widened <- xt_widen(channel, width = 2)
+
+# Compare widths
+original_widths <- xt_width(channel)
+new_widths <- xt_width(channel_widened)
+data.frame(original = original_widths, widened = new_widths, difference = new_widths - original_widths)
+```
+
+### Widening by Volume
+
+```{r volume-widening}
+# Widen by removing 50 cubic meters from each cross-section
+# Note: This requires profile cross-sections
+# channel_widened_vol <- xt_widen(channel, volume = 50)
+```
+
+## Side Specifications
+
+You can control how the widening is distributed between left and right banks.
+
+### Simple Side Specifications
+
+```{r simple-sides}
+# Widen both sides equally (default)
+channel_both <- xt_widen(channel, width = 2, side = "both")
+
+# Widen only left side
+channel_left <- xt_widen(channel, width = 2, side = "left")
+
+# Widen only right side  
+channel_right <- xt_widen(channel, width = 2, side = "right")
+```
+
+### Using Side Functions (Specification Factories)
+
+Side functions are **specification factories** that create functions defining how erosion should be distributed. They provide more flexible control over erosion distribution:
+
+```{r sides}
+# Use built-in side functions
+channel_side1 <- xt_widen(channel, width = 2, side = side_left(0.75))  # 75% left, 25% right
+channel_side2 <- xt_widen(channel, width = 2, side = side_right(0.6))  # 40% left, 60% right
+channel_side3 <- xt_widen(channel, width = 2, side = side_both(0.7, 0.3))  # 70% left, 30% right
+```
+
+### Custom Side Functions
+
+You can create custom side functions (specification factories) for specific scenarios:
+
+```{r custom-side}
+# Create a custom side function that varies along the channel
+custom_side <- function(channel) {
+  n <- xt_n_sections(channel)
+  # Gradually shift from left to right bank erosion
+  seq(0.8, 0.2, length.out = n)
+}
+
+channel_custom <- xt_widen(channel, width = 2, side = custom_side)
+```
+
+## Erosion Calculations
+
+### Volume from Width
+
+Calculate how much sediment volume would be removed for a given width increase:
+
+```{r erosion-volume}
+# Calculate erosion volume for 2-meter width increase
+volumes <- xt_erosion_volume(channel, width = 2, side = "both")
+volumes
+
+# With custom side function
+volumes_custom <- xt_erosion_volume(channel, width = 2, side = side_left(0.75))
+volumes_custom
+```
+
+### Width from Volume
+
+Calculate how much width increase would result from removing a given volume:
+
+```{r erosion-width}
+# Calculate width increase for 50 cubic meter removal
+# Note: This requires profile cross-sections
+# widths <- xt_erosion_width(channel, volume = 50, side = "both")
+# widths
+```
+
+## Advanced Widening Scenarios
+
+### Variable Widening
+
+```{r variable-widening}
+# Widen by different amounts at each cross-section
+variable_widths <- c(1, 2, 1.5, 3, 2.5, 1)
+channel_variable <- xt_widen(channel, width = variable_widths, side = "both")
+
+# Compare results
+data.frame(
+  original = xt_width(channel),
+  variable = xt_width(channel_variable),
+  added = variable_widths
+)
+```
+
+### Complex Erosion Patterns
+
+```{r complex-erosion}
+# Create a side function based on channel characteristics
+# For example, more erosion on outside of bends
+bend_side <- function(channel) {
+  n <- xt_n_sections(channel)
+  # Simulate a meandering pattern
+  sin_pattern <- sin(seq(0, 2*pi, length.out = n))
+  # Convert to proportions (0.3 to 0.7)
+  0.5 + 0.2 * sin_pattern
+}
+
+channel_bend <- xt_widen(channel, width = 2, side = bend_side)
+```
+
+## Visualizing Widening
+
+```{r visualize-widening}
+# Plot original and widened channels
+par(mfrow = c(1, 2))
+plot(channel, view = "plan", main = "Original Channel")
+plot(channel_widened, view = "plan", main = "Widened Channel")
+par(mfrow = c(1, 1))
+```
+
+## Topographic Frame Extension
+
+Before widening channels, you may need to extend the topographic frame beyond the banks to provide space for erosion calculations. This is especially important for channels created from simple width specifications.
+
+### Using Extenders (Operator Factories)
+
+Extenders are **operator factories** that create functions for extending the topographic frame:
+
+```{r extenders}
+# Flat extension on both sides
+channel_extended <- xt_extend_frame(channel, extender = extender_flat(extent = 20))
+
+# Sloped extension on both sides
+channel_sloped <- xt_extend_frame(channel, extender = extender_slope(extent = 30, slope = 0.02))
+
+# Different extensions on each side
+channel_asymmetric <- xt_extend_frame_left(channel, extender = extender_slope(extent = 30, slope = 0.05))
+channel_asymmetric <- xt_extend_frame_right(channel_asymmetric, extender = extender_flat(extent = 20))
+```
+
+### Using Different Elevation References
+
+You can specify different elevation references for extensions:
+
+```{r elevation-references}
+# Extend from bank elevation
+channel_bank <- xt_extend_frame(channel, extender = extender_flat(extent = 20, elevation = elevation_bank()))
+
+# Extend from leftmost point elevation
+channel_left <- xt_extend_frame(channel, extender = extender_flat(extent = 20, elevation = elevation_topo_left()))
+
+# Extend from rightmost point elevation
+channel_right <- xt_extend_frame(channel, extender = extender_flat(extent = 20, elevation = elevation_topo_right()))
+```
+
+## Working with Censored Results
+
+When erosion calculations extend beyond the cross-section extent:
+
+```{r censored-results}
+# Check for censored results
+volumes_with_censored <- xt_erosion_volume(channel, width = 10, side = "both", error_on_overflow = FALSE)
+
+# Check which results are censored
+censored_attr <- attr(volumes_with_censored, "censored")
+if (any(censored_attr)) {
+  cat("Censored results at cross-sections:", which(censored_attr), "\n")
+}
+```
+
+## Summary
+
+This vignette covered:
+
+- Basic channel widening by width and volume
+- Simple and complex side specifications using side functions
+- Custom side function creation for specific scenarios
+- Erosion volume and width calculations
+- Variable widening patterns
+- Topographic frame extension for realistic simulations
+- Handling censored results
+
+The next vignette will show you how to perform detailed channel calculations and analysis.

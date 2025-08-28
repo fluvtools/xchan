@@ -152,14 +152,17 @@ Already saw _channel_ generators: `xt_generate_plan()` and `xt_generate_profile(
 
 Other things (especially useful after eroding the channel):
 
-- `xt_generate_banks(channel, ...)` - Generate banklines from channel.
-- `xt_generate_centerline(channel, ...)` - Generate centerline from channel.
+- `xt_trace_banks(channel, ...)` - Trace banklines from channel.
+- `xt_trace_centerline(channel, ...)` - Trace centerline from channel.
+- `xt_extend_frame(channel, ...)` - Extend topographic frame for widening simulations.
 
 Interface will allow for different methods in the future. Maybe like this:
 
 ```
-xt_generate_banks(channel, method = "linear")  # 🤔
-xt_generate_banks(channel, method = banks_spline(smoothness = 0.4))  # 🤔
+xt_trace_banks(channel, tracer = "linear")  # ✅
+xt_trace_banks(channel, tracer = tracer_spline(degree = 3))  # ✅
+xt_extend_frame(channel, extender = extender_flat(extent = 20))  # ✅
+xt_extend_frame(channel, extender = extender_slope(extent = 30, slope = 0.02))  # ✅
 ```
 
 ## Channel Calculations
@@ -192,7 +195,7 @@ xt_erosion_volume(channel, width = 10, side = "left")
 How much erosion width for a given volume? **NEW**
 
 ```
-xt_erosion_width(channel, volume = 50, side = splitter_left(0.75))
+xt_erosion_width(channel, volume = 50, side = side_left(0.75))
 > Vector of erosion volumes for each cross-section.
 ```
 
@@ -220,47 +223,42 @@ xt_widen(channel, width = 10, side = "left")
 xt_widen(channel, width = 10, side = "right")
 ```
 
-## Sides: splitters
+## Sides: specification factories
 
 Widening specification: flexible specification (all these put 75% erosion on left bank).
 
 ```
-xt_widen(channel, width = 10, side = splitter_left(prop = 0.75))
-xt_widen(channel, width = 10, side = splitter_right(prop = 0.25))
-xt_widen(channel, width = 10, side = splitter_both(prop_left = 0.75, prop_right = 0.25))
+xt_widen(channel, width = 10, side = side_left(prop = 0.75))
+xt_widen(channel, width = 10, side = side_right(prop = 0.25))
+xt_widen(channel, width = 10, side = side_both(prop_left = 0.75, prop_right = 0.25))
 ```
 
-"Splitters" abstract away the mechanism by which erosion is allocated. Better than saying `side = 0.75`.
+"Side functions" are **specification factories** that abstract away the mechanism by which erosion is allocated. Better than saying `side = 0.75`.
 
 ```
-splitter_for_coldwater <- splitter_XYZ(kernel = "tricube", shape = 0.5)
-xt_widen(channel, width = 10, side = splitter_for_coldwater)
+side_for_coldwater <- side_XYZ(kernel = "tricube", shape = 0.5)
+xt_widen(channel, width = 10, side = side_for_coldwater)
 ```
 
-Splitters are functions of the channel object, returning a vector of left proportions (one for each cross section).
+Side functions are **specification factories** that create functions of the channel object, returning a vector of left proportions (one for each cross section).
 
 ```{r}
-splitter_left()
+side_left()
 ```
 
 **QUESTION**: Should `prop_left + prop_right = 1` always? What if bedrock is exposed on either side?
 
 
 
-## Sides: splitters
+## Sides: specification factories
 
-You can make a new splitter, too:
+You can create custom side functions (specification factories), too:
 
 ```
-splitter_vc <- new_splitter(
-  fun = function(channel) {
-    <your code here>
-    <possibly with parameters>
-  }, 
-  name = "Vincenzo's Splitter", 
-  params = list(alpha = 1, beta = 2)
-)
+side_vc <- function(channel) {
+  <your code here>
+  <possibly with parameters>
+}
 
-xt_widen(channel, width = 10, side = "vc")
-xt_widen(channel, width = 10, side = splitter_vc(beta = 1))
+xt_widen(channel, width = 10, side = side_vc)
 ```
