@@ -12,7 +12,7 @@
 \usage{
 elevation_thalweg()
 
-elevation_bank(.f = min)
+elevation_bank(.f = min, ...)
 
 elevation_bank_left()
 

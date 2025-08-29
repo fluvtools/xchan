@@ -10,8 +10,8 @@
 new_channel <- function(l, plan_col = NULL, profile_col = NULL, ..., class = character()) {
   original_class <- class(l)
 
-  if (!is.null(plan_col)) attrs$plan_col <- plan_col
-  if (!is.null(profile_col)) attrs$profile_col <- profile_col
+  # if (!is.null(plan_col)) attrs$plan_col <- plan_col
+  # if (!is.null(profile_col)) attrs$profile_col <- profile_col
 
   structure(
     l,
