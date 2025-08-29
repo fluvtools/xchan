@@ -25,15 +25,29 @@
 #' @exportS3Method base::plot
 plot.xs_profile <- function(x, ..., extent, add = FALSE, exaggerate = 2) {
   x <- exaggerate_relief(x, exaggerate)
+  
   if (!add) {
-    plot(sf::st_sfc(
-      sf::st_multilinestring(list(x$left$coordinates)),
-      sf::st_multilinestring(list(x$right$coordinates))
-    ), ...)
+    # Create empty plot
+    plot(x$coordinates[, 1], x$coordinates[, 2], type = "n", 
+         xlab = "Distance", ylab = "Elevation", ...)
   }
-  plot(sf::st_sfc(sf::st_multilinestring(list(x$left$coordinates))), add = TRUE, col = "blue", ...)
-  plot(sf::st_sfc(sf::st_multilinestring(list(x$right$coordinates))), add = TRUE, col = "red", ...)
-  plot(sf::st_linestring(rbind(x$left$thalweg, x$right$thalweg)), add = TRUE, ...)
-  plot(sf::st_point(x$left$bank_point), add = TRUE, col = "blue", ...)
-  plot(sf::st_point(x$right$bank_point), add = TRUE, col = "red", ...)
+  
+  # Plot the main profile line
+  lines(x$coordinates[, 1], x$coordinates[, 2], col = "black", lwd = 2, ...)
+  
+  # Plot bank points
+  bank_coords <- x$coordinates[match(x$banks, x$coordinates[, 1]), , drop = FALSE]
+  points(bank_coords[, 1], bank_coords[, 2], col = "red", pch = 19, cex = 1.5, ...)
+  
+  # Plot thalweg points
+  thalweg_coords <- x$coordinates[match(x$thalwegs, x$coordinates[, 1]), , drop = FALSE]
+  points(thalweg_coords[, 1], thalweg_coords[, 2], col = "blue", pch = 17, cex = 1.2, ...)
+  
+  # Add legend
+  legend("topright", 
+         legend = c("Profile", "Banks", "Thalwegs"),
+         col = c("black", "red", "blue"),
+         lty = c(1, NA, NA),
+         pch = c(NA, 19, 17),
+         cex = 0.8)
 }

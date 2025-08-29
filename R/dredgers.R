@@ -77,30 +77,22 @@ dredger_spline <- function(alpha = 0.3, beta = 0.5) {
 #' @param water_surface Water surface elevation
 #' @returns Modified xs_profile object
 dredge_profile_rectangle <- function(profile, depth, water_surface) {
-  # Get bank points
-  left_bank <- profile$left$bank_point
-  right_bank <- profile$right$bank_point
+  # Get bank distances
+  left_bank_dist <- min(profile$banks)
+  right_bank_dist <- max(profile$banks)
   
   # Calculate dredge elevation
   dredge_elevation <- water_surface - depth
   
   # Find points between banks and modify their elevations
-  left_coords <- profile$left$coordinates
-  right_coords <- profile$right$coordinates
+  coords <- profile$coordinates
   
-  # Modify left bank coordinates
-  left_bank_dist <- left_bank[1]
-  left_indices <- left_coords[, 1] >= left_bank_dist
-  left_coords[left_indices, 2] <- pmax(left_coords[left_indices, 2], dredge_elevation)
-  
-  # Modify right bank coordinates
-  right_bank_dist <- right_bank[1]
-  right_indices <- right_coords[, 1] <= right_bank_dist
-  right_coords[right_indices, 2] <- pmax(right_coords[right_indices, 2], dredge_elevation)
+  # Modify coordinates between banks
+  in_channel <- coords[, 1] >= left_bank_dist & coords[, 1] <= right_bank_dist
+  coords[in_channel, 2] <- pmax(coords[in_channel, 2], dredge_elevation)
   
   # Update profile
-  profile$left$coordinates <- left_coords
-  profile$right$coordinates <- right_coords
+  profile$coordinates <- coords
   
   profile
 }

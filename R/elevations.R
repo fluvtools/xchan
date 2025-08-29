@@ -10,87 +10,149 @@
 #' @rdname elevations
 #' @export
 elevation_thalweg <- function() {
-  f <- function(channel) {
-    profile <- xt_column_profile(channel)
-    if (is.null(profile)) {
-      stop("Channel object must have profile cross sections")
+  fun <- function(channel) {
+    if (!xt_has_profile(channel)) {
+      stop(
+        "Channel object must have profile cross sections to obtain ",
+        "thalweg height."
+      )
     }
-    
-    vapply(profile, function(xs) {
-      # Get thalweg elevation (minimum elevation in the profile)
-      left_coords <- xs$left$coordinates
-      right_coords <- xs$right$coordinates
-      all_coords <- rbind(left_coords, right_coords)
-      min(all_coords[, 2])
-    }, numeric(1))
+    profile <- xt_column_profile(channel)
+    vapply(
+      profile,
+      function(xs) xs$left$thalweg[2],
+      numeric(1)
+    )
   }
-  structure(f, name = "thalweg", class = "sxchan_elevation")
+  structure(fun, name = "thalweg", class = "sxchan_elevation")
 }
 
 #' @rdname elevations
 #' @export
-elevation_bank <- function(.f = min) {
-  f <- function(channel) {
-    # Implementation will extract bank elevations and apply .f
-    # For now, return a placeholder
-    rep(0, xt_n_sections(channel))
+elevation_bank <- function(.f = min, ...) {
+  fun <- function(channel) {
+    if (!xt_has_profile(channel)) {
+      stop(
+        "Channel object must have profile cross sections to obtain ",
+        "bank height."
+      )
+    }
+    profile <- xt_column_profile(channel)
+    vapply(
+      profile,
+      function(xs) .f(c(xs$left$bank[2], xs$right$bank[2]), ...),
+      numeric(1)
+    )
   }
-  structure(f, name = "bank", params = list(.f = .f), class = "sxchan_elevation")
+  structure(fun, name = "bank", params = list(.f = .f), class = "sxchan_elevation")
 }
 
 #' @rdname elevations
 #' @export
 elevation_bank_left <- function() {
-  f <- function(channel) {
-    # Implementation will extract left bank elevations and apply .f
-    # For now, return a placeholder
-    rep(0, xt_n_sections(channel))
+  fun <- function(channel) {
+    if (!xt_has_profile(channel)) {
+      stop(
+        "Channel object must have profile cross sections to obtain ",
+        "bank height."
+      )
+    }
+    profile <- xt_column_profile(channel)
+    vapply(
+      profile,
+      function(xs) get_2d_points(min(xs$banks))[2],
+      numeric(1)
+    )
   }
-  structure(f, name = "bank_left", params = list(.f = .f), class = "sxchan_elevation")
+  structure(fun, name = "bank_left", class = "sxchan_elevation")
 }
 
 #' @rdname elevations
 #' @export
 elevation_bank_right <- function() {
-  f <- function(channel) {
-    # Implementation will extract right bank elevations and apply .f
-    # For now, return a placeholder
-    rep(0, xt_n_sections(channel))
+  fun <- function(channel) {
+    if (!xt_has_profile(channel)) {
+      stop(
+        "Channel object must have profile cross sections to obtain ",
+        "bank height."
+      )
+    }
+    profile <- xt_column_profile(channel)
+    vapply(
+      profile,
+      function(xs) get_2d_points(max(xs$banks))[2],
+      numeric(1)
+    )
   }
-  structure(f, name = "bank_right", params = list(.f = .f), class = "sxchan_elevation")
+  structure(fun, name = "bank_right", class = "sxchan_elevation")
 }
 
 #' @rdname elevations
 #' @export
 elevation_topo_left <- function() {
-  f <- function(channel) {
-    # Implementation will extract leftmost point elevations
-    # For now, return a placeholder
-    rep(0, xt_n_sections(channel))
+  fun <- function(channel) {
+    if (!xt_has_profile(channel)) {
+      stop(
+        "Channel object must have profile cross sections to obtain ",
+        "topography height."
+      )
+    }
+    profile <- xt_column_profile(channel)
+    vapply(
+      profile,
+      function(xs) {
+        mat <- xs$banks
+        d <- mat[, 1]
+        mat[d == min(d), 2]
+      },
+      numeric(1)
+    )
   }
-  structure(f, name = "topo_left", class = "sxchan_elevation")
+  structure(fun, name = "topo_left", class = "sxchan_elevation")
 }
 
 #' @rdname elevations
 #' @export
 elevation_topo_right <- function() {
-  f <- function(channel) {
-    # Implementation will extract rightmost point elevations
-    # For now, return a placeholder
-    rep(0, xt_n_sections(channel))
+  fun <- function(channel) {
+    if (!xt_has_profile(channel)) {
+      stop(
+        "Channel object must have profile cross sections to obtain ",
+        "topography height."
+      )
+    }
+    profile <- xt_column_profile(channel)
+    vapply(
+      profile,
+      function(xs) {
+        mat <- xs$banks
+        d <- mat[, 1]
+        mat[d == max(d), 2]
+      },
+      numeric(1)
+    )
   }
-  structure(f, name = "topo_right", class = "sxchan_elevation")
+  structure(fun, name = "topo_right", class = "sxchan_elevation")
 }
 
 #' @rdname elevations
 #' @export
 elevation_topo <- function(.f = mean, ...) {
-  f <- function(channel) {
-    # Implementation will extract all topography elevations and apply .f
-    # For now, return a placeholder
-    rep(0, xt_n_sections(channel))
+  fun <- function(channel) {
+    if (!xt_has_profile(channel)) {
+      stop(
+        "Channel object must have profile cross sections to obtain ",
+        "topography height."
+      )
+    }
+    profile <- xt_column_profile(channel)
+    vapply(
+      profile,
+      function(xs) .f(xs$coordinates[, 2], ...),
+      numeric(1)
+    )
   }
-  structure(f, name = "topo", params = list(.f = .f, ...), class = "sxchan_elevation")
+  structure(fun, name = "topo", params = list(.f = .f, ...), class = "sxchan_elevation")
 }
 
 #' Create a bottom elevation specification
@@ -100,42 +162,32 @@ elevation_topo <- function(.f = mean, ...) {
 #' @returns An elevation specification that returns aggregated bottom elevations
 #' @export
 elevation_bottom <- function(.f = mean, ...) {
-  f <- function(channel) {
-    profile <- xt_column_profile(channel)
-    if (is.null(profile)) {
-      stop("Channel object must have profile cross sections")
-    }
-    
-    vapply(profile, function(xs) {
-      # Get all coordinates within the channel (between banks)
-      left_coords <- xs$left$coordinates
-      right_coords <- xs$right$coordinates
-      
-      # Find points between banks
-      left_bank_dist <- xs$left$bank_point[1]
-      right_bank_dist <- xs$right$bank_point[1]
-      
-      # Filter coordinates within channel
-      left_in_channel <- left_coords[, 1] >= left_bank_dist
-      right_in_channel <- right_coords[, 1] <= right_bank_dist
-      
-      channel_coords <- rbind(
-        left_coords[left_in_channel, , drop = FALSE],
-        right_coords[right_in_channel, , drop = FALSE]
+  fun <- function(channel) {
+    if (!xt_has_profile(channel)) {
+      stop(
+        "Channel object must have profile cross sections to obtain ",
+        "topography height."
       )
-      
-      if (nrow(channel_coords) == 0) {
-        return(NA)
-      }
-      
-      # Apply function to elevations
-      do.call(.f, c(list(channel_coords[, 2]), list(...)))
-    }, numeric(1))
+    }
+    profile <- xt_column_profile(channel)
+
+    vapply(
+      profile,
+      function(xs) {
+        left_bank_dist <- min(xs$banks)
+        right_bank_dist <- max(xs$banks)
+        d <- xs$coordinates[, 1]
+        in_channel <- d >= left_bank_dist & d <= right_bank_dist
+        elev <- xs$coordinates[in_channel, 2]
+        .f(elev, ...)
+      },
+      numeric(1)
+    )
   }
   structure(
-    f,
+    fun,
     name = "Bottom Elevation",
-    params = list(.f = .f, ... = list(...)),
+    params = c(list(.f = .f), list(...)),
     class = "sxchan_elevation"
   )
 }

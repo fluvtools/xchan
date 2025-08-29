@@ -15,7 +15,10 @@
 #' xt_erosion_volume(channel, width = 10, side = "left")
 #' xt_erosion_volume(channel, width = 10, side = side_left(0.75))
 #' @export
-xt_erosion_volume <- function(channel, width, side = "both", error_on_overflow = TRUE) {
+xt_erosion_volume <- function(channel, 
+                             width, 
+                             side = "both", 
+                             error_on_overflow = TRUE) {
   checkmate::assert_class(channel, "sxchan")
   
   profile <- xt_column_profile(channel)
@@ -52,16 +55,19 @@ xt_erosion_volume <- function(channel, width, side = "both", error_on_overflow =
 
 xt_erosion_volume_left <- function(xs, width, error_on_overflow = TRUE) {
   checkmate::assert_numeric(width, 0, len = 1, any.missing = FALSE)
+  
   if (width == 0) {
     a <- 0
     attr(a, "censored") <- FALSE
     return(a)
   }
-  x_old <- xs$left$bank_point[1]
+  
+  x_old <- min(xs$banks)
   x_new <- x_old - width
-  left_nodes <- xs$left$coordinates
-  x_extent <- min(left_nodes[, 1])
+  nodes <- xs$coordinates
+  x_extent <- min(nodes[, 1])
   censored <- FALSE
+  
   if (x_new < x_extent) {
     if (error_on_overflow) {
       stop(
@@ -74,10 +80,12 @@ xt_erosion_volume_left <- function(xs, width, error_on_overflow = TRUE) {
       censored <- TRUE
     }
   }
-  y_thalweg <- xs$left$thalweg[2]
-  left_nodes <- inject_2d_points(left_nodes, x_new)
-  x_in_between <- left_nodes[, 1] >= x_new & left_nodes[, 1] <= x_old
-  between_nodes <- left_nodes[x_in_between, , drop = FALSE]
+  
+  d_thalweg <- min(xs$thalwegs)
+  y_thalweg <- get_2d_points(nodes, d_thalweg)[2]
+  nodes <- inject_2d_points(nodes, x_new)
+  x_in_between <- nodes[, 1] >= x_new & nodes[, 1] <= x_old
+  between_nodes <- nodes[x_in_between, , drop = FALSE]
   n <- nrow(between_nodes)
   nm1 <- n - 1
   delta_x <- between_nodes[2:n, 1] - between_nodes[1:nm1, 1]
