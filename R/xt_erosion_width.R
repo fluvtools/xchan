@@ -15,7 +15,10 @@
 #' xt_erosion_width(channel, volume = 50, side = "left")
 #' xt_erosion_width(channel, volume = 50, side = side_left(0.75))
 #' @export
-xt_erosion_width <- function(channel, volume, side = "both", error_on_overflow = TRUE) {
+xt_erosion_width <- function(channel,
+                            volume,
+                            side = "both",
+                            error_on_overflow = TRUE) {
   checkmate::assert_class(channel, "sxchan")
   
   profile <- xt_column_profile(channel)
@@ -38,9 +41,11 @@ xt_erosion_width <- function(channel, volume, side = "both", error_on_overflow =
     dv_left <- volume[i] * prop_left[i]
     dv_right <- volume[i] - dv_left
     
-    dw1 <- xt_erosion_width_left(xs, dv_left, error_on_overflow = error_on_overflow)
-    xs_flipped <- flip_xs2d(xs)
-    dw2 <- xt_erosion_width_left(xs_flipped, dv_right, error_on_overflow = error_on_overflow)
+      dw1 <- xt_erosion_width_left(xs, dv_left, 
+                              error_on_overflow = error_on_overflow)
+  xs_flipped <- flip_xs2d(xs)
+  dw2 <- xt_erosion_width_left(xs_flipped, dv_right, 
+                              error_on_overflow = error_on_overflow)
     
     widths[i] <- dw1 + dw2
     censored[i] <- attr(dw1, "censored") || attr(dw2, "censored")
@@ -57,9 +62,14 @@ xt_erosion_width_left <- function(xs, volume, error_on_overflow = TRUE) {
     attr(w, "censored") <- FALSE
     return(w)
   }
-  x_old <- xs$left$bank_point[1]
-  y_bank <- xs$left$bank_point[2]
-  left_nodes <- xs$left$coordinates
+  # Get left bank information
+  left_bank_dist <- min(xs$banks)
+  left_bank_coords <- xs$coordinates[xs$coordinates[, 1] == left_bank_dist, , drop = FALSE]
+  x_old <- left_bank_dist
+  y_bank <- if (nrow(left_bank_coords) > 0) left_bank_coords[1, 2] else 0
+  
+  # Get left side coordinates (negative distances)
+  left_nodes <- xs$coordinates[xs$coordinates[, 1] <= left_bank_dist, , drop = FALSE]
   x_extent <- min(left_nodes[, 1])
   
   # Use find_x_for_volume_right to find the new x position

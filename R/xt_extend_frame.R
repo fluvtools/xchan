@@ -46,10 +46,14 @@ xt_extend_frame <- function(channel, extender) {
     xs <- profile[[i]]
     
     # Get bank points and elevations
-    left_bank_dist <- xs$left$bank_point[1]
-    right_bank_dist <- xs$right$bank_point[1]
-    left_bank_elev <- xs$left$bank_point[2]
-    right_bank_elev <- xs$right$bank_point[2]
+    left_bank_dist <- min(xs$banks)
+    right_bank_dist <- max(xs$banks)
+    
+    # Get bank elevations
+    left_bank_coords <- xs$coordinates[xs$coordinates[, 1] == left_bank_dist, , drop = FALSE]
+    right_bank_coords <- xs$coordinates[xs$coordinates[, 1] == right_bank_dist, , drop = FALSE]
+    left_bank_elev <- if (nrow(left_bank_coords) > 0) left_bank_coords[1, 2] else 0
+    right_bank_elev <- if (nrow(right_bank_coords) > 0) right_bank_coords[1, 2] else 0
     
     # Apply extender to both sides
     # For now, use placeholder implementation

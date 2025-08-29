@@ -7,16 +7,19 @@ xt_widen_volume_2d <- function(xs, volume, prop_left) {
 
 xt_widen_volume_2d_right <- function(xs, volume) {
   checkmate::assert_numeric(volume, 0, len = 1, any.missing = FALSE)
-  x_bank <- xs$right$bank_point[1]
-  y_bank <- xs$right$bank_point[2]
-  right_nodes <- xs$right$coordinates
+  
+  x_bank <- min(xs$banks[1])
+  y_bank <- get_2d_points(xs$coordinates, x_bank)[2]
+  nodes <- xs$coordinates
+  
   x_new <- find_x_for_volume_right(
     v = volume,
     x0 = x_bank,
-    topo = right_nodes,
+    topo = nodes,
     thalweg_height = y_bank,
     valley = "right"
   )
+  
   xt_widen_width_2d_right(xs, x_new - x_bank)
 }
 

@@ -8,8 +8,8 @@
 #' @param dem Digital elevation model (raster or terra object)
 #' @param extent_distance Distance to extend beyond banks (units)
 #' @param extent_multiplier Multiplier of channel width to extend beyond banks
-#' @param sample_distance Distance between DEM sampling points (units)
-#' @param sample_multiplier Multiplier of channel width for sampling distance
+#' @param sample_freq Distance between DEM sampling points (units)
+#' @param sample_n number to sample
 #' @returns Updated channel object with profile cross sections in the profile column
 #' @details This function extends the planimetric cross sections beyond the banks
 #' to create a "frame" for erosion analysis. The extent can be specified either as
@@ -24,7 +24,7 @@
 #' channel_with_profiles <- xt_generate_profile(channel, dem, extent_multiplier = 2, sample_multiplier = 0.1)
 #' @export
 xt_generate_profile <- function(channel, dem, ..., extent_distance, extent_multiplier,
-                         sample_distance, sample_multiplier) {
+                         sample_freq, sample_n) {
   ellipsis::check_dots_empty()
 
   checkmate::assert_class(channel, "sxchan")
@@ -142,19 +142,22 @@ create_xs_profile <- function(profile_data, original_line) {
   # Adjust distances to be relative to center
   profile_data$relative_distance <- profile_data$distance - center_distance
 
-  # Split into left and right sides
-  left_data <- profile_data[profile_data$relative_distance <= 0, ]
-  right_data <- profile_data[profile_data$relative_distance >= 0, ]
-
-  # Create xs_profile structure
+  # Create coordinates matrix
+  coordinates <- as.matrix(profile_data[, c("relative_distance", "elevation")])
+  
+  # Find thalwegs (minimum elevation points)
+  min_elev <- min(coordinates[, 2])
+  thalweg_indices <- which(coordinates[, 2] == min_elev)
+  thalwegs <- coordinates[thalweg_indices, 1]
+  
+  # For now, assume simple channel with banks at center (distance 0)
+  # This could be enhanced to detect actual bank positions
+  banks <- c(0, 0)  # Placeholder - should detect actual banks
+  
+  # Create xs_profile structure with new format
   list(
-    left = list(
-      coordinates = as.matrix(left_data[, c("relative_distance", "elevation")]),
-      bank_point = c(0, left_data$elevation[left_data$relative_distance == 0])
-    ),
-    right = list(
-      coordinates = as.matrix(right_data[, c("relative_distance", "elevation")]),
-      bank_point = c(0, right_data$elevation[right_data$relative_distance == 0])
-    )
+    coordinates = coordinates,
+    banks = banks,
+    thalwegs = thalwegs
   )
 }

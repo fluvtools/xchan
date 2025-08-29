@@ -21,28 +21,18 @@ xt_width_active <- function(channel) {
   for (i in seq_along(profile)) {
     xs <- profile[[i]]
     
-    # Get all coordinates from both left and right sides
-    left_coords <- xs$left$coordinates
-    right_coords <- xs$right$coordinates
+    # Get all coordinates and sort by distance
+    all_coords <- xs$coordinates[order(xs$coordinates[, 1]), , drop = FALSE]
     
-    # Combine coordinates and sort by distance
-    all_coords <- rbind(left_coords, right_coords)
-    all_coords <- all_coords[order(all_coords[, 1]), , drop = FALSE]
+    # Get bank distances from the new structure
+    left_bank_dist <- min(xs$banks)
+    right_bank_dist <- max(xs$banks)
     
-    # Find bank points (where water transitions to land)
-    # Bank points are where the elevation changes significantly
-    # We'll use a simple approach: find points where elevation is close to bank elevation
-    left_bank_elev <- xs$left$bank_point[2]
-    right_bank_elev <- xs$right$bank_point[2]
-    
-    # Find points that are close to bank elevations (within tolerance)
-    tolerance <- 0.1  # meters
-    left_bank_indices <- which(abs(all_coords[, 2] - left_bank_elev) < tolerance)
-    right_bank_indices <- which(abs(all_coords[, 2] - right_bank_elev) < tolerance)
-    
-    # Get the leftmost and rightmost bank points
-    left_bank_dist <- all_coords[min(left_bank_indices), 1]
-    right_bank_dist <- all_coords[max(right_bank_indices), 1]
+    # Get bank elevations
+    left_bank_coords <- xs$coordinates[xs$coordinates[, 1] == left_bank_dist, , drop = FALSE]
+    right_bank_coords <- xs$coordinates[xs$coordinates[, 1] == right_bank_dist, , drop = FALSE]
+    left_bank_elev <- if (nrow(left_bank_coords) > 0) left_bank_coords[1, 2] else 0
+    right_bank_elev <- if (nrow(right_bank_coords) > 0) right_bank_coords[1, 2] else 0
     
     # Calculate active width (water width)
     widths[i] <- right_bank_dist - left_bank_dist

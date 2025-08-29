@@ -8,12 +8,14 @@
 #' sides switched. The distance values (along the cross section) are
 #' flipped in sign.
 flip_xs2d <- function(xs2d) {
-  names(xs2d) <- rev(names(xs2d))
-  xs2d$left$coordinates[, 1]  <- -xs2d$left$coordinates[, 1]
-  xs2d$left$bank_point[1]         <- -xs2d$left$bank_point[1]
-  xs2d$left$thalweg[1]      <- -xs2d$left$thalweg[1]
-  xs2d$right$coordinates[, 1] <- -xs2d$right$coordinates[, 1]
-  xs2d$right$bank_point[1]        <- -xs2d$right$bank_point[1]
-  xs2d$right$thalweg[1]     <- -xs2d$right$thalweg[1]
+  # Flip all coordinates
+  xs2d$coordinates[, 1] <- -xs2d$coordinates[, 1]
+  
+  # Flip banks
+  xs2d$banks <- sort(-xs2d$banks)
+  
+  # Flip thalwegs
+  xs2d$thalwegs <- sort(-xs2d$thalwegs)
+  
   xs2d
 }
