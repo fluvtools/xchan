@@ -23,13 +23,22 @@ data frame with planimetric cross sections and/or profile cross sections.
 channel <- xt_channel(c(10, 15, 12, 8))
 
 # Create channel from widths with additional metadata
-channel <- xt_channel(c(10, 15, 12, 8),
-                     section_id = c("A", "B", "C", "D"),
-                     roughness = 0.1)
+channel <- xt_channel(
+  c(10, 15, 12, 8),
+  section_id = c("A", "B", "C", "D"),
+  roughness = 0.1
+)
 
 # Create channel from sf geometries
 library(sf)
-seg <- st_linestring(matrix(c(0, 1, 0, 1), ncol = 2))
+seg <- st_sfc(
+  st_linestring(matrix(c(-0.2, 0.3, 0.2, 1), byrow = TRUE, ncol = 2)),
+  st_linestring(matrix(c(0.1, 0.1, 1, 1), byrow = TRUE, ncol = 2)),
+  st_linestring(matrix(c(0.1, 0, 1.3, 0.7), byrow = TRUE, ncol = 2)),
+  st_linestring(matrix(c(0.3, -0.3, 1.3, 0), byrow = TRUE, ncol = 2)),
+  st_linestring(matrix(c(0, -0.6, 1, -0.5), byrow = TRUE, ncol = 2)),
+  st_linestring(matrix(c(0, -0.9, 1, -1), byrow = TRUE, ncol = 2))
+)
 channel <- xt_channel(seg)
 
 # Create channel from sf geometries with profiles and metadata
@@ -38,9 +47,8 @@ channel <- xt_channel(plan_geometries,
 
 # Create channel from data frame
 df <- data.frame(
-  plan = list(seg1, seg2, seg3),
-  profile = list(prof1, prof2, prof3),
-  section_id = c("A", "B", "C")
+  plan = seg,
+  roughness = 0.3
 )
-channel <- xt_channel(df, plan_col = "plan", profile_col = "profile")
+channel <- xt_channel(df, plan_col = "geometry")
 }

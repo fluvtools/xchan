@@ -12,20 +12,19 @@ xt_profile(coords, bankpoints)
 \item{bankpoints}{Vector of distance values where banks occur, alternating between water and land}
 }
 \value{
-An xs_profile object with left and right sides
+An xs_profile object with coordinates, banks, and thalwegs
 }
 \description{
 Create a profile cross section from coordinates and bank positions.
 This function takes elevation data and bank positions and creates
-an xs_profile object with left and right sides.
+an xs_profile object with coordinates, banks, and thalwegs.
 }
 \details{
 This function creates a profile cross section by:
 \enumerate{
 \item Injecting bank points at the specified distances
 \item Finding thalwegs (lowest points) in the channel
-\item Splitting the profile into left and right sides
-\item Creating the xs_profile structure
+\item Creating the xs_profile structure with coordinates, banks, and thalwegs
 }
 
 The bankpoints vector must be a multiple of 2, alternating between water and land

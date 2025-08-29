@@ -10,8 +10,8 @@ xt_generate_profile(
   ...,
   extent_distance,
   extent_multiplier,
-  sample_distance,
-  sample_multiplier
+  sample_freq,
+  sample_n
 )
 }
 \arguments{
@@ -23,9 +23,9 @@ xt_generate_profile(
 
 \item{extent_multiplier}{Multiplier of channel width to extend beyond banks}
 
-\item{sample_distance}{Distance between DEM sampling points (units)}
+\item{sample_freq}{Distance between DEM sampling points (units)}
 
-\item{sample_multiplier}{Multiplier of channel width for sampling distance}
+\item{sample_n}{number to sample}
 }
 \value{
 Updated channel object with profile cross sections in the profile column

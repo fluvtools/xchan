@@ -5,12 +5,12 @@
 #' @param extent Character string indicating the extent of the plot: "full" or "bankline".
 #' @param ... Additional arguments passed to the specific plot methods.
 #' @details
-#' For "profile" and "3d" views, you can specify `exaggerate` to vertically 
+#' For "profile" and "3d" views, you can specify `exaggerate` to vertically
 #' exaggerate the relief. For example, `exaggerate = 2` doubles the vertical scale.
 #' The default is `exaggerate = 1` (no exaggeration). It is strongly recommended not going beyond 3, because
 #' exaggeration beyond this point can distort the perception of the profile.
 #' @export
-plot.channel <- function(x, view = c("plan", "profile", "3d"), extent = c("full", "bankline"), ...) {
+plot.sxchan <- function(x, view = c("plan", "profile", "3d"), extent = c("full", "bankline"), ...) {
   view <- rlang::arg_match(view)
   if (view == "plan") {
     if (!xt_has_plan(x)) {

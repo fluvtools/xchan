@@ -11,13 +11,22 @@
 #' channel <- xt_channel(c(10, 15, 12, 8))
 #'
 #' # Create channel from widths with additional metadata
-#' channel <- xt_channel(c(10, 15, 12, 8),
-#'                      section_id = c("A", "B", "C", "D"),
-#'                      roughness = 0.1)
+#' channel <- xt_channel(
+#'   c(10, 15, 12, 8),
+#'   section_id = c("A", "B", "C", "D"),
+#'   roughness = 0.1
+#' )
 #'
 #' # Create channel from sf geometries
 #' library(sf)
-#' seg <- st_linestring(matrix(c(0, 1, 0, 1), ncol = 2))
+#' seg <- st_sfc(
+#'   st_linestring(matrix(c(-0.2, 0.3, 0.2, 1), byrow = TRUE, ncol = 2)),
+#'   st_linestring(matrix(c(0.1, 0.1, 1, 1), byrow = TRUE, ncol = 2)),
+#'   st_linestring(matrix(c(0.1, 0, 1.3, 0.7), byrow = TRUE, ncol = 2)),
+#'   st_linestring(matrix(c(0.3, -0.3, 1.3, 0), byrow = TRUE, ncol = 2)),
+#'   st_linestring(matrix(c(0, -0.6, 1, -0.5), byrow = TRUE, ncol = 2)),
+#'   st_linestring(matrix(c(0, -0.9, 1, -1), byrow = TRUE, ncol = 2))
+#' )
 #' channel <- xt_channel(seg)
 #'
 #' # Create channel from sf geometries with profiles and metadata
@@ -26,11 +35,10 @@
 #'
 #' # Create channel from data frame
 #' df <- data.frame(
-#'   plan = list(seg1, seg2, seg3),
-#'   profile = list(prof1, prof2, prof3),
-#'   section_id = c("A", "B", "C")
+#'   plan = seg,
+#'   roughness = 0.3
 #' )
-#' channel <- xt_channel(df, plan_col = "plan", profile_col = "profile")
+#' channel <- xt_channel(df, plan_col = "geometry")
 #' @export
 xt_channel <- function(x, ...) {
   UseMethod("xt_channel")
@@ -41,18 +49,21 @@ xt_channel.numeric <- function(x, profile = NULL, ...) {
   checkmate::assert_numeric(x, lower = 0, any.missing = FALSE)
 
   # Create simple planimetric cross sections from widths
-  plan <- lapply(x, function(w) {
-    sf::st_linestring(matrix(c(-w / 2, w / 2, 0, 0), ncol = 2))
-  })
+  plan <- Map(
+    function(w, i) {
+      sf::st_linestring(matrix(c(-w / 2, w / 2, i, i), ncol = 2))
+    },
+    x,
+    1:length(x)
+  )
   plan <- sf::st_sfc(plan)
 
   # Create data frame/tibble with additional columns from ellipsis
-  df <- create_data_frame(...)
-  df$plan <- plan
+  df <- create_data_frame(plan = plan, ...)
   prof_col <- NULL
   if (!is.null(profile)) {
     prof_col <- "profile"
-    df$profile <- profile
+    df[[prof_col]] <- profile
   }
   new_channel(df, plan_col = "plan", profile_col = prof_col)
 }
@@ -60,8 +71,7 @@ xt_channel.numeric <- function(x, profile = NULL, ...) {
 #' @export
 xt_channel.sfc <- function(x, profile = NULL, ...) {
   # Create data frame/tibble with additional columns from ellipsis
-  df <- create_data_frame(...)
-  df$plan <- x
+  df <- create_data_frame(plan = x, ...)
   prof_col <- NULL
   if (!is.null(profile)) {
     prof_col <- "profile"
@@ -75,7 +85,7 @@ xt_channel.data.frame <- function(x, plan_col = NULL, profile_col = NULL, ...) {
   if (is.null(plan_col) && is.null(profile_col)) {
     stop("At least one of plan_col or profile_col must be specified")
   }
-  
+
   # Validate that specified columns exist
   if (!is.null(plan_col) && !plan_col %in% names(x)) {
     stop("Plan column '", plan_col, "' not found in data frame")
