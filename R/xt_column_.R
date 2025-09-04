@@ -63,7 +63,7 @@ xt_column_plan <- function(channel) {
 
   if (is.null(profile_colname)) {
     profile_colname <- "profile"
-    attributes(channel)$profile_colname <- profile_colname
+    attributes(channel)$profile_col <- profile_colname
   }
 
   channel[[profile_colname]] <- value
@@ -73,10 +73,10 @@ xt_column_plan <- function(channel) {
 #' @rdname xt_column
 `xt_column_plan<-` <- function(channel, value) {
   checkmate::assert_class(channel, "sxchan")
-  plan_colname <- attributes(channel)$plan_colname
+  plan_colname <- attributes(channel)$plan_col
   if (is.null(value)) {
     channel[[plan_colname]] <- NULL
-    attributes(channel)$plan_colname <- NULL
+    attributes(channel)$plan_col <- NULL
     if (!xt_has_profile(channel)) {
       return(demote_channel_class(channel))
     }
@@ -90,7 +90,7 @@ xt_column_plan <- function(channel) {
 
   if (is.null(plan_colname)) {
     plan_colname <- "plan"
-    attributes(channel)$plan_colname <- plan_colname
+    attributes(channel)$plan_col <- plan_colname
   }
   channel[[plan_colname]] <- value
   channel

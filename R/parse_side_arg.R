@@ -9,10 +9,10 @@
 #' proportion for each cross section.
 parse_side_arg <- function(side, cross_sections) {
   if (is.character(side)) {
-    fn <- paste0("splitter_", side)
+    fn <- paste0("side_", side)
     side <- rlang::exec(fn)
   }
-  checkmate::assert_class(side, "sxchan_splitter")
+  checkmate::assert_class(side, "sxchan_side")
   prop_left <- side(cross_sections)
   prop_left <- vctrs::vec_recycle(prop_left, size = length(cross_sections))
   checkmate::assert_numeric(
