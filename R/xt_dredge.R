@@ -19,7 +19,6 @@
 #' channel_dredged <- xt_dredge(channel, dredger = dredger_dem(my_dem, sample_freq = 1))
 #' @export
 xt_dredge <- function(channel, dredger) {
-  ellipsis::check_dots_empty()
   checkmate::assert_class(channel, "sxchan")
 
   # Handle text input by calling appropriate dredger function

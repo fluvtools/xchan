@@ -9,9 +9,11 @@
 #' @export
 xt_width <- function(channel) {
   checkmate::assert_class(channel, "sxchan")
-  if (xt_has_plan(object)) {
-    return(vapply(object, sf::st_length, FUNVALUE = numeric(1)))
+  if (xt_has_plan(channel)) {
+    plan <- xt_column_plan(channel)
+    return(vapply(plan, sf::st_length, FUN.VALUE = numeric(1)))
   }
-  vapply(object, xt_width_profile, FUNVALUE = numeric(1))
+  prof <- xt_column_profile(channel)
+  vapply(prof, xt_width_profile, FUN.VALUE = numeric(1))
 }
 

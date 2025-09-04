@@ -18,8 +18,8 @@
 #' # coords_3d <- create_3d_coords(plan_coords, profile_data)
 create_3d_coords <- function(plan_line_segment, profile) {
   # Get distances and elevations from profile
-  banks_x <- c(profile$left$banks[1], profile$right$banks[1])
-  coords <- rbind(profile$left$coords, profile$right$coords)
+  banks_x <- profile$banks[1]
+  coords <- profile$coordinates
   coords <- inject_2d_points(coords, banks_x)
   coords <- coords[coords[, 1] >= min(banks_x), , drop = FALSE]
   coords <- coords[coords[, 1] <= max(banks_x), , drop = FALSE]
@@ -34,7 +34,7 @@ create_3d_coords <- function(plan_line_segment, profile) {
   x1 <- plan_coords[2, "X"]
   y1 <- plan_coords[2, "Y"]
 
-  # Get the total length of the plan line; and rise and run.
+  # Get the rise and run of the plan line, and the total length.
   rise <- y1 - y0
   run <- x1 - x0
   plan_length <- sqrt(rise^2 + run^2)
@@ -43,7 +43,7 @@ create_3d_coords <- function(plan_line_segment, profile) {
   # To turn a "distance from left bank" d into an (x, y) coordinate, first find
   # how far along the cross section it is, as a proportion. This is the
   # same proportion of x and y gain relative to the full run and rise.
-  prop <- d / plan_length
+  prop <- distances / plan_length
   x <- x0 + prop * run
   y <- y0 + prop * rise
 
