@@ -15,20 +15,19 @@
 #' plot(banks, col = "lightblue")
 #' @export
 xt_trace_banks <- function(channel, tracer = "linear") {
-  ellipsis::check_dots_empty()
   checkmate::assert_class(channel, "sxchan")
-  
+
   plan <- xt_column_plan(channel)
   if (is.null(plan)) {
     stop("Channel object must have planimetric cross sections")
   }
-  
+
   # Handle text input by calling appropriate tracer function
   if (is.character(tracer)) {
     tracer_fun <- paste0("tracer_", tracer)
     tracer <- rlang::exec(tracer_fun)
   }
-  
+
   # Execute the tracer function
   tracer(channel)
 }

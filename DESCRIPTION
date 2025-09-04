@@ -26,7 +26,8 @@ Imports:
     ggplot2,
     dplyr,
     lwgeom,
-    units
+    units,
+    stats
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
