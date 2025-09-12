@@ -25,11 +25,11 @@ tracer_spline <- function(ngrid = 200) {
     for (i in 1:length(left)) {
       # Extract start and end points manually
       start_point <- sf::st_cast(
-        st_geometry(left[i]),
+        sf::st_geometry(left[i]),
         "POINT")[1]
 
-      end_point <- st_cast(
-        st_geometry(right[i]),
+      end_point <- sf::st_cast(
+        sf::st_geometry(right[i]),
         "POINT")[1]
 
       start_edge[[i]] <- start_point
@@ -47,16 +47,14 @@ tracer_spline <- function(ngrid = 200) {
         out_text <- "end_edge"
       }
 
-      edge_sf <- st_sf(
+      edge_sf <- sf::st_sf(
         data.frame(id = 1:length(edge)),
-        geometry = st_sfc(do.call(c, edge))
+        geometry = sf::st_sfc(do.call(c, edge))
       ) |>
-        mutate(LONG = map(edge, st_coordinates)) |>
-        separate(LONG, c("LONG", "LAT"), sep = ",") |>
-        mutate(
-          LONG = as.numeric(str_remove(LONG, "c\\(")),
-          LAT = as.numeric(str_remove(LAT, "\\)"))
-        )
+        dplyr::mutate(coords = purrr::map(edge, sf::st_coordinates)) |>
+        dplyr::mutate(LONG = purrr::map_dbl(coords, 1),
+                      LAT = purrr::map_dbl(coords, 2)) |>
+        dplyr::select(-coords)
 
       x <- edge_sf$LONG
       y <- edge_sf$LAT
@@ -76,17 +74,17 @@ tracer_spline <- function(ngrid = 200) {
 
 
       # remake x and y into spatial
-      new_edge <- tibble(
+      new_edge <- tibble::tibble(
         LONG = x_smooth,
         LAT = y_smooth
       ) |>
-        mutate(
-          geometry = map2(LONG, LAT, ~ st_point(c(.x, .y)))
+        dplyr::mutate(
+          geometry = purrr::map2(LONG, LAT, ~ sf::st_point(c(.x, .y)))
         ) |>
-        select(geometry) |>
-        st_as_sf() |>
-        summarise(geometry = st_combine(geometry)) |>
-        st_cast("LINESTRING")
+        dplyr::select(geometry) |>
+        sf::st_as_sf() |>
+        dplyr::summarise(geometry = sf::st_combine(geometry)) |>
+        sf::st_cast("LINESTRING")
 
       if (i == 1) {
         start_edge_lines <- new_edge
@@ -95,8 +93,8 @@ tracer_spline <- function(ngrid = 200) {
       }
 
     }
-    bind_rows(start_edge_lines, end_edge_lines) |>
-      st_as_sfc()
+    dplyr::bind_rows(start_edge_lines, end_edge_lines) |>
+      sf::st_as_sfc()
   }
   structure(
     f,
@@ -106,24 +104,4 @@ tracer_spline <- function(ngrid = 200) {
   )
 }
 
-
-
-library(sf)
-library(tidyverse)
-
-
-
-# plot
-# png(
-#   path("edges.png"),
-#   width = 10, height = 10, units = "in", res = 600
-# )
-# par(mar = c(0.5, 0.5, 0.5, 0.5))
-# plot(start_edge_lines)
-# plot(end_edge_lines, add = TRUE)
-#
-# dev.off()
-
-# st_union(start_edge_lines, end_edge_lines) |>
-#   st_write("output/2-gbem/eroded_banks_50pct.shp", delete_dsn = TRUE)
 
