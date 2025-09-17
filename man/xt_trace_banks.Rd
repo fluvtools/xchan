@@ -25,7 +25,18 @@ object and traces their extents to create a bankline polygon. The algorithm
 can be specified using the tracer parameter.
 }
 \examples{
-banks <- xt_trace_banks(channel, tracer = "linear")
-banks <- xt_trace_banks(channel, tracer = tracer_spline(degree = 3))
+library(sf)
+seg <- st_sfc(
+  st_linestring(matrix(c(-0.2, 0.3, 0.2, 1), byrow = TRUE, ncol = 2)),
+  st_linestring(matrix(c(0.1, 0.1, 1, 1), byrow = TRUE, ncol = 2)),
+  st_linestring(matrix(c(0.1, 0, 1.3, 0.7), byrow = TRUE, ncol = 2)),
+  st_linestring(matrix(c(0.3, -0.3, 1.3, 0), byrow = TRUE, ncol = 2)),
+  st_linestring(matrix(c(0, -0.6, 1, -0.5), byrow = TRUE, ncol = 2)),
+  st_linestring(matrix(c(0, -0.9, 1, -1), byrow = TRUE, ncol = 2))
+)
+channel <- xt_channel(seg)
+
+# banks <- xt_trace_banks(channel, tracer = "linear")
+banks <- xt_trace_banks(channel, tracer = "spline")
 plot(banks, col = "lightblue")
 }

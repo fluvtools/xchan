@@ -94,7 +94,7 @@ find_x_for_volume_right <- function(v,
   checkmate::assert_number(thalweg_height)
   valley <- rlang::arg_match(valley)
 
-  topo <- inject_2d_points(topo, x = x0)
+  topo <- inject_coords(topo, x = x0)
   # Ensure sorted by x
   ord <- order(topo[, 1])
   topo <- topo[ord, , drop = FALSE]
@@ -119,7 +119,7 @@ find_x_for_volume_right <- function(v,
     (x[-1][crosses] - x[-n_topo][crosses]) /
     (y[-1][crosses] - y[-n_topo][crosses])
   if (length(x_cross)) {
-    topo <- inject_2d_points(topo, x = x_cross)
+    topo <- inject_coords(topo, x = x_cross)
     topo <- topo[order(topo[, 1]), ]
     y <- topo[, 2] - thalweg_height
     x <- topo[, 1]

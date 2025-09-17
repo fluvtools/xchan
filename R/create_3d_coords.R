@@ -20,7 +20,7 @@ create_3d_coords <- function(plan_line_segment, profile) {
   # Get distances and elevations from profile
   banks_x <- profile$banks[1]
   coords <- profile$coordinates
-  coords <- inject_2d_points(coords, banks_x)
+  coords <- inject_coords(coords, banks_x)
   coords <- coords[coords[, 1] >= min(banks_x), , drop = FALSE]
   coords <- coords[coords[, 1] <= max(banks_x), , drop = FALSE]
   distances <- coords[, 1]

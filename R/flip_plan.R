@@ -11,7 +11,7 @@ flip_plan <- function(plan) {
   # Extract and flip coordinates
   coords_list <- lapply(seq_along(plan), function(i) {
     n <- nrow(plan[[i]])
-    plan[[i]][n:1, ]
+    sf::st_linestring(plan[[i]][n:1, ])
   })
   sf::st_sfc(coords_list, crs = sf::st_crs(plan))
 }
