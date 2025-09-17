@@ -46,7 +46,7 @@ tracer_spline <- function(ngrid = 200) {
       )
       coords <- lapply(edge, sf::st_coordinates)
       edge_sf$LONG <- vapply(coords, function(x) x[1], FUN.VALUE = numeric(1L))
-      edge_df$LAT <- vapply(coords, function(x) x[2], FUN.VALUE = numeric(1L))
+      edge_sf$LAT <- vapply(coords, function(x) x[2], FUN.VALUE = numeric(1L))
 
       x <- edge_sf$LONG
       y <- edge_sf$LAT
