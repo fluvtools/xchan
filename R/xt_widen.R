@@ -27,40 +27,40 @@
 xt_widen <- function(channel, ..., width, volume, side = "both") {
   ellipsis::check_dots_empty()
   checkmate::assert_class(channel, "sxchan")
-  
+
   if (!xor(missing(width), missing(volume))) {
     stop("Must specify either `width` or `volume`, but not both.")
   }
-  
+
   # Get plan and profile columns
   plan <- xt_column_plan(channel)
   profile <- xt_column_profile(channel)
-  
+
   # Parse side argument to get proportions
   prop_left <- parse_side_arg(side, channel)
-  
+
   # Apply widening to planimetric cross-sections
   if (!is.null(plan)) {
     if (!missing(width)) {
-      plan <- xt_widen_width_1d(plan, by = width, prop_left = prop_left)
+      plan <- xt_widen_width_plan(plan, by = width, prop_left = prop_left)
     } else {
-      stop("Volume widening is not applicable to planimetric cross-sections")
+      stop("Volume widening is not applicable to planimetric cross-sections.")
     }
   }
-  
+
   # Apply widening to profile cross-sections
   if (!is.null(profile)) {
     if (!missing(width)) {
       profile <- lapply(profile, function(xs) {
-        xt_widen_width_2d(xs, dw = width, prop_left = prop_left)
+        xt_widen_width_profile(xs, dw = width, prop_left = prop_left)
       })
     } else {
       profile <- lapply(profile, function(xs) {
-        xt_widen_volume_2d(xs, volume = volume, prop_left = prop_left)
+        xt_widen_volume_profile(xs, volume = volume, prop_left = prop_left)
       })
     }
   }
-  
+
   # Update the channel
   if (!is.null(plan)) {
     xt_column_plan(channel) <- plan
@@ -68,7 +68,7 @@ xt_widen <- function(channel, ..., width, volume, side = "both") {
   if (!is.null(profile)) {
     xt_column_profile(channel) <- profile
   }
-  
+
   channel
 }
 

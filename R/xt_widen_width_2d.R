@@ -19,28 +19,30 @@
 #' the height of the new bank ignores this bed topography, and is determined
 #' by the outermost point.
 #' @rdname xt_widen_2d
-xt_widen_width_2d <- function(xs, dw, prop_left) {
+xt_widen_width_profile <- function(profile, dw, prop_left) {
+  checkmate::assert_class(profile, "sxchan_profile")
   checkmate::assert_numeric(dw, 0)
   checkmate::assert_numeric(prop_left, 0, 1, len = 1)
   dw_left <- prop_left * dw
   dw_right <- dw - dw_left
-  xs <- xt_widen_width_2d_right(xs, dw_right)
-  xt_widen_width_2d_left(xs, dw_left)
+  profile <- xt_widen_width_profile_left(profile, dw_left)
+  flip_xs2d(xt_widen_width_profile_left(flip_xs2d(profile), dw_right))
 }
 
 #' @rdname xt_widen_2d
-xt_widen_width_2d_left <- function(xs, dw) {
+xt_widen_width_profile_left <- function(profile, dw) {
+  checkmate::assert_class(profile, "sxchan_profile")
   checkmate::assert_numeric(dw, 0, len = 1, any.missing = FALSE)
-  if (dw == 0) return(xs)
-  xs$banks <- sort(xs$banks)
-  xs$thalwegs <- sort(xs$thalwegs)
-  nodes <- xs$coordinates
+  if (dw == 0) {
+    return(profile)
+  }
   # Get left bank information
   x_old <- xs$banks[1]
   x_new <- x_old - dw
-  y_new <- get_2d_points(nodes, x_new)[2]
-  y_thal <- get_2d_points(nodes, xs$thalwegs[1])[2]
-  nodes <- inject_2d_points(nodes, x_new)
+  y_new <- coords_interpolate(profile, x_new)[2]
+  y_thal <- coords_interpolate(profile, xs$thalwegs[1])[2]
+  nodes <- profile$coordinates
+  nodes <- inject_coords(nodes, x_new)
   xs$banks[1] <- x_new
   if (y_new < y_thal) {
     warning(
@@ -49,7 +51,7 @@ xt_widen_width_2d_left <- function(xs, dw) {
       "interpreted as the thalweg."
     )
   }
-  
+
   # Erosion rule 1: nodes in between old and new banks disappear,
   # including the old bank.
   x_in_between <- nodes[, 1] > x_new & nodes[, 1] <= x_old
@@ -61,13 +63,4 @@ xt_widen_width_2d_left <- function(xs, dw) {
   xs$coordinates <- nodes
   xs$thalwegs[1] <- xs$thalwegs[1] - dw
   xs
-}
-
-#' @rdname xt_widen_2d
-xt_widen_width_2d_right <- function(xs, dw) {
-  checkmate::assert_numeric(dw, 0, len = 1)
-  if (dw == 0) return(xs)
-  xs <- flip_xs2d(xs)
-  xs <- xt_widen_left_2d(xs, dw)
-  flip_xs2d(xs)
 }

@@ -7,29 +7,50 @@
 xt_profile(coords, bankpoints)
 }
 \arguments{
-\item{coords}{Matrix of coordinates with columns (distance, elevation)}
+\item{coords}{Matrix of coordinates with columns representing distance
+along the cross section (1st column), and elevation (2nd column).}
 
-\item{bankpoints}{Vector of distance values where banks occur, alternating between water and land}
+\item{bankpoints}{Vector of distance values where banks occur, alternating
+between water and land. Must have an even length (see details).}
 }
 \value{
-An xs_profile object with coordinates, banks, and thalwegs
+An "xs_profile" object, which is a list of the following names:
+\itemize{
+\item \code{coordinates}: an \code{n} x 2 matrix of distances along the cross section
+(column 1) and elevation (column 2).
+\item \code{banks}: A numeric vector of even length representing the bankpoints,
+encoded as distances along the cross section,
+sorted from left to right. These points have alternating representations
+of land-to-water and water-to-land.
+\item \code{thalwegs}: A numeric vector representing the location of the thalwegs,
+encoded as distances along the cross section, sorted from left to right.
+These points are where the channel reaches minimum depth.
+\item \code{thalweg_elev}: A single numeric representing the elevation of the
+channel's thalweg; that is, the lowest point within the channel.
+}
 }
 \description{
 Create a profile cross section from coordinates and bank positions.
 This function takes elevation data and bank positions and creates
-an xs_profile object with coordinates, banks, and thalwegs.
+an xs_profile object with coordinates, banks, and thalwegs. Use this
+function whenever making or modifying profile cross sections, because
+it ensures standards are met.
 }
 \details{
-This function creates a profile cross section by:
-\enumerate{
-\item Injecting bank points at the specified distances
-\item Finding thalwegs (lowest points) in the channel
-\item Creating the xs_profile structure with coordinates, banks, and thalwegs
-}
+The bankpoints vector must be a multiple of 2, alternating between water
+and land to allow for islands. For example: c(-3, -2, 2, 3) means water
+from -3 to -2, land from -2 to 2, water from 2 to 3.
 
-The bankpoints vector must be a multiple of 2, alternating between water and land
-to allow for islands. For example: c(-3, -2, 2, 3) means water from -3 to -2,
-land from -2 to 2, water from 2 to 3.
+The following standards are ensured:
+\enumerate{
+\item Distances along the cross section are shifted so that 0 represents the
+center point.
+\item Bank points and coordinates are sorted from left to right. In case of
+vertical cliffs having the same distance value, the order is preserved.
+Note that sorting means bank undercutting is currently not supported.
+\item Bank points are always present in the profile coordinates.
+\item Thalwegs are re-computed.
+}
 }
 \examples{
 # Create a profile cross section

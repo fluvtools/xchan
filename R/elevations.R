@@ -60,8 +60,8 @@ elevation_bank_left <- function() {
     profile <- xt_column_profile(channel)
     vapply(
       profile,
-      function(xs) get_2d_points(min(xs$banks))[2],
-      numeric(1)
+      function(xs) coords_interpolate(xs, min(xs$banks))[2],
+      numeric(1L)
     )
   }
   structure(fun, name = "bank_left", class = "sxchan_elevation")
@@ -80,8 +80,8 @@ elevation_bank_right <- function() {
     profile <- xt_column_profile(channel)
     vapply(
       profile,
-      function(xs) get_2d_points(max(xs$banks))[2],
-      numeric(1)
+      function(xs) coords_interpolate(xs, max(xs$banks))[2],
+      numeric(1L)
     )
   }
   structure(fun, name = "bank_right", class = "sxchan_elevation")
