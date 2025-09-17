@@ -24,17 +24,10 @@ tracer_spline <- function(ngrid = 200) {
 
     for (i in 1:length(left)) {
       # Extract start and end points manually
-      start_point <- sf::st_cast(
-        sf::st_geometry(left[i]),
-        "POINT")[1]
-
-      end_point <- sf::st_cast(
-        sf::st_geometry(right[i]),
-        "POINT")[1]
-
+      start_point <- sf::st_cast(sf::st_geometry(left[i]), "POINT")[1]
+      end_point <- sf::st_cast(sf::st_geometry(right[i]), "POINT")[1]
       start_edge[[i]] <- start_point
       end_edge[[i]] <- end_point
-
     }
 
     # Smoothen and convert start and end points into a valid sf object
@@ -50,11 +43,10 @@ tracer_spline <- function(ngrid = 200) {
       edge_sf <- sf::st_sf(
         data.frame(id = 1:length(edge)),
         geometry = sf::st_sfc(do.call(c, edge))
-      ) |>
-        dplyr::mutate(coords = purrr::map(edge, sf::st_coordinates)) |>
-        dplyr::mutate(LONG = purrr::map_dbl(coords, 1),
-                      LAT = purrr::map_dbl(coords, 2)) |>
-        dplyr::select(-coords)
+      )
+      coords <- lapply(edge, sf::st_coordinates)
+      edge_sf$LONG <- vapply(coords, function(x) x[1], FUN.VALUE = numeric(1L))
+      edge_df$LAT <- vapply(coords, function(x) x[2], FUN.VALUE = numeric(1L))
 
       x <- edge_sf$LONG
       y <- edge_sf$LAT
@@ -74,18 +66,14 @@ tracer_spline <- function(ngrid = 200) {
 
 
       # remake x and y into spatial
-      new_edge <- tibble::tibble(
-        LONG = x_smooth,
-        LAT = y_smooth
-      ) |>
-        dplyr::mutate(
-          geometry = purrr::map2(LONG, LAT, ~ sf::st_point(c(.x, .y)))
-        ) |>
-        dplyr::select(geometry) |>
-        sf::st_as_sf() |>
-        dplyr::summarise(geometry = sf::st_combine(geometry)) |>
+      geometry <- Map(
+        function(x_, y_) sf::st_point(c(x_, y_)),
+        x_smooth, y_smooth
+      )
+      new_edge <- geometry |>
+        sf::st_as_sfc() |>
+        sf::st_combine() |>
         sf::st_cast("LINESTRING")
-
       if (i == 1) {
         start_edge_lines <- new_edge
       } else {
@@ -93,7 +81,7 @@ tracer_spline <- function(ngrid = 200) {
       }
 
     }
-    dplyr::bind_rows(start_edge_lines, end_edge_lines) |>
+    rbind(start_edge_lines, end_edge_lines) |>
       sf::st_as_sfc()
   }
   structure(
