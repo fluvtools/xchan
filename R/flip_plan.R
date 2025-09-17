@@ -6,11 +6,12 @@
 #' @param sxc Planimetric cross section (sxc) object.
 #' @returns The original cross section where each section is flipped,
 #' as if rotating each cross section by 180 degrees.
-flip_xs1d <- function(sxc) {
-  checkmate::assert_class(sxc, "sxc")
-  for (i in seq_along(sxc)) {
-    n <- nrow(sxc[[i]])
-    sxc[[i]][,] <- sxc[[i]][n:1, ]
-  }
-  sxc
+flip_plan <- function(plan) {
+  xt_validate_plan(plan)
+  # Extract and flip coordinates
+  coords_list <- lapply(seq_along(plan), function(i) {
+    n <- nrow(plan[[i]])
+    plan[[i]][n:1, ]
+  })
+  sf::st_sfc(coords_list, crs = sf::st_crs(plan))
 }
