@@ -8,7 +8,7 @@ Authors@R:
     person("Jane", "Wang", email = "jwang@bgcengineering.ca",
            role = "aut"),
     person("Heba", "Abdelmoaty",
-           role = "aut")
+           role = "ctb")
     )
 Description: Create and manipulate watercourse geometries for 
     geomorphology applications, with a 
@@ -25,7 +25,8 @@ Imports:
     vctrs,
     lwgeom,
     units,
-    stats
+    stats,
+    concaveman
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3

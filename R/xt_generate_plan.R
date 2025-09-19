@@ -115,5 +115,5 @@ xt_generate_plan <- function(banks, ..., n, spacing, at, centerline = NULL) {
   attr(geoms, "left_to_right") <- TRUE
 
   # Create channel object
-  xt_channel(plan = geoms)
+  xt_channel(geoms)
 }
