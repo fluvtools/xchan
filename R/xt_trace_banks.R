@@ -24,6 +24,10 @@
 #' # banks <- xt_trace_banks(channel, tracer = "linear")
 #' banks <- xt_trace_banks(channel, tracer = "spline")
 #' plot(banks, col = "lightblue")
+#'
+#' banks <- xt_trace_banks(channel, tracer = tracer_concaveman(concavity = 1))
+#' plot(banks, col = "lightblue")
+#' plot(channel, add = TRUE)
 #' @export
 xt_trace_banks <- function(channel, tracer = "linear") {
   checkmate::assert_class(channel, "sxchan")
