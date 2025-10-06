@@ -24,6 +24,7 @@
 #' # banks <- xt_trace_banks(channel, tracer = "linear")
 #' banks <- xt_trace_banks(channel, tracer = "spline")
 #' plot(banks, col = "lightblue")
+#' plot(channel, add = TRUE)
 #'
 #' banks <- xt_trace_banks(channel, tracer = tracer_concaveman(concavity = 1))
 #' plot(banks, col = "lightblue")

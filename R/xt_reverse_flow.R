@@ -12,9 +12,12 @@
 #' profile cross sections are encoded does change: the left and right parts
 #' are flipped due to the convention that the left side of the profile
 #' correspond to the left bank of the channel.
+#' @note While the channel flow direction is reversed, the original order
+#' of the rows in the `channel` data frame is preserved.
 #' @export
 xt_reverse_flow <- function(channel) {
-  xt_column_plan(channel) <- flip_xs1d(xt_column_plan(channel))
-  xt_column_profile(channel) <- flip_xs2d(xt_column_profile(channel))
+  xt_column_plan(channel) <- flip_plan(xt_column_plan(channel))
+  profiles <- xt_column_profile(channel)
+  xt_column_profile(channel) <- lapply(profiles, flip_profile)
   channel
 }

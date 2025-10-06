@@ -27,7 +27,7 @@ xt_distance_ds <- function(channel, flowline = NULL) {
 
   # Use provided flowline or generate one if not provided
   if (is.null(flowline)) {
-    flowline <- xt_centerline(channel)
+    flowline <- xt_trace_centerline(channel)
   } else {
     # Validate that flowline is an sf LINESTRING
     if (!inherits(flowline, "sfc") || !all(sf::st_geometry_type(flowline) == "LINESTRING")) {

@@ -14,7 +14,12 @@
 #'
 #' # Plot with custom styling
 #' plot_plan(channel, col = "blue", lwd = 2)
-plot_plan <- function(channel, ..., extent, add = FALSE, col = "black", lwd = 1) {
+plot_plan <- function(channel,
+                      ...,
+                      extent,
+                      add = FALSE,
+                      col = "black",
+                      lwd = 1) {
   checkmate::assert_class(channel, "sxchan")
 
   plan <- xt_column_plan(channel)

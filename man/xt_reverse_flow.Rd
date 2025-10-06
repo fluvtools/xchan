@@ -24,3 +24,7 @@ profile cross sections are encoded does change: the left and right parts
 are flipped due to the convention that the left side of the profile
 correspond to the left bank of the channel.
 }
+\note{
+While the channel flow direction is reversed, the original order
+of the rows in the \code{channel} data frame is preserved.
+}

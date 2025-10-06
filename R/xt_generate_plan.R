@@ -39,7 +39,7 @@ xt_generate_plan <- function(banks, ..., n, spacing, at, centerline = NULL) {
   }
 
   if (is.null(centerline)) {
-    cl <- sf::st_geometry(centerline::cnt_path_guess(banks, keep = 1))
+    cl <- banks_to_centerline(banks)
   } else {
     cl <- centerline
   }
@@ -61,7 +61,12 @@ xt_generate_plan <- function(banks, ..., n, spacing, at, centerline = NULL) {
   pts <- pts[!vapply(pts, sf::st_is_empty, logical(1))]
   pts <- sf::st_cast(pts, "POINT")
 
-  # Get maximum distance from bounding box
+  # Sort pts in order along centerline. This is important so that neighbouring
+  # cross sections can be later ensured not to cross.
+  dists <- sf::st_line_project(cl, pts)
+  pts <- pts[order(dists)]
+
+  # Get maximum distance based on bounding box
   bb <- sf::st_bbox(banks)
   maxd <- sqrt(
     (bb[["xmax"]] - bb[["xmin"]])^2 + (bb[["ymax"]] - bb[["ymin"]])^2
@@ -77,6 +82,36 @@ xt_generate_plan <- function(banks, ..., n, spacing, at, centerline = NULL) {
         reposition = FALSE
       )
       sf::st_length(seg)
+    }
+
+    # For all points except the first, the angles must be such that the
+    # cross section does not cross the previous one.
+    # Get angles of current point with previous segment's endpoints.
+    if (i > 1) {
+      prev_seg <- sf::st_cast(sf::st_sfc(xs[[i - 1]]), "POINT")
+
+      a1 <- xt_angle(pts[i], prev_seg[1])
+      a2 <- xt_angle(pts[i], prev_seg[2])
+      dtheta <- diff(range(c(a1, a2)))
+
+
+    }
+
+    # Angle formed by two points
+    #
+    # @returns Normally, the angle would be in radians, in (-pi, pi],
+    # where 0 means horizontal to the right, pi/2 means vertical up,
+    # -pi/2 means vertical down. However, cross sections are non-directional,
+    # and so the opposite angle is actually the same angle, too: for instance,
+    # pi/2 and -pi/2 both represent vertical cross sections. Therefore, the
+    # angle is wrapped to [0, pi).
+    xt_angle <- function(pt1, pt2) {
+      vec <- sf::st_coordinates(pt2) - sf::st_coordinates(pt1)
+      theta <- atan2(vec[2], vec[1])
+      if (theta < 0) {
+        theta <- theta + pi
+      }
+      theta
     }
 
     # Optimize on a grid of 50 points first, because this function

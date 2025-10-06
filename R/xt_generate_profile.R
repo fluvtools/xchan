@@ -1,8 +1,8 @@
 #' Sample DEM to generate profile cross sections
 #'
-#' Generate profile cross sections for a channel object using a digital elevation model (DEM).
-#' This function samples the DEM along the planimetric cross sections and creates
-#' xs_profile objects for each cross section.
+#' Generate profile cross sections for a channel object using a digital
+#' elevation model (DEM). This function samples the DEM along the planimetric
+#' cross sections and creates xs_profile objects for each cross section.
 #'
 #' @param channel Channel object with planimetric cross sections
 #' @param dem Digital elevation model (raster or terra object)
@@ -10,7 +10,8 @@
 #' @param extent_multiplier Multiplier of channel width to extend beyond banks
 #' @param sample_freq Distance between DEM sampling points (units)
 #' @param sample_n number to sample
-#' @returns Updated channel object with profile cross sections in the profile column
+#' @returns Updated channel object with profile cross sections in the
+#' profile column.
 #' @details This function extends the planimetric cross sections beyond the banks
 #' to create a "frame" for erosion analysis. The extent can be specified either as
 #' a fixed distance or as a multiplier of the channel width. Similarly, the sampling
@@ -18,13 +19,22 @@
 #' channel width.
 #' @examples
 #' # Sample DEM with 50m extension and 1m sampling
-#' channel_with_profiles <- xt_generate_profile(channel, dem, extent_distance = 50, sample_distance = 1)
+#' channel_with_profiles <- xt_generate_profile(
+#'   channel, dem, extent_distance = 50, extent_distance = 1
+#' )
 #'
 #' # Sample DEM with 2x channel width extension and 0.1x width sampling
-#' channel_with_profiles <- xt_generate_profile(channel, dem, extent_multiplier = 2, sample_multiplier = 0.1)
+#' channel_with_profiles <- xt_generate_profile(
+#'   channel, dem, extent_multiplier = 2, extent_multiplier = 0.1
+#' )
 #' @export
-xt_generate_profile <- function(channel, dem, ..., extent_distance, extent_multiplier,
-                         sample_freq, sample_n) {
+xt_generate_profile <- function(channel,
+                                dem,
+                                ...,
+                                extent_distance,
+                                extent_multiplier,
+                                sample_freq,
+                                sample_n) {
   ellipsis::check_dots_empty()
 
   checkmate::assert_class(channel, "sxchan")
@@ -41,9 +51,9 @@ xt_generate_profile <- function(channel, dem, ..., extent_distance, extent_multi
   }
 
   # Validate sampling parameters
-  sample_specified <- !missing(sample_distance) + !missing(sample_multiplier)
+  sample_specified <- !missing(extent_distance) + !missing(extent_multiplier)
   if (sample_specified != 1) {
-    stop("Exactly one of sample_distance or sample_multiplier must be specified")
+    stop("Exactly one of extent_distance or extent_multiplier must be specified")
   }
 
   profiles <- list()
@@ -61,12 +71,12 @@ xt_generate_profile <- function(channel, dem, ..., extent_distance, extent_multi
     }
 
     # Calculate sampling distance
-    if (!missing(sample_distance)) {
-      sample_dist <- sample_distance
+    if (!missing(extent_distance)) {
+      sample_dist <- extent_distance
     } else {
       # Calculate sampling distance as multiplier of channel width
       width <- sf::st_length(xs_line)
-      sample_dist <- width * sample_multiplier
+      sample_dist <- width * extent_multiplier
     }
 
     # Extend the cross section line beyond banks
@@ -107,10 +117,10 @@ extend_cross_section <- function(line, extent) {
 }
 
 # Helper function to sample DEM along line
-sample_dem_along_line <- function(line, dem, sample_distance) {
+sample_dem_along_line <- function(line, dem, extent_distance) {
   # Sample points along line
   line_length <- sf::st_length(line)
-  n_points <- ceiling(as.numeric(line_length / sample_distance))
+  n_points <- ceiling(as.numeric(line_length / extent_distance))
 
   if (n_points < 2) n_points <- 2
 
@@ -144,16 +154,16 @@ create_xs_profile <- function(profile_data, original_line) {
 
   # Create coordinates matrix
   coordinates <- as.matrix(profile_data[, c("relative_distance", "elevation")])
-  
+
   # Find thalwegs (minimum elevation points)
   min_elev <- min(coordinates[, 2])
   thalweg_indices <- which(coordinates[, 2] == min_elev)
   thalwegs <- coordinates[thalweg_indices, 1]
-  
+
   # For now, assume simple channel with banks at center (distance 0)
   # This could be enhanced to detect actual bank positions
   banks <- c(0, 0)  # Placeholder - should detect actual banks
-  
+
   # Create xs_profile structure with new format
   list(
     coordinates = coordinates,

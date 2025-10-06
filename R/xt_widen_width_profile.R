@@ -26,7 +26,9 @@ xt_widen_width_profile <- function(profile, dw, prop_left) {
   dw_left <- prop_left * dw
   dw_right <- dw - dw_left
   profile <- xt_widen_width_profile_left(profile, dw_left)
-  flip_xs2d(xt_widen_width_profile_left(flip_xs2d(profile), dw_right))
+  profile <- flip_profile(profile)
+  profile <- xt_widen_width_profile_left(profile, dw_right)
+  flip_profile(profile)
 }
 
 #' @rdname xt_widen_2d
@@ -37,13 +39,13 @@ xt_widen_width_profile_left <- function(profile, dw) {
     return(profile)
   }
   # Get left bank information
-  x_old <- xs$banks[1]
+  x_old <- profile$banks[1]
   x_new <- x_old - dw
   y_new <- coords_interpolate(profile, x_new)[2]
-  y_thal <- coords_interpolate(profile, xs$thalwegs[1])[2]
+  y_thal <- coords_interpolate(profile, profile$thalwegs[1])[2]
   nodes <- profile$coordinates
   nodes <- inject_coords(nodes, x_new)
-  xs$banks[1] <- x_new
+  profile$banks[1] <- x_new
   if (y_new < y_thal) {
     warning(
       "River has eroded into a part of the floodplain that's lower in ",
@@ -58,9 +60,9 @@ xt_widen_width_profile_left <- function(profile, dw) {
   nodes <- nodes[!x_in_between, , drop = FALSE]
   # Erosion rule 2: nodes starting from the old bankpoint shift over
   # to the new bankpoint.
-  x_river_part <- nodes[, 1] >= x_old & nodes[, 1] <= xs$thalwegs[1]
+  x_river_part <- nodes[, 1] >= x_old & nodes[, 1] <= profile$thalwegs[1]
   nodes[x_river_part, 1] <- nodes[x_river_part, 1] - dw
-  xs$coordinates <- nodes
-  xs$thalwegs[1] <- xs$thalwegs[1] - dw
-  xs
+  profile$coordinates <- nodes
+  profile$thalwegs[1] <- profile$thalwegs[1] - dw
+  profile
 }

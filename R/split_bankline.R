@@ -42,12 +42,12 @@ split_bankline <- function(bankline, centerline = NULL) {
     direction <- direction / sqrt(sum(direction^2))
 
     # Extend the points x/2 on each side
-    len <- as.numeric(st_length(centerline)[1])
-    new_first_point <- first_point - (len/2) * direction
-    new_last_point <- last_point + (len/2) * direction
+    len <- as.numeric(sf::st_length(centerline)[1])
+    new_first_point <- first_point - (len / 2) * direction
+    new_last_point <- last_point + (len / 2) * direction
 
     # Create the new extended line
-    extended_line <- st_sfc(st_linestring(
+    extended_line <- sf::st_sfc(st_linestring(
       rbind(
         new_first_point,
         sf::st_coordinates(centerline),
@@ -55,8 +55,8 @@ split_bankline <- function(bankline, centerline = NULL) {
       )
     )
 
-    original_crs <- st_crs(centerline)
-    extended_line <- st_set_crs(extended_line, original_crs)
+    original_crs <- sf::st_crs(centerline)
+    extended_line <- sf::st_set_crs(extended_line, original_crs)
 
     # Get the intersection of the bankline and centerline
     intersection <- sf::st_intersection(bankline, extended_line)
