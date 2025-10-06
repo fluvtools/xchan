@@ -25,29 +25,55 @@
 #' @exportS3Method base::plot
 plot.xs_profile <- function(x, ..., extent, add = FALSE, exaggerate = 2) {
   x <- exaggerate_relief(x, exaggerate)
-  
+
   if (!add) {
     # Create empty plot
-    plot(x$coordinates[, 1], x$coordinates[, 2], type = "n", 
+    plot(x$coordinates[, 1], x$coordinates[, 2], type = "n",
          xlab = "Distance", ylab = "Elevation", ...)
   }
-  
+
   # Plot the main profile line
-  lines(x$coordinates[, 1], x$coordinates[, 2], col = "black", lwd = 2, ...)
-  
+  graphics::lines(
+    x$coordinates[, 1],
+    x$coordinates[, 2],
+    col = "black",
+    lwd = 2,
+    ...
+  )
+
   # Plot bank points
-  bank_coords <- x$coordinates[match(x$banks, x$coordinates[, 1]), , drop = FALSE]
-  points(bank_coords[, 1], bank_coords[, 2], col = "red", pch = 19, cex = 1.5, ...)
-  
+  bank_coords <- x$coordinates[
+    match(x$banks, x$coordinates[, 1]), , drop = FALSE
+  ]
+  points(
+    bank_coords[, 1],
+    bank_coords[, 2],
+    col = "red",
+    pch = 19,
+    cex = 1.5,
+    ...
+  )
+
   # Plot thalweg points
-  thalweg_coords <- x$coordinates[match(x$thalwegs, x$coordinates[, 1]), , drop = FALSE]
-  points(thalweg_coords[, 1], thalweg_coords[, 2], col = "blue", pch = 17, cex = 1.2, ...)
-  
+  thalweg_coords <- x$coordinates[
+    match(x$thalwegs, x$coordinates[, 1]), , drop = FALSE
+  ]
+  graphics::points(
+    thalweg_coords[, 1],
+    thalweg_coords[, 2],
+    col = "blue",
+    pch = 17,
+    cex = 1.2,
+    ...
+  )
+
   # Add legend
-  legend("topright", 
-         legend = c("Profile", "Banks", "Thalwegs"),
-         col = c("black", "red", "blue"),
-         lty = c(1, NA, NA),
-         pch = c(NA, 19, 17),
-         cex = 0.8)
+  graphics::legend(
+    "topright",
+    legend = c("Profile", "Banks", "Thalwegs"),
+    col = c("black", "red", "blue"),
+    lty = c(1, NA, NA),
+    pch = c(NA, 19, 17),
+    cex = 0.8
+  )
 }

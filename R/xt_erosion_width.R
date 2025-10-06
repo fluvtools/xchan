@@ -16,41 +16,45 @@
 #' xt_erosion_width(channel, volume = 50, side = side_left(0.75))
 #' @export
 xt_erosion_width <- function(channel,
-                            volume,
-                            side = "both",
-                            error_on_overflow = TRUE) {
+                             volume,
+                             side = "both",
+                             error_on_overflow = TRUE) {
   checkmate::assert_class(channel, "sxchan")
-  
+
   profile <- xt_column_profile(channel)
   if (is.null(profile)) {
     stop("Channel object must have profile cross sections")
   }
-  
+
   # Parse side argument to get proportions
   prop_left <- parse_side_arg(side, channel)
-  
+
   # Recycle volume to match number of cross-sections
   volume <- vctrs::vec_recycle(volume, length(profile))
-  
+
   # Calculate erosion width for each cross-section
   widths <- numeric(length(profile))
   censored <- logical(length(profile))
-  
+
   for (i in seq_along(profile)) {
     xs <- profile[[i]]
     dv_left <- volume[i] * prop_left[i]
     dv_right <- volume[i] - dv_left
-    
-      dw1 <- xt_erosion_width_left(xs, dv_left, 
-                              error_on_overflow = error_on_overflow)
-  xs_flipped <- flip_xs2d(xs)
-  dw2 <- xt_erosion_width_left(xs_flipped, dv_right, 
-                              error_on_overflow = error_on_overflow)
-    
+
+    dw1 <- xt_erosion_width_left(
+      xs, dv_left,
+      error_on_overflow = error_on_overflow
+    )
+    xs_flipped <- flip_profile(xs)
+    dw2 <- xt_erosion_width_left(
+      xs_flipped, dv_right,
+      error_on_overflow = error_on_overflow
+    )
+
     widths[i] <- dw1 + dw2
     censored[i] <- attr(dw1, "censored") || attr(dw2, "censored")
   }
-  
+
   attr(widths, "censored") <- censored
   widths
 }
@@ -64,14 +68,22 @@ xt_erosion_width_left <- function(xs, volume, error_on_overflow = TRUE) {
   }
   # Get left bank information
   left_bank_dist <- min(xs$banks)
-  left_bank_coords <- xs$coordinates[xs$coordinates[, 1] == left_bank_dist, , drop = FALSE]
+  left_bank_coords <- xs$coordinates[
+    xs$coordinates[, 1] == left_bank_dist, , drop = FALSE
+  ]
   x_old <- left_bank_dist
-  y_bank <- if (nrow(left_bank_coords) > 0) left_bank_coords[1, 2] else 0
-  
+  if (nrow(left_bank_coords) > 0) {
+    y_bank <- left_bank_coords[1, 2]
+  } else {
+    y_bank <- 0
+  }
+
   # Get left side coordinates (negative distances)
-  left_nodes <- xs$coordinates[xs$coordinates[, 1] <= left_bank_dist, , drop = FALSE]
+  left_nodes <- xs$coordinates[
+    xs$coordinates[, 1] <= left_bank_dist, , drop = FALSE
+  ]
   x_extent <- min(left_nodes[, 1])
-  
+
   # Use find_x_for_volume_right to find the new x position
   x_new <- find_x_for_volume_right(
     v = volume,
@@ -80,7 +92,7 @@ xt_erosion_width_left <- function(xs, volume, error_on_overflow = TRUE) {
     thalweg_height = y_bank,
     valley = "left"
   )
-  
+
   censored <- FALSE
   if (x_new < x_extent) {
     if (error_on_overflow) {
@@ -94,7 +106,6 @@ xt_erosion_width_left <- function(xs, volume, error_on_overflow = TRUE) {
       censored <- TRUE
     }
   }
-  
   w <- x_old - x_new
   attr(w, "censored") <- censored
   w

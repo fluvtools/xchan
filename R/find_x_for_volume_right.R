@@ -136,7 +136,7 @@ find_x_for_volume_right <- function(v,
   cum_areas <- cumsum(areas)
 
   # Check if target volume available
-  if (v > tail(cum_areas, 1)) {
+  if (v > utils::tail(cum_areas, 1)) {
     stop("Requested volume exceeds what is available to the right of x0")
   }
 

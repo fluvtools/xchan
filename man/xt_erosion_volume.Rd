@@ -9,21 +9,25 @@ xt_erosion_volume(channel, width, side = "both", error_on_overflow = TRUE)
 \arguments{
 \item{channel}{Channel object}
 
-\item{width}{Change in width; single positive numeric or vector matching number of cross-sections.}
+\item{width}{Change in width; single positive numeric or vector matching
+number of cross-sections.}
 
 \item{side}{A specification for how to distribute the widening between
-left and right banks. Built-in side functions include "left", "right", and "both".}
+left and right banks. Built-in side functions include "left", "right", and
+"both".}
 
 \item{error_on_overflow}{Logical; should an error be thrown if asked
 to calculate erosion volume beyond cross section extent? \code{TRUE} if so
 (the default). If \code{FALSE}, returns the maximum volume up to the extent.}
 }
 \value{
-A numeric vector of erosion volumes for each cross-section in the channel.
+A numeric vector of erosion volumes for each cross-section in
+the channel.
 }
 \description{
-This function calculates the erosion volume for each cross-section in a channel
-given a specified width change, distributing the change according to a given scheme.
+This function calculates the erosion volume for each cross-section in
+a channel given a specified width change, distributing the change
+according to a given scheme.
 }
 \examples{
 xt_erosion_volume(channel, width = 10, side = "left")

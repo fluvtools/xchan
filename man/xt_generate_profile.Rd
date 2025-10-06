@@ -28,12 +28,13 @@ xt_generate_profile(
 \item{sample_n}{number to sample}
 }
 \value{
-Updated channel object with profile cross sections in the profile column
+Updated channel object with profile cross sections in the
+profile column.
 }
 \description{
-Generate profile cross sections for a channel object using a digital elevation model (DEM).
-This function samples the DEM along the planimetric cross sections and creates
-xs_profile objects for each cross section.
+Generate profile cross sections for a channel object using a digital
+elevation model (DEM). This function samples the DEM along the planimetric
+cross sections and creates xs_profile objects for each cross section.
 }
 \details{
 This function extends the planimetric cross sections beyond the banks
@@ -44,8 +45,12 @@ channel width.
 }
 \examples{
 # Sample DEM with 50m extension and 1m sampling
-channel_with_profiles <- xt_generate_profile(channel, dem, extent_distance = 50, sample_distance = 1)
+channel_with_profiles <- xt_generate_profile(
+  channel, dem, extent_distance = 50, extent_distance = 1
+)
 
 # Sample DEM with 2x channel width extension and 0.1x width sampling
-channel_with_profiles <- xt_generate_profile(channel, dem, extent_multiplier = 2, sample_multiplier = 0.1)
+channel_with_profiles <- xt_generate_profile(
+  channel, dem, extent_multiplier = 2, extent_multiplier = 0.1
+)
 }
