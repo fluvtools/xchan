@@ -42,9 +42,7 @@ plot.xs_profile <- function(x, ..., extent, add = FALSE, exaggerate = 2) {
   )
 
   # Plot bank points
-  bank_coords <- x$coordinates[
-    match(x$banks, x$coordinates[, 1]), , drop = FALSE
-  ]
+  bank_coords <- get_bank_coords(x)
   points(
     bank_coords[, 1],
     bank_coords[, 2],
@@ -55,9 +53,7 @@ plot.xs_profile <- function(x, ..., extent, add = FALSE, exaggerate = 2) {
   )
 
   # Plot thalweg points
-  thalweg_coords <- x$coordinates[
-    match(x$thalwegs, x$coordinates[, 1]), , drop = FALSE
-  ]
+  thalweg_coords <- get_thalweg_coords(x)
   graphics::points(
     thalweg_coords[, 1],
     thalweg_coords[, 2],

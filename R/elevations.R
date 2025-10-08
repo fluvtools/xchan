@@ -60,7 +60,7 @@ elevation_bank_left <- function() {
     profile <- xt_column_profile(channel)
     vapply(
       profile,
-      function(xs) coords_interpolate(xs, min(xs$banks))[2],
+      function(xs) get_left_bank_coords(xs)[2],
       numeric(1L)
     )
   }
@@ -80,7 +80,7 @@ elevation_bank_right <- function() {
     profile <- xt_column_profile(channel)
     vapply(
       profile,
-      function(xs) coords_interpolate(xs, max(xs$banks))[2],
+      function(xs) get_right_bank_coords(xs)[2],
       numeric(1L)
     )
   }
@@ -101,9 +101,7 @@ elevation_topo_left <- function() {
     vapply(
       profile,
       function(xs) {
-        mat <- xs$banks
-        d <- mat[, 1]
-        mat[d == min(d), 2]
+        get_left_bank_coords(xs)[2]
       },
       numeric(1)
     )
@@ -125,9 +123,7 @@ elevation_topo_right <- function() {
     vapply(
       profile,
       function(xs) {
-        mat <- xs$banks
-        d <- mat[, 1]
-        mat[d == max(d), 2]
+        get_right_bank_coords(xs)[2]
       },
       numeric(1)
     )
@@ -174,8 +170,10 @@ elevation_bottom <- function(.f = mean, ...) {
     vapply(
       profile,
       function(xs) {
-        left_bank_dist <- min(xs$banks)
-        right_bank_dist <- max(xs$banks)
+        left_bank_coords <- get_left_bank_coords(xs)
+        right_bank_coords <- get_right_bank_coords(xs)
+        left_bank_dist <- left_bank_coords[1]
+        right_bank_dist <- right_bank_coords[1]
         d <- xs$coordinates[, 1]
         in_channel <- d >= left_bank_dist & d <= right_bank_dist
         elev <- xs$coordinates[in_channel, 2]

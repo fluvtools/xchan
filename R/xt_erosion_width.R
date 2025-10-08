@@ -67,20 +67,13 @@ xt_erosion_width_left <- function(xs, volume, error_on_overflow = TRUE) {
     return(w)
   }
   # Get left bank information
-  left_bank_dist <- min(xs$banks)
-  left_bank_coords <- xs$coordinates[
-    xs$coordinates[, 1] == left_bank_dist, , drop = FALSE
-  ]
-  x_old <- left_bank_dist
-  if (nrow(left_bank_coords) > 0) {
-    y_bank <- left_bank_coords[1, 2]
-  } else {
-    y_bank <- 0
-  }
+  left_bank_coords <- get_left_bank_coords(xs)
+  x_old <- left_bank_coords[1]
+  y_bank <- left_bank_coords[2]
 
   # Get left side coordinates (negative distances)
   left_nodes <- xs$coordinates[
-    xs$coordinates[, 1] <= left_bank_dist, , drop = FALSE
+    xs$coordinates[, 1] <= x_old, , drop = FALSE
   ]
   x_extent <- min(left_nodes[, 1])
 
