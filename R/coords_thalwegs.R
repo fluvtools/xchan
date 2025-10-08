@@ -1,6 +1,6 @@
 coords_thalwegs <- function(profile) {
   checkmate::assert_class(profile, "xs_profile")
+  t <- profile$thalwegs
   nodes <- coords_all(profile)
-  nodes[nodes[, 2] == min(nodes[, 2]), , drop = FALSE]
-  nodes
+  nodes[nodes[, 1] == t, , drop = FALSE]
 }

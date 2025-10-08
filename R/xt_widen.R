@@ -2,10 +2,10 @@
 #'
 #' @param channel Channel object
 #' @param ... Additional arguments (ignored)
-#' @param width The total width to add to the channel. Must be a numeric value
-#'   and cannot be used with `volume`.
-#' @param volume The total volume to remove to widen the channel. Must be a
-#'   numeric value and cannot be used with `width`.
+#' @param dw The total width to add to the channel. Must be a numeric value
+#'   and cannot be used with `dv`.
+#' @param dv The total volume to remove to widen the channel. Must be a
+#'   numeric value and cannot be used with `dw`.
 #' @param side A specification for how to distribute the widening between
 #' left and right banks. Built-in side functions include "left", "right", and "both".
 #'
@@ -16,20 +16,20 @@
 #' directly, e.g. `side_left(0.75)`, or by their name using the default
 #' parameters.
 #' @note
-#' While the ellipsis `...` is currently not used, it forces the `width` and
-#' `volume` arguments to be named to ensure deliberate specification.
+#' While the ellipsis `...` is currently not used, it forces the `dw` and
+#' `dv` arguments to be named to ensure deliberate specification.
 #' @returns A modified channel object
 #' @examples
-#' xt_widen(channel, width = 10)
-#' xt_widen(channel, width = 10, side = side_left(0.75))
-#' xt_widen(channel, volume = 5, side = "right")
+#' xt_widen(channel, dw = 10)
+#' xt_widen(channel, dw = 10, side = side_left(0.75))
+#' xt_widen(channel, dv = 5, side = "right")
 #' @export
-xt_widen <- function(channel, ..., width, volume, side = "both") {
+xt_widen <- function(channel, ..., dw, dv, side = "both") {
   ellipsis::check_dots_empty()
   checkmate::assert_class(channel, "sxchan")
 
-  if (!xor(missing(width), missing(volume))) {
-    stop("Must specify either `width` or `volume`, but not both.")
+  if (!xor(missing(dw), missing(dv))) {
+    stop("Must specify either `dw` or `dv`, but not both.")
   }
 
   # Get plan and profile columns
@@ -41,8 +41,8 @@ xt_widen <- function(channel, ..., width, volume, side = "both") {
 
   # Apply widening to planimetric cross-sections
   if (!is.null(plan)) {
-    if (!missing(width)) {
-      plan <- xt_widen_width_plan(plan, by = width, prop_left = prop_left)
+    if (!missing(dw)) {
+      plan <- xt_widen_width_plan(plan, by = dw, prop_left = prop_left)
     } else {
       stop("Volume widening is not applicable to planimetric cross-sections.")
     }
@@ -50,13 +50,13 @@ xt_widen <- function(channel, ..., width, volume, side = "both") {
 
   # Apply widening to profile cross-sections
   if (!is.null(profile)) {
-    if (!missing(width)) {
+    if (!missing(dw)) {
       profile <- lapply(profile, function(xs) {
-        xt_widen_width_profile(xs, dw = width, prop_left = prop_left)
+        xt_widen_width_profile(xs, dw = dw, prop_left = prop_left)
       })
     } else {
       profile <- lapply(profile, function(xs) {
-        xt_widen_volume_profile(xs, volume = volume, prop_left = prop_left)
+        xt_widen_volume_profile(xs, dv = dv, prop_left = prop_left)
       })
     }
   }

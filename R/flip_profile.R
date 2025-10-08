@@ -8,12 +8,13 @@
 #' sides switched. The distance values (along the cross section) are
 #' flipped in sign.
 flip_profile <- function(profile) {
-  checkmate::assert_class(profile, "sxchan_profile")
+  checkmate::assert_class(profile, "xs_profile")
   # Flip all distance coordinates
   nodes <- coords_all(profile)
   nodes[, 1] <- -nodes[, 1]
-  # Flip banks
-  banks <- sort(-profile$banks)
+  # Flip bank distances
+  bank_distances <- get_bank_distances(profile)
+  banks <- sort(-bank_distances)
   # Make new object
   xt_profile(nodes, bankpoints = banks)
 }

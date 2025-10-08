@@ -1,10 +1,8 @@
 xt_nodes_channel <- function(profile) {
   checkmate::assert_class(profile, "xs_profile")
   nodes <- profile$coordinates
-  x_left <- profile$banks[1]
-  x_right <- profile$banks[length(profile$banks)]
-  i_left <- i_bank_left(nodes, x_left) + 1L
-  i_right <- i_bank_right(nodes, x_right) - 1L
+  i_left <- get_left_bank_index(profile) + 1L
+  i_right <- get_right_bank_index(profile) - 1L
   if (i_right == i_left + 1L) {
     return(matrix(ncol = 2, nrow = 0))
   }
@@ -38,15 +36,15 @@ i_channel <- function(nodes, x_left, x_right) {
   checkmate::assert_class(profile, "xs_profile")
   checkmate::assert_matrix(value, ncol = 2L, min.rows = 1L, mode = "numeric")
   nodes <- profile$coordinates
-  x_left <- profile$banks[1]
-  x_right <- profile$banks[length(profile$banks)]
-  i_left <- i_bank_left(nodes, x_left)
-  i_right <- i_bank_right(nodes, x_right)
+  i_left <- get_left_bank_index(profile)
+  i_right <- get_right_bank_index(profile)
   mat_left <- nodes[1:i_left, , drop = FALSE]
   mat_right <- nodes[i_right:nrow(nodes), , drop = FALSE]
   new_mat <- rbind(mat_left, value, mat_right)
-  new_thal_x <- sort(value[which.min(value[, 2]), 1])
+  
+  # Update thalweg indices to point to the new minimum elevation points
+  new_thal_indices <- which.min(value[, 2]) + i_left
   profile$coordinates <- new_mat
-  profile$thalwegs <- new_thal_x
+  profile$thalwegs <- new_thal_indices
   profile
 }

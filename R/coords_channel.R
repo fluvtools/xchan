@@ -15,7 +15,8 @@ coords_between <- function(profile, d_left, d_right, inclusive = TRUE) {
 
 coords_channel <- function(profile, include_banks = TRUE) {
   checkmate::check_class(profile, "xs_profile")
-  banks <- range(profile$banks)
+  bank_distances <- get_bank_distances(profile)
+  banks <- range(bank_distances)
   nodes <- coords_between(profile, banks[1], banks[2], inclusive = TRUE)
   if (!include_banks) {
     id <- 1 + seq_len(nrow(nodes) - 2)
@@ -26,14 +27,14 @@ coords_channel <- function(profile, include_banks = TRUE) {
 
 coords_channel_active <- function(profile, include_banks = TRUE) {
   checkmate::check_class(profile, "xs_profile")
-  banks <- range(profile$banks)
-  nbanks <- length(banks)
+  bank_distances <- get_bank_distances(profile)
+  nbanks <- length(bank_distances)
 
   # Loop over each water section.
   nodes <- list()
   for (i in seq_len(nbanks / 2)) {
     nodes[[i]] <- coords_between(
-      profile, banks[2 * i - 1], banks[2 * i], inclusive = TRUE
+      profile, bank_distances[2 * i - 1], bank_distances[2 * i], inclusive = TRUE
     )
     if (!include_banks) {
       id <- 1 + seq_len(nrow(nodes[i]) - 2)
@@ -53,15 +54,11 @@ coords_all <- function(profile) {
 #' given by the maximum elevation at the bank location.
 coords_banks <- function(profile) {
   checkmate::check_class(profile, "xs_profile")
-  nodes <- coords_all(profile)
-  banks <- profile$banks
-  distances <- nodes[, 1]
-  heights <- nodes[, 2]
-  lgl_list <- lapply(banks, function(b) b == distances)
-  heights <- vapply(
-    lgl_list,
-    function(lgl) max(banks[lgl, 2]),
-    FUN.VALUE = numeric(1L)
-  )
-  matrix(append(banks, heights), ncol = 2)
+  get_bank_coords(profile)
+}
+
+coords_i_banks <- function(profile) {
+  checkmate::check_class(profile, "xs_profile")
+  # This function is now much simpler with index-based banks
+  get_bank_coords(profile)
 }
