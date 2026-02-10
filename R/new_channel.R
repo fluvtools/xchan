@@ -7,7 +7,12 @@
 #' @param class If making a subclass, specify its name here.
 #' @returns An object of class `"sxchan"`, which is a data frame with plan
 #' and/or profile columns.
-new_channel <- function(l, plan_col = NULL, profile_col = NULL, ..., class = character()) {
+#' @noRd
+new_channel <- function(l,
+                        plan_col = NULL,
+                        profile_col = NULL,
+                        ...,
+                        class = character()) {
   original_class <- class(l)
 
   # if (!is.null(plan_col)) attrs$plan_col <- plan_col

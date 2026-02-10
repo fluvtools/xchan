@@ -2,19 +2,18 @@
 % Please edit documentation in R/inject_2d_points.R
 \name{inject_coords}
 \alias{inject_coords}
-\title{Inject points into a 2D cross section matrix}
+\title{Inject points into a profile cross section matrix}
 \usage{
 inject_coords(profile, x)
 }
 \arguments{
-\item{x}{Numeric vector; distance along cross section to add a new node to.}
+\item{profile}{Cross section profile.}
 
-\item{mat}{Matrix of nodes of distances along the cross section
-(column one) and elevation (column two).}
+\item{x}{Numeric vector; distance along cross section to add a new node to.}
 }
 \value{
-The original matrix of nodes, with a additional
-nodes correspoding to \code{x}, with linearly interpolated elevation.
+The original profile cross section, with additional
+nodes corresponding to \code{x}, with linearly interpolated elevation.
 }
 \description{
 Inject a point into a 2D cross section matrix,

@@ -1,4 +1,4 @@
-#' Inject points into a 2D cross section matrix
+#' Inject points into a profile cross section matrix
 #'
 #' Inject a point into a 2D cross section matrix,
 #' potentially splitting a linesegment into two

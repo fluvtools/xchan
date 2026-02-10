@@ -39,26 +39,38 @@ xt_widen <- function(channel, ..., dw, dv, side = "both") {
   # Parse side argument to get proportions
   prop_left <- parse_side_arg(side, channel)
 
+  # Get dw if dv was provided
+  if (missing(dw)) {
+    if (is.null(profile)) {
+      stop(
+        "Channel object must have profile cross sections to calculate ",
+        "widening from volume."
+      )
+    }
+    dw_left <- xt_erosion_width(
+      channel,
+      dv = dv * prop_left,
+      side = "left"
+    )
+    dw_right <- xt_erosion_width(
+      channel,
+      dv = dv * (1 - prop_left),
+      side = "right"
+    )
+    prop_left <- dw_left / (dw_left + dw_right)
+    dw <- dw_left + dw_right
+  }
+
   # Apply widening to planimetric cross-sections
   if (!is.null(plan)) {
-    if (!missing(dw)) {
-      plan <- xt_widen_width_plan(plan, by = dw, prop_left = prop_left)
-    } else {
-      stop("Volume widening is not applicable to planimetric cross-sections.")
-    }
+    plan <- widen_plan(plan, dw = dw, prop_left = prop_left)
   }
 
   # Apply widening to profile cross-sections
   if (!is.null(profile)) {
-    if (!missing(dw)) {
-      profile <- lapply(profile, function(xs) {
-        xt_widen_width_profile(xs, dw = dw, prop_left = prop_left)
-      })
-    } else {
-      profile <- lapply(profile, function(xs) {
-        xt_widen_volume_profile(xs, dv = dv, prop_left = prop_left)
-      })
-    }
+    profile <- lapply(profile, function(xs) {
+      widen_profile(xs, dw = dw, prop_left = prop_left)
+    })
   }
 
   # Update the channel

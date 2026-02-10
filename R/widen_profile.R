@@ -19,20 +19,20 @@
 #' the height of the new bank ignores this bed topography, and is determined
 #' by the outermost point.
 #' @rdname xt_widen_2d
-xt_widen_width_profile <- function(profile, dw, prop_left) {
+widen_profile <- function(profile, dw, prop_left) {
   checkmate::assert_class(profile, "xs_profile")
   checkmate::assert_numeric(dw, 0)
   checkmate::assert_numeric(prop_left, 0, 1, len = 1)
   dw_left <- prop_left * dw
   dw_right <- dw - dw_left
-  profile <- xt_widen_width_profile_left(profile, dw_left)
+  profile <- widen_profile_left(profile, dw_left)
   profile <- flip_profile(profile)
-  profile <- xt_widen_width_profile_left(profile, dw_right)
+  profile <- widen_profile_left(profile, dw_right)
   flip_profile(profile)
 }
 
 #' @rdname xt_widen_2d
-xt_widen_width_profile_left <- function(profile, dw) {
+widen_profile_left <- function(profile, dw) {
   checkmate::assert_class(profile, "xs_profile")
   checkmate::assert_numeric(dw, 0, len = 1, any.missing = FALSE)
   if (dw == 0) {
@@ -47,11 +47,11 @@ xt_widen_width_profile_left <- function(profile, dw) {
   y_thal <- thalweg_coords[2]
   nodes <- profile$coordinates
   nodes <- inject_coords(nodes, x_new)
-  
+
   # Update bank index to point to the new bank location
   new_bank_index <- which.min(abs(nodes[, 1] - x_new))
   profile$banks[1] <- new_bank_index
-  
+
   if (y_new < y_thal) {
     warning(
       "River has eroded into a part of the floodplain that's lower in ",
@@ -70,57 +70,10 @@ xt_widen_width_profile_left <- function(profile, dw) {
   x_river_part <- nodes[, 1] >= x_old & nodes[, 1] <= thalweg_distances[1]
   nodes[x_river_part, 1] <- nodes[x_river_part, 1] - dw
   profile$coordinates <- nodes
-  
+
   # Update thalweg indices
   thalweg_indices <- profile$thalwegs
   thalweg_indices[1] <- which.min(abs(nodes[, 1] - (thalweg_distances[1] - dw)))
-  profile$thalwegs <- thalweg_indices
-  profile
-}
-
-#' @rdname xt_widen_2d
-xt_widen_width_profile_right <- function(profile, dw) {
-  checkmate::assert_class(profile, "xs_profile")
-  checkmate::assert_numeric(dw, 0, len = 1, any.missing = FALSE)
-  if (dw == 0) {
-    return(profile)
-  }
-  # Get right bank information
-  right_bank_coords <- get_right_bank_coords(profile)
-  x_old <- right_bank_coords[1]
-  x_new <- x_old + dw
-  profile <- inject_coords(profile, x_new)
-
-  nodes <- coords_all(profile)
-  # Update right bank index to point to the new bank location
-  new_bank_index <- which.min(abs(nodes[, 1] - x_new))
-  profile$banks[length(profile$banks)] <- new_bank_index
-
-  # y_new <- coords_interpolate(profile, x_new)[2]
-  # y_thal <- coords_interpolate(profile, profile$thalwegs[1])[2]
-  # if (y_new < y_thal) {
-  #   warning(
-  #     "River has eroded into a part of the floodplain that's lower in ",
-  #     "elevation than the thalweg. The original thalweg is still being ",
-  #     "interpreted as the thalweg."
-  #   )
-  # }
-
-  # Erosion rule 1: nodes in between old and new banks disappear,
-  # including the old bank.
-  x_in_between <- nodes[, 1] < x_new & nodes[, 1] >= x_old
-  nodes <- nodes[!x_in_between, , drop = FALSE]
-  # Erosion rule 2: nodes between the right thalweg and the old right bank
-  # (the "river part") shift over to the new bankpoint. This means a cliff
-  # will most likely form at the new bankpoint.
-  thalweg_distances <- get_thalweg_distances(profile)
-  x_river_part <- nodes[, 1] <= x_old & nodes[, 1] >= thalweg_distances[length(thalweg_distances)]
-  nodes[x_river_part, 1] <- nodes[x_river_part, 1] + dw
-  profile$coordinates <- nodes
-  
-  # Update thalweg indices
-  thalweg_indices <- profile$thalwegs
-  thalweg_indices[length(thalweg_indices)] <- which.min(abs(nodes[, 1] - (thalweg_distances[length(thalweg_distances)] + dw)))
   profile$thalwegs <- thalweg_indices
   profile
 }
