@@ -7,12 +7,8 @@ Authors@R:
            role = c("aut", "cre")),
     person("Jane", "Wang", email = "jwang@bgcengineering.ca",
            role = "aut"),
-    person("Lucy", "MacKenzie", email = "lmackenzie@bgcengineering.ca",
-           role = "aut"),
-    person("Brett", "Eaton", email = "beaton@bgcengineering.ca",
-           role = c("aut")),
-    person("Sarah", "Davidson", email = "sdavidson@bgcengineering.ca",
-           role = "aut")
+    person("Heba", "Abdelmoaty",
+           role = "ctb")
     )
 Description: Create and manipulate watercourse geometries for 
     geomorphology applications, with a 
@@ -21,17 +17,19 @@ Description: Create and manipulate watercourse geometries for
 License: CC BY-NC 4.0 + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 URL: https://stochagbem.github.io/sxchan/
 Imports:
     sf,
     centerline,
-    vctrs
+    vctrs,
+    lwgeom,
+    stats,
+    graphics,
+    utils
 Suggests: 
     testthat (>= 3.0.0),
     units
-Remotes: 
-    atsyplenkov/centerline
 Config/testthat/edition: 3
 Depends: 
     R (>= 2.10)

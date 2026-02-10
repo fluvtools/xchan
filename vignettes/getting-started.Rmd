@@ -1,0 +1,121 @@
+---
+title: "Getting Started with sxchan"
+author: "Vincenzo Coia"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting Started with sxchan}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(sxchan)
+```
+
+# Getting Started with sxchan
+
+The `sxchan` package provides tools for creating and manipulating river channel cross-sections. This vignette will get you started with the basics.
+
+## Creating Your First Channel Object
+
+The core data structure in `sxchan` is the **channel object**. A channel contains planimetric cross-sections (top-down view) and/or profile cross-sections (side view).
+
+### Simple Channel from Widths
+
+Let's get set up with a quick, simple channel. The simplest way to do this is by specifying a vector of widths corresponding to channel cross sections.
+
+```{r simple-channel}
+# Create a channel with 6 cross-sections of varying widths
+widths <- c(10, 12, 8, 15, 11, 9)
+channel <- xt_channel(widths)
+channel
+```
+
+Notice that channels are simply data frames where each row is a cross section. So far there is only one column: the planimetric (overhead view) cross-sections created from the specified widths. Add other columns using your usual data frame workflow:
+
+```{r df-channel}
+# Create a data frame with widths and additional information
+channel$roughness <- c(0.03, 0.035, 0.025, 0.04, 0.03, 0.025),
+channel$station <- c(0, 100, 200, 300, 400, 500)
+channel
+```
+
+Planimetric cross sections are sufficient for defining a channel, and are sufficient for this demo. You can also add a profile (side) view, and make more realistic channels; see vigette XYZ for more.
+
+Here is what our channel looks like:
+
+```{r}
+plot(channel, view = "plan")
+```
+
+## Basic Channel Operations
+
+Go ahead and widen the channel, and compare the new channel (blue) with the original (red).
+
+```{r}
+channel2 <- xt_widen(channel, width = c(2, 1, 3, 0, 0, 0)
+plot(channel2, view = "plan", col = "blue")
+plot(channel, view = "plan", col = "red", add = TRUE)
+```
+
+Once you have a channel object, you can perform various calculations. You can generate bankline polygons, calculate widths, and more. Remember, pretty much everything is customizable; see the various other vignettes for more.
+
+Generate banklines and a centerline from the channel cross-sections (if you want to generate a centerline from a bankline polygon, use the `centerline` package found on CRAN).
+
+```{r}
+bankline <- xt_bankline(channel2)
+centerline <- xt_centerline(channel2)
+plot(bankline, view = "plan", col = "blue")
+plot(channel2, view = "plan", col = "red", add = TRUE)
+plot(centerline, view = "plan", add = TRUE)
+```
+
+
+Calculate cross-section widths.
+
+```{r width-analysis}
+# Get widths of all cross-sections
+xt_width(channel)
+```
+
+Get the number of cross-sections.
+
+```{r}
+# Get number of cross-sections
+xt_n_sections(channel)
+```
+
+Calculate downstream distances.
+
+```{r distance}
+# Calculate downstream distances
+distances <- xt_distance_ds(channel)
+distances
+```
+
+Convert to a spatial object understandable by the `sf` package, in case you want to do some manual operations not supported by `sxchan`.
+
+```{r}
+spatial_object <- xt_as_sfc(channel)
+# View
+spatial_object
+```
+
+## Next Steps
+
+Now that you understand the basics, you can:
+
+1. **Create channels from different data sources** - See the "Channel Objects and Generation" vignette
+2. **Modify channels through widening** - See the "Channel Widening and Erosion" vignette  
+3. **Perform detailed calculations** - See the "Channel Calculations and Analysis" vignette
+4. **Work with complex geometries** - See the "Working with Complex Channel Geometries" vignette
+
+The channel object is the foundation of `sxchan`. Once you're comfortable creating and manipulating channels, you can explore the more advanced features of the package.

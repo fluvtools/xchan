@@ -1,28 +1,19 @@
 #' Get Channel Width
 #'
-#' @param object Cross section.
-#' @returns Cross section width; single numeric.
+#' Calculate the width of a channel object.
+#'
+#' @param channel Channel object.
+#' @returns Numeric vector of widths of the channel's cross sections.
 #' @examples
-#' xs <- xt_sxc(1:3)
-#' xt_width(xs)
-#' @rdname xt_width
+#' xt_width(demo_channel)
 #' @export
-xt_width <- function(object) UseMethod("xt_width")
-
-#' @export
-xt_width.sf <- function(object) {
-  xs <- sf::st_geometry(object)
-  if (!is_sxc(xs)) {
-    stop(
-      "The geometry column in the inputted sf object is not a cross section ",
-      "object set (class 'sxc')."
-    )
+xt_width <- function(channel) {
+  checkmate::assert_class(channel, "sxchan")
+  if (xt_has_plan(channel)) {
+    plan <- xt_column_plan(channel)
+    return(vapply(plan, sf::st_length, FUN.VALUE = numeric(1)))
   }
-  xt_width(xs)
+  prof <- xt_column_profile(channel)
+  vapply(prof, xt_width_profile, FUN.VALUE = numeric(1))
 }
 
-#' @export
-xt_width.sxc <- function(object) {
-  class(object) <- class(object)[-1] # sf weirdness
-  sf::st_length(object)
-}
