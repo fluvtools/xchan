@@ -4,18 +4,18 @@
 \alias{xt_widen}
 \title{Widen a channel}
 \usage{
-xt_widen(channel, ..., width, volume, side = "both")
+xt_widen(channel, ..., dw, dv, side = "both")
 }
 \arguments{
 \item{channel}{Channel object}
 
 \item{...}{Additional arguments (ignored)}
 
-\item{width}{The total width to add to the channel. Must be a numeric value
-and cannot be used with \code{volume}.}
+\item{dw}{The total width to add to the channel. Must be a numeric value
+and cannot be used with \code{dv}.}
 
-\item{volume}{The total volume to remove to widen the channel. Must be a
-numeric value and cannot be used with \code{width}.}
+\item{dv}{The total volume to remove to widen the channel. Must be a
+numeric value and cannot be used with \code{dw}.}
 
 \item{side}{A specification for how to distribute the widening between
 left and right banks. Built-in side functions include "left", "right", and "both".
@@ -34,11 +34,11 @@ A modified channel object
 Widen a channel
 }
 \note{
-While the ellipsis \code{...} is currently not used, it forces the \code{width} and
-\code{volume} arguments to be named to ensure deliberate specification.
+While the ellipsis \code{...} is currently not used, it forces the \code{dw} and
+\code{dv} arguments to be named to ensure deliberate specification.
 }
 \examples{
-xt_widen(channel, width = 10)
-xt_widen(channel, width = 10, side = side_left(0.75))
-xt_widen(channel, volume = 5, side = "right")
+xt_widen(channel, dw = 10)
+xt_widen(channel, dw = 10, side = side_left(0.75))
+xt_widen(channel, dv = 5, side = "right")
 }

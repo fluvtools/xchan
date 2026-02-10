@@ -1,15 +1,15 @@
-xt_widen_width_plan <- function(plan, dw, prop_left) {
+widen_plan <- function(plan, dw, prop_left) {
   xt_validate_plan(plan)
   checkmate::assert_numeric(dw)
   checkmate::assert_numeric(prop_left, 0, 1, len = 1)
   dw_left <- dw * prop_left
   dw_right <- dw - dw_left
-  object <- xt_widen_width_plan_right(plan, dw = dw_right)
-  object <- xt_widen_width_plan_right(flip_plan(object), dw = dw_left)
+  object <- widen_plan_right(plan, dw = dw_right)
+  object <- widen_plan_right(flip_plan(object), dw = dw_left)
   flip_plan(object)
 }
 
-xt_widen_width_plan_right <- function(plan, dw) {
+widen_plan_right <- function(plan, dw) {
   xt_validate_plan(plan)
   checkmate::assert_numeric(dw)
   dw <- vctrs::vec_recycle(dw, length(plan))

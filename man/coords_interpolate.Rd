@@ -4,7 +4,7 @@
 \alias{coords_interpolate}
 \title{Obtain interpolated points along a cross section}
 \usage{
-coords_interpolate(profile, x)
+coords_interpolate(coords, x)
 }
 \value{
 A matrix of points. Column one contains distances along the cross

@@ -1,7 +1,7 @@
-#' Find the x-position for a given erosion volume to the right of a bank point
+#' Find the erosion width for given volume to the right of a bank point
 #'
-#' Computes the horizontal position `x` to the right of a given bank point `x0`
-#' such that the trapezoidal area between `x0` and `x` (above the thalweg
+#' Computes the change in horizontal position to the right of a given bank point
+#' `x0` such that the trapezoidal area (above the thalweg
 #' height) equals the specified erosion volume `v`. The cross section is
 #' defined by `topo`, a 2-column matrix of horizontal positions and ground
 #' elevations.
@@ -25,7 +25,7 @@
 #'        ("left") or extend to the point where the elevation rises above
 #'        the thalweg again ("right", the default)? Corresponds to the left and
 #'        right sides of the valley, respectively.
-#' @return Numeric scalar giving the x-position to the right of `x0`
+#' @returns Numeric scalar giving the change in x-position to the right of `x0`
 #'         where the cumulative trapezoidal area above the thalweg height
 #'         equals `v`.
 #'
@@ -55,39 +55,39 @@
 #'   byrow = TRUE
 #' )
 #'
-#' find_x_for_volume_right(4.5, x0 = 1, topo = topo, thalweg_height = 9)
-#' find_x_for_volume_right(6, x0 = 1, topo = topo, thalweg_height = 9)
+#' find_dx_for_volume_right(4.5, x0 = 1, topo = topo, thalweg_height = 9)
+#' find_dx_for_volume_right(6, x0 = 1, topo = topo, thalweg_height = 9)
 #'
 #' # Floodplain goes below thalweg at x=2.5 until x=4
-#' find_x_for_volume_right(
+#' find_dx_for_volume_right(
 #'   3.5, x0 = 1, topo = topo, thalweg_height = 11, valley = "right"
 #' )
-#' find_x_for_volume_right(
+#' find_dx_for_volume_right(
 #'   3.5, x0 = 1, topo = topo, thalweg_height = 11, valley = "left"
 #' )
-#' find_x_for_volume_right(
+#' find_dx_for_volume_right(
 #'   4, x0 = 1, topo = topo, thalweg_height = 11
 #' )
-#' find_x_for_volume_right(
+#' find_dx_for_volume_right(
 #'   4.001, x0 = 1, topo = topo, thalweg_height = 11
 #' )
 #'
 #' # No volume to the right of x0 returns x0, unless in the unusual situation
 #' # where the bank is at or below the thalweg height and valley = "right".
-#' find_x_for_volume_right(
+#' find_dx_for_volume_right(
 #'   0, x0 = 1, topo = topo, thalweg_height = 11
 #' )
-#' find_x_for_volume_right(
+#' find_dx_for_volume_right(
 #'   0, x0 = 2.5, topo = topo, thalweg_height = 11, valley = "right"
 #' )
-#' find_x_for_volume_right(
+#' find_dx_for_volume_right(
 #'   0, x0 = 2.5, topo = topo, thalweg_height = 11, valley = "left"
 #' )
-find_x_for_volume_right <- function(v,
-                                    x0,
-                                    topo,
-                                    thalweg_height,
-                                    valley = c("right", "left")) {
+find_dx_for_volume_right <- function(v,
+                                     x0,
+                                     topo,
+                                     thalweg_height,
+                                     valley = c("right", "left")) {
   checkmate::assert_number(v, lower = 0)
   checkmate::assert_number(x0)
   checkmate::assert_matrix(topo, ncol = 2L, min.rows = 1L, mode = "numeric")
@@ -177,6 +177,6 @@ find_x_for_volume_right <- function(v,
     delta_x <- (-b + sqrt(b^2 + 4 * a * v_remain)) / (2 * a)
   }
 
-  x[seg_idx] + delta_x
+  delta_x
 }
 
