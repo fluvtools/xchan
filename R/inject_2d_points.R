@@ -9,13 +9,26 @@
 #' @returns The original profile cross section, with additional
 #' nodes corresponding to `x`, with linearly interpolated elevation.
 inject_coords <- function(profile, x) {
-  mat <- coords_all(profile)
+  is_profile <- inherits(profile, "xs_profile")
+  if (is_profile) {
+    mat <- coords_all(profile)
+  } else {
+    checkmate::assert_matrix(profile, mode = "numeric", ncols = 2)
+    mat <- profile
+  }
   x_mat <- mat[, 1]
   x <- unique(x[!(x %in% x_mat)])
   if (length(x) == 0) {
-    return(profile)
+    return(mat)
   }
-  new_points <- coords_interpolate(profile, x)
+  new_points <- coords_interpolate(mat, x)
   new_mat <- rbind(mat, new_points)
-  xt_profile(new_mat, bankpoints = profile$banks)
+  new_mat <- new_mat[order(new_mat[, 1]), , drop = FALSE]
+
+  if (!is_profile) {
+    return(new_mat)
+  }
+
+  bankpoints <- mat[profile$banks, 1]
+  xt_profile(new_mat, bankpoints = bankpoints)
 }

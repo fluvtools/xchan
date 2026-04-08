@@ -14,7 +14,8 @@ parse_side_arg <- function(side, cross_sections) {
   }
   checkmate::assert_class(side, "sxchan_side")
   prop_left <- side(cross_sections)
-  prop_left <- vctrs::vec_recycle(prop_left, size = length(cross_sections))
+  n_sections <- xt_n_sections(cross_sections)
+  prop_left <- vctrs::vec_recycle(prop_left, size = n_sections)
   checkmate::assert_numeric(
     prop_left,
     lower = 0,
