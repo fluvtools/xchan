@@ -1,26 +1,16 @@
-#' Demo Bankline
+#' Fraser Bankline
 #'
-#' A simplified bankline for demonstration purposes.
-#' This is an `sf` object representing a single `LINESTRING`.
+#' Bankline geometry for a Fraser tributary demo area in British Columbia.
 #'
-#' @format An `sf` object with 1 feature and 1 geometry column.
-#' @source Simulated data.
-"demo_bankline"
+#' @format A length-1 `sfc_MULTIPOLYGON` object in EPSG:3005.
+#' @source Canada's CanVec Hydrography Waterbody.
+"fraser_bankline"
 
-#' Demo Centerline
+#' Fraser DEM
 #'
-#' A simplified centerline for demonstration purposes.
-#' This is an `sf` object representing a single `LINESTRING`.
+#' Digital elevation model for a Fraser tributary demo area in British Columbia.
 #'
-#' @format An `sf` object with 1 feature and 1 geometry column.
-#' @source Simulated data.
-"demo_centerline"
-
-#' Demo DEM
-#'
-#' A Digital Elevation Model (DEM) for a simulated riverbank.
-#' This is a `SpatRaster` object from the `terra` package.
-#'
-#' @format A `SpatRaster` object with dimensions 75x75 and 1 layer.
-#' @source Simulated data.
-"demo_dem"
+#' @format A `terra::PackedSpatRaster` object.
+#' @source Copernicus DEM (GLO-30), cropped/resampled for package examples.
+#' @details Convert to a `terra::SpatRaster` with `terra::unwrap(fraser_dem)`.
+"fraser_dem"
