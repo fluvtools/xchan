@@ -22,8 +22,8 @@
 #' @rdname xt_widen_2d
 widen_profile <- function(profile, dw, prop_left) {
   checkmate::assert_class(profile, "xs_profile")
-  checkmate::assert_number(dw, 0)
-  checkmate::assert_number(prop_left, 0, 1, len = 1)
+  checkmate::assert_number(dw, lower = 0)
+  checkmate::assert_number(prop_left, lower = 0, upper = 1)
   dw_left <- prop_left * dw
   dw_right <- dw - dw_left
   profile <- widen_profile_left(profile, dw_left)
@@ -43,7 +43,7 @@ widen_profile_left <- function(profile, dw) {
   left_bank_coords <- get_left_bank_coords(profile)
   x_old <- left_bank_coords[1]
   x_new <- x_old - dw
-  y_new <- coords_interpolate(profile, x_new)[2]
+  y_new <- coords_interpolate(profile$coordinates, x_new)[2]
   thalweg_coords <- get_min_thalweg_coords(profile)
   y_thal <- thalweg_coords[2]
   nodes <- profile$coordinates

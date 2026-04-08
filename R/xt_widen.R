@@ -38,6 +38,7 @@ xt_widen <- function(channel, ..., dw, dv, side = "both") {
 
   # Parse side argument to get proportions
   prop_left <- parse_side_arg(side, channel)
+  n_sections <- xt_n_sections(channel)
 
   # Get dw if dv was provided
   if (missing(dw)) {
@@ -49,17 +50,19 @@ xt_widen <- function(channel, ..., dw, dv, side = "both") {
     }
     dw_left <- xt_erosion_width(
       channel,
-      dv = dv * prop_left,
+      dv * prop_left,
       side = "left"
     )
     dw_right <- xt_erosion_width(
       channel,
-      dv = dv * (1 - prop_left),
+      dv * (1 - prop_left),
       side = "right"
     )
     prop_left <- dw_left / (dw_left + dw_right)
     dw <- dw_left + dw_right
   }
+  dw <- vctrs::vec_recycle(dw, n_sections)
+  prop_left <- vctrs::vec_recycle(prop_left, n_sections)
 
   # Apply widening to planimetric cross-sections
   if (!is.null(plan)) {
@@ -68,8 +71,8 @@ xt_widen <- function(channel, ..., dw, dv, side = "both") {
 
   # Apply widening to profile cross-sections
   if (!is.null(profile)) {
-    profile <- lapply(profile, function(xs) {
-      widen_profile(xs, dw = dw, prop_left = prop_left)
+    profile <- lapply(seq_along(profile), function(i) {
+      widen_profile(profile[[i]], dw = dw[i], prop_left = prop_left[i])
     })
   }
 

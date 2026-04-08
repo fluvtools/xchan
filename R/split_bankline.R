@@ -47,7 +47,7 @@ split_bankline <- function(bankline, centerline = NULL) {
     new_last_point <- last_point + (len / 2) * direction
 
     # Create the new extended line
-    extended_line <- sf::st_sfc(st_linestring(
+    extended_line <- sf::st_sfc(sf::st_linestring(
       rbind(
         new_first_point,
         sf::st_coordinates(centerline),
@@ -72,12 +72,12 @@ split_bankline <- function(bankline, centerline = NULL) {
 
   }
 
-  l <- vapply(split_parts, sf::st_length, FUN.VALUE = numeric(1L))
+  l <- as.numeric(sf::st_length(split_parts))
   to_combine <- l != max(l)
 
   # Combine them into multilinestrings if there are multiple lines per side
-  left <- sf::st_combine(split_parts[to_combine])
-  right <- sf::st_combine(split_parts[!to_combine])
+  left <- sf::st_combine(sf::st_geometry(split_parts[to_combine, ]))
+  right <- sf::st_combine(sf::st_geometry(split_parts[!to_combine, ]))
 
   list(
     left = sf::st_cast(left, "MULTILINESTRING"),

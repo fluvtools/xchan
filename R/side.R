@@ -24,7 +24,7 @@
 side_left <- function(prop = 1) {
   checkmate::assert_numeric(prop, lower = 0, upper = 1, any.missing = FALSE)
   f <- function(cross_sections) {
-    vctrs::vec_recycle(prop, size = length(cross_sections))
+    vctrs::vec_recycle(prop, size = xt_n_sections(cross_sections))
   }
   structure(f, name = "left", params = list(prop = prop), class = "sxchan_side")
 }
@@ -34,7 +34,7 @@ side_left <- function(prop = 1) {
 side_right <- function(prop = 1) {
   checkmate::assert_numeric(prop, lower = 0, upper = 1, any.missing = FALSE)
   f <- function(cross_sections) {
-    vctrs::vec_recycle(1 - prop, size = length(cross_sections))
+    vctrs::vec_recycle(1 - prop, size = xt_n_sections(cross_sections))
   }
   structure(f, name = "right", params = list(prop = prop), class = "sxchan_side")
 }
@@ -54,7 +54,7 @@ side_both <- function(prop_left = 0.5, prop_right = 0.5) {
   }
 
   f <- function(cross_sections) {
-    vctrs::vec_recycle(prop_left, size = length(cross_sections))
+    vctrs::vec_recycle(prop_left, size = xt_n_sections(cross_sections))
   }
   structure(f, name = "both", params = list(prop_left = prop_left, prop_right = prop_right), class = "sxchan_side")
 }

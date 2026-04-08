@@ -45,15 +45,24 @@ xt_generate_profile <- function(channel,
   }
 
   # Validate extent parameters
-  extent_specified <- !missing(extent_distance) + !missing(extent_multiplier)
+  extent_specified <- sum(c(!missing(extent_distance), !missing(extent_multiplier)))
   if (extent_specified != 1) {
     stop("Exactly one of extent_distance or extent_multiplier must be specified")
   }
 
   # Validate sampling parameters
-  sample_specified <- !missing(extent_distance) + !missing(extent_multiplier)
+  sample_specified <- sum(c(!missing(sample_freq), !missing(sample_n)))
   if (sample_specified != 1) {
-    stop("Exactly one of extent_distance or extent_multiplier must be specified")
+    stop("Exactly one of sample_freq or sample_n must be specified")
+  }
+  if (!missing(sample_freq)) {
+    checkmate::assert_number(sample_freq, lower = 0)
+  }
+  if (!missing(sample_n)) {
+    checkmate::assert_count(sample_n)
+    if (sample_n < 2) {
+      stop("sample_n must be >= 2")
+    }
   }
 
   profiles <- list()
@@ -63,24 +72,22 @@ xt_generate_profile <- function(channel,
 
     # Calculate extent
     if (!missing(extent_distance)) {
-      extent <- extent_distance
+      extent <- as.numeric(extent_distance)
     } else {
       # Calculate channel width and multiply
-      width <- sf::st_length(xs_line)
+      width <- as.numeric(sf::st_length(xs_line))
       extent <- width * extent_multiplier
-    }
-
-    # Calculate sampling distance
-    if (!missing(extent_distance)) {
-      sample_dist <- extent_distance
-    } else {
-      # Calculate sampling distance as multiplier of channel width
-      width <- sf::st_length(xs_line)
-      sample_dist <- width * extent_multiplier
     }
 
     # Extend the cross section line beyond banks
     extended_line <- extend_cross_section(xs_line, extent)
+
+    # Calculate sampling distance
+    if (!missing(sample_freq)) {
+      sample_dist <- as.numeric(sample_freq)
+    } else {
+      sample_dist <- as.numeric(sf::st_length(extended_line)) / max(1, sample_n - 1)
+    }
 
     # Sample DEM along extended line
     profile_data <- sample_dem_along_line(extended_line, dem, sample_dist)
@@ -111,20 +118,23 @@ extend_cross_section <- function(line, extent) {
   new_start <- start_point - unit_direction * extent
   new_end <- end_point + unit_direction * extent
 
-  # Create extended line
+  # Create extended line and preserve CRS
   extended_coords <- rbind(new_start, coords[, 1:2], new_end)
-  sf::st_linestring(extended_coords)
+  sf::st_sfc(
+    sf::st_linestring(extended_coords),
+    crs = sf::st_crs(line)
+  )
 }
 
 # Helper function to sample DEM along line
-sample_dem_along_line <- function(line, dem, extent_distance) {
+sample_dem_along_line <- function(line, dem, sample_distance) {
   # Sample points along line
   line_length <- sf::st_length(line)
-  n_points <- ceiling(as.numeric(line_length / extent_distance))
+  n_points <- ceiling(as.numeric(line_length) / sample_distance) + 1L
 
   if (n_points < 2) n_points <- 2
 
-  sample_points <- sf::st_line_sample(line, n = n_points)
+  sample_points <- sf::st_line_sample(line, n = n_points, type = "regular")
   sample_points <- sf::st_cast(sample_points, "POINT")
 
   # Extract elevations from DEM
@@ -145,29 +155,37 @@ sample_dem_along_line <- function(line, dem, extent_distance) {
 
 # Helper function to create xs_profile object
 create_xs_profile <- function(profile_data, original_line) {
-  # Find the center point (midpoint of original line)
-  original_coords <- sf::st_coordinates(original_line)
-  center_distance <- sf::st_length(original_line) / 2
+  center_distance <- as.numeric(sf::st_length(original_line)) / 2
 
   # Adjust distances to be relative to center
   profile_data$relative_distance <- profile_data$distance - center_distance
 
-  # Create coordinates matrix
+  # Create coordinates matrix and drop NA elevations outside DEM footprint
   coordinates <- as.matrix(profile_data[, c("relative_distance", "elevation")])
+  coordinates <- coordinates[stats::complete.cases(coordinates), , drop = FALSE]
+  if (nrow(coordinates) < 2) {
+    stop("Not enough DEM samples to build profile cross section")
+  }
 
-  # Find thalwegs (minimum elevation points)
-  min_elev <- min(coordinates[, 2])
-  thalweg_indices <- which(coordinates[, 2] == min_elev)
-  thalwegs <- coordinates[thalweg_indices, 1]
+  # Approximate bank locations at +/- half plan width, then map to nearest indices
+  width <- as.numeric(sf::st_length(original_line))
+  left_bank_idx <- which.min(abs(coordinates[, 1] - (-width / 2)))
+  right_bank_idx <- which.min(abs(coordinates[, 1] - (width / 2)))
+  if (left_bank_idx > right_bank_idx) {
+    tmp <- left_bank_idx
+    left_bank_idx <- right_bank_idx
+    right_bank_idx <- tmp
+  }
 
-  # For now, assume simple channel with banks at center (distance 0)
-  # This could be enhanced to detect actual bank positions
-  banks <- c(0, 0)  # Placeholder - should detect actual banks
+  thalweg_idx <- which.min(coordinates[, 2])
 
-  # Create xs_profile structure with new format
-  list(
-    coordinates = coordinates,
-    banks = banks,
-    thalwegs = thalwegs
+  structure(
+    list(
+      coordinates = coordinates,
+      banks = c(left_bank_idx, right_bank_idx),
+      thalwegs = thalweg_idx,
+      thalweg_elev = coordinates[thalweg_idx, 2]
+    ),
+    class = "xs_profile"
   )
 }

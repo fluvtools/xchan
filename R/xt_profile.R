@@ -79,15 +79,21 @@ xt_profile <- function(coords, bankpoints) {
   # 3. Bank points are always present in the profile coordinates.
   coords <- inject_coords(coords, bankpoints)
 
-  # 4. Thalwegs are re-computed.
-  thalwegs <- coords_thalwegs(coords)
-  thalweg_elev <- thalwegs[1, 2]
-  x_thalwegs <- sort(thalwegs[, 1])
+  # Convert bank distances to coordinate row indices.
+  bank_idx <- vapply(
+    bankpoints,
+    function(b) which.min(abs(coords[, 1] - b)),
+    integer(1)
+  )
+
+  # 4. Thalwegs are re-computed as coordinate row indices.
+  thalweg_idx <- which(coords[, 2] == min(coords[, 2]))
+  thalweg_elev <- min(coords[, 2])
 
   profile <- list(
     coordinates = coords,
-    banks = bankpoints,
-    thalwegs = x_thalwegs,
+    banks = bank_idx,
+    thalwegs = thalweg_idx,
     thalweg_elev = thalweg_elev
   )
   structure(profile, class = "xs_profile")
