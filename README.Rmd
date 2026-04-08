@@ -11,6 +11,7 @@ knitr::opts_chunk$set(
   fig.path = "man/figures/README-",
   out.width = "100%"
 )
+devtools::load_all(quiet = TRUE)
 ```
 
 # sxchan: simple channel cross sections
@@ -35,80 +36,69 @@ devtools::install_github("stochaGBEM/sxchan")
 
 ## Example
 
+The package includes Fraser River demo data that can be used to build a
+typical cross-section workflow. Start by loading the package and
+unwrapping the packaged DEM:
+
 ```{r}
 library(sxchan)
-library(sf)
+
+# Unwrap the packaged DEM to a `terra::SpatRaster` object for use in the package.
+dem <- terra::unwrap(fraser_dem)
 ```
 
-### Constructing cross section objects
-
-Flow direction is from the perspective of someone looking downstream, as is the typical convention in hydrology.
-
-
-Cross section objects can be made using the function `xt_sxc()`, where "sxc" stands for "spatial cross-section column".
-
-1. Simply specify cross section width if you're not interested in the spatial arrangement of the cross sections:
+Generate planimetric cross sections from the bankline polygon and derive
+the channel centerline:
 
 ```{r}
-cross1 <- xt_sxc(c(8, 7, 5, 6, 5, 8))
-plot(cross1)
+planimetric_cross_sections <- xt_generate_plan(fraser_bankline, spacing = 200)
+centerline <- xt_trace_centerline(planimetric_cross_sections)
+
+plot(fraser_bankline, col = "grey90", border = "grey50")
+plot(planimetric_cross_sections, add = TRUE, col = "dodgerblue3")
+plot(centerline, add = TRUE, col = "cadetblue1", lwd = 2)
 ```
 
-2. Or, you can turn a series of line segments into a cross section object. This time, set a coordinate reference system, too:
+Sample the DEM to create profile cross sections:
 
 ```{r}
-seg <- st_linestring(matrix(c(0, 1, 0, 1), ncol = 2))
-cross2 <- xt_sxc(seg, crs = 3005)
-plot(cross2)
+profile_cross_sections <- xt_generate_profile(
+  planimetric_cross_sections,
+  dem,
+  extent_distance = 200,
+  sample_n = 151
+)
+
+plot(fraser_bankline, col = "grey90", border = "grey50")
+plot(profile_cross_sections, add = TRUE, col = "coral")
 ```
 
-Retrieve widths:
+Profile cross sections can also be generated as distance-elevation
+objects. Each profile cross section contains a distance-elevation geometry that
+can be inspected directly:
+```{r}
+# Profile cross sections (distance-elevation):
+channel <- xt_generate_profile(
+  channel = planimetric_cross_sections,
+  dem = dem,
+  extent_distance = 200,
+  sample_n = 151
+)
+
+# Plot an example profile cross section
+plot(profile_cross_sections$profile[[1]])
+```
+
+Apply a widening scenario to the generated cross sections. In this
+example, the channel is widened by 20 metres on the right bank:
 
 ```{r}
-xt_width(cross1)
-xt_width(cross2)
+widened_cross_sections <- xt_widen(
+  planimetric_cross_sections,
+  dw = 200,
+  side = "right"
+)
+
+plot(fraser_bankline)
+plot(widened_cross_sections, add = TRUE)
 ```
-
-Because these cross sections are just `sfc` objects from the sf package, you can add features by making it an `sf` object:
-
-```{r}
-# st_sf(cross1, swimmability = c(5, 4, 3, 2, 1, 0), roughness = 0.01)
-```
-
-### Generating geometries from bankline polygon
-
-sxchan has a built-in demo bankline polygon:
-
-```{r}
-plot(demo_bankline)
-```
-
-You can generate cross sections and a centerline:
-
-```{r}
-demo_cross <- xt_generate_sxc(demo_bankline, n = 50)
-plot(demo_bankline)
-plot(demo_cross, add = TRUE, col = "blue")
-```
-
-You can widen the cross sections, either by a constant amount or one per cross section:
-
-```{r}
-plot(demo_bankline)
-xt_widen(demo_cross, width = 2) |> 
-  plot(add = TRUE, col = "blue")
-set.seed(1)
-plot(demo_bankline)
-xt_widen(demo_cross, width = runif(50, 1, 3)) |> 
-  plot(add = TRUE, col = "blue")
-```
-
-# sxchan in context
-
-Similar R packages for encoding river channels for the purpose of erosion include the following.
-
-- `rivr` exists to calculate channel hydraulic properties from simple channel geometries.
-- `fluvgeo` exists to infer stream properties based on high-resolution terrain data (like a Digital Elevation Model), like dimensions and floodplain inference. It is a computational engine for the FluvialGeomorph ArcGIS toolbox, rather than a standalone tool for creating or manipulating river geometries.
-
-`sxchan` is unique because it is designed to create and manipulate river cross-sections with a focus on channel widening due to bank erosion. This makes it particularly well-suited for conceptual modeling and erosion simulations.
-

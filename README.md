@@ -32,95 +32,79 @@ devtools::install_github("stochaGBEM/sxchan")
 
 ## Example
 
+The package includes Fraser River demo data that can be used to build a
+typical cross-section workflow. Start by loading the package and
+unwrapping the packaged DEM:
+
 ``` r
 library(sxchan)
-library(sf)
-#> Linking to GEOS 3.11.0, GDAL 3.5.3, PROJ 9.1.0; sf_use_s2() is TRUE
+
+# Unwrap the packaged DEM to a `terra::SpatRaster` object for use in the package.
+dem <- terra::unwrap(fraser_dem)
 ```
 
-### Constructing cross section objects
-
-Cross section objects can be made using the function `xt_sxc()`, where
-“sxc” stands for “spatial cross-section column”.
-
-1.  Simply specify cross section width if you’re not interested in the
-    spatial arrangement of the cross sections:
+Generate planimetric cross sections from the bankline polygon and derive
+the channel centerline:
 
 ``` r
-cross1 <- xt_sxc(c(8, 7, 5, 6, 5, 8))
-plot(cross1)
+planimetric_cross_sections <- xt_generate_plan(fraser_bankline, spacing = 200)
+#> Linking to GEOS 3.13.0, GDAL 3.8.5, PROJ 9.5.1; sf_use_s2() is TRUE
+centerline <- xt_trace_centerline(planimetric_cross_sections)
+
+plot(fraser_bankline, col = "grey90", border = "grey50")
+plot(planimetric_cross_sections, add = TRUE, col = "dodgerblue3")
+plot(centerline, add = TRUE, col = "cadetblue1", lwd = 2)
 ```
 
 <img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
 
-2.  Or, you can turn a series of line segments into a cross section
-    object. This time, set a coordinate reference system, too:
+Sample the DEM to create profile cross sections:
 
 ``` r
-seg <- st_linestring(matrix(c(0, 1, 0, 1), ncol = 2))
-cross2 <- xt_sxc(seg, crs = 3005)
-plot(cross2)
+profile_cross_sections <- xt_generate_profile(
+  planimetric_cross_sections,
+  dem,
+  extent_distance = 200,
+  sample_n = 151
+)
+
+plot(fraser_bankline, col = "grey90", border = "grey50")
+plot(profile_cross_sections, add = TRUE, col = "coral")
 ```
 
 <img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
 
-Retrieve widths:
+Profile cross sections can also be generated as distance-elevation
+objects. Each profile cross section contains a distance-elevation
+geometry that can be inspected directly:
 
 ``` r
-xt_width(cross1)
-#> [1] 8 7 5 6 5 8
+# Profile cross sections (distance-elevation):
+channel <- xt_generate_profile(
+  channel = planimetric_cross_sections,
+  dem = dem,
+  extent_distance = 200,
+  sample_n = 151
+)
+
+# Plot an example profile cross section
+plot(profile_cross_sections$profile[[1]])
 ```
+
+<img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
+
+Apply a widening scenario to the generated cross sections. In this
+example, the channel is widened by 20 metres on the right bank:
 
 ``` r
-xt_width(cross2)
-#> 1.414214 [m]
+widened_cross_sections <- xt_widen(
+  planimetric_cross_sections,
+  dw = 200,
+  side = "right"
+)
+
+plot(fraser_bankline)
+plot(widened_cross_sections, add = TRUE)
 ```
 
-Because these cross sections are just `sfc` objects from the sf package,
-you can add features by making it an `sf` object:
-
-``` r
-# st_sf(cross1, swimmability = c(5, 4, 3, 2, 1, 0), roughness = 0.01)
-```
-
-### Generating geometries from bankline polygon
-
-sxchan has a built-in demo bankline polygon:
-
-``` r
-plot(demo_bankline)
-```
-
-<img src="man/figures/README-unnamed-chunk-7-1.png" width="100%" />
-
-You can generate cross sections and a centerline:
-
-``` r
-demo_cross <- xt_generate_sxc(demo_bankline, n = 50)
-demo_center <- xt_trace_centerline(demo_bankline)
-plot(demo_bankline)
-plot(demo_cross, add = TRUE, col = "blue")
-plot(demo_center, add = TRUE)
-```
-
-<img src="man/figures/README-unnamed-chunk-8-1.png" width="100%" />
-
-You can widen the cross sections, either by a constant amount or one per
-cross section:
-
-``` r
-plot(demo_bankline)
-xt_widen_times(demo_cross, times = 0.7) |> 
-  plot(add = TRUE, col = "blue")
-```
-
-<img src="man/figures/README-unnamed-chunk-9-1.png" width="100%" />
-
-``` r
-set.seed(1)
-plot(demo_bankline)
-xt_widen_times(demo_cross, times = exp(rnorm(50) / 2)) |> 
-  plot(add = TRUE, col = "blue")
-```
-
-<img src="man/figures/README-unnamed-chunk-9-2.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-6-1.png" width="100%" />
