@@ -4,4 +4,4 @@
 .Ruserdata
 docs
 *.DS_Store
-
+.vscode/
