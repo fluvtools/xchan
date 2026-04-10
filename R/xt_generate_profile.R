@@ -155,7 +155,9 @@ sample_dem_along_line <- function(line, dem, sample_distance) {
 
 # Helper function to create xs_profile object
 create_xs_profile <- function(profile_data, original_line) {
-  center_distance <- as.numeric(sf::st_length(original_line)) / 2
+  # profile_data is sampled on the extended frame; centre distances on that
+  # frame so original-bank targets at +/- width/2 map correctly.
+  center_distance <- max(profile_data$distance) / 2
 
   # Adjust distances to be relative to center
   profile_data$relative_distance <- profile_data$distance - center_distance
@@ -177,7 +179,8 @@ create_xs_profile <- function(profile_data, original_line) {
     right_bank_idx <- tmp
   }
 
-  thalweg_idx <- which.min(coordinates[, 2])
+  thalweg_window <- seq.int(left_bank_idx, right_bank_idx)
+  thalweg_idx <- thalweg_window[which.min(coordinates[thalweg_window, 2])]
 
   structure(
     list(

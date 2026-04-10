@@ -24,8 +24,9 @@ xt_trace_centerline <- function(channel) {
   # Extract midpoints of each cross section
   midpoints <- lapply(plan, function(xs) {
     coords <- sf::st_coordinates(xs)
-    midpoint_idx <- ceiling(nrow(coords) / 2)
-    sf::st_point(coords[midpoint_idx, 1:2])
+    # Cross sections are lines; take the midpoint between their endpoints.
+    endpoint_midpoint <- colMeans(rbind(coords[1, 1:2], coords[nrow(coords), 1:2]))
+    sf::st_point(endpoint_midpoint)
   })
 
   # Convert to sf points
