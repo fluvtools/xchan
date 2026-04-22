@@ -19,7 +19,7 @@
 #' channel_dredged <- xt_dredge(channel, dredger = dredger_dem(my_dem, sample_freq = 1))
 #' @export
 xt_dredge <- function(channel, dredger) {
-  checkmate::assert_class(channel, "sxchan")
+  checkmate::assert_class(channel, "xchan")
 
   # Handle text input by calling appropriate dredger function
   if (is.character(dredger)) {
@@ -29,6 +29,6 @@ xt_dredge <- function(channel, dredger) {
 
   # Execute the dredger function
   new_chan <- dredger(channel)
-  checkmate::assert_class(channel, "sxchan")
+  checkmate::assert_class(channel, "xchan")
   new_chan
 }

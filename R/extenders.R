@@ -12,14 +12,14 @@
 #' @export
 extender_flat <- function(extent, elevation = elevation_bank()) {
   checkmate::assert_numeric(extent, lower = 0, any.missing = FALSE)
-  checkmate::assert_class(elevation, "sxchan_elevation")
+  checkmate::assert_class(elevation, "xchan_elevation")
   
   f <- function(channel, side = "both") {
     # Implementation will create flat extensions
     # For now, return a placeholder
     list(extent = extent, elevation = elevation, type = "flat")
   }
-  structure(f, name = "flat", params = list(extent = extent, elevation = elevation), class = "sxchan_extender")
+  structure(f, name = "flat", params = list(extent = extent, elevation = elevation), class = "xchan_extender")
 }
 
 #' @rdname extenders
@@ -27,12 +27,12 @@ extender_flat <- function(extent, elevation = elevation_bank()) {
 extender_slope <- function(extent, slope, elevation = elevation_bank()) {
   checkmate::assert_numeric(extent, lower = 0, any.missing = FALSE)
   checkmate::assert_numeric(slope, any.missing = FALSE)
-  checkmate::assert_class(elevation, "sxchan_elevation")
+  checkmate::assert_class(elevation, "xchan_elevation")
   
   f <- function(channel, side = "both") {
     # Implementation will create sloped extensions
     # For now, return a placeholder
     list(extent = extent, slope = slope, elevation = elevation, type = "slope")
   }
-  structure(f, name = "slope", params = list(extent = extent, slope = slope, elevation = elevation), class = "sxchan_extender")
+  structure(f, name = "slope", params = list(extent = extent, slope = slope, elevation = elevation), class = "xchan_extender")
 }

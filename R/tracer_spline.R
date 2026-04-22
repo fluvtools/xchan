@@ -88,7 +88,7 @@ tracer_spline <- function(ngrid = 200) {
     f,
     name = "Spline Tracer",
     params = list(ngrid = ngrid),
-    class = "sxchan_tracer"
+    class = "xchan_tracer"
   )
 }
 

@@ -1,10 +1,10 @@
-#' Print method for sxchan_elevation objects
+#' Print method for xchan_dredger objects
 #'
-#' @param x An elevation object
+#' @param x A dredger object
 #' @param ... Additional arguments (ignored)
 #' @exportS3Method base::print
-print.sxchan_elevation <- function(x, ...) {
-  cat("Elevation:", attr(x, "name"), "\n")
+print.xchan_dredger <- function(x, ...) {
+  cat("Dredger:", attr(x, "name"), "\n")
   
   # Show stored parameters
   params <- attr(x, "params")
@@ -13,11 +13,7 @@ print.sxchan_elevation <- function(x, ...) {
     for (i in seq_along(params)) {
       param_name <- names(params)[i]
       param_value <- params[[i]]
-      if (param_name == "...") {
-        cat("  ... = ", deparse(param_value), "\n", sep = "")
-      } else {
-        cat("  ", param_name, " = ", deparse(param_value), "\n", sep = "")
-      }
+      cat("  ", param_name, " = ", deparse(param_value), "\n", sep = "")
     }
   } else {
     cat("Parameters: none\n")

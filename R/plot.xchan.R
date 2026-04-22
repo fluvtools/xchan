@@ -9,7 +9,7 @@
 #' The default is `exaggerate = 1` (no exaggeration). It is strongly recommended not going beyond 3, because
 #' exaggeration beyond this point can distort the perception of the profile.
 #' @export
-plot.sxchan <- function(x, ..., extent = c("full", "bankline")) {
+plot.xchan <- function(x, ..., extent = c("full", "bankline")) {
   extent <- rlang::arg_match(extent)
   if (!xt_has_plan(x)) {
     stop("Channel object does not have planimetric cross sections for viewing.")

@@ -1,7 +1,7 @@
 #' @exportS3Method base::print
-print.sxchan <- function(x, ...) {
+print.xchan <- function(x, ...) {
   n <- xt_n_sections(x)
-  cat("sxchan channel with", n, "cross sections.\n")
+  cat("xchan channel with", n, "cross sections.\n")
   if (xt_has_plan(x)) {
     cat("With plan view\n")
   }

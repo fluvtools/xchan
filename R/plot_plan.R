@@ -20,7 +20,7 @@ plot_plan <- function(channel,
                       add = FALSE,
                       col = "black",
                       lwd = 1) {
-  checkmate::assert_class(channel, "sxchan")
+  checkmate::assert_class(channel, "xchan")
 
   plan <- xt_column_plan(channel)
   if (is.null(plan)) {
