@@ -1,10 +1,10 @@
-#' Print method for sxchan_tracer objects
+#' Print method for xchan_elevation objects
 #'
-#' @param x A tracer object
+#' @param x An elevation object
 #' @param ... Additional arguments (ignored)
 #' @exportS3Method base::print
-print.sxchan_tracer <- function(x, ...) {
-  cat("Tracer:", attr(x, "name"), "\n")
+print.xchan_elevation <- function(x, ...) {
+  cat("Elevation:", attr(x, "name"), "\n")
   
   # Show stored parameters
   params <- attr(x, "params")
@@ -13,7 +13,11 @@ print.sxchan_tracer <- function(x, ...) {
     for (i in seq_along(params)) {
       param_name <- names(params)[i]
       param_value <- params[[i]]
-      cat("  ", param_name, " = ", deparse(param_value), "\n", sep = "")
+      if (param_name == "...") {
+        cat("  ... = ", deparse(param_value), "\n", sep = "")
+      } else {
+        cat("  ", param_name, " = ", deparse(param_value), "\n", sep = "")
+      }
     }
   } else {
     cat("Parameters: none\n")

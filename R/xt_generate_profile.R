@@ -37,7 +37,7 @@ xt_generate_profile <- function(channel,
                                 sample_n) {
   ellipsis::check_dots_empty()
 
-  checkmate::assert_class(channel, "sxchan")
+  checkmate::assert_class(channel, "xchan")
 
   plan <- xt_column_plan(channel)
   if (is.null(plan)) {
@@ -137,9 +137,17 @@ sample_dem_along_line <- function(line, dem, sample_distance) {
   sample_points <- sf::st_line_sample(line, n = n_points, type = "regular")
   sample_points <- sf::st_cast(sample_points, "POINT")
 
-  # Extract elevations from DEM
+  # Extract elevations from DEM. Wrap the sample points in a `SpatVector` so
+  # that `terra::extract()` reprojects them into the DEM's CRS when the two
+  # differ. If the line has no CRS, fall back to the raw coordinates and
+  # assume they are already in the DEM's CRS.
   coords <- sf::st_coordinates(sample_points)
-  elevations <- terra::extract(dem, coords)[, 1]
+  if (!is.na(sf::st_crs(sample_points))) {
+    sample_vect <- terra::vect(sample_points)
+    elevations <- terra::extract(dem, sample_vect)[, 2]
+  } else {
+    elevations <- terra::extract(dem, coords)[, 1]
+  }
 
   # Calculate distances along line
   distances <- seq(0, as.numeric(line_length), length.out = n_points)

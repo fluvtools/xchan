@@ -4,7 +4,7 @@
 #' @param ... Additional arguments (ignored)
 #' @exportS3Method base::print
 print.xs_profile <- function(x, ...) {
-  cat("sxchan profile cross section\n")
+  cat("xchan profile cross section\n")
   cat("  Coordinates:", nrow(x$coordinates), "points\n")
   cat("  Banks:", length(x$banks), "bank points\n")
   cat("  Thalwegs:", length(x$thalwegs), "thalweg points\n")

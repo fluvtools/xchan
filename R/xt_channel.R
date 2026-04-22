@@ -5,7 +5,7 @@
 #'
 #' @param x Object to create channel from
 #' @param ... Additional columns for the channel data frame
-#' @returns A channel object with class "sxchan"
+#' @returns A channel object with class "xchan"
 #' @examples
 #' # Create channel from widths
 #' channel <- xt_channel(c(10, 15, 12, 8))

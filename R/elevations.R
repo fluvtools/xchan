@@ -24,7 +24,7 @@ elevation_thalweg <- function() {
       numeric(1)
     )
   }
-  structure(fun, name = "thalweg", class = "sxchan_elevation")
+  structure(fun, name = "thalweg", class = "xchan_elevation")
 }
 
 #' @rdname elevations
@@ -44,7 +44,7 @@ elevation_bank <- function(.f = min, ...) {
       numeric(1)
     )
   }
-  structure(fun, name = "bank", params = list(.f = .f), class = "sxchan_elevation")
+  structure(fun, name = "bank", params = list(.f = .f), class = "xchan_elevation")
 }
 
 #' @rdname elevations
@@ -64,7 +64,7 @@ elevation_bank_left <- function() {
       numeric(1L)
     )
   }
-  structure(fun, name = "bank_left", class = "sxchan_elevation")
+  structure(fun, name = "bank_left", class = "xchan_elevation")
 }
 
 #' @rdname elevations
@@ -84,7 +84,7 @@ elevation_bank_right <- function() {
       numeric(1L)
     )
   }
-  structure(fun, name = "bank_right", class = "sxchan_elevation")
+  structure(fun, name = "bank_right", class = "xchan_elevation")
 }
 
 #' @rdname elevations
@@ -106,7 +106,7 @@ elevation_topo_left <- function() {
       numeric(1)
     )
   }
-  structure(fun, name = "topo_left", class = "sxchan_elevation")
+  structure(fun, name = "topo_left", class = "xchan_elevation")
 }
 
 #' @rdname elevations
@@ -128,7 +128,7 @@ elevation_topo_right <- function() {
       numeric(1)
     )
   }
-  structure(fun, name = "topo_right", class = "sxchan_elevation")
+  structure(fun, name = "topo_right", class = "xchan_elevation")
 }
 
 #' @rdname elevations
@@ -148,7 +148,7 @@ elevation_topo <- function(.f = mean, ...) {
       numeric(1)
     )
   }
-  structure(fun, name = "topo", params = list(.f = .f, ...), class = "sxchan_elevation")
+  structure(fun, name = "topo", params = list(.f = .f, ...), class = "xchan_elevation")
 }
 
 #' Create a bottom elevation specification
@@ -186,7 +186,7 @@ elevation_bottom <- function(.f = mean, ...) {
     fun,
     name = "Bottom Elevation",
     params = c(list(.f = .f), list(...)),
-    class = "sxchan_elevation"
+    class = "xchan_elevation"
   )
 }
 

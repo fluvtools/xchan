@@ -23,7 +23,7 @@ xt_erosion_width <- function(channel,
                              dv,
                              side = "both",
                              error_on_overflow = TRUE) {
-  checkmate::assert_class(channel, "sxchan")
+  checkmate::assert_class(channel, "xchan")
 
   profile <- xt_column_profile(channel)
   if (is.null(profile)) {
@@ -84,30 +84,44 @@ xt_erosion_width_left <- function(xs, dv, error_on_overflow = TRUE) {
     drop = FALSE
   ]
   x_extent <- min(left_nodes[, 1])
+  # Maximum width available for leftward erosion (positive number).
+  dw_max_available <- x_old - x_extent
 
-  # Use find_x_for_volume_right to find the new x position
-  x_new <- find_x_for_volume_right(
-    v = dv,
-    x0 = x_old,
-    topo = left_nodes,
-    thalweg_height = y_bank,
-    valley = "left"
+  # find_dx_for_volume_right() only searches in the +x direction, so mirror
+  # the left-side topo across x = 0 (including x_old) to turn leftward
+  # erosion into a rightward search. The function returns a delta in the
+  # flipped frame, which is the erosion width directly.
+  left_nodes_flipped <- left_nodes
+  left_nodes_flipped[, 1] <- -left_nodes_flipped[, 1]
+  dw <- tryCatch(
+    find_dx_for_volume_right(
+      v = dv,
+      x0 = -x_old,
+      topo = left_nodes_flipped,
+      thalweg_height = y_bank,
+      valley = "left"
+    ),
+    error = function(e) {
+      if (grepl("Requested volume exceeds", conditionMessage(e), fixed = TRUE)) {
+        NA_real_
+      } else {
+        stop(e)
+      }
+    }
   )
 
   censored <- FALSE
-  if (x_new < x_extent) {
+  if (is.na(dw) || dw > dw_max_available) {
     if (error_on_overflow) {
       stop(
         "Cannot calculate erosion width for given change in volume, as ",
         "the cross section extent is surpassed."
       )
     } else {
-      # Calculate maximum possible width
-      x_new <- x_extent
+      dw <- dw_max_available
       censored <- TRUE
     }
   }
-  dw <- x_old - x_new
   attr(dw, "censored") <- censored
   dw
 }

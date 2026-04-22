@@ -1,5 +1,5 @@
 ---
-title: "sxchan: An R Package for Channel Cross-Section Analysis"
+title: "xchan: An R Package for Channel Cross-Section Analysis"
 tags:
 - R
 - hydrology
@@ -22,7 +22,7 @@ authors:
 
 # Summary
 
-`sxchan` is an R package that helps researchers analyze river channels by creating and manipulating cross-sectional data. River channels can be described in two ways: as horizontal lines across the channel (planimetric cross-sections) and as elevation profiles along those lines (profile cross-sections). The package allows users to generate these cross-sections from various data sources including river bank outlines, digital elevation models, or simple width specifications. Once created, users can erode the banks to create newly eroded channels. Channel properties can be calculated, like width and depth, centerlines generated and banklines traced. The package integrates with existing R spatial analysis tools, making it easy to incorporate into larger research workflows for studying river processes, erosion, and channel evolution in a programmatic way.
+`xchan` is an R package that helps researchers analyze river channels by creating and manipulating cross-sectional data. River channels can be described in two ways: as horizontal lines across the channel (planimetric cross-sections) and as elevation profiles along those lines (profile cross-sections). The package allows users to generate these cross-sections from various data sources including river bank outlines, digital elevation models, or simple width specifications. Once created, users can erode the banks to create newly eroded channels. Channel properties can be calculated, like width and depth, centerlines generated and banklines traced. The package integrates with existing R spatial analysis tools, making it easy to incorporate into larger research workflows for studying river processes, erosion, and channel evolution in a programmatic way.
 
 # Statement of Need
 
@@ -32,7 +32,7 @@ The advent of remote sensing technologies, particularly airborne LiDAR and photo
 
 Current approaches to channel analysis rely on manual GIS workflows using software such as ArcGIS or QGIS, where users must manually digitize cross-sections, extract elevation profiles, and perform geometric calculations through point-and-click interfaces. These workflows are time-consuming, error-prone, and difficult to reproduce. While R packages like `sf` and `terra` provide excellent tools for spatial data manipulation and raster processing, they lack specialized functionality for channel cross-section analysis. Researchers must cobble together multiple packages and custom scripts to achieve what should be a unified workflow: generating cross-sections from banklines, sampling DEMs for elevation data, and analyzing channel geometry properties.
 
-This gap is particularly evident in the context of fluvial geomorphology research, where researchers need to analyze channel geometry changes over time, assess erosion and deposition patterns, and model channel evolution processes [@church2006bed; @eaton2010predicting]. The `sxchan` package addresses this gap by providing a unified framework for channel cross-section analysis that integrates seamlessly with the existing R spatial analysis ecosystem.
+This gap is particularly evident in the context of fluvial geomorphology research, where researchers need to analyze channel geometry changes over time, assess erosion and deposition patterns, and model channel evolution processes [@church2006bed; @eaton2010predicting]. The `xchan` package addresses this gap by providing a unified framework for channel cross-section analysis that integrates seamlessly with the existing R spatial analysis ecosystem.
 
 # Key Features
 
@@ -114,7 +114,7 @@ The package provides functions to generate derived geometries from channel objec
 # Example Usage
 
 ```
-library(sxchan)
+library(xchan)
 
 # Load data
 banks <- sf::st_read("river_banks.gpkg")
@@ -154,6 +154,6 @@ widths <- xt_width(channel)
 
 # Acknowledgments
 
-The authors thank BGC Engineering Inc. for funding this work. We also thank Brett Eaton and Sarah Davidson for guiding the package utility, and Heba Abdelmoaty for contributing to algorithm design and the developers of the `sf`, `terra`, `units`, and `scales` packages for providing the foundational tools and design inspiration that make `sxchan` possible.
+The authors thank BGC Engineering Inc. for funding this work. We also thank Brett Eaton and Sarah Davidson for guiding the package utility, and Heba Abdelmoaty for contributing to algorithm design and the developers of the `sf`, `terra`, `units`, and `scales` packages for providing the foundational tools and design inspiration that make `xchan` possible.
 
 # References

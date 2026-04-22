@@ -7,6 +7,6 @@
 # * https://testthat.r-lib.org/articles/special-files.html
 
 library(testthat)
-library(sxchan)
+library(xchan)
 
-test_check("sxchan")
+test_check("xchan")

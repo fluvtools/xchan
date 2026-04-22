@@ -34,7 +34,7 @@ xt_gradient <- function(channel,
                         elevation = elevation_bank(),
                         centerline = NULL) {
   ellipsis::check_dots_empty()
-  checkmate::assert_class(channel, "sxchan")
+  checkmate::assert_class(channel, "xchan")
 
   # Get elevation values for each cross-section
   elevations <- xt_elevation(channel, reference = elevation)

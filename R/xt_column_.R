@@ -1,10 +1,10 @@
 #' Extract or replace the profile or plan column in a channel object
 #'
 #' This function allows you to extract or replace the profile or plan column
-#' in a channel object of class `sxchan`. The profile column contains
+#' in a channel object of class `xchan`. The profile column contains
 #' xs_profile objects, while the plan column contains sfc_LINESTRING objects.
 #'
-#' @param channel An object of class `sxchan` containing cross-section data.
+#' @param channel An object of class `xchan` containing cross-section data.
 #' @param value For profile, a list of "xs_profile" objects; for plan, a list of
 #' "sfc_LINESTRING" objects. If `NULL`, the column is removed.
 #' @returns
@@ -15,11 +15,11 @@
 #'
 #' For `xt_column_*<-`, the original `channel` objects with the specified
 #' column updated (or removed if `NULL`). If no plan or profile columns
-#' remain, the "sxchan" class and any subclasses are removed, leaving a data
+#' remain, the "xchan" class and any subclasses are removed, leaving a data
 #' frame (and its subclasses).
 #' @rdname xt_column
 xt_column_profile <- function(channel) {
-  checkmate::assert_class(channel, "sxchan")
+  checkmate::assert_class(channel, "xchan")
   profile_col <- attributes(channel)$profile_col
   if (is.null(profile_col)) {
     return(NULL)
@@ -29,7 +29,7 @@ xt_column_profile <- function(channel) {
 
 #' @rdname xt_column
 xt_column_plan <- function(channel) {
-  checkmate::assert_class(channel, "sxchan")
+  checkmate::assert_class(channel, "xchan")
   plan_col <- attributes(channel)$plan_col
   if (is.null(plan_col)) {
     return(NULL)
@@ -39,7 +39,7 @@ xt_column_plan <- function(channel) {
 
 #' @rdname xt_column
 `xt_column_profile<-` <- function(channel, value) {
-  checkmate::assert_class(channel, "sxchan")
+  checkmate::assert_class(channel, "xchan")
   profile_colname <- attributes(channel)$profile_col
   if (is.null(value)) {
     channel[[profile_colname]] <- NULL
@@ -72,7 +72,7 @@ xt_column_plan <- function(channel) {
 
 #' @rdname xt_column
 `xt_column_plan<-` <- function(channel, value) {
-  checkmate::assert_class(channel, "sxchan")
+  checkmate::assert_class(channel, "xchan")
   plan_colname <- attributes(channel)$plan_col
   if (is.null(value)) {
     channel[[plan_colname]] <- NULL
