@@ -52,11 +52,14 @@ xt_as_channel <- function(x, ...) {
 #' @param profile Optional list of `xs_profile` objects (same length as plan).
 #' @param axis Optional channel axis (`sfc`/`sfg` LINESTRING, length 1); see [xt_axis()].
 #'   Used when coercing from `numeric`, `sfc`, `sfg`, or `data.frame`.
+#' @param chainage Optional numeric vector (same length as `plan`): distance along
+#'   the channel from upstream for each section; coercing methods pass it through
+#'   as a column. See [xt_generate_plan()].
 #' @param crs For `numeric`, `sfc`, and `data.frame` methods:
 #'   CRS applied to plan geometries via [sf::st_set_crs()]. `NULL` leaves
 #'   existing CRS unchanged.
 #' @export
-xt_as_channel.numeric <- function(x, profile = NULL, ..., crs = NULL, axis = NULL) {
+xt_as_channel.numeric <- function(x, profile = NULL, ..., crs = NULL, axis = NULL, chainage = NULL) {
   checkmate::assert_numeric(x, lower = 0, any.missing = FALSE)
 
   plan <- Map(
@@ -71,7 +74,12 @@ xt_as_channel.numeric <- function(x, profile = NULL, ..., crs = NULL, axis = NUL
     plan <- sf::st_set_crs(plan, crs)
   }
 
-  df <- create_data_frame(plan = plan, ...)
+  args <- c(list(plan = plan), rlang::dots_list(...))
+  if (!is.null(chainage)) {
+    checkmate::assert_numeric(chainage, len = length(plan), any.missing = FALSE)
+    args$chainage <- chainage
+  }
+  df <- rlang::exec(create_data_frame, !!!args)
   prof_col <- NULL
   if (!is.null(profile)) {
     prof_col <- "profile"
@@ -86,13 +94,13 @@ xt_as_channel.numeric <- function(x, profile = NULL, ..., crs = NULL, axis = NUL
 
 #' @rdname xt_as_channel
 #' @export
-xt_as_channel.sfg <- function(x, profile = NULL, ..., crs = NULL, axis = NULL) {
-  xt_as_channel(sf::st_sfc(x), profile = profile, ..., crs = crs, axis = axis)
+xt_as_channel.sfg <- function(x, profile = NULL, ..., crs = NULL, axis = NULL, chainage = NULL) {
+  xt_as_channel(sf::st_sfc(x), profile = profile, ..., crs = crs, axis = axis, chainage = chainage)
 }
 
 #' @rdname xt_as_channel
 #' @export
-xt_as_channel.sfc <- function(x, profile = NULL, ..., crs = NULL, axis = NULL) {
+xt_as_channel.sfc <- function(x, profile = NULL, ..., crs = NULL, axis = NULL, chainage = NULL) {
   if (!is.null(crs)) {
     x <- sf::st_set_crs(x, crs)
   }
@@ -100,7 +108,12 @@ xt_as_channel.sfc <- function(x, profile = NULL, ..., crs = NULL, axis = NULL) {
     x <- sf::st_cast(x, "LINESTRING")
   }
 
-  df <- create_data_frame(plan = x, ...)
+  args <- c(list(plan = x), rlang::dots_list(...))
+  if (!is.null(chainage)) {
+    checkmate::assert_numeric(chainage, len = length(x), any.missing = FALSE)
+    args$chainage <- chainage
+  }
+  df <- rlang::exec(create_data_frame, !!!args)
   prof_col <- NULL
   if (!is.null(profile)) {
     prof_col <- "profile"

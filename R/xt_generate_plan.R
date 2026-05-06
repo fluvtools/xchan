@@ -15,8 +15,12 @@
 #'   sections are placed. If `NULL` (the default), an axis is generated
 #'   automatically using the **centerline** package (`centerline::cnt_path_guess()`).
 #' @returns A channel object with planimetric cross sections in the plan column.
-#'   The sampling axis is stored on the object ([xt_axis()]) for
-#'   [xt_trace_centerline()], [xt_arrange_downstream()], and related tools.
+#'   A numeric column **`chainage`** gives distance along the sampling axis from
+#'   its start to each section’s station (CRS units). Downstream order follows
+#'   increasing **`chainage`**; keep or restore this ordering after `arrange()` via
+#'   [xt_arrange_downstream()] or by sorting on **`chainage`**. The sampling axis
+#'   is also stored ([xt_axis()]) for geometry that requires it (e.g.
+#'   [xt_distance_ds()]).
 #' @details This function takes the definition of "cross section" relative
 #' to a point in the channel to be the line segment intersecting the point
 #' whose bank-to-bank segment width is the smallest. Note that this does not
@@ -99,8 +103,10 @@ xt_generate_plan <- function(banks, ..., n, spacing, at, axis = NULL) {
 
   # Sort pts in order along the axis. This is important so that neighbouring
   # cross sections can be later ensured not to cross.
-  dists <- sf::st_line_project(cl, pts)
-  pts <- pts[order(dists)]
+  dists_raw <- as.numeric(sf::st_line_project(cl, pts))
+  ord_st <- order(dists_raw)
+  pts <- pts[ord_st]
+  chainage <- dists_raw[ord_st]
 
   # Get maximum distance based on bounding box
   bb <- sf::st_bbox(banks)
@@ -159,8 +165,8 @@ xt_generate_plan <- function(banks, ..., n, spacing, at, axis = NULL) {
 
   attr(geoms, "left_to_right") <- TRUE
 
-  # Create channel object and record sampling axis for downstream ordering / traces
-  out <- xt_as_channel(geoms)
+  # Chainage + sampling axis for downstream order and distance geometry
+  out <- xt_as_channel(geoms, chainage = chainage)
   xt_axis(out) <- cl
   out
 }
