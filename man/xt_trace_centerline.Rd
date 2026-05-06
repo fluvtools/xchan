@@ -4,22 +4,28 @@
 \alias{xt_trace_centerline}
 \title{Trace centerline from channel}
 \usage{
-xt_trace_centerline(channel)
+xt_trace_centerline(channel, axis = NULL)
 }
 \arguments{
-\item{channel}{Channel object with planimetric cross sections}
+\item{channel}{Channel object with planimetric cross sections.}
+
+\item{axis}{Optional LINESTRING axis (\code{sfc} / \code{sfg}). If \code{NULL}, uses
+\code{xt_axis(channel)}; if that is also \code{NULL}, an error is raised.}
 }
 \value{
-An sf LINESTRING representing the centerline
+An sf \code{LINESTRING} \code{sfc} (length 1) through section midpoints, ordered
+by increasing distance projected onto \code{axis}.
 }
 \description{
-Trace a centerline by connecting the midpoints of planimetric cross sections.
-This line is the channel axis used for downstream distances and related geometry.
+Trace a polyline through planimetric cross-section midpoints in \strong{downstream}
+order along the channel axis (see \strong{Details}).
 }
 \details{
-This function extracts the planimetric cross sections from the channel
-object and connects their midpoints to create a centerline along the channel.
-It approximates the flow path when cross sections are roughly perpendicular to flow.
+Midpoints use the mean of each section’s \strong{first and last} vertices
+(bank-to-bank). Vertex order follows \strong{increasing} \code{\link[sf:st_line_project_point]{sf::st_line_project()}}
+distance along \code{axis} from its start — \strong{not} data-frame row order. Store or
+pass an axis (\code{\link[=xt_axis]{xt_axis()}}; \code{\link[=xt_generate_plan]{xt_generate_plan()}} records one). To align table
+rows with that order, use \code{\link[=xt_arrange_downstream]{xt_arrange_downstream()}}.
 }
 \examples{
 centerline <- xt_trace_centerline(channel)

@@ -7,25 +7,26 @@
 xt_distance_ds(channel, axis = NULL)
 }
 \arguments{
-\item{channel}{A channel object with planimetric cross sections}
+\item{channel}{A channel object with planimetric cross sections.}
 
-\item{axis}{Optional. An sf LINESTRING representing the channel axis (line
-along the channel) for downstream ordering and distance. If \code{NULL} (default),
-uses the centerline from \code{xt_trace_centerline()} with its default settings.}
+\item{axis}{Optional \strong{LINESTRING} (\code{sfc} / \code{sfg}). Resolution matches
+\code{\link[=xt_trace_centerline]{xt_trace_centerline()}}: use this geometry, else \code{xt_axis(channel)}, else an
+error (set an axis with \code{xt_axis(channel) <- ...} or use \code{\link[=xt_generate_plan]{xt_generate_plan()}}).}
 }
 \value{
-A numeric vector of distances downstream (along the axis)
-for each cross section in \code{channel}, where 0 represents the start of the
-axis.
+A numeric vector of length \code{nrow(channel)}, distances downstream along
+\code{axis} (same row order as \code{channel}).
 }
 \description{
-Calculates the distance each cross section in a channel is downstream from the head.
+Distance along the channel axis from the \strong{start} of the axis line to each
+cross section’s station (midpoint between bank endpoints), in axis units.
 }
 \note{
-This is a useful function for sorting cross sections in a channel
-if they are not already sorted.
+Use \code{\link[=xt_arrange_downstream]{xt_arrange_downstream()}} if you need rows ordered by these distances.
 }
 \examples{
-# Using the auto-generated axis (midpoint trace)
-distances <- xt_distance_ds(demo_channel)
+\donttest{
+ch <- xt_generate_plan(fraser_bankline, n = 5)
+ds <- xt_distance_ds(ch)
+}
 }

@@ -16,6 +16,8 @@
 #' @param .plan Planimetric cross sections as `sfc_LINESTRING`.
 #' @param .profile Optional list of `xs_profile` objects, same length as
 #'    `.plan`.
+#' @param .axis Optional channel axis as a single `LINESTRING` (`sfc`/`sfg`);
+#'   same CRS as `.plan`. Used by [xt_trace_centerline()] and related functions.
 #' @param ... Additional columns for the channel table (vectors or
 #'   list-columns).
 #'
@@ -32,7 +34,7 @@
 #'   crs = 3005
 #' )
 #' xt_channel(.plan = seg)
-xt_channel <- function(.plan, .profile = NULL, ...) {
+xt_channel <- function(.plan, .profile = NULL, .axis = NULL, ...) {
   if (!inherits(.plan, "sfc") || !inherits(.plan, "sfc_LINESTRING")) {
     stop("`.plan` must be an object of class `sfc_LINESTRING`.", call. = FALSE)
   }
@@ -75,7 +77,11 @@ xt_channel <- function(.plan, .profile = NULL, ...) {
   }
 
   df <- rlang::exec(create_data_frame, !!!cols)
-  out <- new_channel(df, plan_col = "plan", profile_col = profile_col)
+  axis_obj <- NULL
+  if (!is.null(.axis)) {
+    axis_obj <- validate_axis_sf(.axis, sf::st_crs(.plan))
+  }
+  out <- new_channel(df, plan_col = "plan", profile_col = profile_col, axis = axis_obj)
   xt_validate_plan_profile_widths(out)
   out
 }

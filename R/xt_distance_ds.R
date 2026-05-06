@@ -1,19 +1,20 @@
 #' Calculate Downstream Distance of Cross Sections
 #'
-#' Calculates the distance each cross section in a channel is downstream from the head.
+#' Distance along the channel axis from the **start** of the axis line to each
+#' cross section’s station (midpoint between bank endpoints), in axis units.
 #'
-#' @param channel A channel object with planimetric cross sections
-#' @param axis Optional. An sf LINESTRING representing the channel axis (line
-#' along the channel) for downstream ordering and distance. If `NULL` (default),
-#' uses the centerline from `xt_trace_centerline()` with its default settings.
-#' @returns A numeric vector of distances downstream (along the axis)
-#' for each cross section in `channel`, where 0 represents the start of the
-#' axis.
-#' @note This is a useful function for sorting cross sections in a channel
-#' if they are not already sorted.
+#' @param channel A channel object with planimetric cross sections.
+#' @param axis Optional **LINESTRING** (`sfc` / `sfg`). Resolution matches
+#'   [xt_trace_centerline()]: use this geometry, else `xt_axis(channel)`, else an
+#'   error (set an axis with `xt_axis(channel) <- ...` or use [xt_generate_plan()]).
+#' @returns A numeric vector of length `nrow(channel)`, distances downstream along
+#'   `axis` (same row order as `channel`).
+#' @note Use [xt_arrange_downstream()] if you need rows ordered by these distances.
 #' @examples
-#' # Using the auto-generated axis (midpoint trace)
-#' distances <- xt_distance_ds(demo_channel)
+#' \donttest{
+#' ch <- xt_generate_plan(fraser_bankline, n = 5)
+#' ds <- xt_distance_ds(ch)
+#' }
 #' @export
 xt_distance_ds <- function(channel, axis = NULL) {
   if (!is_channel(channel)) {
@@ -25,49 +26,7 @@ xt_distance_ds <- function(channel, axis = NULL) {
     stop("Channel object must have planimetric cross sections")
   }
 
-  # Use provided axis or trace one from cross-section midpoints
-  if (is.null(axis)) {
-    axis <- xt_trace_centerline(channel)
-  } else {
-    if (
-      !inherits(axis, "sfc") ||
-        !all(sf::st_geometry_type(axis) == "LINESTRING")
-    ) {
-      stop("axis must be an sf LINESTRING")
-    }
-  }
-
-  # Extract midpoints of each cross section
-  midpoints <- lapply(plan, function(xs) {
-    coords <- sf::st_coordinates(xs)
-    midpoint_idx <- ceiling(nrow(coords) / 2)
-    sf::st_point(coords[midpoint_idx, 1:2])
-  })
-
-  # Convert to sf points
-  midpoint_sfc <- sf::st_sfc(midpoints, crs = sf::st_crs(plan))
-
-  # Distances along the axis
-  distances <- numeric(length(midpoints))
-
-  for (i in seq_along(midpoints)) {
-    # Closest point on the axis to each cross-section midpoint
-    nearest_pt <- sf::st_nearest_points(midpoint_sfc[i], axis)
-    nearest_pt_on_line <- sf::st_cast(nearest_pt, "POINT")[2] # The second point is on the line
-
-    # Distance from the start of the axis to this point
-    if (i == 1) {
-      distances[i] <- 0
-    } else {
-      frac <- sf::st_line_project(
-        axis,
-        nearest_pt_on_line,
-        normalized = TRUE
-      )
-      line_segment <- lwgeom::st_linesubstring(axis, 0, frac)
-      distances[i] <- sf::st_length(line_segment)
-    }
-  }
-
-  return(as.numeric(distances))
+  axis_line <- resolve_channel_axis(channel, axis)
+  mid_pts <- plan_midpoints_sfc(plan)
+  as.numeric(sf::st_line_project(axis_line, mid_pts))
 }

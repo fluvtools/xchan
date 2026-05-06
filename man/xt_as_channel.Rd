@@ -12,13 +12,13 @@
 \usage{
 xt_as_channel(x, ...)
 
-\method{xt_as_channel}{numeric}(x, profile = NULL, ..., crs = NULL)
+\method{xt_as_channel}{numeric}(x, profile = NULL, ..., crs = NULL, axis = NULL)
 
-\method{xt_as_channel}{sfg}(x, profile = NULL, ..., crs = NULL)
+\method{xt_as_channel}{sfg}(x, profile = NULL, ..., crs = NULL, axis = NULL)
 
-\method{xt_as_channel}{sfc}(x, profile = NULL, ..., crs = NULL)
+\method{xt_as_channel}{sfc}(x, profile = NULL, ..., crs = NULL, axis = NULL)
 
-\method{xt_as_channel}{data.frame}(x, plan_col, profile_col = NULL, crs = NULL, ...)
+\method{xt_as_channel}{data.frame}(x, plan_col, profile_col = NULL, crs = NULL, axis = NULL, ...)
 
 \method{xt_as_channel}{xchan}(x, crs = NULL, ...)
 
@@ -38,6 +38,9 @@ an existing \code{xchan}, with a warning if non-empty.}
 \item{crs}{For \code{numeric}, \code{sfc}, and \code{data.frame} methods:
 CRS applied to plan geometries via \code{\link[sf:st_crs]{sf::st_set_crs()}}. \code{NULL} leaves
 existing CRS unchanged.}
+
+\item{axis}{Optional channel axis (\code{sfc}/\code{sfg} LINESTRING, length 1); see \code{\link[=xt_axis]{xt_axis()}}.
+Used when coercing from \code{numeric}, \code{sfc}, \code{sfg}, or \code{data.frame}.}
 
 \item{plan_col}{Name of the column holding planimetric \code{sfc_LINESTRING}
 geometries (required).}

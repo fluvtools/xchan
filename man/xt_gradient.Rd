@@ -27,8 +27,8 @@ xt_gradient(
 
 \item{elevation}{Elevation specification for gradient calculation}
 
-\item{axis}{Channel axis for distance calculations (defaults to an axis traced
-from cross-section midpoints via \code{xt_trace_centerline()}).}
+\item{axis}{Optional channel axis passed to \code{\link[=xt_distance_ds]{xt_distance_ds()}} (same rules as
+\code{\link[=xt_trace_centerline]{xt_trace_centerline()}}: explicit \code{axis}, else \code{xt_axis(channel)}, else error).}
 }
 \value{
 A vector of gradient values for each cross-section

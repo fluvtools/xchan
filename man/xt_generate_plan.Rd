@@ -26,6 +26,8 @@ automatically using the \strong{centerline} package (\code{centerline::cnt_path_
 }
 \value{
 A channel object with planimetric cross sections in the plan column.
+The sampling axis is stored on the object (\code{\link[=xt_axis]{xt_axis()}}) for
+\code{\link[=xt_trace_centerline]{xt_trace_centerline()}}, \code{\link[=xt_arrange_downstream]{xt_arrange_downstream()}}, and related tools.
 }
 \description{
 Generate a channel object with planimetric cross sections from a
@@ -42,6 +44,35 @@ although in almost all cases this should not be an issue.
 To define the spacing of the cross sections, a channel axis is
 first calculated, and equally spaced points are sampled along that
 axis. Cross sections are calculated at these points.
+
+\strong{Downstream} is the direction of increasing distance along that axis
+(the same direction used when stations are sorted by
+\code{\link[sf:st_line_project_point]{sf::st_line_project()}}). If you supply \code{axis}, downstream follows the
+storage order and digitization of that line; if the axis is generated
+automatically, downstream follows the geometry returned by the centerline
+routine.
+
+\strong{Left and right bank} mean left and right when standing at the station on
+the axis and \strong{facing downstream}, in the map plane of the CRS (planar
+coordinates).
+
+\strong{Vertex order (planimetric convention):} each output segment is a
+\code{LINESTRING} from left bank to right bank: the \strong{first} coordinate is on the
+left bank, the \strong{last} on the right bank. Increasing distance along the
+segment (first to last vertex) thus matches profile cross sections where
+distance increases from left to right bank.
+
+\strong{How orientation is computed:} for each station we take a unit tangent to
+the axis pointing downstream (\code{axis_unit_tangent_downstream()}). For each
+endpoint of the bank-to-bank segment we form the vector from the station to
+that endpoint and compute the 2D scalar cross product with the tangent,
+\eqn{D_x (E_y - C_y) - D_y (E_x - C_x)}{D_x*(E_y-C_y) - D_y*(E_x-C_x)}
+where \eqn{(D_x,D_y)} is the tangent and \eqn{(C_x,C_y)} / \eqn{(E_x,E_y)}
+are the station and an endpoint. Under the usual planar orientation, the
+endpoint with the \strong{larger} value lies on the \strong{left} bank. If that is not
+already the first vertex, the segment is reversed with \code{\link[sf:geos_unary]{sf::st_reverse()}}
+(\code{orient_plan_xs_left_first()}). This does not require splitting the bank
+polygon by the axis.
 }
 \examples{
 bl <- sf::st_sfc(demo_bankline, crs = 3005)

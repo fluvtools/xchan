@@ -3,6 +3,7 @@
 #' @param l Object to turn into a channel.
 #' @param plan_col Name of the plan column (or NULL if not present)
 #' @param profile_col Name of the profile column (or NULL if not present)
+#' @param axis Optional channel axis as `sfc` LINESTRING (length 1); see [xt_axis()].
 #' @param ... Additional attributes to add to the object.
 #' @param class If making a subclass, specify its name here.
 #' @returns An object of class `"xchan"`, which is a data frame with plan
@@ -12,6 +13,7 @@ new_channel <- function(
   l,
   plan_col = NULL,
   profile_col = NULL,
+  axis = NULL,
   ...,
   class = character()
 ) {
@@ -24,6 +26,7 @@ new_channel <- function(
     l,
     plan_col = plan_col,
     profile_col = profile_col,
+    axis = axis,
     ...,
     class = c(class, "xchan", original_class)
   )

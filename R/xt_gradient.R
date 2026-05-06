@@ -6,8 +6,8 @@
 #' @param .after Number of cross-sections after current to include in calculation
 #' @param .complete Whether to include incomplete windows at boundaries
 #' @param elevation Elevation specification for gradient calculation
-#' @param axis Channel axis for distance calculations (defaults to an axis traced
-#'   from cross-section midpoints via `xt_trace_centerline()`).
+#' @param axis Optional channel axis passed to [xt_distance_ds()] (same rules as
+#'   [xt_trace_centerline()]: explicit `axis`, else `xt_axis(channel)`, else error).
 #' @returns A vector of gradient values for each cross-section
 #' @details
 #' This function calculates channel gradient using a sliding window approach,
@@ -42,13 +42,7 @@ xt_gradient <- function(
   # Get elevation values for each cross-section
   elevations <- xt_elevation(channel, reference = elevation)
 
-  # Trace axis from midpoints if not provided
-  if (is.null(axis)) {
-    axis <- xt_trace_centerline(channel)
-  }
-
-  # Distances along the axis
-  distances <- xt_distance_ds(channel, axis = axis)
+  distances <- xt_distance_ds(channel, axis)
 
   # Calculate gradient using sliding window
   n <- length(elevations)
