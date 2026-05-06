@@ -4,12 +4,9 @@
 #' a channel given a specified width change, distributing the change
 #' according to a given scheme.
 #'
-#' @param channel Channel object
+#' @inheritParams xt_widen
 #' @param width Change in width; single positive numeric or vector matching
 #' number of cross-sections.
-#' @param side A specification for how to distribute the widening between
-#' left and right banks. Built-in side functions include "left", "right", and
-#' "both".
 #' @param error_on_overflow Logical; should an error be thrown if asked
 #' to calculate erosion volume beyond cross section extent? `TRUE` if so
 #' (the default). If `FALSE`, returns the maximum volume up to the extent.

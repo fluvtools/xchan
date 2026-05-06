@@ -1,12 +1,10 @@
-#' Parse the `side` argument in `xt_widen()`
+#' Parse the `side` argument (internal)
 #'
-#' An internal helper function to parse and standardize the `side` argument
-#' from the `xt_widen()` function.
-#'
-#' @param side The `side` argument from `xt_widen()`.
-#' @param cross_sections The cross section object passed to `xt_widen()`.
-#' @return A vector of proportions corresponding to the left bank; one
-#' proportion for each cross section.
+#' @noRd
+#' @param side Same as `side` in [xt_widen()].
+#' @param cross_sections Channel (`xchan`) or other object passed to the side
+#'   function (must work with [xt_n_sections()]).
+#' @return A vector of proportions for the left bank; one per cross section.
 parse_side_arg <- function(side, cross_sections) {
   if (is.character(side)) {
     fn <- paste0("side_", side)
