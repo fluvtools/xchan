@@ -75,5 +75,7 @@ xt_channel <- function(.plan, .profile = NULL, ...) {
   }
 
   df <- rlang::exec(create_data_frame, !!!cols)
-  new_channel(df, plan_col = "plan", profile_col = profile_col)
+  out <- new_channel(df, plan_col = "plan", profile_col = profile_col)
+  xt_validate_plan_profile_widths(out)
+  out
 }

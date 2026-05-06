@@ -67,6 +67,7 @@ xt_column_plan <- function(channel) {
   }
 
   channel[[profile_colname]] <- value
+  xt_validate_plan_profile_widths(channel)
   channel
 }
 
@@ -96,5 +97,6 @@ xt_column_plan <- function(channel) {
     attributes(channel)$plan_col <- plan_colname
   }
   channel[[plan_colname]] <- value
+  xt_validate_plan_profile_widths(channel)
   channel
 }
