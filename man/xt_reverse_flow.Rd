@@ -18,11 +18,11 @@ Swaps what is called the "left" and "right" banks (from the perspective
 of someone looking downstream).
 }
 \details{
-Reversing a channel's flow does not change
-the geometry of the plan view cross sections, but the way the
-profile cross sections are encoded does change: the left and right parts
-are flipped due to the convention that the left side of the profile
-correspond to the left bank of the channel.
+Planimetric segments are reversed end-for-end (\code{flip_plan()}), so the first
+vertex now corresponds to what was the right bank (and vice versa). Profile
+cross sections, when present, are flipped with \code{flip_profile()} so signed
+distances across the section stay aligned with the plan. When there is no
+profile column, only the planimetric geometries are updated.
 }
 \note{
 While the channel flow direction is reversed, the original order

@@ -4,13 +4,16 @@
 \alias{xt_channel}
 \title{Construct a channel object (\code{xchan})}
 \usage{
-xt_channel(.plan, .profile = NULL, ...)
+xt_channel(.plan, .profile = NULL, .axis = NULL, ...)
 }
 \arguments{
 \item{.plan}{Planimetric cross sections as \code{sfc_LINESTRING}.}
 
 \item{.profile}{Optional list of \code{xs_profile} objects, same length as
 \code{.plan}.}
+
+\item{.axis}{Optional channel axis as a single \code{LINESTRING} (\code{sfc}/\code{sfg});
+same CRS as \code{.plan}. Used by \code{\link[=xt_trace_centerline]{xt_trace_centerline()}} and related functions.}
 
 \item{...}{Additional columns for the channel table (vectors or
 list-columns).}

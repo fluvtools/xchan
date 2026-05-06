@@ -15,6 +15,8 @@
 #'   sections are placed. If `NULL` (the default), an axis is generated
 #'   automatically using the **centerline** package (`centerline::cnt_path_guess()`).
 #' @returns A channel object with planimetric cross sections in the plan column.
+#'   The sampling axis is stored on the object ([xt_axis()]) for
+#'   [xt_trace_centerline()], [xt_arrange_downstream()], and related tools.
 #' @details This function takes the definition of "cross section" relative
 #' to a point in the channel to be the line segment intersecting the point
 #' whose bank-to-bank segment width is the smallest. Note that this does not
@@ -25,6 +27,35 @@
 #' To define the spacing of the cross sections, a channel axis is
 #' first calculated, and equally spaced points are sampled along that
 #' axis. Cross sections are calculated at these points.
+#'
+#' **Downstream** is the direction of increasing distance along that axis
+#' (the same direction used when stations are sorted by
+#' [sf::st_line_project()]). If you supply `axis`, downstream follows the
+#' storage order and digitization of that line; if the axis is generated
+#' automatically, downstream follows the geometry returned by the centerline
+#' routine.
+#'
+#' **Left and right bank** mean left and right when standing at the station on
+#' the axis and **facing downstream**, in the map plane of the CRS (planar
+#' coordinates).
+#'
+#' **Vertex order (planimetric convention):** each output segment is a
+#' `LINESTRING` from left bank to right bank: the **first** coordinate is on the
+#' left bank, the **last** on the right bank. Increasing distance along the
+#' segment (first to last vertex) thus matches profile cross sections where
+#' distance increases from left to right bank.
+#'
+#' **How orientation is computed:** for each station we take a unit tangent to
+#' the axis pointing downstream (`axis_unit_tangent_downstream()`). For each
+#' endpoint of the bank-to-bank segment we form the vector from the station to
+#' that endpoint and compute the 2D scalar cross product with the tangent,
+#' \eqn{D_x (E_y - C_y) - D_y (E_x - C_x)}{D_x*(E_y-C_y) - D_y*(E_x-C_x)}
+#' where \eqn{(D_x,D_y)} is the tangent and \eqn{(C_x,C_y)} / \eqn{(E_x,E_y)}
+#' are the station and an endpoint. Under the usual planar orientation, the
+#' endpoint with the **larger** value lies on the **left** bank. If that is not
+#' already the first vertex, the segment is reversed with [sf::st_reverse()]
+#' (`orient_plan_xs_left_first()`). This does not require splitting the bank
+#' polygon by the axis.
 #' @examples
 #' bl <- sf::st_sfc(demo_bankline, crs = 3005)
 #' channel <- xt_generate_plan(bl, n = 100)
@@ -50,8 +81,7 @@ xt_generate_plan <- function(banks, ..., n, spacing, at, axis = NULL) {
     cl <- axis
   }
 
-  lr <- split_bankline(banks, axis = cl)
-  len <- sum(sf::st_length(cl))
+  len <- as.numeric(sum(sf::st_length(cl)))
 
   # Determine sampling points based on input parameters
   if (n_specified) {
@@ -123,16 +153,83 @@ xt_generate_plan <- function(banks, ..., n, spacing, at, axis = NULL) {
   sf::st_crs(geoms) <- sf::st_crs(banks)
 
   for (i in seq_along(pts)) {
-    this_xs <- geoms[i]
-    d1 <- sf::st_distance(sf::st_cast(this_xs, "POINT")[1], lr$left)
-    d2 <- sf::st_distance(sf::st_cast(this_xs, "POINT")[2], lr$left)
-    if (d2 < d1) {
-      geoms[i] <- sf::st_reverse(geoms[i])
-    }
+    t_down <- axis_unit_tangent_downstream(cl, pts[i], len)
+    geoms[i] <- orient_plan_xs_left_first(geoms[i], pts[i], t_down)
   }
 
   attr(geoms, "left_to_right") <- TRUE
 
-  # Create channel object
-  xt_as_channel(geoms)
+  # Create channel object and record sampling axis for downstream ordering / traces
+  out <- xt_as_channel(geoms)
+  xt_axis(out) <- cl
+  out
+}
+
+#' Unit tangent along the channel axis, downstream
+#'
+#' Approximates the direction of increasing chainage on `cl` at `pt` by taking a
+#' short finite difference between two nearby interpolations along the line.
+#' Used to define left/right relative to flow when orienting cross sections.
+#' The full downstream / left–right convention is documented under **Details**
+#' in [xt_generate_plan()].
+#'
+#' @param cl Channel axis as `sfc` LINESTRING (or compatible).
+#' @param pt `sfc`/`sfg` POINT where the tangent is evaluated (typically a cross
+#'   section station on `cl`).
+#' @param line_length Total length of `cl` (same units as coordinates); passed so
+#'   the finite-difference step scales safely near endpoints.
+#' @returns Numeric vector of length two `(dx, dy)` with Euclidean norm 1, or
+#'   `(1, 0)` if the tangent is degenerate.
+#' @noRd
+axis_unit_tangent_downstream <- function(cl, pt, line_length) {
+  s <- as.numeric(sf::st_line_project(cl, pt))
+  eps <- max(line_length * 1e-10, 1e-4)
+  s0 <- max(0, s - eps)
+  s1 <- min(line_length, s + eps)
+  if (s1 <= s0) {
+    s0 <- max(0, s - line_length * 1e-8)
+    s1 <- min(line_length, s + line_length * 1e-8)
+  }
+  p0 <- sf::st_line_interpolate(cl, s0)
+  p1 <- sf::st_line_interpolate(cl, s1)
+  m0 <- sf::st_coordinates(p0)[1L, 1:2, drop = TRUE]
+  m1 <- sf::st_coordinates(p1)[1L, 1:2, drop = TRUE]
+  v <- m1 - m0
+  nrm <- sqrt(sum(v^2))
+  if (nrm < 1e-15) {
+    return(c(1, 0))
+  }
+  v / nrm
+}
+
+#' Orient a planimetric cross section so the left bank is first
+#'
+#' Uses the 2D scalar cross product `tangent_x * vy - tangent_y * vx` from the
+#' station to each endpoint. Under the usual map orientation, the endpoint with
+#' the larger value lies on the left when facing downstream along `tangent`. If
+#' the first vertex is not that endpoint, the line is reversed with
+#' [sf::st_reverse()].
+#' See **Details** in [xt_generate_plan()] for the convention and formula.
+#'
+#' @param seg Bank-to-bank segment: `LINESTRING` `sfg` or length-one `sfc`.
+#' @param station_sf Station on the axis (`POINT`), same CRS as `seg`.
+#' @param tangent Unit downstream tangent from `axis_unit_tangent_downstream()`.
+#' @returns `seg`, possibly reversed so vertex order is left bank then right bank.
+#' @noRd
+orient_plan_xs_left_first <- function(seg, station_sf, tangent) {
+  m <- sf::st_coordinates(seg)
+  if (nrow(m) < 2L) {
+    return(seg)
+  }
+  cs <- sf::st_coordinates(station_sf)[1L, , drop = FALSE]
+  ctr <- c(cs[1L, 1L], cs[1L, 2L])
+  e1 <- m[1L, 1:2]
+  e2 <- m[nrow(m), 1:2]
+  cross1 <- tangent[1L] * (e1[2L] - ctr[2L]) - tangent[2L] * (e1[1L] - ctr[1L])
+  cross2 <- tangent[1L] * (e2[2L] - ctr[2L]) - tangent[2L] * (e2[1L] - ctr[1L])
+  if (cross1 < cross2) {
+    sf::st_reverse(seg)
+  } else {
+    seg
+  }
 }

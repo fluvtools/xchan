@@ -50,11 +50,13 @@ xt_as_channel <- function(x, ...) {
 
 #' @rdname xt_as_channel
 #' @param profile Optional list of `xs_profile` objects (same length as plan).
+#' @param axis Optional channel axis (`sfc`/`sfg` LINESTRING, length 1); see [xt_axis()].
+#'   Used when coercing from `numeric`, `sfc`, `sfg`, or `data.frame`.
 #' @param crs For `numeric`, `sfc`, and `data.frame` methods:
 #'   CRS applied to plan geometries via [sf::st_set_crs()]. `NULL` leaves
 #'   existing CRS unchanged.
 #' @export
-xt_as_channel.numeric <- function(x, profile = NULL, ..., crs = NULL) {
+xt_as_channel.numeric <- function(x, profile = NULL, ..., crs = NULL, axis = NULL) {
   checkmate::assert_numeric(x, lower = 0, any.missing = FALSE)
 
   plan <- Map(
@@ -75,20 +77,22 @@ xt_as_channel.numeric <- function(x, profile = NULL, ..., crs = NULL) {
     prof_col <- "profile"
     df$profile <- profile
   }
-  out <- new_channel(df, plan_col = "plan", profile_col = prof_col)
+  crs_hint <- if (!is.null(crs)) crs else sf::st_crs(plan)
+  axis_obj <- if (!is.null(axis)) validate_axis_sf(axis, crs_hint) else NULL
+  out <- new_channel(df, plan_col = "plan", profile_col = prof_col, axis = axis_obj)
   xt_validate_plan_profile_widths(out)
   out
 }
 
 #' @rdname xt_as_channel
 #' @export
-xt_as_channel.sfg <- function(x, profile = NULL, ..., crs = NULL) {
-  xt_as_channel(sf::st_sfc(x), profile = profile, ..., crs = crs)
+xt_as_channel.sfg <- function(x, profile = NULL, ..., crs = NULL, axis = NULL) {
+  xt_as_channel(sf::st_sfc(x), profile = profile, ..., crs = crs, axis = axis)
 }
 
 #' @rdname xt_as_channel
 #' @export
-xt_as_channel.sfc <- function(x, profile = NULL, ..., crs = NULL) {
+xt_as_channel.sfc <- function(x, profile = NULL, ..., crs = NULL, axis = NULL) {
   if (!is.null(crs)) {
     x <- sf::st_set_crs(x, crs)
   }
@@ -102,7 +106,8 @@ xt_as_channel.sfc <- function(x, profile = NULL, ..., crs = NULL) {
     prof_col <- "profile"
     df$profile <- profile
   }
-  out <- new_channel(df, plan_col = "plan", profile_col = prof_col)
+  axis_obj <- if (!is.null(axis)) validate_axis_sf(axis, sf::st_crs(x)) else NULL
+  out <- new_channel(df, plan_col = "plan", profile_col = prof_col, axis = axis_obj)
   xt_validate_plan_profile_widths(out)
   out
 }
@@ -117,6 +122,7 @@ xt_as_channel.data.frame <- function(
   plan_col,
   profile_col = NULL,
   crs = NULL,
+  axis = NULL,
   ...
 ) {
   if (...length() > 0) {
@@ -138,7 +144,13 @@ xt_as_channel.data.frame <- function(
     x[[plan_col]] <- sf::st_set_crs(x[[plan_col]], crs)
   }
 
-  out <- new_channel(x, plan_col = plan_col, profile_col = profile_col)
+  axis_obj <- if (!is.null(axis)) {
+    validate_axis_sf(axis, sf::st_crs(x[[plan_col]]))
+  } else {
+    NULL
+  }
+
+  out <- new_channel(x, plan_col = plan_col, profile_col = profile_col, axis = axis_obj)
   xt_validate_plan_profile_widths(out)
   out
 }

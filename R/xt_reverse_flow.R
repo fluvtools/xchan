@@ -7,17 +7,19 @@
 #' @returns A cross section object with the flow direction reversed. That is,
 #' what was previously called the left bank is now the right, and vice versa.
 #' @details
-#' Reversing a channel's flow does not change
-#' the geometry of the plan view cross sections, but the way the
-#' profile cross sections are encoded does change: the left and right parts
-#' are flipped due to the convention that the left side of the profile
-#' correspond to the left bank of the channel.
+#' Planimetric segments are reversed end-for-end (`flip_plan()`), so the first
+#' vertex now corresponds to what was the right bank (and vice versa). Profile
+#' cross sections, when present, are flipped with `flip_profile()` so signed
+#' distances across the section stay aligned with the plan. When there is no
+#' profile column, only the planimetric geometries are updated.
 #' @note While the channel flow direction is reversed, the original order
 #' of the rows in the `channel` data frame is preserved.
 #' @export
 xt_reverse_flow <- function(channel) {
   xt_column_plan(channel) <- flip_plan(xt_column_plan(channel))
-  profiles <- xt_column_profile(channel)
-  xt_column_profile(channel) <- lapply(profiles, flip_profile)
+  if (xt_has_profile(channel)) {
+    profiles <- xt_column_profile(channel)
+    xt_column_profile(channel) <- lapply(profiles, flip_profile)
+  }
   channel
 }
