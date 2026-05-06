@@ -34,7 +34,7 @@ seg <- st_sfc(
   st_linestring(matrix(c(0, -0.6, 1, -0.5), byrow = TRUE, ncol = 2)),
   st_linestring(matrix(c(0, -0.9, 1, -1), byrow = TRUE, ncol = 2))
 )
-channel <- xt_channel(seg)
+channel <- xt_as_channel(seg)
 
 # banks <- xt_trace_banks(channel, tracer = "linear")
 banks <- xt_trace_banks(channel, tracer = "spline")

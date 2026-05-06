@@ -2,53 +2,41 @@
 % Please edit documentation in R/xt_channel.R
 \name{xt_channel}
 \alias{xt_channel}
-\title{Create channel object}
+\title{Construct a channel object (\code{xchan})}
 \usage{
-xt_channel(x, ...)
+xt_channel(.plan, .profile = NULL, ...)
 }
 \arguments{
-\item{x}{Object to create channel from}
+\item{.plan}{Planimetric cross sections as \code{sfc_LINESTRING}.}
 
-\item{...}{Additional columns for the channel data frame}
+\item{.profile}{Optional list of \code{xs_profile} objects, same length as \code{.plan}.}
+
+\item{...}{Additional columns for the channel table (vectors or list-columns).}
 }
 \value{
-A channel object with class "xchan"
+An object of class \code{"xchan"}.
 }
 \description{
-Creates a channel object from various inputs. A channel object is a
-data frame with planimetric cross sections and/or profile cross sections.
+Assembles a channel table from \strong{required} planimetric cross sections
+(\code{sfc_LINESTRING}), optional profile cross sections (\code{xs_profile} list), and
+optional extra columns via \code{...}, in the same spirit as \code{\link[sf:sf]{sf::st_sf()}}.
+}
+\details{
+Every channel has a plan column; profile is optional. Set CRS on \code{.plan}
+with \code{\link[sf:st_crs]{sf::st_crs()}} / \code{\link[sf:st_crs]{sf::st_set_crs()}} before calling if needed.
+
+When \code{.profile} is supplied, \code{length(.profile)} must equal \code{length(.plan)}.
+Additional columns are recycled with \code{\link[vctrs:vec_recycle]{vctrs::vec_recycle_common()}}.
 }
 \examples{
-# Create channel from widths
-channel <- xt_channel(c(10, 15, 12, 8))
-
-# Create channel from widths with additional metadata
-channel <- xt_channel(
-  c(10, 15, 12, 8),
-  section_id = c("A", "B", "C", "D"),
-  roughness = 0.1
-)
-
-# Create channel from sf geometries
 library(sf)
 seg <- st_sfc(
-  st_linestring(matrix(c(-0.2, 0.3, 0.2, 1), byrow = TRUE, ncol = 2)),
-  st_linestring(matrix(c(0.1, 0.1, 1, 1), byrow = TRUE, ncol = 2)),
-  st_linestring(matrix(c(0.1, 0, 1.3, 0.7), byrow = TRUE, ncol = 2)),
-  st_linestring(matrix(c(0.3, -0.3, 1.3, 0), byrow = TRUE, ncol = 2)),
-  st_linestring(matrix(c(0, -0.6, 1, -0.5), byrow = TRUE, ncol = 2)),
-  st_linestring(matrix(c(0, -0.9, 1, -1), byrow = TRUE, ncol = 2))
+  st_linestring(matrix(c(-1, 1, 0, 1), ncol = 2)),
+  st_linestring(matrix(c(0, 0, 1, 1), ncol = 2)),
+  crs = 3005
 )
-channel <- xt_channel(seg)
-
-# Create channel from sf geometries with profiles and metadata
-channel <- xt_channel(plan_geometries,
-                     profile = profile_list)
-
-# Create channel from data frame
-df <- data.frame(
-  plan = seg,
-  roughness = 0.3
-)
-channel <- xt_channel(df, plan_col = "geometry")
+xt_channel(.plan = seg)
+}
+\seealso{
+\code{\link[=xt_as_channel]{xt_as_channel()}} to coerce from widths, existing tables, etc.
 }

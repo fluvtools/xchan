@@ -47,10 +47,10 @@ The `xt_widen()` function allows you to modify channel cross-sections by adding 
 
 ```{r width-widening}
 # Create a simple channel
-channel <- xt_channel(c(10, 12, 8, 15, 11, 9))
+channel <- xt_as_channel(c(10, 12, 8, 15, 11, 9))
 
 # Widen by adding 2 meters to each cross-section
-channel_widened <- xt_widen(channel, width = 2)
+channel_widened <- xt_widen(channel, dw = 2)
 
 # Compare widths
 original_widths <- xt_width(channel)
@@ -74,13 +74,13 @@ You can control how the widening is distributed between left and right banks.
 
 ```{r simple-sides}
 # Widen both sides equally (default)
-channel_both <- xt_widen(channel, width = 2, side = "both")
+channel_both <- xt_widen(channel, dw = 2, side = "both")
 
 # Widen only left side
-channel_left <- xt_widen(channel, width = 2, side = "left")
+channel_left <- xt_widen(channel, dw = 2, side = "left")
 
 # Widen only right side  
-channel_right <- xt_widen(channel, width = 2, side = "right")
+channel_right <- xt_widen(channel, dw = 2, side = "right")
 ```
 
 ### Using Side Functions (Specification Factories)
@@ -89,9 +89,9 @@ Side functions are **specification factories** that create functions defining ho
 
 ```{r sides}
 # Use built-in side functions
-channel_side1 <- xt_widen(channel, width = 2, side = side_left(0.75))  # 75% left, 25% right
-channel_side2 <- xt_widen(channel, width = 2, side = side_right(0.6))  # 40% left, 60% right
-channel_side3 <- xt_widen(channel, width = 2, side = side_both(0.7, 0.3))  # 70% left, 30% right
+channel_side1 <- xt_widen(channel, dw = 2, side = side_left(0.75))  # 75% left, 25% right
+channel_side2 <- xt_widen(channel, dw = 2, side = side_right(0.6))  # 40% left, 60% right
+channel_side3 <- xt_widen(channel, dw = 2, side = side_both(0.7, 0.3))  # 70% left, 30% right
 ```
 
 ### Custom Side Functions
@@ -106,7 +106,7 @@ custom_side <- function(channel) {
   seq(0.8, 0.2, length.out = n)
 }
 
-channel_custom <- xt_widen(channel, width = 2, side = custom_side)
+channel_custom <- xt_widen(channel, dw = 2, side = custom_side)
 ```
 
 ## Erosion Calculations
@@ -143,7 +143,7 @@ Calculate how much width increase would result from removing a given volume:
 ```{r variable-widening}
 # Widen by different amounts at each cross-section
 variable_widths <- c(1, 2, 1.5, 3, 2.5, 1)
-channel_variable <- xt_widen(channel, width = variable_widths, side = "both")
+channel_variable <- xt_widen(channel, dw = variable_widths, side = "both")
 
 # Compare results
 data.frame(
@@ -166,7 +166,7 @@ bend_side <- function(channel) {
   0.5 + 0.2 * sin_pattern
 }
 
-channel_bend <- xt_widen(channel, width = 2, side = bend_side)
+channel_bend <- xt_widen(channel, dw = 2, side = bend_side)
 ```
 
 ## Visualizing Widening
