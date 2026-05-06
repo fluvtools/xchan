@@ -10,16 +10,16 @@
 #' @examples
 #' # Get thalweg elevations
 #' elevations <- xt_elevation(channel, reference = elevation_thalweg())
-#' 
+#'
 #' # Get water surface elevations from a column
 #' elevations <- xt_elevation(channel, reference = elevation_column("water_surface"))
-#' 
+#'
 #' # Get mean bank elevations
 #' elevations <- xt_elevation(channel, reference = elevation_bank(.f = mean))
 #' @export
 xt_elevation <- function(channel, reference) {
   checkmate::assert_class(channel, "xchan")
-  
+
   # Execute the elevation specification
   reference(channel)
 }

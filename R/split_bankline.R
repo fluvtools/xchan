@@ -18,7 +18,10 @@
 #' plot(lr$right, add = TRUE, col = "blue")
 split_bankline <- function(bankline, centerline = NULL) {
   if (is.null(centerline)) {
-    centerline <- sf::st_geometry(centerline::cnt_path_guess(bankline, keep = 1))
+    centerline <- sf::st_geometry(centerline::cnt_path_guess(
+      bankline,
+      keep = 1
+    ))
   }
 
   # Get the intersection of the bankline and centerline
@@ -35,8 +38,8 @@ split_bankline <- function(bankline, centerline = NULL) {
 
   # extend the bankline if split_parts has length of 1
   if (length(split_parts) < 2) {
-    first_point <- as.numeric(centerline[[1]][1,])
-    last_point <- as.numeric(centerline[[1]][nrow(centerline[[1]]),])
+    first_point <- as.numeric(centerline[[1]][1, ])
+    last_point <- as.numeric(centerline[[1]][nrow(centerline[[1]]), ])
 
     direction <- last_point - first_point
     direction <- direction / sqrt(sum(direction^2))
@@ -51,9 +54,9 @@ split_bankline <- function(bankline, centerline = NULL) {
       rbind(
         new_first_point,
         sf::st_coordinates(centerline),
-        new_last_point)
+        new_last_point
       )
-    )
+    ))
 
     original_crs <- sf::st_crs(centerline)
     extended_line <- sf::st_set_crs(extended_line, original_crs)
@@ -69,7 +72,6 @@ split_bankline <- function(bankline, centerline = NULL) {
 
     # Extract the resulting lines
     split_parts <- sf::st_collection_extract(split, "LINESTRING")
-
   }
 
   l <- as.numeric(sf::st_length(split_parts))

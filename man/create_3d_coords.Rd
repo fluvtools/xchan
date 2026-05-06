@@ -4,26 +4,29 @@
 \alias{create_3d_coords}
 \title{Create 3D coordinates by mapping profile distances to plan positions}
 \usage{
-create_3d_coords(plan_line_segment, profile)
+create_3d_coords(plan, profile)
 }
 \arguments{
-\item{plan_coords}{Matrix with x, y coordinates from plan view cross section}
+\item{plan}{Planimetric cross sections.}
 
-\item{profile_data}{Matrix with distance (col1) and elevation (col2) from profile view}
+\item{profile}{Profile cross sections.}
 }
 \value{
-Matrix with 3D coordinates (x, y, z) where x,y come from plan interpolation
-and z comes from profile elevation data
+Matrix with 3D coordinates (x, y, z) where x,y come from
+plan interpolation and z comes from profile elevation data
 }
 \description{
-Maps profile elevation data to plan view coordinates to create true 3D geometries.
-Profile distances (column 1) are used to map elevations (column 2) to the correct
-x-y positions along the plan view cross section.
+Maps profile elevation data to plan view coordinates to create true
+3D geometries. Profile distances (column 1) are used to map
+elevations (column 2) to the correct x-y positions along the plan
+view cross section.
 }
 \details{
-Distances in profile_data are signed: negative for left side, positive for right side.
-The function assumes that the plan length equals the bank-to-bank river span.
-First point in plan corresponds to left bank, last point corresponds to right bank.
+Distances in profile_data are signed: negative for left side,
+positive for right side.
+The function assumes that the plan length equals the bank-to-bank
+river span. First point in plan corresponds to left bank,
+last point corresponds to right bank.
 }
 \examples{
 # plan_coords: matrix with x,y coordinates from plan view

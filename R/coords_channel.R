@@ -34,7 +34,10 @@ coords_channel_active <- function(profile, include_banks = TRUE) {
   nodes <- list()
   for (i in seq_len(nbanks / 2)) {
     nodes[[i]] <- coords_between(
-      profile, bank_distances[2 * i - 1], bank_distances[2 * i], inclusive = TRUE
+      profile,
+      bank_distances[2 * i - 1],
+      bank_distances[2 * i],
+      inclusive = TRUE
     )
     if (!include_banks) {
       id <- 1 + seq_len(nrow(nodes[i]) - 2)
@@ -52,6 +55,7 @@ coords_all <- function(profile) {
 
 #' Returns a matrix with as many rows as banks, with elevations
 #' given by the maximum elevation at the bank location.
+#' @noRd
 coords_banks <- function(profile) {
   checkmate::check_class(profile, "xs_profile")
   get_bank_coords(profile)

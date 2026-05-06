@@ -1,7 +1,6 @@
 #' Create a spline tracer for bankline generation
 #'
 #' @param ngrid Number of points to generate along each bankline.
-#' @param ... Other arguments to pass to `stats::splinefun`.
 #' @returns A tracer object that takes a channel and returns banklines.
 #' @export
 tracer_spline <- function(ngrid = 200) {
@@ -21,8 +20,7 @@ tracer_spline <- function(ngrid = 200) {
     start_edge <- list()
     end_edge <- list()
 
-
-    for (i in 1:length(left)) {
+    for (i in seq_along(left)) {
       # Extract start and end points manually
       start_point <- sf::st_cast(sf::st_geometry(left[i]), "POINT")[1]
       end_point <- sf::st_cast(sf::st_geometry(right[i]), "POINT")[1]
@@ -41,7 +39,7 @@ tracer_spline <- function(ngrid = 200) {
       }
 
       edge_sf <- sf::st_sf(
-        data.frame(id = 1:length(edge)),
+        data.frame(id = seq_along(edge)),
         geometry = sf::st_sfc(do.call(c, edge))
       )
       coords <- lapply(edge, sf::st_coordinates)
@@ -54,7 +52,6 @@ tracer_spline <- function(ngrid = 200) {
       # Parameter t: cumulative arc-length
       t <- cumsum(c(0, sqrt(diff(x)^2 + diff(y)^2)))
 
-
       # Fit cubic splines for x(t) and y(t)
       x_spline <- stats::splinefun(t, x)
       y_spline <- stats::splinefun(t, y)
@@ -64,25 +61,21 @@ tracer_spline <- function(ngrid = 200) {
       x_smooth <- x_spline(t_fine)
       y_smooth <- y_spline(t_fine)
 
-
       # remake x and y into spatial
       geometry <- Map(
         function(x_, y_) sf::st_point(c(x_, y_)),
-        x_smooth, y_smooth
+        x_smooth,
+        y_smooth
       )
-      new_edge <- geometry |>
-        sf::st_as_sfc() |>
-        sf::st_combine() |>
-        sf::st_cast("LINESTRING")
+      new_edge <- sf::st_combine(sf::st_as_sfc(geometry))
+      new_edge <- sf::st_cast(new_edge, "LINESTRING")
       if (i == 1) {
         start_edge_lines <- new_edge
       } else {
         end_edge_lines <- new_edge
       }
-
     }
-    rbind(start_edge_lines, end_edge_lines) |>
-      sf::st_as_sfc()
+    sf::st_as_sfc(rbind(start_edge_lines, end_edge_lines))
   }
   structure(
     f,
@@ -91,5 +84,3 @@ tracer_spline <- function(ngrid = 200) {
     class = "xchan_tracer"
   )
 }
-
-

@@ -11,12 +11,12 @@
 #' (according to height above thalweg).
 exaggerate_relief <- function(xs2d, times = 1) {
   checkmate::assert_numeric(times, 0, len = 1)
-  
+
   # Get thalweg elevation (minimum elevation)
   ymin <- min(xs2d$coordinates[, 2])
-  
+
   # Exaggerate all coordinates
   xs2d$coordinates[, 2] <- ymin + times * (xs2d$coordinates[, 2] - ymin)
-  
+
   xs2d
 }

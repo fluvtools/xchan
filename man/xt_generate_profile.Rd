@@ -15,17 +15,23 @@ xt_generate_profile(
 )
 }
 \arguments{
-\item{channel}{Channel object with planimetric cross sections}
+\item{channel}{Channel object with planimetric cross sections.}
 
-\item{dem}{Digital elevation model (raster or terra object)}
+\item{dem}{Digital elevation model (raster or terra object).}
 
-\item{extent_distance}{Distance to extend beyond banks (units)}
+\item{...}{Additional arguments (ignored).}
 
-\item{extent_multiplier}{Multiplier of channel width to extend beyond banks}
+\item{extent_distance}{Distance to extend beyond banks (units);
+positive numeric value. Mutually exclusive with \code{extent_multiplier}.}
 
-\item{sample_freq}{Distance between DEM sampling points (units)}
+\item{extent_multiplier}{Multiplier of channel width to extend beyond banks;
+positive numeric value. Mutually exclusive with \code{extent_distance}.}
 
-\item{sample_n}{number to sample}
+\item{sample_freq}{Distance between DEM sampling points (units);
+positive numeric value. Mutually exclusive with \code{sample_n}.}
+
+\item{sample_n}{number to sample; positive integer value greater than 1.
+Mutually exclusive with \code{sample_freq}.}
 }
 \value{
 Updated channel object with profile cross sections in the
@@ -37,11 +43,11 @@ elevation model (DEM). This function samples the DEM along the planimetric
 cross sections and creates xs_profile objects for each cross section.
 }
 \details{
-This function extends the planimetric cross sections beyond the banks
-to create a "frame" for erosion analysis. The extent can be specified either as
-a fixed distance or as a multiplier of the channel width. Similarly, the sampling
-distance can be specified either as a fixed distance or as a multiplier of the
-channel width.
+This function extends the planimetric cross sections beyond the
+banks to create a "frame" for erosion analysis. The extent can be specified
+either as a fixed distance or as a multiplier of the channel width.
+Similarly, the sampling distance can be specified either as a fixed
+distance or as a multiplier of the channel width.
 }
 \examples{
 # Sample DEM with 50m extension and 1m sampling

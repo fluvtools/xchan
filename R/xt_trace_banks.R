@@ -1,12 +1,13 @@
 #' Trace banklines from channel
 #'
-#' Trace bankline polygon by connecting bank points from planimetric cross sections.
+#' Trace bankline polygon by connecting bank points from planimetric
+#' cross sections.
 #'
 #' @param channel Channel object with planimetric cross sections
-#' @param tracer Tracer algorithm to use for bankline tracing
-#' @param ... Additional parameters (ignored)
+#' @param tracer Tracer algorithm to use for bankline tracing.
 #' @returns An sf POLYGON representing the banklines
-#' @details This function extracts the planimetric cross sections from the channel
+#' @details This function extracts the planimetric cross sections from the
+#'   channel object and traces their extents to create a bankline polygon. The
 #' object and traces their extents to create a bankline polygon. The algorithm
 #' can be specified using the tracer parameter.
 #' @examples

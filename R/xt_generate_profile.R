@@ -4,19 +4,24 @@
 #' elevation model (DEM). This function samples the DEM along the planimetric
 #' cross sections and creates xs_profile objects for each cross section.
 #'
-#' @param channel Channel object with planimetric cross sections
-#' @param dem Digital elevation model (raster or terra object)
-#' @param extent_distance Distance to extend beyond banks (units)
-#' @param extent_multiplier Multiplier of channel width to extend beyond banks
-#' @param sample_freq Distance between DEM sampling points (units)
-#' @param sample_n number to sample
+#' @param channel Channel object with planimetric cross sections.
+#' @param dem Digital elevation model (raster or terra object).
+#' @param ... Additional arguments (ignored).
+#' @param extent_distance Distance to extend beyond banks (units);
+#'   positive numeric value. Mutually exclusive with `extent_multiplier`.
+#' @param extent_multiplier Multiplier of channel width to extend beyond banks;
+#'   positive numeric value. Mutually exclusive with `extent_distance`.
+#' @param sample_freq Distance between DEM sampling points (units);
+#'   positive numeric value. Mutually exclusive with `sample_n`.
+#' @param sample_n number to sample; positive integer value greater than 1.
+#'   Mutually exclusive with `sample_freq`.
 #' @returns Updated channel object with profile cross sections in the
-#' profile column.
-#' @details This function extends the planimetric cross sections beyond the banks
-#' to create a "frame" for erosion analysis. The extent can be specified either as
-#' a fixed distance or as a multiplier of the channel width. Similarly, the sampling
-#' distance can be specified either as a fixed distance or as a multiplier of the
-#' channel width.
+#'   profile column.
+#' @details This function extends the planimetric cross sections beyond the
+#'   banks to create a "frame" for erosion analysis. The extent can be specified
+#'   either as a fixed distance or as a multiplier of the channel width.
+#'   Similarly, the sampling distance can be specified either as a fixed
+#'   distance or as a multiplier of the channel width.
 #' @examples
 #' # Sample DEM with 50m extension and 1m sampling
 #' channel_with_profiles <- xt_generate_profile(
@@ -28,14 +33,16 @@
 #'   channel, dem, extent_multiplier = 2, extent_multiplier = 0.1
 #' )
 #' @export
-xt_generate_profile <- function(channel,
-                                dem,
-                                ...,
-                                extent_distance,
-                                extent_multiplier,
-                                sample_freq,
-                                sample_n) {
-  ellipsis::check_dots_empty()
+xt_generate_profile <- function(
+  channel,
+  dem,
+  ...,
+  extent_distance,
+  extent_multiplier,
+  sample_freq,
+  sample_n
+) {
+  rlang::check_dots_empty()
 
   checkmate::assert_class(channel, "xchan")
 
@@ -45,9 +52,14 @@ xt_generate_profile <- function(channel,
   }
 
   # Validate extent parameters
-  extent_specified <- sum(c(!missing(extent_distance), !missing(extent_multiplier)))
+  extent_specified <- sum(c(
+    !missing(extent_distance),
+    !missing(extent_multiplier)
+  ))
   if (extent_specified != 1) {
-    stop("Exactly one of extent_distance or extent_multiplier must be specified")
+    stop(
+      "Exactly one of extent_distance or extent_multiplier must be specified"
+    )
   }
 
   # Validate sampling parameters
@@ -86,7 +98,8 @@ xt_generate_profile <- function(channel,
     if (!missing(sample_freq)) {
       sample_dist <- as.numeric(sample_freq)
     } else {
-      sample_dist <- as.numeric(sf::st_length(extended_line)) / max(1, sample_n - 1)
+      sample_dist <- as.numeric(sf::st_length(extended_line)) /
+        max(1, sample_n - 1)
     }
 
     # Sample DEM along extended line
@@ -132,7 +145,9 @@ sample_dem_along_line <- function(line, dem, sample_distance) {
   line_length <- sf::st_length(line)
   n_points <- ceiling(as.numeric(line_length) / sample_distance) + 1L
 
-  if (n_points < 2) n_points <- 2
+  if (n_points < 2) {
+    n_points <- 2
+  }
 
   sample_points <- sf::st_line_sample(line, n = n_points, type = "regular")
   sample_points <- sf::st_cast(sample_points, "POINT")

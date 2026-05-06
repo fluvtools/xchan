@@ -5,7 +5,7 @@
 #' @exportS3Method base::print
 print.xchan_tracer <- function(x, ...) {
   cat("Tracer:", attr(x, "name"), "\n")
-  
+
   # Show stored parameters
   params <- attr(x, "params")
   if (length(params) > 0) {
@@ -18,6 +18,6 @@ print.xchan_tracer <- function(x, ...) {
   } else {
     cat("Parameters: none\n")
   }
-  
+
   invisible(x)
 }

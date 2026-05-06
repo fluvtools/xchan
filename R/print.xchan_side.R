@@ -5,7 +5,7 @@
 #' @exportS3Method base::print
 print.xchan_side <- function(x, ...) {
   cat("Side:", attr(x, "name"), "\n")
-  
+
   # Get function arguments
   args <- formals(x)
   if (length(args) > 0) {
@@ -20,6 +20,6 @@ print.xchan_side <- function(x, ...) {
       }
     }
   }
-  
+
   invisible(x)
 }

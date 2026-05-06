@@ -5,7 +5,7 @@
 #' @exportS3Method base::print
 print.xchan_dredger <- function(x, ...) {
   cat("Dredger:", attr(x, "name"), "\n")
-  
+
   # Show stored parameters
   params <- attr(x, "params")
   if (length(params) > 0) {
@@ -18,6 +18,6 @@ print.xchan_dredger <- function(x, ...) {
   } else {
     cat("Parameters: none\n")
   }
-  
+
   invisible(x)
 }

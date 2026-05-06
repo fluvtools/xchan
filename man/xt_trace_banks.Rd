@@ -9,18 +9,18 @@ xt_trace_banks(channel, tracer = "linear")
 \arguments{
 \item{channel}{Channel object with planimetric cross sections}
 
-\item{tracer}{Tracer algorithm to use for bankline tracing}
-
-\item{...}{Additional parameters (ignored)}
+\item{tracer}{Tracer algorithm to use for bankline tracing.}
 }
 \value{
 An sf POLYGON representing the banklines
 }
 \description{
-Trace bankline polygon by connecting bank points from planimetric cross sections.
+Trace bankline polygon by connecting bank points from planimetric
+cross sections.
 }
 \details{
-This function extracts the planimetric cross sections from the channel
+This function extracts the planimetric cross sections from the
+channel object and traces their extents to create a bankline polygon. The
 object and traces their extents to create a bankline polygon. The algorithm
 can be specified using the tracer parameter.
 }

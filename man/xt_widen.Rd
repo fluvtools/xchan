@@ -4,21 +4,29 @@
 \alias{xt_widen}
 \title{Widen a channel}
 \usage{
-xt_widen(channel, ..., dw, dv, side = "both", error_on_overflow = TRUE)
+xt_widen(
+  channel,
+  ...,
+  dw,
+  dv,
+  side = "both",
+  on_overflow = c("error", "repeat")
+)
 }
 \arguments{
 \item{channel}{Channel object}
 
 \item{...}{Additional arguments (ignored)}
 
-\item{dw}{The total width to add to the channel. Must be a numeric value
-and cannot be used with \code{dv}.}
+\item{dw}{The total width to add to the channel. Must be a positive numeric
+value and cannot be used with \code{dv}.}
 
 \item{dv}{The total volume to remove to widen the channel. Must be a
-numeric value and cannot be used with \code{dw}.}
+positive numeric value and cannot be used with \code{dw}.}
 
 \item{side}{A specification for how to distribute the widening between
-left and right banks. Built-in side functions include "left", "right", and "both".
+left and right banks, from the \code{side_} family of functions. Shorthand
+options include "left", "right", and "both" (50-50).
 
 A side object is a function of channels that determines the amount
 of erosion occurring on the left bank (by convention) for each cross section.
@@ -26,6 +34,10 @@ Existing schemes have the naming convention \verb{side_<name>} and are
 determined by parameters. You can call them
 directly, e.g. \code{side_left(0.75)}, or by their name using the default
 parameters.}
+
+\item{on_overflow}{What to do if the widening exceeds the cross section
+extent; either "error" (the default), or "repeat", which will repeat the
+widening with the last available topography elevation.}
 }
 \value{
 A modified channel object

@@ -4,12 +4,15 @@
 \alias{plot.xs_profile}
 \title{Plot profile cross section}
 \usage{
-\method{plot}{xs_profile}(x, ..., extent, add = FALSE, exaggerate = 2)
+\method{plot}{xs_profile}(x, ..., extent = c("full", "bankline"), add = FALSE, exaggerate = 2)
 }
 \arguments{
 \item{x}{An xs_profile object}
 
 \item{...}{Additional arguments passed to plot}
+
+\item{extent}{Character string indicating the extent of the plot: "full" or
+"bankline". Defaults to "full".}
 
 \item{add}{Logical. Add to existing plot?}
 

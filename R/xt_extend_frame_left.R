@@ -22,7 +22,7 @@
 xt_extend_frame_left <- function(channel, extender) {
   checkmate::assert_class(channel, "xchan")
   checkmate::assert_class(extender, "xchan_extender")
-  
+
   # For now, return placeholder implementation
   # This will be implemented to extend only the left side
   channel

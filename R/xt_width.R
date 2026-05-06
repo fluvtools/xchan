@@ -7,6 +7,7 @@
 #' @examples
 #' xt_width(demo_channel)
 #' @export
+#' @rdname widths
 xt_width <- function(channel) {
   checkmate::assert_class(channel, "xchan")
   if (xt_has_plan(channel)) {
@@ -16,4 +17,3 @@ xt_width <- function(channel) {
   prof <- xt_column_profile(channel)
   vapply(prof, xt_width_profile, FUN.VALUE = numeric(1))
 }
-

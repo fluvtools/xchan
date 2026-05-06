@@ -85,7 +85,10 @@ xt_column_plan <- function(channel) {
 
   validation_result <- xt_validate_plan(value)
   if (!validation_result$valid) {
-    stop("Invalid plan view cross sections: ", paste(validation_result$issues, collapse = "; "))
+    stop(
+      "Invalid plan view cross sections: ",
+      paste(validation_result$issues, collapse = "; ")
+    )
   }
 
   if (is.null(plan_colname)) {

@@ -25,7 +25,10 @@ xt_trace_centerline <- function(channel) {
   midpoints <- lapply(plan, function(xs) {
     coords <- sf::st_coordinates(xs)
     # Cross sections are lines; take the midpoint between their endpoints.
-    endpoint_midpoint <- colMeans(rbind(coords[1, 1:2], coords[nrow(coords), 1:2]))
+    endpoint_midpoint <- colMeans(rbind(
+      coords[1, 1:2],
+      coords[nrow(coords), 1:2]
+    ))
     sf::st_point(endpoint_midpoint)
   })
 

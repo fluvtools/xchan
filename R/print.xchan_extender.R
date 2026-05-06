@@ -5,7 +5,7 @@
 #' @exportS3Method base::print
 print.xchan_extender <- function(x, ...) {
   cat("Extender:", attr(x, "name"), "\n")
-  
+
   # Get function arguments
   args <- formals(x)
   if (length(args) > 0) {
@@ -20,6 +20,6 @@ print.xchan_extender <- function(x, ...) {
       }
     }
   }
-  
+
   invisible(x)
 }

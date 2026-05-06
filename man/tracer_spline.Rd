@@ -8,8 +8,6 @@ tracer_spline(ngrid = 200)
 }
 \arguments{
 \item{ngrid}{Number of points to generate along each bankline.}
-
-\item{...}{Other arguments to pass to \code{stats::splinefun}.}
 }
 \value{
 A tracer object that takes a channel and returns banklines.

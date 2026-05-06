@@ -19,10 +19,12 @@
 #' xt_erosion_width(channel, dv = 50, side = "left")
 #' xt_erosion_width(channel, dv = 50, side = side_left(0.75))
 #' @export
-xt_erosion_width <- function(channel,
-                             dv,
-                             side = "both",
-                             error_on_overflow = TRUE) {
+xt_erosion_width <- function(
+  channel,
+  dv,
+  side = "both",
+  error_on_overflow = TRUE
+) {
   checkmate::assert_class(channel, "xchan")
 
   profile <- xt_column_profile(channel)
@@ -102,7 +104,9 @@ xt_erosion_width_left <- function(xs, dv, error_on_overflow = TRUE) {
       valley = "left"
     ),
     error = function(e) {
-      if (grepl("Requested volume exceeds", conditionMessage(e), fixed = TRUE)) {
+      if (
+        grepl("Requested volume exceeds", conditionMessage(e), fixed = TRUE)
+      ) {
         NA_real_
       } else {
         stop(e)

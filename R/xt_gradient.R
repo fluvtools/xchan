@@ -26,14 +26,16 @@
 #' # Use wider window for smoother gradient
 #' gradient <- xt_gradient(channel, .before = 2L, .after = 2L, elevation = elevation_bank(.f = mean))
 #' @export
-xt_gradient <- function(channel,
-                        ...,
-                        .before = 1L,
-                        .after = 1L,
-                        .complete = FALSE,
-                        elevation = elevation_bank(),
-                        centerline = NULL) {
-  ellipsis::check_dots_empty()
+xt_gradient <- function(
+  channel,
+  ...,
+  .before = 1L,
+  .after = 1L,
+  .complete = FALSE,
+  elevation = elevation_bank(),
+  centerline = NULL
+) {
+  rlang::check_dots_empty()
   checkmate::assert_class(channel, "xchan")
 
   # Get elevation values for each cross-section

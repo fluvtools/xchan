@@ -56,7 +56,10 @@
 #' @export
 xt_profile <- function(coords, bankpoints) {
   checkmate::assert_matrix(
-    coords, mode = "numeric", any.missing = FALSE, ncols = 2
+    coords,
+    mode = "numeric",
+    any.missing = FALSE,
+    ncols = 2
   )
   checkmate::assert_numeric(bankpoints, any.missing = FALSE, min.len = 2L)
   if (length(bankpoints) %% 2 != 0) {

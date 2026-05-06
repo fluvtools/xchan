@@ -39,7 +39,6 @@ tracer_linear <- function() {
 }
 
 
-
 #' Create a DEM tracer for bankline generation
 #'
 #' @param dem DEM raster for contour tracing
@@ -49,8 +48,8 @@ tracer_linear <- function() {
 tracer_dem <- function(dem, contour_interval = 1) {
   checkmate::assert_class(dem, "SpatRaster")
   f <- function(channel) {
-      # Placeholder for DEM contour tracing algorithm
-      stop("DEM tracer not yet implemented")
+    # Placeholder for DEM contour tracing algorithm
+    stop("DEM tracer not yet implemented")
   }
   structure(
     f,
@@ -59,5 +58,3 @@ tracer_dem <- function(dem, contour_interval = 1) {
     class = "xchan_tracer"
   )
 }
-
-

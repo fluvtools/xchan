@@ -20,15 +20,20 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
 URL: https://stochagbem.github.io/xchan/
 Imports:
-    sf,
     centerline,
-    vctrs,
-    lwgeom,
-    stats,
+    checkmate,
+    concaveman,
     graphics,
-    utils
+    lwgeom,
+    rlang,
+    sf,
+    stats,
+    terra,
+    utils,
+    vctrs
 Suggests: 
     testthat (>= 3.0.0),
+    tibble,
     units
 Config/testthat/edition: 3
 Depends: 

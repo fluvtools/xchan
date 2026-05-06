@@ -10,7 +10,7 @@
 #' @returns The original `sxc` object, with additional island bankpoints in between
 #' the left and right bank points, where applicable. If there are no islands, the
 #' cross section remains unchanged.
-inject_islands <- function(sxc, banklines){
+inject_islands <- function(sxc, banklines) {
   checkmate::assert_class(sxc, "sxc")
   checkmate::assert_class(banklines, "sfc")
   crs <- sf::st_crs(sxc)
@@ -20,7 +20,7 @@ inject_islands <- function(sxc, banklines){
     sf::st_coordinates(geom)[, 1:2, drop = FALSE]
   })
   multi_line <- sf::st_sfc(
-    lapply(coords_list, \(x) sf::st_multilinestring(list(x))),
+    lapply(coords_list, function(x) sf::st_multilinestring(list(x))),
     crs = crs
   )
   xt_sxc(multi_line)

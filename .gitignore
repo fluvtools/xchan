@@ -5,5 +5,5 @@
 docs
 *.DS_Store
 .vscode/
-
+air.toml
 **.tif.aux.xml
