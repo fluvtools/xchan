@@ -2,25 +2,50 @@
 % Please edit documentation in R/xt_width.R, R/xt_width_-b.R
 \name{xt_width}
 \alias{xt_width}
+\alias{xt_width.xchan}
+\alias{xt_width.xs_profile}
 \alias{xt_width_lb}
 \alias{xt_width_rb}
-\title{Get Channel Width}
+\title{Width of cross sections}
 \usage{
-xt_width(channel)
+xt_width(x, ...)
+
+\method{xt_width}{xchan}(x, ...)
+
+\method{xt_width}{xs_profile}(x, ...)
 
 xt_width_lb(xs)
 
 xt_width_rb(xs)
 }
 \arguments{
-\item{channel}{Channel object.}
+\item{x}{A \code{xchan} or \code{xs_profile} object.}
+
+\item{...}{Unused (reserved for methods).}
+
+\item{xs}{\code{xs_profile}; left/right half-width helpers below.}
 }
 \value{
-Numeric vector of widths of the channel's cross sections.
+For \code{xchan}: a numeric vector with one width per row.
+For \code{xs_profile}: a non-negative numeric scalar.
 }
 \description{
-Calculate the width of a channel object.
+\code{xt_width()} returns geometric width. For a \code{xchan} object, this is typically one
+value per cross section: from planimetric line lengths when a plan column
+exists, otherwise from profile geometry. For a single \code{xs_profile}
+object, it is the span along the profile horizontal axis between the
+outermost left and right banks (the same convention as
+\code{\link[=xt_generate_profile]{xt_generate_profile()}} and \code{\link[=xt_profile]{xt_profile()}}).
 }
 \examples{
-xt_width(demo_channel)
+library(sf)
+seg <- st_sfc(
+  st_linestring(matrix(c(-1, 0, 1, 0), ncol = 2, byrow = TRUE)),
+  crs = 3005
+)
+coords <- matrix(c(-1, 0, 0, -1, 1, 0), ncol = 2, byrow = TRUE)
+xs <- xt_profile(coords, bankpoints = c(-1, 1))
+xt_width(xs)
+
+# xt_width(demo_channel)
 }

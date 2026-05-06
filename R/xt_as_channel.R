@@ -75,7 +75,9 @@ xt_as_channel.numeric <- function(x, profile = NULL, ..., crs = NULL) {
     prof_col <- "profile"
     df$profile <- profile
   }
-  new_channel(df, plan_col = "plan", profile_col = prof_col)
+  out <- new_channel(df, plan_col = "plan", profile_col = prof_col)
+  xt_validate_plan_profile_widths(out)
+  out
 }
 
 #' @rdname xt_as_channel
@@ -100,7 +102,9 @@ xt_as_channel.sfc <- function(x, profile = NULL, ..., crs = NULL) {
     prof_col <- "profile"
     df$profile <- profile
   }
-  new_channel(df, plan_col = "plan", profile_col = prof_col)
+  out <- new_channel(df, plan_col = "plan", profile_col = prof_col)
+  xt_validate_plan_profile_widths(out)
+  out
 }
 
 #' @rdname xt_as_channel
@@ -134,7 +138,9 @@ xt_as_channel.data.frame <- function(
     x[[plan_col]] <- sf::st_set_crs(x[[plan_col]], crs)
   }
 
-  new_channel(x, plan_col = plan_col, profile_col = profile_col)
+  out <- new_channel(x, plan_col = plan_col, profile_col = profile_col)
+  xt_validate_plan_profile_widths(out)
+  out
 }
 
 #' @rdname xt_as_channel

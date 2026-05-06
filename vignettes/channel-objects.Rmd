@@ -39,6 +39,12 @@ extra columns in `xt_channel()`). When you **already** have a data frame, add an
 extra variables as columns on that frame first, then call `xt_as_channel()` ---
 or use `xt_channel()` to bind plan, profile, and other columns in one step.
 
+When both plan and profile columns are supplied, construction checks that each
+profile spans the same horizontal distance as its planimetric cross section
+(width from `xt_width()` matches between the two). The same [xt_width()]
+function also accepts a single `xs_profile` object if you need that width in
+isolation.
+
 ### From Numeric Vectors (Widths)
 
 ```{r numeric-input}

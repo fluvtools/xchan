@@ -1,3 +1,4 @@
+#' @param xs `xs_profile`; left/right half-width helpers below.
 #' @export
 #' @rdname widths
 xt_width_lb <- function(xs) {
