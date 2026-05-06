@@ -9,9 +9,11 @@ xt_channel(.plan, .profile = NULL, ...)
 \arguments{
 \item{.plan}{Planimetric cross sections as \code{sfc_LINESTRING}.}
 
-\item{.profile}{Optional list of \code{xs_profile} objects, same length as \code{.plan}.}
+\item{.profile}{Optional list of \code{xs_profile} objects, same length as
+\code{.plan}.}
 
-\item{...}{Additional columns for the channel table (vectors or list-columns).}
+\item{...}{Additional columns for the channel table (vectors or
+list-columns).}
 }
 \value{
 An object of class \code{"xchan"}.
@@ -19,7 +21,10 @@ An object of class \code{"xchan"}.
 \description{
 Assembles a channel table from \strong{required} planimetric cross sections
 (\code{sfc_LINESTRING}), optional profile cross sections (\code{xs_profile} list), and
-optional extra columns via \code{...}, in the same spirit as \code{\link[sf:sf]{sf::st_sf()}}.
+optional extra columns via \code{...}, in the same spirit as \code{\link[sf:sf]{sf::st_sf()}}. To
+\strong{coerce} widths, geometries, or an existing table instead, see
+\code{\link[=xt_as_channel]{xt_as_channel()}} (extra columns via \code{...} apply when building from
+widths/\code{sfc}; add columns on the data frame first when coercing a table).
 }
 \details{
 Every channel has a plan column; profile is optional. Set CRS on \code{.plan}

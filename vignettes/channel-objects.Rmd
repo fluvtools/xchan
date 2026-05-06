@@ -33,6 +33,12 @@ Use [xt_channel()] when you already have `sfc_LINESTRING` (and optionally
 `xs_profile` objects) ready to bind into a table, similar to [sf::st_sf()]. Set CRS
 on plan geometries with `sf::st_set_crs()` before constructing if needed.
 
+When `xt_as_channel()` **creates** the table from a width vector or from `sfc`
+geometries, you can pass extra channel columns as further named arguments (like
+extra columns in `xt_channel()`). When you **already** have a data frame, add any
+extra variables as columns on that frame first, then call `xt_as_channel()` ---
+or use `xt_channel()` to bind plan, profile, and other columns in one step.
+
 ### From Numeric Vectors (Widths)
 
 ```{r numeric-input}
@@ -62,6 +68,10 @@ xt_width(channel)
 ```
 
 ### From Data Frames
+
+Put metadata and other fields on the data frame **before** coercing; optional
+CRS can be set on the plan column with `xt_as_channel(..., crs = )` or by
+setting CRS on the geometries beforehand.
 
 ```{r df-input}
 # Data frame whose `plan` column holds LINESTRING geometries

@@ -5,9 +5,19 @@
 #' channel from planimetric (and optional profile) columns. Coercion methods
 #' always attach a plan column; profile remains optional.
 #'
+#' **Extra columns (`...`):** When the method **builds** the channel table from
+#' widths or geometries (`numeric`, `sfc`, `sfg`), named arguments in `...`
+#' become extra columns (same recycling as [xt_channel()]). When you **already
+#' have a data frame**, add variables as columns on that table first, then call
+#' `xt_as_channel()` --- `...` is not used there (see [xt_channel()] if you need
+#' to assemble plan/profile from vectors in one call).
+#'
 #' @param x Object to coerce (numeric vector of widths, `sfc`, `data.frame`, or
 #'   existing `xchan`).
-#' @param ... Additional arguments passed to methods.
+#' @param ... Used only by `numeric`, `sfc`, and `sfg` methods: named arguments
+#'   become extra columns in the channel table (recycled like [xt_channel()]).
+#'   Not used when coercing a `data.frame` (must be empty). Ignored when coercing
+#'   an existing `xchan`, with a warning if non-empty.
 #'
 #' @returns An object of class `"xchan"`.
 #'
@@ -30,6 +40,7 @@
 #'
 #' df <- data.frame(section = c("u", "v"), roughness = c(0.02, 0.03))
 #' df$plan <- seg
+#' # Extra variables live on `df` before coercing (not via `...`)
 #' xt_as_channel(df, plan_col = "plan")
 #'
 #' @export
@@ -39,8 +50,9 @@ xt_as_channel <- function(x, ...) {
 
 #' @rdname xt_as_channel
 #' @param profile Optional list of `xs_profile` objects (same length as plan).
-#' @param crs For `numeric`, `sfc`, and `data.frame` methods: CRS applied to plan
-#'   geometries via [sf::st_set_crs()]. `NULL` leaves existing CRS unchanged.
+#' @param crs For `numeric`, `sfc`, and `data.frame` methods:
+#'   CRS applied to plan geometries via [sf::st_set_crs()]. `NULL` leaves
+#'   existing CRS unchanged.
 #' @export
 xt_as_channel.numeric <- function(x, profile = NULL, ..., crs = NULL) {
   checkmate::assert_numeric(x, lower = 0, any.missing = FALSE)
@@ -97,13 +109,19 @@ xt_as_channel.sfc <- function(x, profile = NULL, ..., crs = NULL) {
 #' @param profile_col Name of the profile list-column, if any.
 #' @export
 xt_as_channel.data.frame <- function(
-    x,
-    plan_col,
-    profile_col = NULL,
-    crs = NULL
-  ) {
+  x,
+  plan_col,
+  profile_col = NULL,
+  crs = NULL,
+  ...
+) {
+  if (...length() > 0) {
+    stop("`...` is not used when coercing a data frame.")
+  }
   if (missing(plan_col) || is.null(plan_col)) {
-    stop("`plan_col` must name the column containing planimetric cross sections.")
+    stop(
+      "`plan_col` must name the column containing planimetric cross sections."
+    )
   }
   if (!plan_col %in% names(x)) {
     stop("Plan column '", plan_col, "' not found in data frame")

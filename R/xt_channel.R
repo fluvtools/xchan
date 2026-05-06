@@ -2,7 +2,10 @@
 #'
 #' Assembles a channel table from **required** planimetric cross sections
 #' (`sfc_LINESTRING`), optional profile cross sections (`xs_profile` list), and
-#' optional extra columns via `...`, in the same spirit as [sf::st_sf()].
+#' optional extra columns via `...`, in the same spirit as [sf::st_sf()]. To
+#' **coerce** widths, geometries, or an existing table instead, see
+#' [xt_as_channel()] (extra columns via `...` apply when building from
+#' widths/`sfc`; add columns on the data frame first when coercing a table).
 #'
 #' Every channel has a plan column; profile is optional. Set CRS on `.plan`
 #' with [sf::st_crs()] / [sf::st_set_crs()] before calling if needed.
@@ -11,8 +14,10 @@
 #' Additional columns are recycled with [vctrs::vec_recycle_common()].
 #'
 #' @param .plan Planimetric cross sections as `sfc_LINESTRING`.
-#' @param .profile Optional list of `xs_profile` objects, same length as `.plan`.
-#' @param ... Additional columns for the channel table (vectors or list-columns).
+#' @param .profile Optional list of `xs_profile` objects, same length as
+#'    `.plan`.
+#' @param ... Additional columns for the channel table (vectors or
+#'   list-columns).
 #'
 #' @returns An object of class `"xchan"`.
 #'

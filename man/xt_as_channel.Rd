@@ -18,7 +18,7 @@ xt_as_channel(x, ...)
 
 \method{xt_as_channel}{sfc}(x, profile = NULL, ..., crs = NULL)
 
-\method{xt_as_channel}{data.frame}(x, plan_col, profile_col = NULL, crs = NULL)
+\method{xt_as_channel}{data.frame}(x, plan_col, profile_col = NULL, crs = NULL, ...)
 
 \method{xt_as_channel}{xchan}(x, crs = NULL, ...)
 
@@ -28,12 +28,16 @@ xt_as_channel(x, ...)
 \item{x}{Object to coerce (numeric vector of widths, \code{sfc}, \code{data.frame}, or
 existing \code{xchan}).}
 
-\item{...}{Additional arguments passed to methods.}
+\item{...}{Used only by \code{numeric}, \code{sfc}, and \code{sfg} methods: named arguments
+become extra columns in the channel table (recycled like \code{\link[=xt_channel]{xt_channel()}}).
+Not used when coercing a \code{data.frame} (must be empty). Ignored when coercing
+an existing \code{xchan}, with a warning if non-empty.}
 
 \item{profile}{Optional list of \code{xs_profile} objects (same length as plan).}
 
-\item{crs}{For \code{numeric}, \code{sfc}, and \code{data.frame} methods: CRS applied to plan
-geometries via \code{\link[sf:st_crs]{sf::st_set_crs()}}. \code{NULL} leaves existing CRS unchanged.}
+\item{crs}{For \code{numeric}, \code{sfc}, and \code{data.frame} methods:
+CRS applied to plan geometries via \code{\link[sf:st_crs]{sf::st_set_crs()}}. \code{NULL} leaves
+existing CRS unchanged.}
 
 \item{plan_col}{Name of the column holding planimetric \code{sfc_LINESTRING}
 geometries (required).}
@@ -48,6 +52,14 @@ Convert widths, line geometries, or a data frame into a channel object.
 This is the coercion analogue of \code{\link[=xt_channel]{xt_channel()}}, which \strong{constructs} a
 channel from planimetric (and optional profile) columns. Coercion methods
 always attach a plan column; profile remains optional.
+}
+\details{
+\strong{Extra columns (\code{...}):} When the method \strong{builds} the channel table from
+widths or geometries (\code{numeric}, \code{sfc}, \code{sfg}), named arguments in \code{...}
+become extra columns (same recycling as \code{\link[=xt_channel]{xt_channel()}}). When you \strong{already
+have a data frame}, add variables as columns on that table first, then call
+\code{xt_as_channel()} --- \code{...} is not used there (see \code{\link[=xt_channel]{xt_channel()}} if you need
+to assemble plan/profile from vectors in one call).
 }
 \examples{
 # Synthetic widths (integer positions along the channel)
@@ -66,6 +78,7 @@ xt_as_channel(seg)
 
 df <- data.frame(section = c("u", "v"), roughness = c(0.02, 0.03))
 df$plan <- seg
+# Extra variables live on `df` before coercing (not via `...`)
 xt_as_channel(df, plan_col = "plan")
 
 }
