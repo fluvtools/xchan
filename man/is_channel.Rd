@@ -13,5 +13,5 @@ is_channel(x)
 Logical; TRUE if the test passes.
 }
 \description{
-Checks whether an object inherits the "sxchan" class.
+Checks whether an object inherits the "xchan" class.
 }

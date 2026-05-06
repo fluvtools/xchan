@@ -1,10 +1,10 @@
-#' Print method for sxchan_extender objects
+#' Print method for xchan_side objects
 #'
-#' @param x An extender object
+#' @param x A side object
 #' @param ... Additional arguments (ignored)
 #' @exportS3Method base::print
-print.sxchan_extender <- function(x, ...) {
-  cat("Extender:", attr(x, "name"), "\n")
+print.xchan_side <- function(x, ...) {
+  cat("Side:", attr(x, "name"), "\n")
   
   # Get function arguments
   args <- formals(x)

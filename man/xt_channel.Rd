@@ -12,7 +12,7 @@ xt_channel(x, ...)
 \item{...}{Additional columns for the channel data frame}
 }
 \value{
-A channel object with class "sxchan"
+A channel object with class "xchan"
 }
 \description{
 Creates a channel object from various inputs. A channel object is a

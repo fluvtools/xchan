@@ -24,7 +24,7 @@
 #' @rdname xt_as_sf
 #' @export
 xt_as_sfc <- function(channel, what = c("plan", "profile", "3d")) {
-  checkmate::assert_class(channel, "sxchan")
+  checkmate::assert_class(channel, "xchan")
   what <- rlang::arg_match(what)
 
   plan <- xt_column_plan(channel)
@@ -71,7 +71,7 @@ xt_as_sfc <- function(channel, what = c("plan", "profile", "3d")) {
 #' @rdname xt_as_sf
 #' @export
 xt_as_sf <- function(channel, what = c("plan", "profile", "3d"), geom_col = "geometry") {
-  checkmate::assert_class(channel, "sxchan")
+  checkmate::assert_class(channel, "xchan")
   what <- rlang::arg_match(what)
   geometry <- xt_as_sfc(channel, what = what)
   xt_column_plan(channel) <- NULL

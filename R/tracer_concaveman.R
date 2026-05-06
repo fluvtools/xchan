@@ -14,6 +14,6 @@ tracer_concaveman <- function(...) {
     f,
     name = "Concaveman Tracer",
     params = list(...),
-    class = "sxchan_tracer"
+    class = "xchan_tracer"
   )
 }

@@ -24,9 +24,10 @@
 #' xt_widen(channel, dw = 10, side = side_left(0.75))
 #' xt_widen(channel, dv = 5, side = "right")
 #' @export
-xt_widen <- function(channel, ..., dw, dv, side = "both") {
+xt_widen <- function(channel, ..., dw, dv, side = "both",
+                     error_on_overflow = TRUE) {
   ellipsis::check_dots_empty()
-  checkmate::assert_class(channel, "sxchan")
+  checkmate::assert_class(channel, "xchan")
 
   if (!xor(missing(dw), missing(dv))) {
     stop("Must specify either `dw` or `dv`, but not both.")
@@ -51,14 +52,18 @@ xt_widen <- function(channel, ..., dw, dv, side = "both") {
     dw_left <- xt_erosion_width(
       channel,
       dv * prop_left,
-      side = "left"
+      side = "left",
+      error_on_overflow = error_on_overflow
     )
     dw_right <- xt_erosion_width(
       channel,
       dv * (1 - prop_left),
-      side = "right"
+      side = "right",
+      error_on_overflow = error_on_overflow
     )
-    prop_left <- dw_left / (dw_left + dw_right)
+    # Avoid 0 / 0 when neither side eroded.
+    denom <- dw_left + dw_right
+    prop_left <- ifelse(denom > 0, dw_left / denom, 0.5)
     dw <- dw_left + dw_right
   }
   dw <- vctrs::vec_recycle(dw, n_sections)

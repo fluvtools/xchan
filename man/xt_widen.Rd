@@ -4,7 +4,7 @@
 \alias{xt_widen}
 \title{Widen a channel}
 \usage{
-xt_widen(channel, ..., dw, dv, side = "both")
+xt_widen(channel, ..., dw, dv, side = "both", error_on_overflow = TRUE)
 }
 \arguments{
 \item{channel}{Channel object}

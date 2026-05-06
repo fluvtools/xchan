@@ -18,7 +18,7 @@
 #' elevations <- xt_elevation(channel, reference = elevation_bank(.f = mean))
 #' @export
 xt_elevation <- function(channel, reference) {
-  checkmate::assert_class(channel, "sxchan")
+  checkmate::assert_class(channel, "xchan")
   
   # Execute the elevation specification
   reference(channel)

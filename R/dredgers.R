@@ -49,7 +49,7 @@ dredger_rectangle <- function(depth, wse = elevation_bank()) {
     f,
     name = "Rectangle Dredger",
     params = list(depth = depth, wse = wse),
-    class = "sxchan_dredger"
+    class = "xchan_dredger"
   )
 }
 

@@ -34,7 +34,7 @@ tracer_linear <- function() {
     f,
     name = "Linear Tracer",
     params = list(),
-    class = "sxchan_tracer"
+    class = "xchan_tracer"
   )
 }
 
@@ -56,7 +56,7 @@ tracer_dem <- function(dem, contour_interval = 1) {
     f,
     name = "DEM Tracer",
     params = list(dem = dem, contour_interval = contour_interval),
-    class = "sxchan_tracer"
+    class = "xchan_tracer"
   )
 }
 

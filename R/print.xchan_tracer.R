@@ -1,10 +1,10 @@
-#' Print method for sxchan_dredger objects
+#' Print method for xchan_tracer objects
 #'
-#' @param x A dredger object
+#' @param x A tracer object
 #' @param ... Additional arguments (ignored)
 #' @exportS3Method base::print
-print.sxchan_dredger <- function(x, ...) {
-  cat("Dredger:", attr(x, "name"), "\n")
+print.xchan_tracer <- function(x, ...) {
+  cat("Tracer:", attr(x, "name"), "\n")
   
   # Show stored parameters
   params <- attr(x, "params")

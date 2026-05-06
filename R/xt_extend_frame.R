@@ -28,7 +28,7 @@
 #' channel <- xt_extend_frame(channel, extender = extender_flat(extent = 20, elevation = elevation_topo_left()))
 #' @export
 xt_extend_frame <- function(channel, extender) {
-  checkmate::assert_class(channel, "sxchan")
+  checkmate::assert_class(channel, "xchan")
   
   profile <- xt_column_profile(channel)
   if (is.null(profile)) {
@@ -36,7 +36,7 @@ xt_extend_frame <- function(channel, extender) {
   }
   
   # Validate extender
-  checkmate::assert_class(extender, "sxchan_extender")
+  checkmate::assert_class(extender, "xchan_extender")
   
   # Get extension parameters from extender
   extender_params <- extender(channel)
