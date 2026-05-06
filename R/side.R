@@ -43,10 +43,16 @@ side_right <- function(prop = 1) {
 #' @export
 side_both <- function(prop_left = 0.5, prop_right = 0.5) {
   checkmate::assert_numeric(
-    prop_left, lower = 0, upper = 1, any.missing = FALSE
+    prop_left,
+    lower = 0,
+    upper = 1,
+    any.missing = FALSE
   )
   checkmate::assert_numeric(
-    prop_right, lower = 0, upper = 1, any.missing = FALSE
+    prop_right,
+    lower = 0,
+    upper = 1,
+    any.missing = FALSE
   )
 
   if (!isTRUE(all.equal(prop_left + prop_right, rep(1, length(prop_left))))) {
@@ -56,5 +62,10 @@ side_both <- function(prop_left = 0.5, prop_right = 0.5) {
   f <- function(cross_sections) {
     vctrs::vec_recycle(prop_left, size = xt_n_sections(cross_sections))
   }
-  structure(f, name = "both", params = list(prop_left = prop_left, prop_right = prop_right), class = "xchan_side")
+  structure(
+    f,
+    name = "both",
+    params = list(prop_left = prop_left, prop_right = prop_right),
+    class = "xchan_side"
+  )
 }

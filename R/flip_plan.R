@@ -6,6 +6,7 @@
 #' @param sxc Planimetric cross section (sxc) object.
 #' @returns The original cross section where each section is flipped,
 #' as if rotating each cross section by 180 degrees.
+#' @noRd
 flip_plan <- function(plan) {
   xt_validate_plan(plan)
   # Extract and flip coordinates

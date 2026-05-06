@@ -1,11 +1,16 @@
 #' Generate channel object from banklines
 #'
-#' Generate a channel object with planimetric cross sections from a bankline polygon.
+#' Generate a channel object with planimetric cross sections from a
+#' bankline polygon.
 #'
 #' @param banks Bankline polygon (sf POLYGON object)
-#' @param n Number of cross sections to generate (mutually exclusive with spacing and at)
-#' @param spacing Distance between cross sections (mutually exclusive with n and at)
-#' @param at Specific distances along centerline for cross sections (mutually exclusive with n and spacing)
+#' @param ... Additional arguments (ignored).
+#' @param n Number of cross sections to generate (mutually exclusive with
+#'   spacing and at)
+#' @param spacing Distance between cross sections (mutually exclusive with n
+#'   and at)
+#' @param at Specific distances along centerline for cross sections (mutually
+#'   exclusive with n and spacing)
 #' @param centerline Centerline multilinestring object. If NULL (the default),
 #' will be generated automatically using the centerline package.
 #' @returns A channel object with planimetric cross sections in the plan column.
@@ -27,9 +32,9 @@
 #' channel <- xt_generate_plan(bl, n = 100, centerline = demo_centerline)
 #' @export
 xt_generate_plan <- function(banks, ..., n, spacing, at, centerline = NULL) {
-  ellipsis::check_dots_empty()
+  rlang::check_dots_empty()
 
-  # Validate input parameters - exactly one of n, spacing, or at must be specified
+  # Validate input parameters: exactly one of n, spacing, or at is required.
   n_specified <- !missing(n)
   spacing_specified <- !missing(spacing)
   at_specified <- !missing(at)
@@ -78,40 +83,14 @@ xt_generate_plan <- function(banks, ..., n, spacing, at, centerline = NULL) {
     # given angle, for the first point in the centerline.
     calc_width <- function(angle) {
       seg <- span_banks_engine(
-        pts[i], angle, bankline = banks, maxd = maxd, intersect = TRUE,
+        pts[i],
+        angle,
+        bankline = banks,
+        maxd = maxd,
+        intersect = TRUE,
         reposition = FALSE
       )
       sf::st_length(seg)
-    }
-
-    # For all points except the first, the angles must be such that the
-    # cross section does not cross the previous one.
-    # Get angles of current point with previous segment's endpoints.
-    if (i > 1) {
-      prev_seg <- sf::st_cast(sf::st_sfc(xs[[i - 1]]), "POINT")
-
-      a1 <- xt_angle(pts[i], prev_seg[1])
-      a2 <- xt_angle(pts[i], prev_seg[2])
-      dtheta <- diff(range(c(a1, a2)))
-
-
-    }
-
-    # Angle formed by two points
-    #
-    # @returns Normally, the angle would be in radians, in (-pi, pi],
-    # where 0 means horizontal to the right, pi/2 means vertical up,
-    # -pi/2 means vertical down. However, cross sections are non-directional,
-    # and so the opposite angle is actually the same angle, too: for instance,
-    # pi/2 and -pi/2 both represent vertical cross sections. Therefore, the
-    # angle is wrapped to [0, pi).
-    xt_angle <- function(pt1, pt2) {
-      vec <- sf::st_coordinates(pt2) - sf::st_coordinates(pt1)
-      theta <- atan2(vec[2], vec[1])
-      if (theta < 0) {
-        theta <- theta + pi
-      }
-      theta
     }
 
     # Optimize on a grid of 50 points first, because this function
@@ -129,7 +108,11 @@ xt_generate_plan <- function(banks, ..., n, spacing, at, centerline = NULL) {
     # Use optimization to find the angle that minimizes the width
     res <- stats::optimize(calc_width, rng)$minimum
     xs[[i]] <- span_banks_engine(
-      pts[i], res, bankline = banks, maxd = maxd, intersect = TRUE,
+      pts[i],
+      res,
+      bankline = banks,
+      maxd = maxd,
+      intersect = TRUE,
       reposition = TRUE
     )[[1]]
   }

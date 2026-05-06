@@ -19,7 +19,8 @@ dredger_rectangle <- function(depth, wse = elevation_bank()) {
         f = function(prof, z) {
           xt_nodes_channel(prof) <- matrix(
             c(x_left, z, x_right, z),
-            ncol = 2, byrow = TRUE
+            ncol = 2,
+            byrow = TRUE
           )
         },
         profile,
@@ -31,12 +32,17 @@ dredger_rectangle <- function(depth, wse = elevation_bank()) {
         xt_profile(
           coords = matrix(
             c(
-              -w / 2, depth,
-              -w / 2, 0,
-              w / 2, 0,
-              w / 2, depth
+              -w / 2,
+              depth,
+              -w / 2,
+              0,
+              w / 2,
+              0,
+              w / 2,
+              depth
             ),
-            ncol = 2, byrow = TRUE
+            ncol = 2,
+            byrow = TRUE
           ),
           bankpoints = c(-w / 2, w / 2)
         )
@@ -52,4 +58,3 @@ dredger_rectangle <- function(depth, wse = elevation_bank()) {
     class = "xchan_dredger"
   )
 }
-

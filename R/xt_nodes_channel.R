@@ -11,6 +11,7 @@ xt_nodes_channel <- function(profile) {
 
 #' Important because in rectangular channels, there are two points with the
 #' same x value at the bank. We want the highest one to be the bank.
+#' @noRd
 i_bank_left <- function(nodes, x_left) {
   i_left_all <- which(nodes[, 1] == x_left)
   j_left_bank <- which(nodes[i_left_all, 2] == max(nodes[i_left_all, 2]))
@@ -41,7 +42,7 @@ i_channel <- function(nodes, x_left, x_right) {
   mat_left <- nodes[1:i_left, , drop = FALSE]
   mat_right <- nodes[i_right:nrow(nodes), , drop = FALSE]
   new_mat <- rbind(mat_left, value, mat_right)
-  
+
   # Update thalweg indices to point to the new minimum elevation points
   new_thal_indices <- which.min(value[, 2]) + i_left
   profile$coordinates <- new_mat

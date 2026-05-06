@@ -44,7 +44,12 @@ elevation_bank <- function(.f = min, ...) {
       numeric(1)
     )
   }
-  structure(fun, name = "bank", params = list(.f = .f), class = "xchan_elevation")
+  structure(
+    fun,
+    name = "bank",
+    params = list(.f = .f),
+    class = "xchan_elevation"
+  )
 }
 
 #' @rdname elevations
@@ -148,7 +153,12 @@ elevation_topo <- function(.f = mean, ...) {
       numeric(1)
     )
   }
-  structure(fun, name = "topo", params = list(.f = .f, ...), class = "xchan_elevation")
+  structure(
+    fun,
+    name = "topo",
+    params = list(.f = .f, ...),
+    class = "xchan_elevation"
+  )
 }
 
 #' Create a bottom elevation specification
@@ -189,5 +199,3 @@ elevation_bottom <- function(.f = mean, ...) {
     class = "xchan_elevation"
   )
 }
-
-

@@ -28,7 +28,13 @@ for rectangular dredging, DEM data for DEM-based dredging).
 channel_dredged <- xt_dredge(channel, dredger = dredger_rectangle(depth = 5))
 
 # Dredge to rectangular shape with custom water surface
-channel_dredged <- xt_dredge(channel, dredger = dredger_rectangle(depth = 5, wse = elevation_column("water_surface")))
+channel_dredged <- xt_dredge(
+  channel,
+  dredger = dredger_rectangle(
+    depth = 5,
+    wse = elevation_column("water_surface")
+  )
+)
 
 # Dredge using DEM method (when implemented)
 channel_dredged <- xt_dredge(channel, dredger = dredger_dem(my_dem, sample_freq = 1))

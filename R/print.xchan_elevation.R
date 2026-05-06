@@ -5,7 +5,7 @@
 #' @exportS3Method base::print
 print.xchan_elevation <- function(x, ...) {
   cat("Elevation:", attr(x, "name"), "\n")
-  
+
   # Show stored parameters
   params <- attr(x, "params")
   if (length(params) > 0) {
@@ -22,6 +22,6 @@ print.xchan_elevation <- function(x, ...) {
   } else {
     cat("Parameters: none\n")
   }
-  
+
   invisible(x)
 }

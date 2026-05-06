@@ -1,6 +1,7 @@
 #' Obtain interpolated points along a cross section
 #' @returns A matrix of points. Column one contains distances along the cross
 #' section; column two, the elevations.
+#' @noRd
 coords_interpolate <- function(coords, x) {
   checkmate::assert_matrix(coords, mode = "numeric", ncols = 2)
   checkmate::assert_numeric(x)

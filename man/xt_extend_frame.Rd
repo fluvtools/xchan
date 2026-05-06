@@ -36,8 +36,14 @@ channel <- xt_channel(c(10, 12, 8, 15, 11, 9))
 channel <- xt_extend_frame(channel, extender = extender_flat(extent = 20))
 
 # Sloped extension
-channel <- xt_extend_frame(channel, extender = extender_slope(extent = 30, slope = 0.02))
+channel <- xt_extend_frame(
+  channel,
+  extender = extender_slope(extent = 30, slope = 0.02)
+)
 
 # Different elevation reference
-channel <- xt_extend_frame(channel, extender = extender_flat(extent = 20, elevation = elevation_topo_left()))
+channel <- xt_extend_frame(
+  channel,
+  extender = extender_flat(extent = 20, elevation = elevation_topo_left())
+)
 }

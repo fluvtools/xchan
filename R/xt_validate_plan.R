@@ -19,7 +19,6 @@
 #'   cat(paste("-", result$issues, collapse = "\n"))
 #' }
 xt_validate_plan <- function(plan) {
-
   if (!inherits(plan, "sfc_LINESTRING")) {
     return(list(
       valid = FALSE,
@@ -35,9 +34,17 @@ xt_validate_plan <- function(plan) {
   valid_geoms <- sf::st_is_valid(plan)
   if (!all(valid_geoms)) {
     invalid_indices <- which(!valid_geoms)
-    issues <- c(issues, paste("Invalid geometries at indices:",
-                             paste(invalid_indices, collapse = ", ")))
-    details$valid_geometries <- list(valid = FALSE, invalid_indices = invalid_indices)
+    issues <- c(
+      issues,
+      paste(
+        "Invalid geometries at indices:",
+        paste(invalid_indices, collapse = ", ")
+      )
+    )
+    details$valid_geometries <- list(
+      valid = FALSE,
+      invalid_indices = invalid_indices
+    )
   } else {
     details$valid_geometries <- list(valid = TRUE)
   }

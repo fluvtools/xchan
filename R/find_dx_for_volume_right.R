@@ -83,11 +83,13 @@
 #' find_dx_for_volume_right(
 #'   0, x0 = 2.5, topo = topo, thalweg_height = 11, valley = "left"
 #' )
-find_dx_for_volume_right <- function(v,
-                                     x0,
-                                     topo,
-                                     thalweg_height,
-                                     valley = c("right", "left")) {
+find_dx_for_volume_right <- function(
+  v,
+  x0,
+  topo,
+  thalweg_height,
+  valley = c("right", "left")
+) {
   checkmate::assert_number(v, lower = 0)
   checkmate::assert_number(x0)
   checkmate::assert_matrix(topo, ncol = 2L, min.rows = 1L, mode = "numeric")
@@ -124,8 +126,8 @@ find_dx_for_volume_right <- function(v,
   crosses <- sign(y[-1]) * sign(y[-n_topo]) < 0
   x_cross <- x[-n_topo][crosses] +
     (0 - y[-n_topo][crosses]) *
-    (x[-1][crosses] - x[-n_topo][crosses]) /
-    (y[-1][crosses] - y[-n_topo][crosses])
+      (x[-1][crosses] - x[-n_topo][crosses]) /
+      (y[-1][crosses] - y[-n_topo][crosses])
   if (length(x_cross)) {
     topo <- inject_coords(topo, x = x_cross)
     topo <- topo[order(topo[, 1]), ]
@@ -156,7 +158,7 @@ find_dx_for_volume_right <- function(v,
     if (valley == "left") {
       return(x[1 + seg_idx[1]] - x0)
     } else {
-      return(x[1 + tail(seg_idx, 1)] - x0)
+      return(x[1 + utils::tail(seg_idx, 1)] - x0)
     }
   }
 
@@ -172,7 +174,7 @@ find_dx_for_volume_right <- function(v,
   # Heights & width for this segment
   h1 <- y[seg_idx]
   h2 <- y[seg_idx + 1]
-  w  <- widths[seg_idx]
+  w <- widths[seg_idx]
 
   # Solve for delta_x in trapezoid using quadratic equation
   # ax^2 + bx - v_remain = 0.
@@ -187,4 +189,3 @@ find_dx_for_volume_right <- function(v,
 
   delta_x
 }
-

@@ -1,10 +1,18 @@
 widen_plan <- function(plan, dw, prop_left) {
   validation <- xt_validate_plan(plan)
   if (!validation$valid) {
-    stop("Invalid plan view cross sections: ", paste(validation$issues, collapse = "; "))
+    stop(
+      "Invalid plan view cross sections: ",
+      paste(validation$issues, collapse = "; ")
+    )
   }
   checkmate::assert_numeric(dw)
-  checkmate::assert_numeric(prop_left, lower = 0, upper = 1, any.missing = FALSE)
+  checkmate::assert_numeric(
+    prop_left,
+    lower = 0,
+    upper = 1,
+    any.missing = FALSE
+  )
   dw <- vctrs::vec_recycle(dw, length(plan))
   prop_left <- vctrs::vec_recycle(prop_left, length(plan))
   dw_left <- dw * prop_left
@@ -17,7 +25,10 @@ widen_plan <- function(plan, dw, prop_left) {
 widen_plan_right <- function(plan, dw) {
   validation <- xt_validate_plan(plan)
   if (!validation$valid) {
-    stop("Invalid plan view cross sections: ", paste(validation$issues, collapse = "; "))
+    stop(
+      "Invalid plan view cross sections: ",
+      paste(validation$issues, collapse = "; ")
+    )
   }
   checkmate::assert_numeric(dw)
   dw <- vctrs::vec_recycle(dw, length(plan))
@@ -31,7 +42,7 @@ widen_plan_right <- function(plan, dw) {
     if (nrow(mat) < 2) {
       stop("Each plan cross section must have at least two vertices.")
     }
-    base_pt <- mat[1, 1:2]        # left
+    base_pt <- mat[1, 1:2] # left
     end_pt <- mat[nrow(mat), 1:2] # right
     vec <- end_pt - base_pt
     mag <- sqrt(sum(vec^2))

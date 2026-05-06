@@ -70,7 +70,11 @@ xt_as_sfc <- function(channel, what = c("plan", "profile", "3d")) {
 
 #' @rdname xt_as_sf
 #' @export
-xt_as_sf <- function(channel, what = c("plan", "profile", "3d"), geom_col = "geometry") {
+xt_as_sf <- function(
+  channel,
+  what = c("plan", "profile", "3d"),
+  geom_col = "geometry"
+) {
   checkmate::assert_class(channel, "xchan")
   what <- rlang::arg_match(what)
   geometry <- xt_as_sfc(channel, what = what)
@@ -79,5 +83,3 @@ xt_as_sf <- function(channel, what = c("plan", "profile", "3d"), geom_col = "geo
   channel[[geom_col]] <- geometry
   sf::st_as_sf(channel, sf_column_name = geom_col)
 }
-
-

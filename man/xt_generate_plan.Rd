@@ -9,11 +9,16 @@ xt_generate_plan(banks, ..., n, spacing, at, centerline = NULL)
 \arguments{
 \item{banks}{Bankline polygon (sf POLYGON object)}
 
-\item{n}{Number of cross sections to generate (mutually exclusive with spacing and at)}
+\item{...}{Additional arguments (ignored).}
 
-\item{spacing}{Distance between cross sections (mutually exclusive with n and at)}
+\item{n}{Number of cross sections to generate (mutually exclusive with
+spacing and at)}
 
-\item{at}{Specific distances along centerline for cross sections (mutually exclusive with n and spacing)}
+\item{spacing}{Distance between cross sections (mutually exclusive with n
+and at)}
+
+\item{at}{Specific distances along centerline for cross sections (mutually
+exclusive with n and spacing)}
 
 \item{centerline}{Centerline multilinestring object. If NULL (the default),
 will be generated automatically using the centerline package.}
@@ -22,7 +27,8 @@ will be generated automatically using the centerline package.}
 A channel object with planimetric cross sections in the plan column.
 }
 \description{
-Generate a channel object with planimetric cross sections from a bankline polygon.
+Generate a channel object with planimetric cross sections from a
+bankline polygon.
 }
 \details{
 This function takes the definition of "cross section" relative

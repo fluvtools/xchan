@@ -7,3 +7,7 @@
 ^docs$
 ^pkgdown$
 ^data-raw$
+^joss-paper\.(Rmd|html|pdf)$
+^paper\.bib$
+^[.]?air[.]toml$
+^\.vscode$

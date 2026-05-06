@@ -30,7 +30,10 @@ xt_distance_ds <- function(channel, flowline = NULL) {
     flowline <- xt_trace_centerline(channel)
   } else {
     # Validate that flowline is an sf LINESTRING
-    if (!inherits(flowline, "sfc") || !all(sf::st_geometry_type(flowline) == "LINESTRING")) {
+    if (
+      !inherits(flowline, "sfc") ||
+        !all(sf::st_geometry_type(flowline) == "LINESTRING")
+    ) {
       stop("Flowline must be an sf LINESTRING")
     }
   }
@@ -59,7 +62,12 @@ xt_distance_ds <- function(channel, flowline = NULL) {
       distances[i] <- 0
     } else {
       # For subsequent cross-sections, calculate distance along flowline
-      line_segment <- sf::st_linesubstring(flowline, 0, sf::st_line_locate_point(flowline, nearest_pt_on_line))
+      frac <- sf::st_line_project(
+        flowline,
+        nearest_pt_on_line,
+        normalized = TRUE
+      )
+      line_segment <- lwgeom::st_linesubstring(flowline, 0, frac)
       distances[i] <- sf::st_length(line_segment)
     }
   }

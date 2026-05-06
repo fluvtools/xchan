@@ -149,5 +149,3 @@ get_min_thalweg_coords <- function(profile) {
   checkmate::assert_class(profile, "xs_profile")
   profile$coordinates[get_min_thalweg_index(profile), ]
 }
-
-

@@ -19,10 +19,12 @@
 #' xt_erosion_volume(channel, width = 10, side = "left")
 #' xt_erosion_volume(channel, width = 10, side = side_left(0.75))
 #' @export
-xt_erosion_volume <- function(channel,
-                              width,
-                              side = "both",
-                              error_on_overflow = TRUE) {
+xt_erosion_volume <- function(
+  channel,
+  width,
+  side = "both",
+  error_on_overflow = TRUE
+) {
   checkmate::assert_class(channel, "xchan")
 
   profile <- xt_column_profile(channel)
@@ -45,9 +47,17 @@ xt_erosion_volume <- function(channel,
     dw_left <- width[i] * prop_left[i]
     dw_right <- width[i] - dw_left
 
-    v1 <- xt_erosion_volume_left(xs, dw_left, error_on_overflow = error_on_overflow)
+    v1 <- xt_erosion_volume_left(
+      xs,
+      dw_left,
+      error_on_overflow = error_on_overflow
+    )
     xs_flipped <- flip_profile(xs)
-    v2 <- xt_erosion_volume_left(xs_flipped, dw_right, error_on_overflow = error_on_overflow)
+    v2 <- xt_erosion_volume_left(
+      xs_flipped,
+      dw_right,
+      error_on_overflow = error_on_overflow
+    )
 
     volumes[i] <- v1 + v2
     censored[i] <- attr(v1, "censored") || attr(v2, "censored")

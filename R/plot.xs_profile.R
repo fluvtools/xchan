@@ -6,6 +6,8 @@
 #'
 #' @param x An xs_profile object
 #' @param ... Additional arguments passed to plot
+#' @param extent Character string indicating the extent of the plot: "full" or
+#'   "bankline". Defaults to "full".
 #' @param add Logical. Add to existing plot?
 #' @param exaggerate Single positive numeric. Vertical exaggeration factor;
 #' defaults to 2. See details.
@@ -23,13 +25,26 @@
 #' # Plot with vertical exaggeration
 #' plot(profile_object, exaggerate = 2)
 #' @exportS3Method base::plot
-plot.xs_profile <- function(x, ..., extent, add = FALSE, exaggerate = 2) {
+plot.xs_profile <- function(
+  x,
+  ...,
+  extent = c("full", "bankline"),
+  add = FALSE,
+  exaggerate = 2
+) {
+  extent <- rlang::arg_match(extent)
   x <- exaggerate_relief(x, exaggerate)
 
   if (!add) {
     # Create empty plot
-    plot(x$coordinates[, 1], x$coordinates[, 2], type = "n",
-         xlab = "Distance", ylab = "Elevation", ...)
+    plot(
+      x$coordinates[, 1],
+      x$coordinates[, 2],
+      type = "n",
+      xlab = "Distance",
+      ylab = "Elevation",
+      ...
+    )
   }
 
   # Plot the main profile line
@@ -43,7 +58,7 @@ plot.xs_profile <- function(x, ..., extent, add = FALSE, exaggerate = 2) {
 
   # Plot bank points
   bank_coords <- get_bank_coords(x)
-  points(
+  graphics::points(
     bank_coords[, 1],
     bank_coords[, 2],
     col = "red",

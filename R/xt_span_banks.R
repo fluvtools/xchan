@@ -28,13 +28,22 @@ xt_span_banks <- function(pt, angle, bankline) {
     (bb[["xmax"]] - bb[["xmin"]])^2 + (bb[["ymax"]] - bb[["ymin"]])^2
   )
   span_banks_engine(
-    pt, angle, bankline = bankline, maxd = maxd, intersect = TRUE,
+    pt,
+    angle,
+    bankline = bankline,
+    maxd = maxd,
+    intersect = TRUE,
     reposition = TRUE
   )
 }
 
 span_banks_engine <- function(
-    pt, angle, bankline, maxd, intersect, reposition
+  pt,
+  angle,
+  bankline,
+  maxd,
+  intersect,
+  reposition
 ) {
   if (!identical(bankline, sf::st_geometry(bankline))) {
     stop("bankline input must be a geometry.")

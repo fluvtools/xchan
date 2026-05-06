@@ -10,37 +10,52 @@
 #' @export
 xt_width_active <- function(channel) {
   checkmate::assert_class(channel, "xchan")
-  
+
   profile <- xt_column_profile(channel)
   if (is.null(profile)) {
     stop("Channel object must have profile cross sections")
   }
-  
+
   widths <- numeric(length(profile))
-  
+
   for (i in seq_along(profile)) {
     xs <- profile[[i]]
-    
+
     # Get all coordinates and sort by distance
     all_coords <- xs$coordinates[order(xs$coordinates[, 1]), , drop = FALSE]
-    
+
     # Get bank distances from the new structure
     left_bank_dist <- min(xs$banks)
     right_bank_dist <- max(xs$banks)
-    
+
     # Get bank elevations
-    left_bank_coords <- xs$coordinates[xs$coordinates[, 1] == left_bank_dist, , drop = FALSE]
-    right_bank_coords <- xs$coordinates[xs$coordinates[, 1] == right_bank_dist, , drop = FALSE]
-    left_bank_elev <- if (nrow(left_bank_coords) > 0) left_bank_coords[1, 2] else 0
-    right_bank_elev <- if (nrow(right_bank_coords) > 0) right_bank_coords[1, 2] else 0
-    
+    left_bank_coords <- xs$coordinates[
+      xs$coordinates[, 1] == left_bank_dist,
+      ,
+      drop = FALSE
+    ]
+    right_bank_coords <- xs$coordinates[
+      xs$coordinates[, 1] == right_bank_dist,
+      ,
+      drop = FALSE
+    ]
+    left_bank_elev <- if (nrow(left_bank_coords) > 0) {
+      left_bank_coords[1, 2]
+    } else {
+      0
+    }
+    right_bank_elev <- if (nrow(right_bank_coords) > 0) {
+      right_bank_coords[1, 2]
+    } else {
+      0
+    }
+
     # Calculate active width (water width)
     widths[i] <- right_bank_dist - left_bank_dist
   }
-  
+
   widths
 }
-
 
 # #' Calculate XS width when there are islands or not
 # #'

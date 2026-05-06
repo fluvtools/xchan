@@ -2,12 +2,13 @@
 #'
 #' @param channel Channel object
 #' @param ... Additional arguments (ignored)
-#' @param dw The total width to add to the channel. Must be a numeric value
-#'   and cannot be used with `dv`.
+#' @param dw The total width to add to the channel. Must be a positive numeric
+#'   value and cannot be used with `dv`.
 #' @param dv The total volume to remove to widen the channel. Must be a
-#'   numeric value and cannot be used with `dw`.
+#'   positive numeric value and cannot be used with `dw`.
 #' @param side A specification for how to distribute the widening between
-#' left and right banks. Built-in side functions include "left", "right", and "both".
+#'   left and right banks, from the `side_` family of functions. Shorthand
+#'   options include "left", "right", and "both" (50-50).
 #'
 #' A side object is a function of channels that determines the amount
 #' of erosion occurring on the left bank (by convention) for each cross section.
@@ -15,6 +16,9 @@
 #' determined by parameters. You can call them
 #' directly, e.g. `side_left(0.75)`, or by their name using the default
 #' parameters.
+#' @param on_overflow What to do if the widening exceeds the cross section
+#'   extent; either "error" (the default), or "repeat", which will repeat the
+#'   widening with the last available topography elevation.
 #' @note
 #' While the ellipsis `...` is currently not used, it forces the `dw` and
 #' `dv` arguments to be named to ensure deliberate specification.
@@ -24,9 +28,16 @@
 #' xt_widen(channel, dw = 10, side = side_left(0.75))
 #' xt_widen(channel, dv = 5, side = "right")
 #' @export
-xt_widen <- function(channel, ..., dw, dv, side = "both",
-                     error_on_overflow = TRUE) {
-  ellipsis::check_dots_empty()
+xt_widen <- function(
+  channel,
+  ...,
+  dw,
+  dv,
+  side = "both",
+  on_overflow = c("error", "repeat")
+) {
+  on_overflow <- rlang::arg_match(on_overflow)
+  rlang::check_dots_empty()
   checkmate::assert_class(channel, "xchan")
 
   if (!xor(missing(dw), missing(dv))) {
@@ -91,4 +102,3 @@ xt_widen <- function(channel, ..., dw, dv, side = "both",
 
   channel
 }
-
