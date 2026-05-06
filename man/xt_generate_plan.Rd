@@ -4,7 +4,7 @@
 \alias{xt_generate_plan}
 \title{Generate channel object from banklines}
 \usage{
-xt_generate_plan(banks, ..., n, spacing, at, centerline = NULL)
+xt_generate_plan(banks, ..., n, spacing, at, axis = NULL)
 }
 \arguments{
 \item{banks}{Bankline polygon (sf POLYGON object)}
@@ -17,11 +17,12 @@ spacing and at)}
 \item{spacing}{Distance between cross sections (mutually exclusive with n
 and at)}
 
-\item{at}{Specific distances along centerline for cross sections (mutually
+\item{at}{Specific distances along the channel axis for cross sections (mutually
 exclusive with n and spacing)}
 
-\item{centerline}{Centerline multilinestring object. If NULL (the default),
-will be generated automatically using the centerline package.}
+\item{axis}{Channel axis as a multilinestring: the line along which cross
+sections are placed. If \code{NULL} (the default), an axis is generated
+automatically using the \strong{centerline} package (\code{centerline::cnt_path_guess()}).}
 }
 \value{
 A channel object with planimetric cross sections in the plan column.
@@ -38,14 +39,14 @@ imply that the cross section is unique, and in this case the cross section
 is arbitrarily taken to be the one closest to a 0-degree angle --
 although in almost all cases this should not be an issue.
 
-To define the spacing of the cross sections, a centerline is
-first calculated, and equally spaced points are sampled along the
-centerline. Cross sections are calculated at these points.
+To define the spacing of the cross sections, a channel axis is
+first calculated, and equally spaced points are sampled along that
+axis. Cross sections are calculated at these points.
 }
 \examples{
 bl <- sf::st_sfc(demo_bankline, crs = 3005)
 channel <- xt_generate_plan(bl, n = 100)
 
-# With custom centerline
-channel <- xt_generate_plan(bl, n = 100, centerline = demo_centerline)
+# With a custom axis (e.g. user-defined line along the channel)
+# channel <- xt_generate_plan(bl, n = 100, axis = my_axis)
 }

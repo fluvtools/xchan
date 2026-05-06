@@ -4,14 +4,14 @@
 \alias{split_bankline}
 \title{Split a Bankline into Left and Right}
 \usage{
-split_bankline(bankline, centerline = NULL)
+split_bankline(bankline, axis = NULL)
 }
 \arguments{
 \item{bankline}{Bankline polygon.}
 
-\item{centerline}{A multiline object representing the channel
-centerline. If \code{NULL} (the default), this is auto-generated using
-the centerline package.}
+\item{axis}{A multiline object representing the channel axis (a line along the
+channel). If \code{NULL} (the default), this is auto-generated using the
+\strong{centerline} package (\code{centerline::cnt_path_guess()}).}
 }
 \value{
 A list of two multilines: entry \code{"left"} represents the left bank,

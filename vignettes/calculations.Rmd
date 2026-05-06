@@ -111,9 +111,9 @@ gradient_custom
 distances <- xt_distance_ds(channel)
 distances
 
-# With custom centerline
-# centerline <- xt_trace_centerline(channel)
-# distances_custom <- xt_distance_ds(channel, centerline = centerline)
+# With a custom axis (sf LINESTRING)
+# axis_line <- ...  # user-defined line along the channel
+# distances_custom <- xt_distance_ds(channel, axis = axis_line)
 ```
 
 ## Width Analysis

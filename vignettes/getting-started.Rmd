@@ -68,11 +68,11 @@ plot(channel, view = "plan", col = "red", add = TRUE)
 
 Once you have a channel object, you can perform various calculations. You can generate bankline polygons, calculate widths, and more. Remember, pretty much everything is customizable; see the various other vignettes for more.
 
-Generate banklines and a centerline from the channel cross-sections (if you want to generate a centerline from a bankline polygon, use the `centerline` package found on CRAN).
+Generate banklines and trace a channel axis from the cross-sections (if you want to build an axis from a bankline polygon alone, use the **centerline** package on CRAN).
 
 ```{r}
 bankline <- xt_bankline(channel2)
-centerline <- xt_centerline(channel2)
+centerline <- xt_trace_centerline(channel2)
 plot(bankline, view = "plan", col = "blue")
 plot(channel2, view = "plan", col = "red", add = TRUE)
 plot(centerline, view = "plan", add = TRUE)

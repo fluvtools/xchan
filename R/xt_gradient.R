@@ -6,15 +6,16 @@
 #' @param .after Number of cross-sections after current to include in calculation
 #' @param .complete Whether to include incomplete windows at boundaries
 #' @param elevation Elevation specification for gradient calculation
-#' @param centerline Centerline for distance calculations (defaults to generated centerline)
+#' @param axis Channel axis for distance calculations (defaults to an axis traced
+#'   from cross-section midpoints via `xt_trace_centerline()`).
 #' @returns A vector of gradient values for each cross-section
 #' @details
 #' This function calculates channel gradient using a sliding window approach,
 #' inspired by the `slider` package. The gradient is calculated as the change
-#' in elevation divided by the change in distance along the centerline.
+#' in elevation divided by the change in distance along the channel axis.
 #'
 #' The elevation specification determines which elevation value is used for
-#' each cross-section. The centerline is used to calculate distances between
+#' each cross-section. The axis is used to calculate distances between
 #' cross-sections for the gradient calculation.
 #' @examples
 #' # Calculate gradient using thalweg elevation
@@ -33,7 +34,7 @@ xt_gradient <- function(
   .after = 1L,
   .complete = FALSE,
   elevation = elevation_bank(),
-  centerline = NULL
+  axis = NULL
 ) {
   rlang::check_dots_empty()
   checkmate::assert_class(channel, "xchan")
@@ -41,13 +42,13 @@ xt_gradient <- function(
   # Get elevation values for each cross-section
   elevations <- xt_elevation(channel, reference = elevation)
 
-  # Generate centerline if not provided
-  if (is.null(centerline)) {
-    centerline <- xt_trace_centerline(channel)
+  # Trace axis from midpoints if not provided
+  if (is.null(axis)) {
+    axis <- xt_trace_centerline(channel)
   }
 
-  # Calculate distances along centerline
-  distances <- xt_distance_ds(channel, flowline = centerline)
+  # Distances along the axis
+  distances <- xt_distance_ds(channel, axis = axis)
 
   # Calculate gradient using sliding window
   n <- length(elevations)

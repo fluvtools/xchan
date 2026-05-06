@@ -22,7 +22,7 @@ authors:
 
 # Summary
 
-`xchan` is an R package that helps researchers analyze river channels by creating and manipulating cross-sectional data. River channels can be described in two ways: as horizontal lines across the channel (planimetric cross-sections) and as elevation profiles along those lines (profile cross-sections). The package allows users to generate these cross-sections from various data sources including river bank outlines, digital elevation models, or simple width specifications. Once created, users can erode the banks to create newly eroded channels. Channel properties can be calculated, like width and depth, centerlines generated and banklines traced. The package integrates with existing R spatial analysis tools, making it easy to incorporate into larger research workflows for studying river processes, erosion, and channel evolution in a programmatic way.
+`xchan` is an R package that helps researchers analyze river channels by creating and manipulating cross-sectional data. River channels can be described in two ways: as horizontal lines across the channel (planimetric cross-sections) and as elevation profiles along those lines (profile cross-sections). The package allows users to generate these cross-sections from various data sources including river bank outlines, digital elevation models, or simple width specifications. Once created, users can erode the banks to create newly eroded channels. Channel properties can be calculated, like width and depth, a channel axis traced along the cross sections and banklines generated. The package integrates with existing R spatial analysis tools, making it easy to incorporate into larger research workflows for studying river processes, erosion, and channel evolution in a programmatic way.
 
 # Statement of Need
 
@@ -109,7 +109,7 @@ Channel dredging modifies profile cross-sections to create new channel geometrie
 
 ## Derived Geometries
 
-The package provides functions to generate derived geometries from channel objects. Centerlines are created by connecting the midpoints of planimetric cross-sections, while banklines are generated using the tracer system to connect bank points into continuous banklines. 
+The package provides functions to generate derived geometries from channel objects. A channel axis can be traced by connecting the midpoints of planimetric cross-sections, while banklines are generated using the tracer system to connect bank points into continuous banklines. 
 
 # Example Usage
 
@@ -139,7 +139,7 @@ channel_widened <- xt_widen(channel, width = 10, side = side_left(prop = 0.75))
 plot(channel_widened, view = "3d")
 
 # Generate derived geometries
-centerline <- xt_centerline(channel)
+centerline <- xt_trace_centerline(channel)
 banks <- xt_trace_banks(channel, tracer = "linear")
 banks_smooth <- xt_trace_banks(channel, tracer = tracer_spline(degree = 3))
 

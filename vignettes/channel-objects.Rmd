@@ -118,10 +118,10 @@ plot(xt_column_plan(channel), add = TRUE, col = "blue")
 
 ## Generating Derived Geometries
 
-### Centerlines
+### Channel axis
 
-```{r centerline}
-# Generate centerline from channel
+```{r channel-axis}
+# Trace an axis along the channel from cross-section midpoints
 centerline <- xt_trace_centerline(channel)
 plot(channel, view = "plan")
 plot(centerline, add = TRUE, col = "red", lwd = 2)
@@ -212,7 +212,7 @@ This vignette covered:
 
 - Creating channels via coercion (`xt_as_channel()`) or explicit assembly (`xt_channel()`)
 - Generating channels from banklines and DEMs
-- Creating derived geometries (centerlines, banklines)
+- Creating derived geometries (channel axis, banklines)
 - Correcting streamflow direction
 - Converting channels to spatial objects
 - Validating and accessing channel components

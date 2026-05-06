@@ -47,8 +47,8 @@ library(xchan)
 dem <- terra::unwrap(fraser_dem)
 ```
 
-Generate planimetric cross sections from the bankline polygon and derive
-the channel centerline:
+Generate planimetric cross sections from the bankline polygon and trace
+a channel axis along the cross sections:
 
 ```{r}
 planimetric_cross_sections <- xt_generate_plan(fraser_bankline, spacing = 200)

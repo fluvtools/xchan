@@ -11,7 +11,7 @@ xt_gradient(
   .after = 1L,
   .complete = FALSE,
   elevation = elevation_bank(),
-  centerline = NULL
+  axis = NULL
 )
 }
 \arguments{
@@ -27,7 +27,8 @@ xt_gradient(
 
 \item{elevation}{Elevation specification for gradient calculation}
 
-\item{centerline}{Centerline for distance calculations (defaults to generated centerline)}
+\item{axis}{Channel axis for distance calculations (defaults to an axis traced
+from cross-section midpoints via \code{xt_trace_centerline()}).}
 }
 \value{
 A vector of gradient values for each cross-section
@@ -38,10 +39,10 @@ Calculate channel gradient
 \details{
 This function calculates channel gradient using a sliding window approach,
 inspired by the \code{slider} package. The gradient is calculated as the change
-in elevation divided by the change in distance along the centerline.
+in elevation divided by the change in distance along the channel axis.
 
 The elevation specification determines which elevation value is used for
-each cross-section. The centerline is used to calculate distances between
+each cross-section. The axis is used to calculate distances between
 cross-sections for the gradient calculation.
 }
 \examples{
