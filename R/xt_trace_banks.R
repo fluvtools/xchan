@@ -31,7 +31,7 @@
 #' plot(channel, add = TRUE)
 #' @export
 xt_trace_banks <- function(channel, tracer = "linear") {
-  checkmate::assert_class(channel, "sxchan")
+  checkmate::assert_class(channel, "xchan")
 
   plan <- xt_column_plan(channel)
   if (is.null(plan)) {

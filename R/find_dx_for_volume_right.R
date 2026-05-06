@@ -106,7 +106,15 @@ find_dx_for_volume_right <- function(v,
 
   # Stop early if v = 0.
   if (v == 0) {
-    return(x0)
+    return(0)
+  }
+
+  # If there are no points to the right of x0 (e.g. x0 is at or beyond the
+  # rightmost point of the topo), there is no volume available to satisfy
+  # v > 0. Treat as overflow so callers with error_on_overflow = FALSE can
+  # recover with the maximum available width (which is also 0 here).
+  if (n_topo < 2) {
+    stop("Requested volume exceeds what is available to the right of x0")
   }
 
   # Inject crossing points where topo crosses thalweg height.
@@ -146,9 +154,9 @@ find_dx_for_volume_right <- function(v,
   seg_idx <- which(cum_areas == v)
   if (length(seg_idx) > 0) {
     if (valley == "left") {
-      return(x[1 + seg_idx[1]])
+      return(x[1 + seg_idx[1]] - x0)
     } else {
-      return(x[1 + tail(seg_idx, 1)])
+      return(x[1 + tail(seg_idx, 1)] - x0)
     }
   }
 

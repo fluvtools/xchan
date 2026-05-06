@@ -16,7 +16,7 @@ xt_column_profile(channel) <- value
 xt_column_plan(channel) <- value
 }
 \arguments{
-\item{channel}{An object of class \code{sxchan} containing cross-section data.}
+\item{channel}{An object of class \code{xchan} containing cross-section data.}
 
 \item{value}{For profile, a list of "xs_profile" objects; for plan, a list of
 "sfc_LINESTRING" objects. If \code{NULL}, the column is removed.}
@@ -29,11 +29,11 @@ of "xs_profile" objects.
 
 For \verb{xt_column_*<-}, the original \code{channel} objects with the specified
 column updated (or removed if \code{NULL}). If no plan or profile columns
-remain, the "sxchan" class and any subclasses are removed, leaving a data
+remain, the "xchan" class and any subclasses are removed, leaving a data
 frame (and its subclasses).
 }
 \description{
 This function allows you to extract or replace the profile or plan column
-in a channel object of class \code{sxchan}. The profile column contains
+in a channel object of class \code{xchan}. The profile column contains
 xs_profile objects, while the plan column contains sfc_LINESTRING objects.
 }

@@ -17,7 +17,7 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup}
-library(sxchan)
+library(xchan)
 ```
 
 # Channel Widening and Erosion
@@ -26,7 +26,7 @@ This vignette covers modifying channels through widening operations and calculat
 
 ## Function Factory Pattern
 
-`sxchan` uses a function factory pattern to provide flexible and extensible operations. The factories fall into two categories:
+`xchan` uses a function factory pattern to provide flexible and extensible operations. The factories fall into two categories:
 
 **Specification Factories** create functions that define parameters and contexts:
 - **Side Factories** (`side_*()`) - specify erosion allocation patterns

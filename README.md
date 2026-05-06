@@ -1,33 +1,33 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# sxchan: simple channel cross sections
+# xchan: simple channel cross sections
 
 <!-- badges: start -->
 
-[![R-CMD-check](https://github.com/stochaGBEM/sxchan/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/stochaGBEM/sxchan/actions/workflows/R-CMD-check.yaml)
+[![R-CMD-check](https://github.com/stochaGBEM/xchan/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/stochaGBEM/xchan/actions/workflows/R-CMD-check.yaml)
 [![Codecov test
-coverage](https://codecov.io/gh/stochaGBEM/sxchan/branch/main/graph/badge.svg)](https://app.codecov.io/gh/stochaGBEM/sxchan?branch=main)
+coverage](https://codecov.io/gh/stochaGBEM/xchan/branch/main/graph/badge.svg)](https://app.codecov.io/gh/stochaGBEM/xchan?branch=main)
 <!-- badges: end -->
 
-The purpose of sxchan is to create and manipulate watercourse
+The purpose of xchan is to create and manipulate watercourse
 geometries, with a focus on cross sections. Because this package sits on
 top of the sf package, geometries can also be manipulated in the same
 way as in the sf package.
 
 The name of the package is inspired by the sf package. Functions in
-sxchan start with a common prefix, `xt`, which stands for “cross-section
+xchan start with a common prefix, `xt`, which stands for “cross-section
 type”; this is intended to parallel the sf package’s function prefix,
 `st`, which stands for “spatial type”.
 
 ## Installation
 
-You can install the development version of sxchan from
+You can install the development version of xchan from
 [GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("stochaGBEM/sxchan")
+devtools::install_github("stochaGBEM/xchan")
 ```
 
 ## Example
@@ -37,7 +37,7 @@ typical cross-section workflow. Start by loading the package and
 unwrapping the packaged DEM:
 
 ``` r
-library(sxchan)
+library(xchan)
 
 # Unwrap the packaged DEM to a `terra::SpatRaster` object for use in the package.
 dem <- terra::unwrap(fraser_dem)

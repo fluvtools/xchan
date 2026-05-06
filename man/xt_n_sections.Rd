@@ -7,7 +7,7 @@
 xt_n_sections(channel)
 }
 \arguments{
-\item{channel}{An object of class \code{sxchan} representing a channel.}
+\item{channel}{An object of class \code{xchan} representing a channel.}
 }
 \value{
 A single integer representing the number of cross sections.

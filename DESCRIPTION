@@ -1,4 +1,4 @@
-Package: sxchan
+Package: xchan
 Title: Simple Channel Cross Sections
 Version: 0.1.0.9000
 Authors@R: 
@@ -18,7 +18,7 @@ License: CC BY-NC 4.0 + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
-URL: https://stochagbem.github.io/sxchan/
+URL: https://stochagbem.github.io/xchan/
 Imports:
     sf,
     centerline,

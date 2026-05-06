@@ -1,10 +1,10 @@
 ---
-title: "Getting Started with sxchan"
+title: "Getting Started with xchan"
 author: "Vincenzo Coia"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Getting Started with sxchan}
+  %\VignetteIndexEntry{Getting Started with xchan}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -17,16 +17,16 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup}
-library(sxchan)
+library(xchan)
 ```
 
-# Getting Started with sxchan
+# Getting Started with xchan
 
-The `sxchan` package provides tools for creating and manipulating river channel cross-sections. This vignette will get you started with the basics.
+The `xchan` package provides tools for creating and manipulating river channel cross-sections. This vignette will get you started with the basics.
 
 ## Creating Your First Channel Object
 
-The core data structure in `sxchan` is the **channel object**. A channel contains planimetric cross-sections (top-down view) and/or profile cross-sections (side view).
+The core data structure in `xchan` is the **channel object**. A channel contains planimetric cross-sections (top-down view) and/or profile cross-sections (side view).
 
 ### Simple Channel from Widths
 
@@ -101,7 +101,7 @@ distances <- xt_distance_ds(channel)
 distances
 ```
 
-Convert to a spatial object understandable by the `sf` package, in case you want to do some manual operations not supported by `sxchan`.
+Convert to a spatial object understandable by the `sf` package, in case you want to do some manual operations not supported by `xchan`.
 
 ```{r}
 spatial_object <- xt_as_sfc(channel)
@@ -118,4 +118,4 @@ Now that you understand the basics, you can:
 3. **Perform detailed calculations** - See the "Channel Calculations and Analysis" vignette
 4. **Work with complex geometries** - See the "Working with Complex Channel Geometries" vignette
 
-The channel object is the foundation of `sxchan`. Once you're comfortable creating and manipulating channels, you can explore the more advanced features of the package.
+The channel object is the foundation of `xchan`. Once you're comfortable creating and manipulating channels, you can explore the more advanced features of the package.

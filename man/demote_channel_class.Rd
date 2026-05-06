@@ -7,14 +7,14 @@
 demote_channel_class(channel)
 }
 \arguments{
-\item{channel}{A channel object of class \code{sxchan}.}
+\item{channel}{A channel object of class \code{xchan}.}
 }
 \value{
-The same \code{channel} object, with "sxchan" class and its
+The same \code{channel} object, with "xchan" class and its
 subclasses removed.
 }
 \description{
-This function strips away a channel's "sxchan" class so that
-only a tibble or data frame remains. All classes above "sxchan"
+This function strips away a channel's "xchan" class so that
+only a tibble or data frame remains. All classes above "xchan"
 are preserved.
 }

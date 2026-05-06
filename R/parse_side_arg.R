@@ -12,7 +12,7 @@ parse_side_arg <- function(side, cross_sections) {
     fn <- paste0("side_", side)
     side <- rlang::exec(fn)
   }
-  checkmate::assert_class(side, "sxchan_side")
+  checkmate::assert_class(side, "xchan_side")
   prop_left <- side(cross_sections)
   n_sections <- xt_n_sections(cross_sections)
   prop_left <- vctrs::vec_recycle(prop_left, size = n_sections)
