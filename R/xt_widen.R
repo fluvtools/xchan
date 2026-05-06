@@ -6,16 +6,10 @@
 #'   value and cannot be used with `dv`.
 #' @param dv The total volume to remove to widen the channel. Must be a
 #'   positive numeric value and cannot be used with `dw`.
-#' @param side A specification for how to distribute the widening between
-#'   left and right banks, from the `side_` family of functions. Shorthand
-#'   options include "left", "right", and "both" (50-50).
-#'
-#' A side object is a function of channels that determines the amount
-#' of erosion occurring on the left bank (by convention) for each cross section.
-#' Existing schemes have the naming convention `side_<name>` and are
-#' determined by parameters. You can call them
-#' directly, e.g. `side_left(0.75)`, or by their name using the default
-#' parameters.
+#' @param side A side specification controlling how widening is split between
+#'   left and right banks. Supply either a side object from [side_left()],
+#'   [side_right()], or [side_both()], or a shorthand string: `"left"`,
+#'   `"right"`, or `"both"`.
 #' @param on_overflow What to do if the widening exceeds the cross section
 #'   extent; either "error" (the default), or "repeat", which will repeat the
 #'   widening with the last available topography elevation.

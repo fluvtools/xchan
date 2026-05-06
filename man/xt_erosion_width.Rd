@@ -12,9 +12,10 @@ xt_erosion_width(channel, dv, side = "both", error_on_overflow = TRUE)
 \item{dv}{Volume of erosion; single positive numeric or vector matching
 number of cross-sections.}
 
-\item{side}{A specification for how to distribute the widening between
-left and right banks. Built-in side functions include "left", "right", and
-"both".}
+\item{side}{A side specification controlling how widening is split between
+left and right banks. Supply either a side object from \code{\link[=side_left]{side_left()}},
+\code{\link[=side_right]{side_right()}}, or \code{\link[=side_both]{side_both()}}, or a shorthand string: \code{"left"},
+\code{"right"}, or \code{"both"}.}
 
 \item{error_on_overflow}{Logical; should an error be thrown if asked
 to calculate erosion width beyond cross section extent? \code{TRUE} if so

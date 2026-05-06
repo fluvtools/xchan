@@ -24,16 +24,10 @@ value and cannot be used with \code{dv}.}
 \item{dv}{The total volume to remove to widen the channel. Must be a
 positive numeric value and cannot be used with \code{dw}.}
 
-\item{side}{A specification for how to distribute the widening between
-left and right banks, from the \code{side_} family of functions. Shorthand
-options include "left", "right", and "both" (50-50).
-
-A side object is a function of channels that determines the amount
-of erosion occurring on the left bank (by convention) for each cross section.
-Existing schemes have the naming convention \verb{side_<name>} and are
-determined by parameters. You can call them
-directly, e.g. \code{side_left(0.75)}, or by their name using the default
-parameters.}
+\item{side}{A side specification controlling how widening is split between
+left and right banks. Supply either a side object from \code{\link[=side_left]{side_left()}},
+\code{\link[=side_right]{side_right()}}, or \code{\link[=side_both]{side_both()}}, or a shorthand string: \code{"left"},
+\code{"right"}, or \code{"both"}.}
 
 \item{on_overflow}{What to do if the widening exceeds the cross section
 extent; either "error" (the default), or "repeat", which will repeat the
