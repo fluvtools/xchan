@@ -1,99 +1,74 @@
-#' Create channel object
+#' Construct a channel object (`xchan`)
 #'
-#' Creates a channel object from various inputs. A channel object is a
-#' data frame with planimetric cross sections and/or profile cross sections.
+#' Assembles a channel table from **required** planimetric cross sections
+#' (`sfc_LINESTRING`), optional profile cross sections (`xs_profile` list), and
+#' optional extra columns via `...`, in the same spirit as [sf::st_sf()].
 #'
-#' @param x Object to create channel from
-#' @param ... Additional columns for the channel data frame
-#' @returns A channel object with class "xchan"
+#' Every channel has a plan column; profile is optional. Set CRS on `.plan`
+#' with [sf::st_crs()] / [sf::st_set_crs()] before calling if needed.
+#'
+#' When `.profile` is supplied, `length(.profile)` must equal `length(.plan)`.
+#' Additional columns are recycled with [vctrs::vec_recycle_common()].
+#'
+#' @param .plan Planimetric cross sections as `sfc_LINESTRING`.
+#' @param .profile Optional list of `xs_profile` objects, same length as `.plan`.
+#' @param ... Additional columns for the channel table (vectors or list-columns).
+#'
+#' @returns An object of class `"xchan"`.
+#'
+#' @seealso [xt_as_channel()] to coerce from widths, existing tables, etc.
+#'
+#' @export
 #' @examples
-#' # Create channel from widths
-#' channel <- xt_channel(c(10, 15, 12, 8))
-#'
-#' # Create channel from widths with additional metadata
-#' channel <- xt_channel(
-#'   c(10, 15, 12, 8),
-#'   section_id = c("A", "B", "C", "D"),
-#'   roughness = 0.1
-#' )
-#'
-#' # Create channel from sf geometries
 #' library(sf)
 #' seg <- st_sfc(
-#'   st_linestring(matrix(c(-0.2, 0.3, 0.2, 1), byrow = TRUE, ncol = 2)),
-#'   st_linestring(matrix(c(0.1, 0.1, 1, 1), byrow = TRUE, ncol = 2)),
-#'   st_linestring(matrix(c(0.1, 0, 1.3, 0.7), byrow = TRUE, ncol = 2)),
-#'   st_linestring(matrix(c(0.3, -0.3, 1.3, 0), byrow = TRUE, ncol = 2)),
-#'   st_linestring(matrix(c(0, -0.6, 1, -0.5), byrow = TRUE, ncol = 2)),
-#'   st_linestring(matrix(c(0, -0.9, 1, -1), byrow = TRUE, ncol = 2))
+#'   st_linestring(matrix(c(-1, 1, 0, 1), ncol = 2)),
+#'   st_linestring(matrix(c(0, 0, 1, 1), ncol = 2)),
+#'   crs = 3005
 #' )
-#' channel <- xt_channel(seg)
-#'
-#' # Create channel from sf geometries with profiles and metadata
-#' channel <- xt_channel(plan_geometries,
-#'                      profile = profile_list)
-#'
-#' # Create channel from data frame
-#' df <- data.frame(
-#'   plan = seg,
-#'   roughness = 0.3
-#' )
-#' channel <- xt_channel(df, plan_col = "geometry")
-#' @export
-xt_channel <- function(x, ...) {
-  UseMethod("xt_channel")
-}
-
-#' @export
-xt_channel.numeric <- function(x, profile = NULL, ...) {
-  checkmate::assert_numeric(x, lower = 0, any.missing = FALSE)
-
-  # Create simple planimetric cross sections from widths
-  plan <- Map(
-    function(w, i) {
-      sf::st_linestring(matrix(c(-w / 2, w / 2, i, i), ncol = 2))
-    },
-    x,
-    1:length(x)
-  )
-  plan <- sf::st_sfc(plan)
-
-  # Create data frame/tibble with additional columns from ellipsis
-  df <- create_data_frame(plan = plan, ...)
-  prof_col <- NULL
-  if (!is.null(profile)) {
-    prof_col <- "profile"
-    df[[prof_col]] <- profile
+#' xt_channel(.plan = seg)
+xt_channel <- function(.plan, .profile = NULL, ...) {
+  if (!inherits(.plan, "sfc") || !inherits(.plan, "sfc_LINESTRING")) {
+    stop("`.plan` must be an object of class `sfc_LINESTRING`.", call. = FALSE)
   }
-  new_channel(df, plan_col = "plan", profile_col = prof_col)
-}
-
-#' @export
-xt_channel.sfc <- function(x, profile = NULL, ...) {
-  # Create data frame/tibble with additional columns from ellipsis
-  df <- create_data_frame(plan = x, ...)
-  prof_col <- NULL
-  if (!is.null(profile)) {
-    prof_col <- "profile"
-    df$profile <- profile
-  }
-  new_channel(df, plan_col = "plan", profile_col = prof_col)
-}
-
-#' @export
-xt_channel.data.frame <- function(x, plan_col = NULL, profile_col = NULL, ...) {
-  if (is.null(plan_col) && is.null(profile_col)) {
-    stop("At least one of plan_col or profile_col must be specified")
+  vp <- xt_validate_plan(.plan)
+  if (!vp$valid) {
+    stop(paste(vp$issues, collapse = "; "), call. = FALSE)
   }
 
-  # Validate that specified columns exist
-  if (!is.null(plan_col) && !plan_col %in% names(x)) {
-    stop("Plan column '", plan_col, "' not found in data frame")
-  }
-  if (!is.null(profile_col) && !profile_col %in% names(x)) {
-    stop("Profile column '", profile_col, "' not found in data frame")
+  dots <- rlang::list2(...)
+  dup <- intersect(names(dots), c("plan", "profile"))
+  if (length(dup)) {
+    stop(
+      "Arguments in `...` must not be named `plan` or `profile`; ",
+      "use `.plan` and `.profile`.",
+      call. = FALSE
+    )
   }
 
-  # Create new channel object
-  new_channel(x, plan_col = plan_col, profile_col = profile_col)
+  profile_col <- NULL
+  if (!is.null(.profile)) {
+    if (length(.plan) != length(.profile)) {
+      stop("`length(.plan)` must equal `length(.profile)`.", call. = FALSE)
+    }
+    if (!is.list(.profile)) {
+      stop("`.profile` must be a list.", call. = FALSE)
+    }
+    bad <- vapply(.profile, function(p) !inherits(p, "xs_profile"), logical(1))
+    if (any(bad)) {
+      stop(
+        "All elements of `.profile` must inherit from `xs_profile`.",
+        call. = FALSE
+      )
+    }
+    profile_col <- "profile"
+  }
+
+  cols <- c(list(plan = .plan), dots)
+  if (!is.null(.profile)) {
+    cols$profile <- .profile
+  }
+
+  df <- rlang::exec(create_data_frame, !!!cols)
+  new_channel(df, plan_col = "plan", profile_col = profile_col)
 }

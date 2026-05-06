@@ -94,7 +94,7 @@ profile_multi
 
 ```{r width-comparison}
 # Create a channel with islands
-channel_with_islands <- xt_channel(c(10, 12, 8, 15, 11, 9))
+channel_with_islands <- xt_as_channel(c(10, 12, 8, 15, 11, 9))
 
 # Compare total width vs active width
 total_widths <- xt_width(channel_with_islands)
@@ -235,7 +235,7 @@ par(mfrow = c(1, 1))
 
 ```{r 3d-visualization}
 # Create channel with complex profiles
-# channel_complex <- xt_channel(plan = plan_sfc, profile = list(profile_island, profile_multi))
+# channel_complex <- xt_channel(.plan = plan_sfc, .profile = list(profile_island, profile_multi))
 
 # Plot 3D view
 # plot(channel_complex, view = "3d", exaggerate = 2)

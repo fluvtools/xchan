@@ -35,15 +35,15 @@ Let's get set up with a quick, simple channel. The simplest way to do this is by
 ```{r simple-channel}
 # Create a channel with 6 cross-sections of varying widths
 widths <- c(10, 12, 8, 15, 11, 9)
-channel <- xt_channel(widths)
+channel <- xt_as_channel(widths)
 channel
 ```
 
 Notice that channels are simply data frames where each row is a cross section. So far there is only one column: the planimetric (overhead view) cross-sections created from the specified widths. Add other columns using your usual data frame workflow:
 
 ```{r df-channel}
-# Create a data frame with widths and additional information
-channel$roughness <- c(0.03, 0.035, 0.025, 0.04, 0.03, 0.025),
+# Add columns using ordinary data frame semantics
+channel$roughness <- c(0.03, 0.035, 0.025, 0.04, 0.03, 0.025)
 channel$station <- c(0, 100, 200, 300, 400, 500)
 channel
 ```
