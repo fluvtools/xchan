@@ -9,10 +9,11 @@
 #'   spacing and at)
 #' @param spacing Distance between cross sections (mutually exclusive with n
 #'   and at)
-#' @param at Specific distances along centerline for cross sections (mutually
+#' @param at Specific distances along the channel axis for cross sections (mutually
 #'   exclusive with n and spacing)
-#' @param centerline Centerline multilinestring object. If NULL (the default),
-#' will be generated automatically using the centerline package.
+#' @param axis Channel axis as a multilinestring: the line along which cross
+#'   sections are placed. If `NULL` (the default), an axis is generated
+#'   automatically using the **centerline** package (`centerline::cnt_path_guess()`).
 #' @returns A channel object with planimetric cross sections in the plan column.
 #' @details This function takes the definition of "cross section" relative
 #' to a point in the channel to be the line segment intersecting the point
@@ -21,17 +22,17 @@
 #' is arbitrarily taken to be the one closest to a 0-degree angle --
 #' although in almost all cases this should not be an issue.
 #'
-#' To define the spacing of the cross sections, a centerline is
-#' first calculated, and equally spaced points are sampled along the
-#' centerline. Cross sections are calculated at these points.
+#' To define the spacing of the cross sections, a channel axis is
+#' first calculated, and equally spaced points are sampled along that
+#' axis. Cross sections are calculated at these points.
 #' @examples
 #' bl <- sf::st_sfc(demo_bankline, crs = 3005)
 #' channel <- xt_generate_plan(bl, n = 100)
 #'
-#' # With custom centerline
-#' channel <- xt_generate_plan(bl, n = 100, centerline = demo_centerline)
+#' # With a custom axis (e.g. user-defined line along the channel)
+#' # channel <- xt_generate_plan(bl, n = 100, axis = my_axis)
 #' @export
-xt_generate_plan <- function(banks, ..., n, spacing, at, centerline = NULL) {
+xt_generate_plan <- function(banks, ..., n, spacing, at, axis = NULL) {
   rlang::check_dots_empty()
 
   # Validate input parameters: exactly one of n, spacing, or at is required.
@@ -43,13 +44,13 @@ xt_generate_plan <- function(banks, ..., n, spacing, at, centerline = NULL) {
     stop("Exactly one of n, spacing, or at must be specified.")
   }
 
-  if (is.null(centerline)) {
+  if (is.null(axis)) {
     cl <- banks_to_centerline(banks)
   } else {
-    cl <- centerline
+    cl <- axis
   }
 
-  lr <- split_bankline(banks, centerline = cl)
+  lr <- split_bankline(banks, axis = cl)
   len <- sum(sf::st_length(cl))
 
   # Determine sampling points based on input parameters
@@ -66,7 +67,7 @@ xt_generate_plan <- function(banks, ..., n, spacing, at, centerline = NULL) {
   pts <- pts[!vapply(pts, sf::st_is_empty, logical(1))]
   pts <- sf::st_cast(pts, "POINT")
 
-  # Sort pts in order along centerline. This is important so that neighbouring
+  # Sort pts in order along the axis. This is important so that neighbouring
   # cross sections can be later ensured not to cross.
   dists <- sf::st_line_project(cl, pts)
   pts <- pts[order(dists)]
@@ -80,7 +81,7 @@ xt_generate_plan <- function(banks, ..., n, spacing, at, centerline = NULL) {
   xs <- list()
   for (i in seq_along(pts)) {
     # Make a function to calculate the width of a bank-to-bank line for a
-    # given angle, for the first point in the centerline.
+    # given angle, for the first point along the axis.
     calc_width <- function(angle) {
       seg <- span_banks_engine(
         pts[i],

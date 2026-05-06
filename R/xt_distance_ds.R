@@ -3,19 +3,19 @@
 #' Calculates the distance each cross section in a channel is downstream from the head.
 #'
 #' @param channel A channel object with planimetric cross sections
-#' @param flowline Optional. An sf LINESTRING representing the line of flow,
-#' such as the centerline. If `NULL` (default), uses the centerline
-#' generated using `xt_trace_centerline(channel)` with its default settings.
-#' @returns A numeric vector of distances downstream (along the line of flow)
+#' @param axis Optional. An sf LINESTRING representing the channel axis (line
+#' along the channel) for downstream ordering and distance. If `NULL` (default),
+#' uses the centerline from `xt_trace_centerline()` with its default settings.
+#' @returns A numeric vector of distances downstream (along the axis)
 #' for each cross section in `channel`, where 0 represents the start of the
-#' line of flow.
+#' axis.
 #' @note This is a useful function for sorting cross sections in a channel
 #' if they are not already sorted.
 #' @examples
-#' # Using the auto-generated flowline
+#' # Using the auto-generated axis (midpoint trace)
 #' distances <- xt_distance_ds(demo_channel)
 #' @export
-xt_distance_ds <- function(channel, flowline = NULL) {
+xt_distance_ds <- function(channel, axis = NULL) {
   if (!is_channel(channel)) {
     stop("Input must be a channel object")
   }
@@ -25,16 +25,15 @@ xt_distance_ds <- function(channel, flowline = NULL) {
     stop("Channel object must have planimetric cross sections")
   }
 
-  # Use provided flowline or generate one if not provided
-  if (is.null(flowline)) {
-    flowline <- xt_trace_centerline(channel)
+  # Use provided axis or trace one from cross-section midpoints
+  if (is.null(axis)) {
+    axis <- xt_trace_centerline(channel)
   } else {
-    # Validate that flowline is an sf LINESTRING
     if (
-      !inherits(flowline, "sfc") ||
-        !all(sf::st_geometry_type(flowline) == "LINESTRING")
+      !inherits(axis, "sfc") ||
+        !all(sf::st_geometry_type(axis) == "LINESTRING")
     ) {
-      stop("Flowline must be an sf LINESTRING")
+      stop("axis must be an sf LINESTRING")
     }
   }
 
@@ -48,26 +47,24 @@ xt_distance_ds <- function(channel, flowline = NULL) {
   # Convert to sf points
   midpoint_sfc <- sf::st_sfc(midpoints, crs = sf::st_crs(plan))
 
-  # Calculate the distances along the flowline
+  # Distances along the axis
   distances <- numeric(length(midpoints))
 
   for (i in seq_along(midpoints)) {
-    # Find the closest point on the flowline to each midpoint
-    nearest_pt <- sf::st_nearest_points(midpoint_sfc[i], flowline)
+    # Closest point on the axis to each cross-section midpoint
+    nearest_pt <- sf::st_nearest_points(midpoint_sfc[i], axis)
     nearest_pt_on_line <- sf::st_cast(nearest_pt, "POINT")[2] # The second point is on the line
 
-    # Calculate the distance from the start of the flowline to this point
+    # Distance from the start of the axis to this point
     if (i == 1) {
-      # For the first cross-section, distance is 0
       distances[i] <- 0
     } else {
-      # For subsequent cross-sections, calculate distance along flowline
       frac <- sf::st_line_project(
-        flowline,
+        axis,
         nearest_pt_on_line,
         normalized = TRUE
       )
-      line_segment <- lwgeom::st_linesubstring(flowline, 0, frac)
+      line_segment <- lwgeom::st_linesubstring(axis, 0, frac)
       distances[i] <- sf::st_length(line_segment)
     }
   }

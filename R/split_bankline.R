@@ -5,9 +5,9 @@
 #' I suspect this algorithm may fail in some cases.
 #'
 #' @param bankline Bankline polygon.
-#' @param centerline A multiline object representing the channel
-#' centerline. If `NULL` (the default), this is auto-generated using
-#' the centerline package.
+#' @param axis A multiline object representing the channel axis (a line along the
+#' channel). If `NULL` (the default), this is auto-generated using the
+#' **centerline** package (`centerline::cnt_path_guess()`).
 #' @returns A list of two multilines: entry `"left"` represents the left bank,
 #' entry `"right"` represents the right bank. The original `bankline` object
 #' could be retrieved by combining both multilines together.
@@ -16,18 +16,18 @@
 #' plot(demo_bankline)
 #' plot(lr$left, add = TRUE, col = "red")
 #' plot(lr$right, add = TRUE, col = "blue")
-split_bankline <- function(bankline, centerline = NULL) {
-  if (is.null(centerline)) {
-    centerline <- sf::st_geometry(centerline::cnt_path_guess(
+split_bankline <- function(bankline, axis = NULL) {
+  if (is.null(axis)) {
+    axis <- sf::st_geometry(centerline::cnt_path_guess(
       bankline,
       keep = 1
     ))
   }
 
-  # Get the intersection of the bankline and centerline
-  intersection <- sf::st_intersection(bankline, centerline)
+  # Get the intersection of the bankline and axis
+  intersection <- sf::st_intersection(bankline, axis)
 
-  # Convert the bankline boundary to a centerline
+  # Polygon boundary as multilinestring
   polygon_boundary <- sf::st_cast(bankline, "MULTILINESTRING")
 
   # Split the bankline boundary by the intersection line
@@ -38,14 +38,14 @@ split_bankline <- function(bankline, centerline = NULL) {
 
   # extend the bankline if split_parts has length of 1
   if (length(split_parts) < 2) {
-    first_point <- as.numeric(centerline[[1]][1, ])
-    last_point <- as.numeric(centerline[[1]][nrow(centerline[[1]]), ])
+    first_point <- as.numeric(axis[[1]][1, ])
+    last_point <- as.numeric(axis[[1]][nrow(axis[[1]]), ])
 
     direction <- last_point - first_point
     direction <- direction / sqrt(sum(direction^2))
 
     # Extend the points x/2 on each side
-    len <- as.numeric(sf::st_length(centerline)[1])
+    len <- as.numeric(sf::st_length(axis)[1])
     new_first_point <- first_point - (len / 2) * direction
     new_last_point <- last_point + (len / 2) * direction
 
@@ -53,18 +53,17 @@ split_bankline <- function(bankline, centerline = NULL) {
     extended_line <- sf::st_sfc(sf::st_linestring(
       rbind(
         new_first_point,
-        sf::st_coordinates(centerline),
+        sf::st_coordinates(axis),
         new_last_point
       )
     ))
 
-    original_crs <- sf::st_crs(centerline)
+    original_crs <- sf::st_crs(axis)
     extended_line <- sf::st_set_crs(extended_line, original_crs)
 
-    # Get the intersection of the bankline and centerline
+    # Get the intersection of the bankline and extended axis
     intersection <- sf::st_intersection(bankline, extended_line)
 
-    # Convert the bankline boundary to a centerline
     polygon_boundary <- sf::st_cast(bankline, "MULTILINESTRING")
 
     # Split the bankline boundary by the intersection line

@@ -4,19 +4,19 @@
 \alias{xt_distance_ds}
 \title{Calculate Downstream Distance of Cross Sections}
 \usage{
-xt_distance_ds(channel, flowline = NULL)
+xt_distance_ds(channel, axis = NULL)
 }
 \arguments{
 \item{channel}{A channel object with planimetric cross sections}
 
-\item{flowline}{Optional. An sf LINESTRING representing the line of flow,
-such as the centerline. If \code{NULL} (default), uses the centerline
-generated using \code{xt_trace_centerline(channel)} with its default settings.}
+\item{axis}{Optional. An sf LINESTRING representing the channel axis (line
+along the channel) for downstream ordering and distance. If \code{NULL} (default),
+uses the centerline from \code{xt_trace_centerline()} with its default settings.}
 }
 \value{
-A numeric vector of distances downstream (along the line of flow)
+A numeric vector of distances downstream (along the axis)
 for each cross section in \code{channel}, where 0 represents the start of the
-line of flow.
+axis.
 }
 \description{
 Calculates the distance each cross section in a channel is downstream from the head.
@@ -26,6 +26,6 @@ This is a useful function for sorting cross sections in a channel
 if they are not already sorted.
 }
 \examples{
-# Using the auto-generated flowline
+# Using the auto-generated axis (midpoint trace)
 distances <- xt_distance_ds(demo_channel)
 }

@@ -14,11 +14,12 @@ An sf LINESTRING representing the centerline
 }
 \description{
 Trace a centerline by connecting the midpoints of planimetric cross sections.
+This line is the channel axis used for downstream distances and related geometry.
 }
 \details{
 This function extracts the planimetric cross sections from the channel
-object and connects their midpoints to create a centerline. The centerline
-represents the approximate flow path through the channel.
+object and connects their midpoints to create a centerline along the channel.
+It approximates the flow path when cross sections are roughly perpendicular to flow.
 }
 \examples{
 centerline <- xt_trace_centerline(channel)
