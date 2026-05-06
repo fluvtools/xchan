@@ -103,17 +103,14 @@ resolve_channel_axis <- function(channel, axis = NULL, axis_arg_name = "axis") {
 
 #' Sort channel rows by distance along the axis
 #'
-#' Reorders rows so cross sections progress downstream along the channel axis:
-#' increasing distance from the **start** of the axis line (as digitized). Plan,
-#' profile (if any), and other columns move together.
-#'
-#' Axis resolution matches [xt_trace_centerline()]: use the `axis` argument or the
-#' axis stored on `channel` via [xt_axis()] (including defaults from
-#' [xt_generate_plan()]).
+#' Reorders rows so cross sections progress downstream. If a numeric **`chainage`**
+#' column is present ([xt_has_chainage()][xt_has_profile]), rows are sorted by increasing
+#' **`chainage`** (no axis required). Otherwise rows are ordered by projection onto
+#' `axis` ([xt_axis()] or explicit `axis` argument).
 #'
 #' @param channel A channel object (`xchan`).
-#' @param axis Optional LINESTRING axis (`sfc` / `sfg`). If `NULL`, uses
-#'   `xt_axis(channel)`; if that is also `NULL`, an error is raised.
+#' @param axis Optional LINESTRING axis (`sfc` / `sfg`). Used only when
+#'   **`chainage`** is absent; passed through for projection ordering.
 #'
 #' @returns The same channel object with rows permuted (attributes such as
 #'   `axis` and `plan_col` preserved).
@@ -128,6 +125,11 @@ resolve_channel_axis <- function(channel, axis = NULL, axis_arg_name = "axis") {
 #' }
 xt_arrange_downstream <- function(channel, axis = NULL) {
   checkmate::assert_class(channel, "xchan")
+  if (has_chainage_column(channel)) {
+    ord <- order(channel[["chainage"]])
+    return(channel[ord, , drop = FALSE])
+  }
+
   axis_line <- resolve_channel_axis(channel, axis)
   plan <- xt_column_plan(channel)
   if (is.null(plan)) {

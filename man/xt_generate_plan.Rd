@@ -26,8 +26,12 @@ automatically using the \strong{centerline} package (\code{centerline::cnt_path_
 }
 \value{
 A channel object with planimetric cross sections in the plan column.
-The sampling axis is stored on the object (\code{\link[=xt_axis]{xt_axis()}}) for
-\code{\link[=xt_trace_centerline]{xt_trace_centerline()}}, \code{\link[=xt_arrange_downstream]{xt_arrange_downstream()}}, and related tools.
+A numeric column \strong{\code{chainage}} gives distance along the sampling axis from
+its start to each section’s station (CRS units). Downstream order follows
+increasing \strong{\code{chainage}}; keep or restore this ordering after \code{arrange()} via
+\code{\link[=xt_arrange_downstream]{xt_arrange_downstream()}} or by sorting on \strong{\code{chainage}}. The sampling axis
+is also stored (\code{\link[=xt_axis]{xt_axis()}}) for geometry that requires it (e.g.
+\code{\link[=xt_distance_ds]{xt_distance_ds()}}).
 }
 \description{
 Generate a channel object with planimetric cross sections from a

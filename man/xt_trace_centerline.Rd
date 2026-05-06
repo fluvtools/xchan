@@ -13,8 +13,9 @@ xt_trace_centerline(channel, axis = NULL)
 \code{xt_axis(channel)}; if that is also \code{NULL}, an error is raised.}
 }
 \value{
-An sf \code{LINESTRING} \code{sfc} (length 1) through section midpoints, ordered
-by increasing distance projected onto \code{axis}.
+An sf \code{LINESTRING} \code{sfc} (length 1) through section midpoints. Vertex
+order follows increasing \strong{\code{chainage}} when that column is present (see
+\code{\link[=xt_generate_plan]{xt_generate_plan()}}); otherwise increasing projection onto \code{axis}.
 }
 \description{
 Trace a polyline through planimetric cross-section midpoints in \strong{downstream}
@@ -22,10 +23,11 @@ order along the channel axis (see \strong{Details}).
 }
 \details{
 Midpoints use the mean of each section’s \strong{first and last} vertices
-(bank-to-bank). Vertex order follows \strong{increasing} \code{\link[sf:st_line_project_point]{sf::st_line_project()}}
-distance along \code{axis} from its start — \strong{not} data-frame row order. Store or
-pass an axis (\code{\link[=xt_axis]{xt_axis()}}; \code{\link[=xt_generate_plan]{xt_generate_plan()}} records one). To align table
-rows with that order, use \code{\link[=xt_arrange_downstream]{xt_arrange_downstream()}}.
+(bank-to-bank). If the channel has a valid numeric \strong{\code{chainage}} column
+(\link[=xt_has_profile]{xt_has_chainage()}), downstream vertex order follows \strong{\code{chainage}} and an
+axis need not be stored for this trace. Otherwise order follows
+\code{\link[sf:st_line_project_point]{sf::st_line_project()}} along \code{axis} (\code{\link[=xt_axis]{xt_axis()}} or explicit argument). Use
+\code{\link[=xt_arrange_downstream]{xt_arrange_downstream()}} to sort rows by \strong{\code{chainage}} or projection.
 }
 \examples{
 centerline <- xt_trace_centerline(channel)

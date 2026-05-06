@@ -19,7 +19,9 @@ A numeric vector of length \code{nrow(channel)}, distances downstream along
 }
 \description{
 Distance along the channel axis from the \strong{start} of the axis line to each
-cross section’s station (midpoint between bank endpoints), in axis units.
+cross section’s bank-to-bank \strong{midpoint}, in axis units. This can differ from
+the \strong{\code{chainage}} column from \code{\link[=xt_generate_plan]{xt_generate_plan()}} (distance to the sampling
+station on the axis).
 }
 \note{
 Use \code{\link[=xt_arrange_downstream]{xt_arrange_downstream()}} if you need rows ordered by these distances.

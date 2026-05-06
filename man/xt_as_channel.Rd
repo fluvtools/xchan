@@ -12,11 +12,11 @@
 \usage{
 xt_as_channel(x, ...)
 
-\method{xt_as_channel}{numeric}(x, profile = NULL, ..., crs = NULL, axis = NULL)
+\method{xt_as_channel}{numeric}(x, profile = NULL, ..., crs = NULL, axis = NULL, chainage = NULL)
 
-\method{xt_as_channel}{sfg}(x, profile = NULL, ..., crs = NULL, axis = NULL)
+\method{xt_as_channel}{sfg}(x, profile = NULL, ..., crs = NULL, axis = NULL, chainage = NULL)
 
-\method{xt_as_channel}{sfc}(x, profile = NULL, ..., crs = NULL, axis = NULL)
+\method{xt_as_channel}{sfc}(x, profile = NULL, ..., crs = NULL, axis = NULL, chainage = NULL)
 
 \method{xt_as_channel}{data.frame}(x, plan_col, profile_col = NULL, crs = NULL, axis = NULL, ...)
 
@@ -41,6 +41,10 @@ existing CRS unchanged.}
 
 \item{axis}{Optional channel axis (\code{sfc}/\code{sfg} LINESTRING, length 1); see \code{\link[=xt_axis]{xt_axis()}}.
 Used when coercing from \code{numeric}, \code{sfc}, \code{sfg}, or \code{data.frame}.}
+
+\item{chainage}{Optional numeric vector (same length as \code{plan}): distance along
+the channel from upstream for each section; coercing methods pass it through
+as a column. See \code{\link[=xt_generate_plan]{xt_generate_plan()}}.}
 
 \item{plan_col}{Name of the column holding planimetric \code{sfc_LINESTRING}
 geometries (required).}

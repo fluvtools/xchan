@@ -18,6 +18,9 @@
 #'    `.plan`.
 #' @param .axis Optional channel axis as a single `LINESTRING` (`sfc`/`sfg`);
 #'   same CRS as `.plan`. Used by [xt_trace_centerline()] and related functions.
+#' @param .chainage Optional numeric vector (length `length(.plan)`): distance
+#'   along the channel from upstream to each section’s station (CRS units); see
+#'   [xt_generate_plan()].
 #' @param ... Additional columns for the channel table (vectors or
 #'   list-columns).
 #'
@@ -34,7 +37,7 @@
 #'   crs = 3005
 #' )
 #' xt_channel(.plan = seg)
-xt_channel <- function(.plan, .profile = NULL, .axis = NULL, ...) {
+xt_channel <- function(.plan, .profile = NULL, .axis = NULL, .chainage = NULL, ...) {
   if (!inherits(.plan, "sfc") || !inherits(.plan, "sfc_LINESTRING")) {
     stop("`.plan` must be an object of class `sfc_LINESTRING`.", call. = FALSE)
   }
@@ -44,7 +47,7 @@ xt_channel <- function(.plan, .profile = NULL, .axis = NULL, ...) {
   }
 
   dots <- rlang::list2(...)
-  dup <- intersect(names(dots), c("plan", "profile"))
+  dup <- intersect(names(dots), c("plan", "profile", "chainage"))
   if (length(dup)) {
     stop(
       "Arguments in `...` must not be named `plan` or `profile`; ",
@@ -74,6 +77,12 @@ xt_channel <- function(.plan, .profile = NULL, .axis = NULL, ...) {
   cols <- c(list(plan = .plan), dots)
   if (!is.null(.profile)) {
     cols$profile <- .profile
+  }
+  if (!is.null(.chainage)) {
+    if (length(.chainage) != length(.plan)) {
+      stop("`.chainage` must have length `length(.plan)`.", call. = FALSE)
+    }
+    cols$chainage <- .chainage
   }
 
   df <- rlang::exec(create_data_frame, !!!cols)

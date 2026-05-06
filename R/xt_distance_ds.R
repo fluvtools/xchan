@@ -1,7 +1,9 @@
 #' Calculate Downstream Distance of Cross Sections
 #'
 #' Distance along the channel axis from the **start** of the axis line to each
-#' cross section’s station (midpoint between bank endpoints), in axis units.
+#' cross section’s bank-to-bank **midpoint**, in axis units. This can differ from
+#' the **`chainage`** column from [xt_generate_plan()] (distance to the sampling
+#' station on the axis).
 #'
 #' @param channel A channel object with planimetric cross sections.
 #' @param axis Optional **LINESTRING** (`sfc` / `sfg`). Resolution matches

@@ -24,7 +24,7 @@ test_that("xt_arrange_downstream restores canonical row order", {
   expect_identical(sf::st_coordinates(ch$plan), sf::st_coordinates(back$plan))
 })
 
-test_that("xt_trace_centerline requires an axis when none is stored", {
+test_that("xt_trace_centerline requires an axis when neither axis nor chainage", {
   skip_if_not_installed("sf")
   seg <- sf::st_sfc(
     sf::st_linestring(matrix(c(-1, 0, 1, 0), ncol = 2, byrow = TRUE)),
@@ -33,4 +33,12 @@ test_that("xt_trace_centerline requires an axis when none is stored", {
   )
   ch <- xt_channel(.plan = seg)
   expect_error(xt_trace_centerline(ch), "No axis stored")
+})
+
+test_that("xt_trace_centerline works with chainage after clearing axis", {
+  skip_if_not_installed("sf")
+  ch <- xt_generate_plan(fraser_bankline, n = 6)
+  xt_axis(ch) <- NULL
+  expect_true(xt_has_chainage(ch))
+  expect_no_error(xt_trace_centerline(ch))
 })
