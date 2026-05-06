@@ -5,10 +5,18 @@ Authors@R:
     c(
     person("Vincenzo", "Coia", email = "vcoia@bgcengineering.ca", 
            role = c("aut", "cre")),
+    person("Lucy", "MacKenzie", email = "lmackenzie@bgcengineering.ca",
+           role = "aut"),
     person("Jane", "Wang", email = "jwang@bgcengineering.ca",
            role = "aut"),
-    person("Heba", "Abdelmoaty",
-           role = "ctb")
+    person("Kathleen", "Horita", email = "khorita@bgcengineering.ca",
+           role = "ctb"),
+    person("Sarah", "Davidson", email = "sdavidson@bgcengineering.ca",
+           role = "ctb"),
+    person("Brett", "Eaton", email = "beaton@bgcengineering.ca",
+           role = "ctb"),
+    person("Heba", "Abdelmoaty", email = "heba.abdelmoaty@ucalgary.ca",
+           role = "ctb"),
     )
 Description: Create and manipulate watercourse geometries for 
     geomorphology applications, with a 
