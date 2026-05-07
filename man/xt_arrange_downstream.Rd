@@ -9,18 +9,16 @@ xt_arrange_downstream(channel, axis = NULL)
 \arguments{
 \item{channel}{A channel object (\code{xchan}).}
 
-\item{axis}{Optional LINESTRING axis (\code{sfc} / \code{sfg}). Used only when
-\strong{\code{chainage}} is absent; passed through for projection ordering.}
+\item{axis}{Optional LINESTRING axis (\code{sfc} / \code{sfg}) passed through for
+projection ordering.}
 }
 \value{
 The same channel object with rows permuted (attributes such as
 \code{axis} and \code{plan_col} preserved).
 }
 \description{
-Reorders rows so cross sections progress downstream. If a numeric \strong{\code{chainage}}
-column is present (\link[=xt_has_profile]{xt_has_chainage()}), rows are sorted by increasing
-\strong{\code{chainage}} (no axis required). Otherwise rows are ordered by projection onto
-\code{axis} (\code{\link[=xt_axis]{xt_axis()}} or explicit \code{axis} argument).
+Reorders rows so cross sections progress downstream by projection onto \code{axis}
+(\code{\link[=xt_axis]{xt_axis()}} or explicit \code{axis} argument).
 }
 \examples{
 \donttest{

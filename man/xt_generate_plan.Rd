@@ -4,7 +4,7 @@
 \alias{xt_generate_plan}
 \title{Generate channel object from banklines}
 \usage{
-xt_generate_plan(banks, ..., n, spacing, at, axis = NULL)
+xt_generate_plan(banks, ..., n, spacing, at, axis = NULL, progress = FALSE)
 }
 \arguments{
 \item{banks}{Bankline polygon (sf POLYGON object)}
@@ -23,6 +23,9 @@ exclusive with n and spacing)}
 \item{axis}{Channel axis as a multilinestring: the line along which cross
 sections are placed. If \code{NULL} (the default), an axis is generated
 automatically using the \strong{centerline} package (\code{centerline::cnt_path_guess()}).}
+
+\item{progress}{Logical; if \code{TRUE}, display a text progress bar while
+generating planimetric cross sections.}
 }
 \value{
 A channel object with planimetric cross sections in the plan column.

@@ -12,15 +12,15 @@
 \usage{
 xt_as_channel(x, ...)
 
-\method{xt_as_channel}{numeric}(x, profile = NULL, ..., crs = NULL, axis = NULL, chainage = NULL)
+\method{xt_as_channel}{numeric}(x, ..., profile = NULL, crs = NULL, axis = NULL, spacing = NULL)
 
-\method{xt_as_channel}{sfg}(x, profile = NULL, ..., crs = NULL, axis = NULL, chainage = NULL)
+\method{xt_as_channel}{sfg}(x, ..., profile = NULL, crs = NULL, axis = NULL)
 
-\method{xt_as_channel}{sfc}(x, profile = NULL, ..., crs = NULL, axis = NULL, chainage = NULL)
+\method{xt_as_channel}{sfc}(x, ..., profile = NULL, crs = NULL, axis = NULL)
 
-\method{xt_as_channel}{data.frame}(x, plan_col, profile_col = NULL, crs = NULL, axis = NULL, ...)
+\method{xt_as_channel}{data.frame}(x, plan_col, ..., profile_col = NULL, crs = NULL, axis = NULL)
 
-\method{xt_as_channel}{xchan}(x, crs = NULL, ...)
+\method{xt_as_channel}{xchan}(x, ..., crs = NULL)
 
 \method{xt_as_channel}{default}(x, ...)
 }
@@ -42,9 +42,10 @@ existing CRS unchanged.}
 \item{axis}{Optional channel axis (\code{sfc}/\code{sfg} LINESTRING, length 1); see \code{\link[=xt_axis]{xt_axis()}}.
 Used when coercing from \code{numeric}, \code{sfc}, \code{sfg}, or \code{data.frame}.}
 
-\item{chainage}{Optional numeric vector (same length as \code{plan}): distance along
-the channel from upstream for each section; coercing methods pass it through
-as a column. See \code{\link[=xt_generate_plan]{xt_generate_plan()}}.}
+\item{spacing}{Numeric scalar used by the \code{numeric} method only when \code{axis} is
+\code{NULL}: spacing between consecutive synthetic cross sections. If both
+\code{axis} and \code{spacing} are supplied, an error is raised. When \code{axis} is
+\code{NULL} and \code{spacing} is omitted, \code{spacing = 1} is used.}
 
 \item{plan_col}{Name of the column holding planimetric \code{sfc_LINESTRING}
 geometries (required).}

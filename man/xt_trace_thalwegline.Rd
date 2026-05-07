@@ -10,8 +10,9 @@ xt_trace_thalwegline(channel, axis = NULL)
 \item{channel}{Channel object with \strong{both} planimetric cross sections and a
 profile column (\code{xs_profile} list).}
 
-\item{axis}{Optional LINESTRING axis; used for section ordering only if
-\strong{\code{chainage}} is absent (same as \code{\link[=xt_trace_centerline]{xt_trace_centerline()}}).}
+\item{axis}{Optional LINESTRING axis used to define downstream section order.
+If \code{NULL}, uses \code{xt_axis(channel)}; if that is also \code{NULL}, an error is
+raised (same ordering rules as \code{\link[=xt_trace_centerline]{xt_trace_centerline()}}).}
 }
 \value{
 An \code{sfc} object:
@@ -34,9 +35,9 @@ Requires \code{\link[=xt_has_profile]{xt_has_profile()}}. Thalweg distances come
 positions along the plan line use the same bank-span interpolation as
 \code{\link[=create_3d_coords]{create_3d_coords()}} (first plan vertex = left bank, last = right bank).
 
-Section order follows increasing \strong{\code{chainage}} when present; otherwise
-increasing projection onto \code{axis} of the centroid of each section’s thalweg
-plan points.
+The axis defines section order only. Thalweg geometry is always recomputed
+from current plan/profile geometry, so this function naturally supports
+retracing after geometry-changing operations.
 }
 \examples{
 \donttest{

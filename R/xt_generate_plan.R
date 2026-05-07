@@ -14,6 +14,8 @@
 #' @param axis Channel axis as a multilinestring: the line along which cross
 #'   sections are placed. If `NULL` (the default), an axis is generated
 #'   automatically using the **centerline** package (`centerline::cnt_path_guess()`).
+#' @param progress Logical; if `TRUE`, display a text progress bar while
+#'   generating planimetric cross sections.
 #' @returns A channel object with planimetric cross sections in the plan column.
 #'   A numeric column **`chainage`** gives distance along the sampling axis from
 #'   its start to each section’s station (CRS units). Downstream order follows
@@ -67,8 +69,19 @@
 #' # With a custom axis (e.g. user-defined line along the channel)
 #' # channel <- xt_generate_plan(bl, n = 100, axis = my_axis)
 #' @export
-xt_generate_plan <- function(banks, ..., n, spacing, at, axis = NULL) {
+xt_generate_plan <- function(
+    banks,
+    ...,
+    n,
+    spacing,
+    at,
+    axis = NULL,
+    progress = FALSE
+) {
   rlang::check_dots_empty()
+  if (!rlang::is_bool(progress)) {
+    stop("`progress` must be TRUE or FALSE.")
+  }
 
   # Validate input parameters: exactly one of n, spacing, or at is required.
   n_specified <- !missing(n)
@@ -115,6 +128,12 @@ xt_generate_plan <- function(banks, ..., n, spacing, at, axis = NULL) {
   )
 
   xs <- list()
+  n_pts <- length(pts)
+  pb <- NULL
+  if (progress && n_pts > 0) {
+    pb <- utils::txtProgressBar(min = 0, max = n_pts, style = 3)
+    on.exit(close(pb), add = TRUE)
+  }
   for (i in seq_along(pts)) {
     # Make a function to calculate the width of a bank-to-bank line for a
     # given angle, for the first point along the axis.
@@ -152,6 +171,9 @@ xt_generate_plan <- function(banks, ..., n, spacing, at, axis = NULL) {
       intersect = TRUE,
       reposition = TRUE
     )[[1]]
+    if (!is.null(pb)) {
+      utils::setTxtProgressBar(pb, i)
+    }
   }
 
   ## Combine list of segments in xs into a single sf geometry
