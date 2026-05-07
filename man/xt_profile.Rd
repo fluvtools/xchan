@@ -19,7 +19,8 @@ An \code{"xs_profile"} object: a list with the following components:
 \item \code{coordinates}: an \code{n} x 2 matrix of distances along the cross section
 (column 1) and elevation (column 2).
 \item \code{banks}: A numeric vector of \strong{even length} whose values are \strong{row indices}
-into \code{coordinates} (not chainage). Banks appear left-to-right in profile
+into \code{coordinates} (profile coordinates along the cross section, not
+distance along the channel). Banks appear left-to-right in profile
 order and alternate land-to-water / water-to-land (including islands).
 Distances at bank vertices are \code{coordinates[banks, 1]}.
 \item \code{thalwegs}: A numeric vector of \strong{row indices} into \code{coordinates} for

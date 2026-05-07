@@ -27,12 +27,11 @@
 #' @param progress Logical; if `TRUE`, display a text progress bar while
 #'   generating planimetric cross sections.
 #' @returns A channel object with planimetric cross sections in the plan column.
-#'   A numeric column **`chainage`** gives distance along the sampling axis from
-#'   its start to each section’s station (CRS units). Downstream order follows
-#'   increasing **`chainage`**; keep or restore this ordering after `arrange()` via
-#'   [xt_arrange_downstream()] or by sorting on **`chainage`**. The sampling axis
-#'   is also stored ([xt_axis()]) for geometry that requires it (e.g.
-#'   [xt_distance_ds()]).
+#'   Rows follow downstream order along the sampling axis. After `arrange()` or
+#'   subsetting, restore order with [xt_arrange_downstream()]. Use [xt_distance_ds()]
+#'   for distance along the axis from its start to each section (requires the axis
+#'   from [xt_axis()], which this function sets). The sampling axis is stored for
+#'   geometry that requires it.
 #' @details **Bank geometry:** Supply the channel as one polygon (or
 #' multipolygon) so its boundary is a closed loop around the wetted/plan
 #' corridor. If you only have two bank polylines, convert them to a closed
@@ -134,7 +133,6 @@ xt_generate_plan <- function(
   dists_raw <- as.numeric(sf::st_line_project(cl, pts))
   ord_st <- order(dists_raw)
   pts <- pts[ord_st]
-  chainage <- dists_raw[ord_st]
 
   # Get maximum distance based on bounding box
   bb <- sf::st_bbox(banks)
@@ -202,15 +200,15 @@ xt_generate_plan <- function(
 
   attr(geoms, "left_to_right") <- TRUE
 
-  # Chainage + sampling axis for downstream order and distance geometry
-  out <- xt_as_channel(geoms, chainage = chainage)
+  # Sampling axis for downstream order and distance geometry (see xt_distance_ds)
+  out <- xt_as_channel(geoms)
   xt_axis(out) <- cl
   out
 }
 
 #' Unit tangent along the channel axis, downstream
 #'
-#' Approximates the direction of increasing chainage on `cl` at `pt` by taking a
+#' Approximates the downstream direction on `cl` at `pt` by taking a
 #' short finite difference between two nearby interpolations along the line.
 #' Used to define left/right relative to flow when orienting cross sections.
 #' The full downstream / left–right convention is documented under **Details**

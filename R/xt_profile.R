@@ -15,7 +15,8 @@
 #' - `coordinates`: an `n` x 2 matrix of distances along the cross section
 #'   (column 1) and elevation (column 2).
 #' - `banks`: A numeric vector of **even length** whose values are **row indices**
-#'   into `coordinates` (not chainage). Banks appear left-to-right in profile
+#'   into `coordinates` (profile coordinates along the cross section, not
+#'   distance along the channel). Banks appear left-to-right in profile
 #'   order and alternate land-to-water / water-to-land (including islands).
 #'   Distances at bank vertices are `coordinates[banks, 1]`.
 #' - `thalwegs`: A numeric vector of **row indices** into `coordinates` for
