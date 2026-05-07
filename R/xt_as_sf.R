@@ -63,9 +63,10 @@ xt_as_sfc <- function(channel, what = c("plan", "profile", "3d")) {
     return(sf::st_sfc(profile_geoms))
   }
 
-  # Convert each cross section to a multiline
+  # Convert each cross section to a multiline; preserve the plan's CRS since
+  # 3D geometry coordinates are still in map (x, y) plus elevation.
   coords_3d <- Map(create_3d_coords, plan, profile)
-  sf::st_sfc(coords_3d)
+  sf::st_sfc(coords_3d, crs = sf::st_crs(plan))
 }
 
 #' @rdname xt_as_sf

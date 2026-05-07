@@ -9,8 +9,11 @@ xt_erosion_volume(channel, width, side = "both")
 \arguments{
 \item{channel}{Channel object}
 
-\item{width}{Change in width; single positive numeric or vector matching
-number of cross-sections.}
+\item{width}{Change in width; single positive value or vector matching the
+number of cross sections. Plain numeric is interpreted in the channel's
+CRS length unit; a \code{\link[units:units]{units::units()}} length object is converted
+automatically (for example \code{units::set_units(10, "ft")} against a metric
+channel).}
 
 \item{side}{A side specification controlling how widening is split between
 left and right banks. Supply either a side object from \code{\link[=side_left]{side_left()}},
@@ -18,8 +21,9 @@ left and right banks. Supply either a side object from \code{\link[=side_left]{s
 \code{"right"}, or \code{"both"}.}
 }
 \value{
-A numeric vector of erosion volumes for each cross-section in
-the channel.
+A numeric vector of erosion volumes for each cross-section in the
+channel, carrying \code{\link[units:units]{units::units()}} of (CRS length unit)^3 when the
+channel has a CRS with a defined linear unit.
 }
 \description{
 This function calculates the erosion volume for each cross-section in

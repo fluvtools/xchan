@@ -7,12 +7,15 @@
 #' @param channel Channel object with planimetric cross sections.
 #' @param dem Digital elevation model (raster or terra object).
 #' @param ... Additional arguments (ignored).
-#' @param extent_distance Distance to extend beyond banks (units);
-#'   positive numeric value. Mutually exclusive with `extent_multiplier`.
+#' @param extent_distance Distance to extend beyond banks; positive value.
+#'   Plain numeric is interpreted in the channel's CRS length unit; a
+#'   [units::units()] length object is converted automatically. Mutually
+#'   exclusive with `extent_multiplier`.
 #' @param extent_multiplier Multiplier of channel width to extend beyond banks;
 #'   positive numeric value. Mutually exclusive with `extent_distance`.
-#' @param sample_freq Distance between DEM sampling points (units);
-#'   positive numeric value. Mutually exclusive with `sample_n`.
+#' @param sample_freq Distance between DEM sampling points; positive value.
+#'   Same units treatment as `extent_distance`. Mutually exclusive with
+#'   `sample_n`.
 #' @param sample_n number to sample; positive integer value greater than 1.
 #'   Mutually exclusive with `sample_freq`.
 #' @returns Updated channel object with profile cross sections in the
@@ -71,7 +74,19 @@ xt_generate_profile <- function(
   if (sample_specified != 1) {
     stop("Exactly one of sample_freq or sample_n must be specified")
   }
+
+  # Convert any units inputs to bare numerics in the channel's CRS unit so
+  # downstream coordinate arithmetic stays plain numeric.
+  unit <- crs_length_unit(channel)
+  if (!missing(extent_distance)) {
+    extent_distance <- to_numeric_length(
+      extent_distance,
+      unit,
+      arg = "extent_distance"
+    )
+  }
   if (!missing(sample_freq)) {
+    sample_freq <- to_numeric_length(sample_freq, unit, arg = "sample_freq")
     checkmate::assert_number(sample_freq, lower = 0)
   }
   if (!missing(sample_n)) {
@@ -88,7 +103,7 @@ xt_generate_profile <- function(
 
     # Calculate extent
     if (!missing(extent_distance)) {
-      extent <- as.numeric(extent_distance)
+      extent <- extent_distance
     } else {
       # Calculate channel width and multiply
       width <- as.numeric(sf::st_length(xs_line))
@@ -100,7 +115,7 @@ xt_generate_profile <- function(
 
     # Calculate sampling distance
     if (!missing(sample_freq)) {
-      sample_dist <- as.numeric(sample_freq)
+      sample_dist <- sample_freq
     } else {
       sample_dist <- as.numeric(sf::st_length(extended_line)) /
         max(1, sample_n - 1)

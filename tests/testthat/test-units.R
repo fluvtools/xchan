@@ -1,0 +1,230 @@
+test_that("crs_length_unit returns the expected unit symbol", {
+  expect_null(xchan:::crs_length_unit(NULL))
+  expect_equal(xchan:::crs_length_unit(sf::st_crs(3005)), "m")
+  expect_equal(xchan:::crs_length_unit(sf::st_crs(32610)), "m")
+  expect_null(xchan:::crs_length_unit(sf::st_sfc(sf::st_point(c(0, 0)))))
+})
+
+test_that("xt_width returns units when CRS has linear units, plain numeric otherwise", {
+  ch <- xt_generate_plan(fraser_bankline, n = 5)
+  w <- xt_width(ch)
+  expect_s3_class(w, "units")
+  expect_equal(units::deparse_unit(w), "m")
+  expect_equal(length(w), 5L)
+
+  ch_nocrs <- xt_as_channel(c(10, 15, 12))
+  expect_type(xt_width(ch_nocrs), "double")
+  expect_false(inherits(xt_width(ch_nocrs), "units"))
+})
+
+test_that("xt_distance_ds returns units when CRS has linear units", {
+  ch <- xt_generate_plan(fraser_bankline, n = 5)
+  ds <- xt_distance_ds(ch)
+  expect_s3_class(ds, "units")
+  expect_equal(units::deparse_unit(ds), "m")
+})
+
+test_that("xt_widen accepts units inputs for dw, normalised to channel CRS unit", {
+  ch <- xt_generate_plan(fraser_bankline, n = 4)
+  w0 <- as.numeric(xt_width(ch))
+
+  # Plain numeric is interpreted in CRS units (metres here).
+  w_num <- xt_widen(ch, dw = 2)
+  expect_equal(as.numeric(xt_width(w_num)), w0 + 2)
+
+  # units::set_units(2, "m") must give the same result.
+  w_m <- xt_widen(ch, dw = units::set_units(2, "m"))
+  expect_equal(as.numeric(xt_width(w_m)), w0 + 2)
+
+  # 200 cm == 2 m.
+  w_cm <- xt_widen(ch, dw = units::set_units(200, "cm"))
+  expect_equal(as.numeric(xt_width(w_cm)), w0 + 2)
+})
+
+test_that("xt_widen rejects units that aren't lengths", {
+  ch <- xt_generate_plan(fraser_bankline, n = 3)
+  expect_error(
+    xt_widen(ch, dw = units::set_units(2, "kg")),
+    "incompatible with the channel"
+  )
+})
+
+test_that("xt_erosion_width accepts volume units, returns length units", {
+  profile <- xt_profile(
+    coords = matrix(
+      c(
+        -3, 11,
+        -2, 10,
+        -1, 10,
+        0, 9,
+        1, 10,
+        2, 10,
+        3, 11
+      ),
+      ncol = 2,
+      byrow = TRUE
+    ),
+    bankpoints = c(-1, 1)
+  )
+  ch <- xt_as_channel(2, profile = list(profile), crs = 3005)
+
+  # numeric dv (interpreted in m^3)
+  out_num <- xt_erosion_width(ch, dv = 0.5)
+  expect_s3_class(out_num, "units")
+  expect_equal(units::deparse_unit(out_num), "m")
+
+  # m^3 dv -> same answer
+  out_m3 <- xt_erosion_width(ch, dv = units::set_units(0.5, "m^3"))
+  expect_equal(as.numeric(out_m3), as.numeric(out_num))
+
+  # 500 L == 0.5 m^3
+  out_L <- xt_erosion_width(ch, dv = units::set_units(500, "L"))
+  expect_equal(as.numeric(out_L), as.numeric(out_num), tolerance = 1e-9)
+})
+
+test_that("xt_erosion_volume accepts length units, returns m^3", {
+  profile <- xt_profile(
+    coords = matrix(
+      c(
+        -3, 11,
+        -2, 10,
+        -1, 10,
+        0, 9,
+        1, 10,
+        2, 10,
+        3, 11
+      ),
+      ncol = 2,
+      byrow = TRUE
+    ),
+    bankpoints = c(-1, 1)
+  )
+  ch <- xt_as_channel(2, profile = list(profile), crs = 3005)
+
+  out_num <- xt_erosion_volume(ch, width = 0.5)
+  expect_s3_class(out_num, "units")
+  # `units` deparses cubic metres as "m3" (no caret); both round-trip.
+  expect_equal(units::deparse_unit(out_num), "m3")
+
+  out_m <- xt_erosion_volume(ch, width = units::set_units(0.5, "m"))
+  expect_equal(as.numeric(out_m), as.numeric(out_num))
+
+  # 50 cm == 0.5 m
+  out_cm <- xt_erosion_volume(ch, width = units::set_units(50, "cm"))
+  expect_equal(as.numeric(out_cm), as.numeric(out_num), tolerance = 1e-9)
+})
+
+test_that("xt_widen with dv (volume) accepts units and matches plain numeric", {
+  profile <- xt_profile(
+    coords = matrix(
+      c(
+        -3, 11,
+        -2, 10,
+        -1, 10,
+        0, 9,
+        1, 10,
+        2, 10,
+        3, 11
+      ),
+      ncol = 2,
+      byrow = TRUE
+    ),
+    bankpoints = c(-1, 1)
+  )
+  ch <- xt_as_channel(2, profile = list(profile), crs = 3005)
+
+  out_num <- xt_widen(ch, dv = 0.5, side = "left")
+  out_m3 <- xt_widen(ch, dv = units::set_units(0.5, "m^3"), side = "left")
+  expect_equal(as.numeric(xt_width(out_num)), as.numeric(xt_width(out_m3)))
+})
+
+test_that("xt_generate_plan accepts units for spacing and at", {
+  bl <- fraser_bankline
+  ch_num <- xt_generate_plan(bl, spacing = 5000)
+  ch_m <- xt_generate_plan(bl, spacing = units::set_units(5000, "m"))
+  expect_equal(xt_n_sections(ch_num), xt_n_sections(ch_m))
+
+  # 5 km == 5000 m
+  ch_km <- xt_generate_plan(bl, spacing = units::set_units(5, "km"))
+  expect_equal(xt_n_sections(ch_num), xt_n_sections(ch_km))
+
+  ch_at_num <- xt_generate_plan(bl, at = c(1000, 5000, 9000))
+  ch_at_m <- xt_generate_plan(bl, at = units::set_units(c(1000, 5000, 9000), "m"))
+  expect_equal(xt_n_sections(ch_at_num), xt_n_sections(ch_at_m))
+})
+
+test_that("xt_as_channel.numeric accepts units for x and spacing", {
+  ch_num <- xt_as_channel(c(10, 12, 14), spacing = 5, crs = 3005)
+  ch_m <- xt_as_channel(
+    units::set_units(c(10, 12, 14), "m"),
+    spacing = units::set_units(5, "m"),
+    crs = 3005
+  )
+  expect_equal(as.numeric(xt_width(ch_num)), as.numeric(xt_width(ch_m)))
+
+  # Mixed: cm widths against a metric CRS
+  ch_cm <- xt_as_channel(
+    units::set_units(c(1000, 1200, 1400), "cm"),
+    spacing = units::set_units(500, "cm"),
+    crs = 3005
+  )
+  expect_equal(as.numeric(xt_width(ch_num)), as.numeric(xt_width(ch_cm)))
+})
+
+test_that("xt_gradient stays unitless even when CRS carries units", {
+  # Build a synthetic CRS-aware channel with a stepped thalweg so a real
+  # gradient comes out. Use elevation_topo() which works with the current
+  # xs_profile data structure.
+  make_profile <- function(elev_offset) {
+    xt_profile(
+      coords = matrix(
+        c(-2, 10 + elev_offset, -1, 9 + elev_offset, 0, 8 + elev_offset,
+          1, 9 + elev_offset, 2, 10 + elev_offset),
+        ncol = 2,
+        byrow = TRUE
+      ),
+      bankpoints = c(-1, 1)
+    )
+  }
+  ch <- xt_as_channel(
+    rep(2, 4),
+    spacing = 10,
+    profile = list(
+      make_profile(3),
+      make_profile(2),
+      make_profile(1),
+      make_profile(0)
+    ),
+    crs = 3005
+  )
+  g <- xt_gradient(
+    ch,
+    .before = 1L,
+    .after = 1L,
+    .complete = TRUE,
+    elevation = elevation_topo(.f = min)
+  )
+  expect_type(g, "double")
+  expect_false(inherits(g, "units"))
+  # Per-section elevation drops by 1 over a 10 m step → gradient ≈ -0.1.
+  expect_equal(g, c(-0.1, -0.1, -0.1, -0.1))
+})
+
+test_that("xt_as_sfc(channel, what = '3d') preserves CRS", {
+  profile <- xt_profile(
+    coords = matrix(
+      c(-2, 10, -1, 9, 0, 8, 1, 9, 2, 10),
+      ncol = 2,
+      byrow = TRUE
+    ),
+    bankpoints = c(-1, 1)
+  )
+  ch <- xt_as_channel(
+    rep(2, 3),
+    spacing = 10,
+    profile = rep(list(profile), 3),
+    crs = 3005
+  )
+  g3d <- xt_as_sfc(ch, what = "3d")
+  expect_equal(sf::st_crs(g3d), sf::st_crs(3005))
+})

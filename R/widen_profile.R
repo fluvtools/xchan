@@ -55,12 +55,20 @@ widen_profile_left <- function(profile, dw) {
   y_new <- coords_interpolate(profile$coordinates, x_new)[2]
   thalweg_coords <- get_min_thalweg_coords(profile)
   y_thal <- thalweg_coords[2]
+
+  # Snapshot bank and thalweg distances *before* mutating nodes; we'll re-look
+  # up their indices in the post-mutation node set at the very end. Without
+  # this the right bank and any non-leftmost thalweg indices would silently
+  # drift after we drop rows below.
+  bank_d_old <- get_bank_distances(profile)
+  bank_d_new <- bank_d_old
+  bank_d_new[1] <- x_new
+  thalweg_d_old <- get_thalweg_distances(profile)
+  thalweg_d_new <- thalweg_d_old
+  thalweg_d_new[1] <- thalweg_d_old[1] - dw
+
   nodes <- profile$coordinates
   nodes <- inject_coords(nodes, x_new)
-
-  # Update bank index to point to the new bank location
-  new_bank_index <- which.min(abs(nodes[, 1] - x_new))
-  profile$banks[1] <- new_bank_index
 
   if (y_new < y_thal) {
     warning(
@@ -76,14 +84,21 @@ widen_profile_left <- function(profile, dw) {
   nodes <- nodes[!x_in_between, , drop = FALSE]
   # Erosion rule 2: nodes starting from the old bankpoint shift over
   # to the new bankpoint.
-  thalweg_distances <- get_thalweg_distances(profile)
-  x_river_part <- nodes[, 1] >= x_old & nodes[, 1] <= thalweg_distances[1]
+  x_river_part <- nodes[, 1] >= x_old & nodes[, 1] <= thalweg_d_old[1]
   nodes[x_river_part, 1] <- nodes[x_river_part, 1] - dw
   profile$coordinates <- nodes
 
-  # Update thalweg indices
-  thalweg_indices <- profile$thalwegs
-  thalweg_indices[1] <- which.min(abs(nodes[, 1] - (thalweg_distances[1] - dw)))
-  profile$thalwegs <- thalweg_indices
+  # Recompute every bank/thalweg index from x-coordinates against the new
+  # node table, so removed rows don't shift outer-bank or island indices.
+  profile$banks <- vapply(
+    bank_d_new,
+    function(xd) which.min(abs(nodes[, 1] - xd)),
+    integer(1L)
+  )
+  profile$thalwegs <- vapply(
+    thalweg_d_new,
+    function(xd) which.min(abs(nodes[, 1] - xd)),
+    integer(1L)
+  )
   profile
 }

@@ -11,11 +11,15 @@ xt_widen(channel, ..., dw, dv, side = "both")
 
 \item{...}{Additional arguments (ignored)}
 
-\item{dw}{The total width to add to the channel. Must be a positive numeric
-value and cannot be used with \code{dv}.}
+\item{dw}{The total width to add to the channel. Positive numeric, or a
+\code{\link[units:units]{units::units()}} length object (for example
+\code{units::set_units(2, "m")}); units are converted to the channel's CRS
+length unit. Cannot be used with \code{dv}.}
 
-\item{dv}{The total volume to remove to widen the channel. Must be a
-positive numeric value and cannot be used with \code{dw}.}
+\item{dv}{The total volume to remove to widen the channel. Positive numeric,
+or a \code{\link[units:units]{units::units()}} volume object (for example
+\code{units::set_units(50, "m^3")}); units are converted to the channel's CRS
+length unit cubed. Cannot be used with \code{dw}.}
 
 \item{side}{A side specification controlling how widening is split between
 left and right banks. Supply either a side object from \code{\link[=side_left]{side_left()}},

@@ -24,11 +24,13 @@ with this closed boundary.}
 \item{n}{Number of cross sections to generate (mutually exclusive with
 spacing and at)}
 
-\item{spacing}{Distance between cross sections (mutually exclusive with n
-and at)}
+\item{spacing}{Distance between cross sections (mutually exclusive with \code{n}
+and \code{at}). Plain numeric is interpreted in the \code{banks} CRS length unit; a
+\code{\link[units:units]{units::units()}} length object is converted automatically.}
 
-\item{at}{Specific distances along the channel axis for cross sections (mutually
-exclusive with n and spacing)}
+\item{at}{Specific distances along the channel axis for cross sections
+(mutually exclusive with \code{n} and \code{spacing}). Same units treatment as
+\code{spacing}.}
 
 \item{axis}{Channel axis as a multilinestring: the line along which cross
 sections are placed. If \code{NULL} (the default), an axis is generated
