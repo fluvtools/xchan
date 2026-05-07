@@ -1,8 +1,7 @@
 #' Width of cross sections
 #'
-#' `xt_width()` returns geometric width. For a \code{xchan} object, this is typically one
-#' value per cross section: from planimetric line lengths when a plan column
-#' exists, otherwise from profile geometry. For a single \code{xs_profile}
+#' `xt_width()` returns geometric width. For a `xchan` object, this is one
+#' value per cross section from planimetric line lengths. For a single `xs_profile`
 #' object, it is the span along the profile horizontal axis between the
 #' outermost left and right banks (the same convention as
 #' [xt_generate_profile()] and [xt_profile()]).
@@ -35,12 +34,8 @@ xt_width <- function(x, ...) {
 #' @rdname widths
 xt_width.xchan <- function(x, ...) {
   checkmate::assert_class(x, "xchan")
-  if (xt_has_plan(x)) {
-    plan <- xt_column_plan(x)
-    return(vapply(plan, function(g) as.numeric(sf::st_length(g)), numeric(1)))
-  }
-  prof <- xt_column_profile(x)
-  vapply(prof, xt_width, FUN.VALUE = numeric(1))
+  plan <- xt_column_plan(x)
+  vapply(plan, function(g) as.numeric(sf::st_length(g)), numeric(1))
 }
 
 #' @export
@@ -64,7 +59,7 @@ xt_width.default <- function(x, ...) {
 xt_validate_plan_profile_widths <- function(channel, tol = 1e-6) {
   checkmate::assert_class(channel, "xchan")
   checkmate::assert_number(tol, lower = 0)
-  if (!xt_has_plan(channel) || !xt_has_profile(channel)) {
+  if (!xt_has_profile(channel)) {
     return(invisible(channel))
   }
   plan <- xt_column_plan(channel)

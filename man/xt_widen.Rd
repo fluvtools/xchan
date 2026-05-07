@@ -4,13 +4,7 @@
 \alias{xt_widen}
 \title{Widen a channel}
 \usage{
-xt_widen(
-  channel,
-  ...,
-  dw,
-  dv,
-  side = "both"
-)
+xt_widen(channel, ..., dw, dv, side = "both")
 }
 \arguments{
 \item{channel}{Channel object}
@@ -27,7 +21,6 @@ positive numeric value and cannot be used with \code{dw}.}
 left and right banks. Supply either a side object from \code{\link[=side_left]{side_left()}},
 \code{\link[=side_right]{side_right()}}, or \code{\link[=side_both]{side_both()}}, or a shorthand string: \code{"left"},
 \code{"right"}, or \code{"both"}.}
-
 }
 \value{
 A modified channel object

@@ -120,50 +120,6 @@ total_widths <- xt_width(channel_with_islands)
 # bank_analysis
 ```
 
-## Complex Bankline Tracing
-
-### Different Tracer Methods
-
-```{r tracer-methods}
-# Linear tracer (connects bank points directly)
-linear_tracer <- tracer_linear()
-
-# Spline tracer (smooth interpolation)
-spline_tracer <- tracer_spline(degree = 3, smoothing = 0.5)
-
-# DEM tracer (tracing contours from DEM)
-# dem_tracer <- tracer_dem(my_dem, contour_interval = 1)
-```
-
-### Using Tracers (Operator Factories)
-
-Tracers are **operator factories** that create functions for connecting bank points into continuous banklines. Similarly, extenders are **operator factories** that create functions for extending the topographic frame beyond the banks.
-
-```{r using-tracers}
-# Generate banklines using different tracers
-# linear_banks <- xt_trace_banks(channel, tracer = linear_tracer)
-# spline_banks <- xt_trace_banks(channel, tracer = spline_tracer)
-
-# Or use text shortcuts
-# linear_banks <- xt_trace_banks(channel, tracer = "linear")
-# spline_banks <- xt_trace_banks(channel, tracer = "spline")
-```
-
-### Custom Tracers
-
-```{r custom-tracer}
-# Create a custom tracer for specific scenarios
-custom_tracer <- function(channel) {
-  # Custom bankline generation logic
-  # This would return bankline polygons
-  # For example, tracing along specific elevation contours
-  NULL  # Placeholder
-}
-
-# Use custom tracer
-# custom_banks <- xt_trace_banks(channel, tracer = custom_tracer)
-```
-
 ## Working with Irregular Channel Shapes
 
 ### Asymmetric Channels
@@ -282,7 +238,6 @@ This vignette covered:
 - Creating profile cross-sections with islands using `xt_new_profile()`
 - Understanding active width vs total width with `xt_width_active()`
 - Bank analysis with `xt_span_banks()`
-- Complex bankline tracing with different tracers
 - Working with irregular channel shapes (asymmetric, braided)
 - Visualizing complex geometries
 - Advanced analysis of islands and channel complexity

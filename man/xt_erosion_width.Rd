@@ -16,7 +16,6 @@ number of cross-sections.}
 left and right banks. Supply either a side object from \code{\link[=side_left]{side_left()}},
 \code{\link[=side_right]{side_right()}}, or \code{\link[=side_both]{side_both()}}, or a shorthand string: \code{"left"},
 \code{"right"}, or \code{"both"}.}
-
 }
 \value{
 A numeric vector of erosion widths for each cross-section in the

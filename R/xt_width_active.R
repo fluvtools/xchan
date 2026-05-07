@@ -21,37 +21,17 @@ xt_width_active <- function(channel) {
   for (i in seq_along(profile)) {
     xs <- profile[[i]]
 
-    # Get all coordinates and sort by distance
-    all_coords <- xs$coordinates[order(xs$coordinates[, 1]), , drop = FALSE]
-
-    # Get bank distances from the new structure
-    left_bank_dist <- min(xs$banks)
-    right_bank_dist <- max(xs$banks)
-
-    # Get bank elevations
-    left_bank_coords <- xs$coordinates[
-      xs$coordinates[, 1] == left_bank_dist,
-      ,
-      drop = FALSE
-    ]
-    right_bank_coords <- xs$coordinates[
-      xs$coordinates[, 1] == right_bank_dist,
-      ,
-      drop = FALSE
-    ]
-    left_bank_elev <- if (nrow(left_bank_coords) > 0) {
-      left_bank_coords[1, 2]
-    } else {
-      0
-    }
-    right_bank_elev <- if (nrow(right_bank_coords) > 0) {
-      right_bank_coords[1, 2]
-    } else {
-      0
+    bank_d <- get_bank_distances(xs)
+    if (length(bank_d) %% 2L != 0L) {
+      stop("Profile ", i, ": expected an even number of bank points.")
     }
 
-    # Calculate active width (water width)
-    widths[i] <- right_bank_dist - left_bank_dist
+    # Sum widths of water segments (pairs alternate land/water; see `xt_profile()`).
+    w_water <- 0
+    for (j in seq_len(length(bank_d) / 2L)) {
+      w_water <- w_water + (bank_d[2L * j] - bank_d[2L * j - 1L])
+    }
+    widths[i] <- w_water
   }
 
   widths

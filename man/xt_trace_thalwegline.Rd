@@ -31,9 +31,10 @@ downstream order along the channel axis — analogous to \code{\link[=xt_trace_c
 but through lowest-point (\code{thalweg}) locations rather than mid-channel.
 }
 \details{
-Requires \code{\link[=xt_has_profile]{xt_has_profile()}}. Thalweg distances come from \code{\link[=get_thalweg_coords]{get_thalweg_coords()}};
-positions along the plan line use the same bank-span interpolation as
-\code{\link[=create_3d_coords]{create_3d_coords()}} (first plan vertex = left bank, last = right bank).
+Requires \code{\link[=xt_has_profile]{xt_has_profile()}}. Thalweg \verb{(distance, elevation)} pairs are taken from
+the profile coordinate matrix at each \code{thalwegs} row index; positions along the
+plan line use the same bank-span interpolation as \code{\link[=create_3d_coords]{create_3d_coords()}} (first
+plan vertex = left bank, last = right bank).
 
 The axis defines section order only. Thalweg geometry is always recomputed
 from current plan/profile geometry, so this function naturally supports

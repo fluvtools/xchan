@@ -10,19 +10,19 @@
 #' along the cross section (1st column), and elevation (2nd column).
 #' @param bankpoints Vector of distance values where banks occur, alternating
 #' between water and land. Must have an even length (see details).
-#' @returns An "xs_profile" object, which is a list of the following names:
+#' @returns An `"xs_profile"` object: a list with the following components:
 #'
 #' - `coordinates`: an `n` x 2 matrix of distances along the cross section
 #'   (column 1) and elevation (column 2).
-#' - `banks`: A numeric vector of even length representing the bankpoints,
-#'   encoded as distances along the cross section,
-#'   sorted from left to right. These points have alternating representations
-#'   of land-to-water and water-to-land.
-#' - `thalwegs`: A numeric vector representing the location of the thalwegs,
-#'   encoded as distances along the cross section, sorted from left to right.
-#'   These points are where the channel reaches minimum depth.
-#' - `thalweg_elev`: A single numeric representing the elevation of the
-#'   channel's thalweg; that is, the lowest point within the channel.
+#' - `banks`: A numeric vector of **even length** whose values are **row indices**
+#'   into `coordinates` (not chainage). Banks appear left-to-right in profile
+#'   order and alternate land-to-water / water-to-land (including islands).
+#'   Distances at bank vertices are `coordinates[banks, 1]`.
+#' - `thalwegs`: A numeric vector of **row indices** into `coordinates` for
+#'   thalweg point(s) (global minimum depth may include points outside the
+#'   defined banks). Distances at thalweg vertices are `coordinates[thalwegs, 1]`.
+#' - `thalweg_elev`: A single numeric: elevation at the lowest point in
+#'   `coordinates` (used as the channel thalweg elevation).
 #' @details
 #' The bankpoints vector must be a multiple of 2, alternating between water
 #' and land to allow for islands. For example: c(-3, -2, 2, 3) means water

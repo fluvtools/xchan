@@ -135,46 +135,6 @@ data.frame(
 )
 ```
 
-## Dredging Operations
-
-### Basic Dredging
-
-```{r basic-dredging}
-# Dredge channel using rectangular method
-# Note: This requires profile cross-sections
-# channel_dredged <- xt_dredge(channel, method = "rectangle")
-```
-
-### Dredging with Different Methods
-
-```{r dredging-methods}
-# Rectangular dredging with custom parameters
-rect_dredger <- dredger_rectangle(depth = 2, wse = elevation_bank())
-# channel_rect <- xt_dredge(channel, method = rect_dredger)
-
-# Spline dredging
-spline_dredger <- dredger_spline(alpha = 0.3, beta = 0.5)
-# channel_spline <- xt_dredge(channel, method = spline_dredger)
-
-# DEM-based dredging
-# dem_dredger <- dredger_dem(my_dem, sample_freq = 0.1)
-# channel_dem <- xt_dredge(channel, method = dem_dredger)
-```
-
-### Custom Dredgers
-
-```{r custom-dredger}
-# Create a custom dredger
-custom_dredger <- function(channel) {
-  # Custom dredging logic here
-  # This would modify the channel profile
-  channel
-}
-
-# Use custom dredger
-# channel_custom <- xt_dredge(channel, method = custom_dredger)
-```
-
 ## Advanced Elevation Analysis
 
 ### Multiple Elevation References

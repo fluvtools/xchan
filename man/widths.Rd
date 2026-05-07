@@ -30,9 +30,8 @@ For \code{xchan}: a numeric vector with one width per row.
 For \code{xs_profile}: a non-negative numeric scalar.
 }
 \description{
-\code{xt_width()} returns geometric width. For a \code{xchan} object, this is typically one
-value per cross section: from planimetric line lengths when a plan column
-exists, otherwise from profile geometry. For a single \code{xs_profile}
+\code{xt_width()} returns geometric width. For a \code{xchan} object, this is one
+value per cross section from planimetric line lengths. For a single \code{xs_profile}
 object, it is the span along the profile horizontal axis between the
 outermost left and right banks (the same convention as
 \code{\link[=xt_generate_profile]{xt_generate_profile()}} and \code{\link[=xt_profile]{xt_profile()}}).

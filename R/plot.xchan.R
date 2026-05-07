@@ -11,8 +11,5 @@
 #' @export
 plot.xchan <- function(x, ..., extent = c("full", "bankline")) {
   extent <- rlang::arg_match(extent)
-  if (!xt_has_plan(x)) {
-    stop("Channel object does not have planimetric cross sections for viewing.")
-  }
   plot_plan(x, extent = extent, ...)
 }

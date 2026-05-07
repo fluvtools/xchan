@@ -13,6 +13,6 @@ test_that("create_xs_profile aligns banks and thalweg to channel window", {
 
   profile <- xchan:::create_xs_profile(profile_data, original_line)
 
-  expect_equal(unname(get_bank_distances(profile)), c(-2, 2))
-  expect_equal(unname(get_thalweg_distances(profile)), 0)
+  expect_equal(unname(profile$coordinates[profile$banks, 1]), c(-2, 2))
+  expect_equal(unname(profile$coordinates[profile$thalwegs, 1]), 0)
 })
