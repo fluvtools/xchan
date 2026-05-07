@@ -37,12 +37,12 @@ Imports:
     sf,
     stats,
     terra,
+    units,
     utils,
     vctrs
 Suggests: 
     testthat (>= 3.0.0),
-    tibble,
-    units
+    tibble
 Config/testthat/edition: 3
 Depends: 
     R (>= 3.5)

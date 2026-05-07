@@ -52,10 +52,13 @@ xt_as_channel <- function(x, ...) {
 #' @param profile Optional list of `xs_profile` objects (same length as plan).
 #' @param axis Optional channel axis (`sfc`/`sfg` LINESTRING, length 1); see [xt_axis()].
 #'   Used when coercing from `numeric`, `sfc`, `sfg`, or `data.frame`.
-#' @param spacing Numeric scalar used by the `numeric` method only when `axis` is
-#'   `NULL`: spacing between consecutive synthetic cross sections. If both
-#'   `axis` and `spacing` are supplied, an error is raised. When `axis` is
-#'   `NULL` and `spacing` is omitted, `spacing = 1` is used.
+#' @param spacing Single positive value used by the `numeric` method only when
+#'   `axis` is `NULL`: spacing between consecutive synthetic cross sections.
+#'   Plain numeric is interpreted in the supplied `crs`'s length unit (or
+#'   unitless when `crs` is `NULL`); a [units::units()] length object is
+#'   converted automatically. If both `axis` and `spacing` are supplied, an
+#'   error is raised. When `axis` is `NULL` and `spacing` is omitted,
+#'   `spacing = 1` is used.
 #' @param crs For `numeric`, `sfc`, and `data.frame` methods:
 #'   CRS applied to plan geometries via [sf::st_set_crs()]. `NULL` leaves
 #'   existing CRS unchanged.
@@ -73,9 +76,12 @@ xt_as_channel.numeric <- function(
   if (!is.null(axis) && spacing_supplied) {
     stop("`spacing` cannot be supplied when `axis` is provided.", call. = FALSE)
   }
+  unit <- if (!is.null(crs)) crs_length_unit(crs) else NULL
   if (is.null(axis)) {
     if (is.null(spacing)) {
       spacing <- 1
+    } else {
+      spacing <- to_numeric_length(spacing, unit, arg = "spacing")
     }
     checkmate::assert_number(spacing, lower = .Machine$double.eps, finite = TRUE)
   }
@@ -120,6 +126,28 @@ xt_as_channel.numeric <- function(
   out <- new_channel(df, plan_col = "plan", profile_col = prof_col, axis = axis_obj)
   xt_validate_plan_profile_widths(out)
   out
+}
+
+#' @rdname xt_as_channel
+#' @export
+xt_as_channel.units <- function(
+  x,
+  ...,
+  profile = NULL,
+  crs = NULL,
+  axis = NULL,
+  spacing = NULL
+) {
+  unit <- if (!is.null(crs)) crs_length_unit(crs) else NULL
+  x <- to_numeric_length(x, unit, arg = "x")
+  xt_as_channel(
+    x,
+    ...,
+    profile = profile,
+    crs = crs,
+    axis = axis,
+    spacing = spacing
+  )
 }
 
 #' @rdname xt_as_channel

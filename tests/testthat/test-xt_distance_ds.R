@@ -5,10 +5,11 @@ test_that("xt_distance_ds uses axis projection and respects explicit axis", {
   expect_length(ds, nrow(ch))
   ax <- xt_axis(ch)
   mid <- xchan:::plan_midpoints_sfc(ch$plan)
-  expect_equal(ds, as.numeric(sf::st_line_project(ax, mid)))
+  # `ds` carries CRS units; compare bare numeric values.
+  expect_equal(as.numeric(ds), as.numeric(sf::st_line_project(ax, mid)))
   sh <- ch[sample.int(nrow(ch)), ]
   expect_equal(
-    xt_distance_ds(sh, axis = ax),
+    as.numeric(xt_distance_ds(sh, axis = ax)),
     as.numeric(sf::st_line_project(ax, xchan:::plan_midpoints_sfc(sh$plan)))
   )
 })

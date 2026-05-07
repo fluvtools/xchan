@@ -3,6 +3,7 @@
 \name{xt_as_channel}
 \alias{xt_as_channel}
 \alias{xt_as_channel.numeric}
+\alias{xt_as_channel.units}
 \alias{xt_as_channel.sfg}
 \alias{xt_as_channel.sfc}
 \alias{xt_as_channel.data.frame}
@@ -13,6 +14,8 @@
 xt_as_channel(x, ...)
 
 \method{xt_as_channel}{numeric}(x, ..., profile = NULL, crs = NULL, axis = NULL, spacing = NULL)
+
+\method{xt_as_channel}{units}(x, ..., profile = NULL, crs = NULL, axis = NULL, spacing = NULL)
 
 \method{xt_as_channel}{sfg}(x, ..., profile = NULL, crs = NULL, axis = NULL)
 
@@ -42,10 +45,13 @@ existing CRS unchanged.}
 \item{axis}{Optional channel axis (\code{sfc}/\code{sfg} LINESTRING, length 1); see \code{\link[=xt_axis]{xt_axis()}}.
 Used when coercing from \code{numeric}, \code{sfc}, \code{sfg}, or \code{data.frame}.}
 
-\item{spacing}{Numeric scalar used by the \code{numeric} method only when \code{axis} is
-\code{NULL}: spacing between consecutive synthetic cross sections. If both
-\code{axis} and \code{spacing} are supplied, an error is raised. When \code{axis} is
-\code{NULL} and \code{spacing} is omitted, \code{spacing = 1} is used.}
+\item{spacing}{Single positive value used by the \code{numeric} method only when
+\code{axis} is \code{NULL}: spacing between consecutive synthetic cross sections.
+Plain numeric is interpreted in the supplied \code{crs}'s length unit (or
+unitless when \code{crs} is \code{NULL}); a \code{\link[units:units]{units::units()}} length object is
+converted automatically. If both \code{axis} and \code{spacing} are supplied, an
+error is raised. When \code{axis} is \code{NULL} and \code{spacing} is omitted,
+\code{spacing = 1} is used.}
 
 \item{plan_col}{Name of the column holding planimetric \code{sfc_LINESTRING}
 geometries (required).}

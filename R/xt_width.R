@@ -10,8 +10,11 @@
 #' @param ... Unused (reserved for methods).
 #'
 #' @returns
-#' For `xchan`: a numeric vector with one width per row.
-#' For `xs_profile`: a non-negative numeric scalar.
+#' For `xchan`: a numeric vector with one width per row, carrying
+#'   [units::units()] when the channel has a CRS with a defined linear unit
+#'   (for example metres). When no CRS is set the result is plain numeric.
+#' For `xs_profile`: a non-negative numeric scalar (no CRS context, so plain
+#'   numeric).
 #'
 #' @examples
 #' library(sf)
@@ -35,7 +38,8 @@ xt_width <- function(x, ...) {
 xt_width.xchan <- function(x, ...) {
   checkmate::assert_class(x, "xchan")
   plan <- xt_column_plan(x)
-  vapply(plan, function(g) as.numeric(sf::st_length(g)), numeric(1))
+  raw <- vapply(plan, function(g) as.numeric(sf::st_length(g)), numeric(1))
+  with_length_units(raw, crs_length_unit(plan))
 }
 
 #' @export

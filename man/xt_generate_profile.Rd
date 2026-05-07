@@ -21,14 +21,17 @@ xt_generate_profile(
 
 \item{...}{Additional arguments (ignored).}
 
-\item{extent_distance}{Distance to extend beyond banks (units);
-positive numeric value. Mutually exclusive with \code{extent_multiplier}.}
+\item{extent_distance}{Distance to extend beyond banks; positive value.
+Plain numeric is interpreted in the channel's CRS length unit; a
+\code{\link[units:units]{units::units()}} length object is converted automatically. Mutually
+exclusive with \code{extent_multiplier}.}
 
 \item{extent_multiplier}{Multiplier of channel width to extend beyond banks;
 positive numeric value. Mutually exclusive with \code{extent_distance}.}
 
-\item{sample_freq}{Distance between DEM sampling points (units);
-positive numeric value. Mutually exclusive with \code{sample_n}.}
+\item{sample_freq}{Distance between DEM sampling points; positive value.
+Same units treatment as \code{extent_distance}. Mutually exclusive with
+\code{sample_n}.}
 
 \item{sample_n}{number to sample; positive integer value greater than 1.
 Mutually exclusive with \code{sample_freq}.}

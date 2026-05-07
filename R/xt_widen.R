@@ -2,10 +2,14 @@
 #'
 #' @param channel Channel object
 #' @param ... Additional arguments (ignored)
-#' @param dw The total width to add to the channel. Must be a positive numeric
-#'   value and cannot be used with `dv`.
-#' @param dv The total volume to remove to widen the channel. Must be a
-#'   positive numeric value and cannot be used with `dw`.
+#' @param dw The total width to add to the channel. Positive numeric, or a
+#'   [units::units()] length object (for example
+#'   `units::set_units(2, "m")`); units are converted to the channel's CRS
+#'   length unit. Cannot be used with `dv`.
+#' @param dv The total volume to remove to widen the channel. Positive numeric,
+#'   or a [units::units()] volume object (for example
+#'   `units::set_units(50, "m^3")`); units are converted to the channel's CRS
+#'   length unit cubed. Cannot be used with `dw`.
 #' @param side A side specification controlling how widening is split between
 #'   left and right banks. Supply either a side object from [side_left()],
 #'   [side_right()], or [side_both()], or a shorthand string: `"left"`,
@@ -41,6 +45,10 @@ xt_widen <- function(
   prop_left <- parse_side_arg(side, channel)
   n_sections <- xt_n_sections(channel)
 
+  # Strip user-supplied units (if any) into the channel's CRS unit so that
+  # downstream coordinate arithmetic stays plain numeric.
+  unit <- crs_length_unit(channel)
+
   # Get dw if dv was provided
   if (missing(dw)) {
     if (is.null(profile)) {
@@ -49,12 +57,13 @@ xt_widen <- function(
         "widening from volume."
       )
     }
-    dw_left <- xt_erosion_width(
+    dv <- to_numeric_volume(dv, unit, arg = "dv")
+    dw_left <- erosion_width_numeric(
       channel,
       dv * prop_left,
       side = "left"
     )
-    dw_right <- xt_erosion_width(
+    dw_right <- erosion_width_numeric(
       channel,
       dv * (1 - prop_left),
       side = "right"
@@ -63,6 +72,8 @@ xt_widen <- function(
     denom <- dw_left + dw_right
     prop_left <- ifelse(denom > 0, dw_left / denom, 0.5)
     dw <- dw_left + dw_right
+  } else {
+    dw <- to_numeric_length(dw, unit, arg = "dw")
   }
   dw <- vctrs::vec_recycle(dw, n_sections)
   prop_left <- vctrs::vec_recycle(prop_left, n_sections)
@@ -86,13 +97,28 @@ xt_widen <- function(
     })
   }
 
-  # Update the channel
+  # Update both columns directly, then validate once. The per-column setters
+  # validate plan against profile (and vice versa) on each assignment, which
+  # would spuriously fire here: after widening, plan and profile are mutually
+  # consistent but each individually disagrees with the as-yet-unupdated
+  # other column.
+  plan_col <- attributes(channel)$plan_col
+  profile_col <- attributes(channel)$profile_col
   if (!is.null(plan)) {
-    xt_column_plan(channel) <- plan
+    vp <- xt_validate_plan(plan)
+    if (!vp$valid) {
+      stop(
+        "Invalid plan after widening: ",
+        paste(vp$issues, collapse = "; "),
+        call. = FALSE
+      )
+    }
+    channel[[plan_col]] <- plan
   }
-  if (!is.null(profile)) {
-    xt_column_profile(channel) <- profile
+  if (!is.null(profile) && !is.null(profile_col)) {
+    channel[[profile_col]] <- profile
   }
+  xt_validate_plan_profile_widths(channel)
 
   channel
 }

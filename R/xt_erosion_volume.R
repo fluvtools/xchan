@@ -5,10 +5,14 @@
 #' according to a given scheme.
 #'
 #' @inheritParams xt_widen
-#' @param width Change in width; single positive numeric or vector matching
-#' number of cross-sections.
-#' @returns A numeric vector of erosion volumes for each cross-section in
-#' the channel.
+#' @param width Change in width; single positive value or vector matching the
+#'   number of cross sections. Plain numeric is interpreted in the channel's
+#'   CRS length unit; a [units::units()] length object is converted
+#'   automatically (for example `units::set_units(10, "ft")` against a metric
+#'   channel).
+#' @returns A numeric vector of erosion volumes for each cross-section in the
+#'   channel, carrying [units::units()] of (CRS length unit)^3 when the
+#'   channel has a CRS with a defined linear unit.
 #' @examples
 #' xt_erosion_volume(channel, width = 10, side = "left")
 #' xt_erosion_volume(channel, width = 10, side = side_left(0.75))
@@ -19,7 +23,14 @@ xt_erosion_volume <- function(
   side = "both"
 ) {
   checkmate::assert_class(channel, "xchan")
+  unit <- crs_length_unit(channel)
+  width <- to_numeric_length(width, unit, arg = "width")
+  raw <- erosion_volume_numeric(channel, width, side)
+  with_volume_units(raw, unit)
+}
 
+#' @noRd
+erosion_volume_numeric <- function(channel, width, side = "both") {
   profile <- xt_column_profile(channel)
   if (is.null(profile)) {
     stop("Channel object must have profile cross sections")

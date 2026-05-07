@@ -26,8 +26,11 @@ xt_width_rb(xs)
 \item{xs}{\code{xs_profile}; left/right half-width helpers below.}
 }
 \value{
-For \code{xchan}: a numeric vector with one width per row.
-For \code{xs_profile}: a non-negative numeric scalar.
+For \code{xchan}: a numeric vector with one width per row, carrying
+\code{\link[units:units]{units::units()}} when the channel has a CRS with a defined linear unit
+(for example metres). When no CRS is set the result is plain numeric.
+For \code{xs_profile}: a non-negative numeric scalar (no CRS context, so plain
+numeric).
 }
 \description{
 \code{xt_width()} returns geometric width. For a \code{xchan} object, this is one

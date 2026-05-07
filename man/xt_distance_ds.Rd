@@ -15,7 +15,9 @@ error (set an axis with \code{xt_axis(channel) <- ...} or use \code{\link[=xt_ge
 }
 \value{
 A numeric vector of length \code{nrow(channel)}, distances downstream along
-\code{axis} (same row order as \code{channel}).
+\code{axis} (same row order as \code{channel}). The result carries \code{\link[units:units]{units::units()}}
+(for example metres) when the channel has a CRS with a defined linear
+unit; plain numeric otherwise.
 }
 \description{
 Distance along the channel axis from the \strong{start} of the axis line to each

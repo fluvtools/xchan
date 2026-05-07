@@ -42,7 +42,10 @@ xt_gradient <- function(
   # Get elevation values for each cross-section
   elevations <- xt_elevation(channel, reference = elevation)
 
-  distances <- xt_distance_ds(channel, axis)
+  # Use the unit-stripped helper so arithmetic with elevation stays unitless.
+  # `xt_distance_ds()` would carry units for CRS-aware channels and break the
+  # delta_elevation / delta_distance ratio (no elevation units to cancel).
+  distances <- axis_distances_numeric(channel, axis)
 
   # Calculate gradient using sliding window
   n <- length(elevations)

@@ -17,10 +17,12 @@
 #' @param ... Additional arguments (ignored).
 #' @param n Number of cross sections to generate (mutually exclusive with
 #'   spacing and at)
-#' @param spacing Distance between cross sections (mutually exclusive with n
-#'   and at)
-#' @param at Specific distances along the channel axis for cross sections (mutually
-#'   exclusive with n and spacing)
+#' @param spacing Distance between cross sections (mutually exclusive with `n`
+#'   and `at`). Plain numeric is interpreted in the `banks` CRS length unit; a
+#'   [units::units()] length object is converted automatically.
+#' @param at Specific distances along the channel axis for cross sections
+#'   (mutually exclusive with `n` and `spacing`). Same units treatment as
+#'   `spacing`.
 #' @param axis Channel axis as a multilinestring: the line along which cross
 #'   sections are placed. If `NULL` (the default), an axis is generated
 #'   automatically using the **centerline** package (`centerline::cnt_path_guess()`).
@@ -113,6 +115,16 @@ xt_generate_plan <- function(
   }
 
   len <- as.numeric(sum(sf::st_length(cl)))
+
+  # Strip units from length-bearing inputs into the CRS length unit so the
+  # density / sample arithmetic below stays plain numeric.
+  unit <- crs_length_unit(banks)
+  if (spacing_specified) {
+    spacing <- to_numeric_length(spacing, unit, arg = "spacing")
+  }
+  if (at_specified) {
+    at <- to_numeric_length(at, unit, arg = "at")
+  }
 
   # Determine sampling points based on input parameters
   if (n_specified) {

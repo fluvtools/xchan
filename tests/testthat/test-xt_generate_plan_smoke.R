@@ -10,7 +10,8 @@ test_that("xt_generate_plan orders sections downstream along axis", {
   ch <- xt_generate_plan(fraser_bankline, n = 12)
   ds <- xt_distance_ds(ch)
   expect_identical(length(ds), nrow(ch))
-  expect_true(all(diff(ds) >= 0))
+  # `ds` carries CRS units; strip before the bare-numeric comparison with 0.
+  expect_true(all(diff(as.numeric(ds)) >= 0))
 })
 
 test_that("planimetric segments orient first vertex to left bank (downstream)", {
