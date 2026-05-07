@@ -7,8 +7,9 @@
 #'
 #' @param channel Channel object with **both** planimetric cross sections and a
 #'   profile column (`xs_profile` list).
-#' @param axis Optional LINESTRING axis; used for section ordering only if
-#'   **`chainage`** is absent (same as [xt_trace_centerline()]).
+#' @param axis Optional LINESTRING axis used to define downstream section order.
+#'   If `NULL`, uses `xt_axis(channel)`; if that is also `NULL`, an error is
+#'   raised (same ordering rules as [xt_trace_centerline()]).
 #'
 #' @returns An `sfc` object:
 #'   - **Single thalweg** at every section: one `LINESTRING`.
@@ -22,9 +23,9 @@
 #' positions along the plan line use the same bank-span interpolation as
 #' [create_3d_coords()] (first plan vertex = left bank, last = right bank).
 #'
-#' Section order follows increasing **`chainage`** when present; otherwise
-#' increasing projection onto `axis` of the centroid of each section’s thalweg
-#' plan points.
+#' The axis defines section order only. Thalweg geometry is always recomputed
+#' from current plan/profile geometry, so this function naturally supports
+#' retracing after geometry-changing operations.
 #'
 #' @seealso [xt_trace_centerline()], [xt_axis()]
 #' @export
@@ -77,14 +78,10 @@ xt_trace_thalwegline <- function(channel, axis = NULL) {
     centroids[[i]] <- sf::st_point(colMeans(xy))
   }
 
-  if (has_chainage_column(channel)) {
-    trace_order <- order(channel[["chainage"]])
-  } else {
-    axis_line <- resolve_channel_axis(channel, axis, axis_arg_name = "axis")
-    cent_sfc <- sf::st_sfc(centroids, crs = sf::st_crs(plan))
-    d_ax <- as.numeric(sf::st_line_project(axis_line, cent_sfc))
-    trace_order <- order(d_ax)
-  }
+  axis_line <- resolve_channel_axis(channel, axis, axis_arg_name = "axis")
+  cent_sfc <- sf::st_sfc(centroids, crs = sf::st_crs(plan))
+  d_ax <- as.numeric(sf::st_line_project(axis_line, cent_sfc))
+  trace_order <- order(d_ax)
 
   crs_out <- sf::st_crs(plan)
 
