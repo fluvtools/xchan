@@ -14,9 +14,9 @@
 #' of "xs_profile" objects.
 #'
 #' For `xt_column_*<-`, the original `channel` objects with the specified
-#' column updated (or removed if `NULL`). If no plan or profile columns
-#' remain, the "xchan" class and any subclasses are removed, leaving a data
-#' frame (and its subclasses).
+#' column updated (or removed if `NULL` for the profile column only). Plan
+#' columns cannot be removed: every `xchan` object must retain planimetric cross
+#' sections.
 #' @rdname xt_column
 xt_column_profile <- function(channel) {
   checkmate::assert_class(channel, "xchan")
@@ -42,11 +42,11 @@ xt_column_plan <- function(channel) {
   checkmate::assert_class(channel, "xchan")
   profile_colname <- attributes(channel)$profile_col
   if (is.null(value)) {
-    channel[[profile_colname]] <- NULL
-    attributes(channel)$profile_colname <- NULL
-    if (!xt_has_plan(channel)) {
-      return(demote_channel_class(channel))
+    if (is.null(profile_colname)) {
+      return(channel)
     }
+    channel[[profile_colname]] <- NULL
+    attributes(channel)$profile_col <- NULL
     return(channel)
   }
   if (!is.list(value)) {
@@ -76,12 +76,10 @@ xt_column_plan <- function(channel) {
   checkmate::assert_class(channel, "xchan")
   plan_colname <- attributes(channel)$plan_col
   if (is.null(value)) {
-    channel[[plan_colname]] <- NULL
-    attributes(channel)$plan_col <- NULL
-    if (!xt_has_profile(channel)) {
-      return(demote_channel_class(channel))
-    }
-    return(channel)
+    stop(
+      "Cannot remove planimetric cross sections from a channel.",
+      call. = FALSE
+    )
   }
 
   validation_result <- xt_validate_plan(value)

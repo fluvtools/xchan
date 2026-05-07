@@ -14,19 +14,19 @@ along the cross section (1st column), and elevation (2nd column).}
 between water and land. Must have an even length (see details).}
 }
 \value{
-An "xs_profile" object, which is a list of the following names:
+An \code{"xs_profile"} object: a list with the following components:
 \itemize{
 \item \code{coordinates}: an \code{n} x 2 matrix of distances along the cross section
 (column 1) and elevation (column 2).
-\item \code{banks}: A numeric vector of even length representing the bankpoints,
-encoded as distances along the cross section,
-sorted from left to right. These points have alternating representations
-of land-to-water and water-to-land.
-\item \code{thalwegs}: A numeric vector representing the location of the thalwegs,
-encoded as distances along the cross section, sorted from left to right.
-These points are where the channel reaches minimum depth.
-\item \code{thalweg_elev}: A single numeric representing the elevation of the
-channel's thalweg; that is, the lowest point within the channel.
+\item \code{banks}: A numeric vector of \strong{even length} whose values are \strong{row indices}
+into \code{coordinates} (not chainage). Banks appear left-to-right in profile
+order and alternate land-to-water / water-to-land (including islands).
+Distances at bank vertices are \code{coordinates[banks, 1]}.
+\item \code{thalwegs}: A numeric vector of \strong{row indices} into \code{coordinates} for
+thalweg point(s) (global minimum depth may include points outside the
+defined banks). Distances at thalweg vertices are \code{coordinates[thalwegs, 1]}.
+\item \code{thalweg_elev}: A single numeric: elevation at the lowest point in
+\code{coordinates} (used as the channel thalweg elevation).
 }
 }
 \description{

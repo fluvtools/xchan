@@ -2,13 +2,10 @@
 % Please edit documentation in R/xt_has_profile.R
 \name{xt_has_profile}
 \alias{xt_has_profile}
-\alias{xt_has_plan}
 \alias{xt_has_chainage}
-\title{Check if a channel has profile or plan-view cross sections}
+\title{Check if a channel has profile cross sections or chainage}
 \usage{
 xt_has_profile(x)
-
-xt_has_plan(x)
 
 xt_has_chainage(x)
 }
@@ -16,11 +13,11 @@ xt_has_chainage(x)
 \item{x}{A channel object.}
 }
 \value{
-Single logical. For \code{xt_has_profile()} / \code{xt_has_plan()}, \code{TRUE} if
-the channel has that column tracked. For \code{xt_has_chainage()}, \code{TRUE} if \code{x}
-has a numeric \strong{\code{chainage}} column with one non-missing value per row (see
-\code{\link[=xt_generate_plan]{xt_generate_plan()}}).
+For \code{xt_has_profile()}, \code{TRUE} if the channel has a profile column.
+Every \code{xchan} object has planimetric cross sections by definition.
+For \code{xt_has_chainage()}, \code{TRUE} if \code{x} has a numeric \strong{\code{chainage}} column
+with one non-missing value per row (see \code{\link[=xt_generate_plan]{xt_generate_plan()}}).
 }
 \description{
-Check if a channel has profile or plan-view cross sections
+Check if a channel has profile cross sections or chainage
 }

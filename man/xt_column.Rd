@@ -28,9 +28,9 @@ of sf_LINESTRINGs from the sf package. For profile view, this is a list of
 of "xs_profile" objects.
 
 For \verb{xt_column_*<-}, the original \code{channel} objects with the specified
-column updated (or removed if \code{NULL}). If no plan or profile columns
-remain, the "xchan" class and any subclasses are removed, leaving a data
-frame (and its subclasses).
+column updated (or removed if \code{NULL} for the profile column only). Plan
+columns cannot be removed: every \code{xchan} object must retain planimetric cross
+sections.
 }
 \description{
 This function allows you to extract or replace the profile or plan column

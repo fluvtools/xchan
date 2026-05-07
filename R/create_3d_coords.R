@@ -20,12 +20,16 @@
 #' # profile_data: matrix with distance,elevation from profile
 #' # coords_3d <- create_3d_coords(plan_coords, profile_data)
 create_3d_coords <- function(plan, profile) {
-  # Get distances and elevations from profile
-  banks_x <- profile$banks[1]
-  coords <- profile$coordinates
-  coords <- inject_coords(coords, banks_x)
-  coords <- coords[coords[, 1] >= min(banks_x), , drop = FALSE]
-  coords <- coords[coords[, 1] <= max(banks_x), , drop = FALSE]
+  checkmate::assert_class(profile, "xs_profile")
+  bank_d <- get_bank_distances(profile)
+  d_span <- range(bank_d)
+
+  coords <- inject_coords(profile$coordinates, bank_d)
+  coords <- coords[
+    coords[, 1] >= d_span[1] & coords[, 1] <= d_span[2],
+    ,
+    drop = FALSE
+  ]
   distances <- coords[, 1]
   distances <- distances - min(distances) # 0 = left bank.
   elevations <- coords[, 2]

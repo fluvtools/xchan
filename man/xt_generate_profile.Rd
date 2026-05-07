@@ -54,13 +54,13 @@ the DEM extent, or if a sampled elevation is missing (\code{NA}), the function
 throws an error.
 }
 \examples{
-# Sample DEM with 50m extension and 1m sampling
-channel_with_profiles <- xt_generate_profile(
-  channel, dem, extent_distance = 50, extent_distance = 1
-)
+# Sample DEM with 50 m extension beyond banks and 1 m sample spacing
+# channel_with_profiles <- xt_generate_profile(
+#   channel, dem, extent_distance = 50, sample_freq = 1
+# )
 
-# Sample DEM with 2x channel width extension and 0.1x width sampling
-channel_with_profiles <- xt_generate_profile(
-  channel, dem, extent_multiplier = 2, extent_multiplier = 0.1
-)
+# 2x channel width extension; sample count sets spacing along extended line
+# channel_with_profiles <- xt_generate_profile(
+#   channel, dem, extent_multiplier = 2, sample_n = 100
+# )
 }

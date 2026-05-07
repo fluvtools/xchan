@@ -127,15 +127,6 @@ plot(channel, view = "plan")
 plot(centerline, add = TRUE, col = "red", lwd = 2)
 ```
 
-### Banklines
-
-```{r banklines, eval=FALSE}
-# Bankline tracers are currently excluded from the package build.
-# banklines <- xt_trace_banks(channel)
-# plot(channel, view = "plan")
-# plot(banklines, add = TRUE, col = "green", lwd = 2)
-```
-
 ## Correcting Streamflow Direction
 
 Sometimes the auto-generated streamflow direction may be incorrect:
@@ -183,8 +174,7 @@ Check if objects are valid channels:
 # Check if object is a channel
 is_channel(channel)
 
-# Check if channel has specific components
-xt_has_plan(channel)
+# Check if channel has profile cross sections
 xt_has_profile(channel)
 
 # Validate planimetric cross-sections

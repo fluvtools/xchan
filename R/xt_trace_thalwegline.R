@@ -19,9 +19,10 @@
 #'     stations (requires the **same** number of thalwegs at every section).
 #'
 #' @details
-#' Requires [xt_has_profile()]. Thalweg distances come from [get_thalweg_coords()];
-#' positions along the plan line use the same bank-span interpolation as
-#' [create_3d_coords()] (first plan vertex = left bank, last = right bank).
+#' Requires [xt_has_profile()]. Thalweg `(distance, elevation)` pairs are taken from
+#' the profile coordinate matrix at each `thalwegs` row index; positions along the
+#' plan line use the same bank-span interpolation as [create_3d_coords()] (first
+#' plan vertex = left bank, last = right bank).
 #'
 #' The axis defines section order only. Thalweg geometry is always recomputed
 #' from current plan/profile geometry, so this function naturally supports
