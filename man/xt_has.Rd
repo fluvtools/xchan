@@ -2,12 +2,9 @@
 % Please edit documentation in R/xt_has_profile.R
 \name{xt_has_profile}
 \alias{xt_has_profile}
-\alias{xt_has_chainage}
-\title{Check if a channel has profile cross sections or chainage}
+\title{Check if a channel has profile cross sections}
 \usage{
 xt_has_profile(x)
-
-xt_has_chainage(x)
 }
 \arguments{
 \item{x}{A channel object.}
@@ -15,9 +12,7 @@ xt_has_chainage(x)
 \value{
 For \code{xt_has_profile()}, \code{TRUE} if the channel has a profile column.
 Every \code{xchan} object has planimetric cross sections by definition.
-For \code{xt_has_chainage()}, \code{TRUE} if \code{x} has a numeric \strong{\code{chainage}} column
-with one non-missing value per row (see \code{\link[=xt_generate_plan]{xt_generate_plan()}}).
 }
 \description{
-Check if a channel has profile cross sections or chainage
+Check if a channel has profile cross sections
 }

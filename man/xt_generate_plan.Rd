@@ -39,12 +39,11 @@ generating planimetric cross sections.}
 }
 \value{
 A channel object with planimetric cross sections in the plan column.
-A numeric column \strong{\code{chainage}} gives distance along the sampling axis from
-its start to each section’s station (CRS units). Downstream order follows
-increasing \strong{\code{chainage}}; keep or restore this ordering after \code{arrange()} via
-\code{\link[=xt_arrange_downstream]{xt_arrange_downstream()}} or by sorting on \strong{\code{chainage}}. The sampling axis
-is also stored (\code{\link[=xt_axis]{xt_axis()}}) for geometry that requires it (e.g.
-\code{\link[=xt_distance_ds]{xt_distance_ds()}}).
+Rows follow downstream order along the sampling axis. After \code{arrange()} or
+subsetting, restore order with \code{\link[=xt_arrange_downstream]{xt_arrange_downstream()}}. Use \code{\link[=xt_distance_ds]{xt_distance_ds()}}
+for distance along the axis from its start to each section (requires the axis
+from \code{\link[=xt_axis]{xt_axis()}}, which this function sets). The sampling axis is stored for
+geometry that requires it.
 }
 \description{
 Generate a channel object with planimetric cross sections from a

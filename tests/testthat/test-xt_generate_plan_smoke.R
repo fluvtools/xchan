@@ -5,12 +5,12 @@ test_that("xt_generate_plan returns a channel", {
   expect_identical(xt_n_sections(ch), 10L)
 })
 
-test_that("xt_generate_plan attaches sorted chainage column", {
+test_that("xt_generate_plan orders sections downstream along axis", {
   skip_if_not_installed("sf")
   ch <- xt_generate_plan(fraser_bankline, n = 12)
-  expect_true(xt_has_chainage(ch))
-  expect_identical(length(ch$chainage), nrow(ch))
-  expect_true(all(diff(sort(ch$chainage)) >= 0))
+  ds <- xt_distance_ds(ch)
+  expect_identical(length(ds), nrow(ch))
+  expect_true(all(diff(ds) >= 0))
 })
 
 test_that("planimetric segments orient first vertex to left bank (downstream)", {

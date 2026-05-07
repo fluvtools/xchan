@@ -4,7 +4,7 @@
 \alias{xt_channel}
 \title{Construct a channel object (\code{xchan})}
 \usage{
-xt_channel(.plan, .profile = NULL, .axis = NULL, .chainage = NULL, ...)
+xt_channel(.plan, .profile = NULL, .axis = NULL, ...)
 }
 \arguments{
 \item{.plan}{Planimetric cross sections as \code{sfc_LINESTRING}.}
@@ -14,10 +14,6 @@ xt_channel(.plan, .profile = NULL, .axis = NULL, .chainage = NULL, ...)
 
 \item{.axis}{Optional channel axis as a single \code{LINESTRING} (\code{sfc}/\code{sfg});
 same CRS as \code{.plan}. Used by \code{\link[=xt_trace_centerline]{xt_trace_centerline()}} and related functions.}
-
-\item{.chainage}{Optional numeric vector (length \code{length(.plan)}): distance
-along the channel from upstream to each section’s station (CRS units); see
-\code{\link[=xt_generate_plan]{xt_generate_plan()}}.}
 
 \item{...}{Additional columns for the channel table (vectors or
 list-columns).}
