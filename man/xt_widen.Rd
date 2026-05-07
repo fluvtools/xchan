@@ -9,8 +9,7 @@ xt_widen(
   ...,
   dw,
   dv,
-  side = "both",
-  on_overflow = c("error", "repeat")
+  side = "both"
 )
 }
 \arguments{
@@ -29,9 +28,6 @@ left and right banks. Supply either a side object from \code{\link[=side_left]{s
 \code{\link[=side_right]{side_right()}}, or \code{\link[=side_both]{side_both()}}, or a shorthand string: \code{"left"},
 \code{"right"}, or \code{"both"}.}
 
-\item{on_overflow}{What to do if the widening exceeds the cross section
-extent; either "error" (the default), or "repeat", which will repeat the
-widening with the last available topography elevation.}
 }
 \value{
 A modified channel object

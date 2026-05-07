@@ -58,6 +58,10 @@ location within the last trapezoid where the target volume is achieved.
 The method is fully vectorized and runs in \eqn{O(n)} time, where \eqn{n}
 is the number of cross-section points to the right of \code{x0}.
 
+If the requested volume cannot be satisfied within the available topography
+to the right of \code{x0}, the function throws an error rather than extrapolating
+beyond the cross-section extent.
+
 For \code{v = 0}, the convention is adopted where \code{x0} is always returned, even
 in the unusual case where the bank is below thalweg and \code{valley = "right"}.
 }

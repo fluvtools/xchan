@@ -97,7 +97,7 @@ test_that("Single-row topography (reached the end of the topo).", {
   )
   expect_equal(r0c, 5)
 
-  # v>0 should always be censored.
+  # v>0 should always error once the available extent is exhausted.
   # valley-left, v>0, above-thalweg
   expect_error(find_x_for_volume_right(
     1, x0 = 5, topo = topo1, thalweg_height = 0, valley = "left"

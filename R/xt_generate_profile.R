@@ -22,6 +22,10 @@
 #'   either as a fixed distance or as a multiplier of the channel width.
 #'   Similarly, the sampling distance can be specified either as a fixed
 #'   distance or as a multiplier of the channel width.
+#'
+#'   Sampling must remain inside DEM coverage. If any sampled point is outside
+#'   the DEM extent, or if a sampled elevation is missing (`NA`), the function
+#'   throws an error.
 #' @examples
 #' # Sample DEM with 50m extension and 1m sampling
 #' channel_with_profiles <- xt_generate_profile(
@@ -151,17 +155,41 @@ sample_dem_along_line <- function(line, dem, sample_distance) {
 
   sample_points <- sf::st_line_sample(line, n = n_points, type = "regular")
   sample_points <- sf::st_cast(sample_points, "POINT")
+  coords <- sf::st_coordinates(sample_points)
+
+  # Guard against sampling beyond DEM extent.
+  points_for_extent <- sample_points
+  dem_crs <- terra::crs(dem, proj = TRUE)
+  if (!is.na(sf::st_crs(sample_points)) && nzchar(dem_crs)) {
+    points_for_extent <- sf::st_transform(sample_points, dem_crs)
+  }
+  coords_dem <- sf::st_coordinates(points_for_extent)
+  outside_extent <- coords_dem[, 1] < terra::xmin(dem) |
+    coords_dem[, 1] > terra::xmax(dem) |
+    coords_dem[, 2] < terra::ymin(dem) |
+    coords_dem[, 2] > terra::ymax(dem)
+  if (any(outside_extent)) {
+    stop(
+      "Cross section sampling extends beyond the DEM extent. ",
+      "Increase DEM coverage or reduce profile extent."
+    )
+  }
 
   # Extract elevations from DEM. Wrap the sample points in a `SpatVector` so
   # that `terra::extract()` reprojects them into the DEM's CRS when the two
   # differ. If the line has no CRS, fall back to the raw coordinates and
   # assume they are already in the DEM's CRS.
-  coords <- sf::st_coordinates(sample_points)
   if (!is.na(sf::st_crs(sample_points))) {
     sample_vect <- terra::vect(sample_points)
     elevations <- terra::extract(dem, sample_vect)[, 2]
   } else {
     elevations <- terra::extract(dem, coords)[, 1]
+  }
+  if (any(is.na(elevations))) {
+    stop(
+      "Missing DEM elevations encountered while sampling cross section. ",
+      "Fill DEM gaps or adjust profile extent."
+    )
   }
 
   # Calculate distances along line
@@ -185,9 +213,11 @@ create_xs_profile <- function(profile_data, original_line) {
   # Adjust distances to be relative to center
   profile_data$relative_distance <- profile_data$distance - center_distance
 
-  # Create coordinates matrix and drop NA elevations outside DEM footprint
+  # Create coordinates matrix (NA values are guarded against upstream)
   coordinates <- as.matrix(profile_data[, c("relative_distance", "elevation")])
-  coordinates <- coordinates[stats::complete.cases(coordinates), , drop = FALSE]
+  if (any(!stats::complete.cases(coordinates))) {
+    stop("Cannot create profile from missing coordinate or elevation values.")
+  }
   if (nrow(coordinates) < 2) {
     stop("Not enough DEM samples to build profile cross section")
   }

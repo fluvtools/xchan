@@ -7,9 +7,6 @@
 #' @inheritParams xt_widen
 #' @param width Change in width; single positive numeric or vector matching
 #' number of cross-sections.
-#' @param error_on_overflow Logical; should an error be thrown if asked
-#' to calculate erosion volume beyond cross section extent? `TRUE` if so
-#' (the default). If `FALSE`, returns the maximum volume up to the extent.
 #' @returns A numeric vector of erosion volumes for each cross-section in
 #' the channel.
 #' @examples
@@ -19,8 +16,7 @@
 xt_erosion_volume <- function(
   channel,
   width,
-  side = "both",
-  error_on_overflow = TRUE
+  side = "both"
 ) {
   checkmate::assert_class(channel, "xchan")
 
@@ -37,40 +33,26 @@ xt_erosion_volume <- function(
 
   # Calculate erosion volume for each cross-section
   volumes <- numeric(length(profile))
-  censored <- logical(length(profile))
-
   for (i in seq_along(profile)) {
     xs <- profile[[i]]
     dw_left <- width[i] * prop_left[i]
     dw_right <- width[i] - dw_left
 
-    v1 <- xt_erosion_volume_left(
-      xs,
-      dw_left,
-      error_on_overflow = error_on_overflow
-    )
+    v1 <- xt_erosion_volume_left(xs, dw_left)
     xs_flipped <- flip_profile(xs)
-    v2 <- xt_erosion_volume_left(
-      xs_flipped,
-      dw_right,
-      error_on_overflow = error_on_overflow
-    )
+    v2 <- xt_erosion_volume_left(xs_flipped, dw_right)
 
     volumes[i] <- v1 + v2
-    censored[i] <- attr(v1, "censored") || attr(v2, "censored")
   }
 
-  attr(volumes, "censored") <- censored
   volumes
 }
 
-xt_erosion_volume_left <- function(xs, width, error_on_overflow = TRUE) {
+xt_erosion_volume_left <- function(xs, width) {
   checkmate::assert_numeric(width, 0, len = 1, any.missing = FALSE)
 
   if (width == 0) {
-    a <- 0
-    attr(a, "censored") <- FALSE
-    return(a)
+    return(0)
   }
 
   # xs$banks and xs$thalwegs store indices into xs$coordinates; convert to
@@ -80,19 +62,11 @@ xt_erosion_volume_left <- function(xs, width, error_on_overflow = TRUE) {
   x_new <- x_old - width
   nodes <- xs$coordinates
   x_extent <- min(nodes[, 1])
-  censored <- FALSE
-
   if (x_new < x_extent) {
-    if (error_on_overflow) {
-      stop(
-        "Cannot calculate erosion volume for given change in width, as ",
-        "the cross section extent is surpassed."
-      )
-    } else {
-      width <- x_old - x_extent
-      x_new <- x_extent
-      censored <- TRUE
-    }
+    stop(
+      "Cannot calculate erosion volume for given change in width, as ",
+      "the cross section extent is surpassed."
+    )
   }
 
   y_thalweg <- get_min_thalweg_coords(xs)[2]
@@ -101,9 +75,7 @@ xt_erosion_volume_left <- function(xs, width, error_on_overflow = TRUE) {
   between_nodes <- nodes[x_in_between, , drop = FALSE]
   n <- nrow(between_nodes)
   if (n < 2) {
-    a <- 0
-    attr(a, "censored") <- censored
-    return(a)
+    return(0)
   }
   nm1 <- n - 1
   delta_x <- between_nodes[2:n, 1] - between_nodes[1:nm1, 1]
@@ -119,7 +91,5 @@ xt_erosion_volume_left <- function(xs, width, error_on_overflow = TRUE) {
     delta_x * (avg_y - y_thalweg)
   )
   area[zero_area] <- 0
-  a <- sum(area)
-  attr(a, "censored") <- censored
-  a
+  sum(area)
 }

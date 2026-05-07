@@ -4,7 +4,7 @@
 \alias{xt_erosion_width}
 \title{Calculate Erosion Width from Volume Change}
 \usage{
-xt_erosion_width(channel, dv, side = "both", error_on_overflow = TRUE)
+xt_erosion_width(channel, dv, side = "both")
 }
 \arguments{
 \item{channel}{Channel object}
@@ -17,9 +17,6 @@ left and right banks. Supply either a side object from \code{\link[=side_left]{s
 \code{\link[=side_right]{side_right()}}, or \code{\link[=side_both]{side_both()}}, or a shorthand string: \code{"left"},
 \code{"right"}, or \code{"both"}.}
 
-\item{error_on_overflow}{Logical; should an error be thrown if asked
-to calculate erosion width beyond cross section extent? \code{TRUE} if so
-(the default). If \code{FALSE}, returns the maximum width up to the extent.}
 }
 \value{
 A numeric vector of erosion widths for each cross-section in the
