@@ -7,7 +7,17 @@
 xt_generate_plan(banks, ..., n, spacing, at, axis = NULL, progress = FALSE)
 }
 \arguments{
-\item{banks}{Bankline polygon (sf POLYGON object)}
+\item{banks}{Channel footprint as \strong{one closed polygon} (\code{POLYGON} or
+\code{MULTIPOLYGON}), typically as \code{\link[sf:sf]{sf::st_sf()}}, \code{\link[sf:sfc]{sf::st_sfc()}}, or bare
+\code{\link[sf:st_geometry]{sf::st_geometry()}}. The ring(s) enclose the plan-view channel area; left
+and right banks are \strong{not} supplied as separate inputs—they are inferred
+from this boundary together with the sampling axis (see \strong{Details}).
+
+\strong{Not supported as \code{banks}:} two independent open bank polylines (e.g. one
+\code{LINESTRING} per bank without closing the corridor). Automatic axis
+generation uses \code{\link[centerline:cnt_path_guess]{centerline::cnt_path_guess()}}, which expects polygon
+geometry; bank-to-bank segments are found by intersecting trial transects
+with this closed boundary.}
 
 \item{...}{Additional arguments (ignored).}
 
@@ -38,9 +48,14 @@ is also stored (\code{\link[=xt_axis]{xt_axis()}}) for geometry that requires it
 }
 \description{
 Generate a channel object with planimetric cross sections from a
-bankline polygon.
+single closed polygon outlining the channel footprint (both banks).
 }
 \details{
+\strong{Bank geometry:} Supply the channel as one polygon (or
+multipolygon) so its boundary is a closed loop around the wetted/plan
+corridor. If you only have two bank polylines, convert them to a closed
+polygon (e.g. connect upstream/downstream ends) before calling this function.
+
 This function takes the definition of "cross section" relative
 to a point in the channel to be the line segment intersecting the point
 whose bank-to-bank segment width is the smallest. Note that this does not

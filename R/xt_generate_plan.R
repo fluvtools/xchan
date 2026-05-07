@@ -1,9 +1,19 @@
 #' Generate channel object from banklines
 #'
 #' Generate a channel object with planimetric cross sections from a
-#' bankline polygon.
+#' single closed polygon outlining the channel footprint (both banks).
 #'
-#' @param banks Bankline polygon (sf POLYGON object)
+#' @param banks Channel footprint as **one closed polygon** (`POLYGON` or
+#'   `MULTIPOLYGON`), typically as [`sf::st_sf()`], [`sf::st_sfc()`], or bare
+#'   [`sf::st_geometry()`]. The ring(s) enclose the plan-view channel area; left
+#'   and right banks are **not** supplied as separate inputs—they are inferred
+#'   from this boundary together with the sampling axis (see **Details**).
+#'
+#'   **Not supported as `banks`:** two independent open bank polylines (e.g. one
+#'   \code{LINESTRING} per bank without closing the corridor). Automatic axis
+#'   generation uses [`centerline::cnt_path_guess()`], which expects polygon
+#'   geometry; bank-to-bank segments are found by intersecting trial transects
+#'   with this closed boundary.
 #' @param ... Additional arguments (ignored).
 #' @param n Number of cross sections to generate (mutually exclusive with
 #'   spacing and at)
@@ -23,7 +33,12 @@
 #'   [xt_arrange_downstream()] or by sorting on **`chainage`**. The sampling axis
 #'   is also stored ([xt_axis()]) for geometry that requires it (e.g.
 #'   [xt_distance_ds()]).
-#' @details This function takes the definition of "cross section" relative
+#' @details **Bank geometry:** Supply the channel as one polygon (or
+#' multipolygon) so its boundary is a closed loop around the wetted/plan
+#' corridor. If you only have two bank polylines, convert them to a closed
+#' polygon (e.g. connect upstream/downstream ends) before calling this function.
+#'
+#' This function takes the definition of "cross section" relative
 #' to a point in the channel to be the line segment intersecting the point
 #' whose bank-to-bank segment width is the smallest. Note that this does not
 #' imply that the cross section is unique, and in this case the cross section
