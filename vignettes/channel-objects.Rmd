@@ -129,11 +129,11 @@ plot(centerline, add = TRUE, col = "red", lwd = 2)
 
 ### Banklines
 
-```{r banklines}
-# Generate banklines from channel
-banklines <- xt_trace_banks(channel)
-plot(channel, view = "plan")
-plot(banklines, add = TRUE, col = "green", lwd = 2)
+```{r banklines, eval=FALSE}
+# Bankline tracers are currently excluded from the package build.
+# banklines <- xt_trace_banks(channel)
+# plot(channel, view = "plan")
+# plot(banklines, add = TRUE, col = "green", lwd = 2)
 ```
 
 ## Correcting Streamflow Direction
