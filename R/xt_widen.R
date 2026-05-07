@@ -10,9 +10,6 @@
 #'   left and right banks. Supply either a side object from [side_left()],
 #'   [side_right()], or [side_both()], or a shorthand string: `"left"`,
 #'   `"right"`, or `"both"`.
-#' @param on_overflow What to do if the widening exceeds the cross section
-#'   extent; either "error" (the default), or "repeat", which will repeat the
-#'   widening with the last available topography elevation.
 #' @note
 #' While the ellipsis `...` is currently not used, it forces the `dw` and
 #' `dv` arguments to be named to ensure deliberate specification.
@@ -27,10 +24,8 @@ xt_widen <- function(
   ...,
   dw,
   dv,
-  side = "both",
-  on_overflow = c("error", "repeat")
+  side = "both"
 ) {
-  on_overflow <- rlang::arg_match(on_overflow)
   rlang::check_dots_empty()
   checkmate::assert_class(channel, "xchan")
 
@@ -57,14 +52,12 @@ xt_widen <- function(
     dw_left <- xt_erosion_width(
       channel,
       dv * prop_left,
-      side = "left",
-      error_on_overflow = error_on_overflow
+      side = "left"
     )
     dw_right <- xt_erosion_width(
       channel,
       dv * (1 - prop_left),
-      side = "right",
-      error_on_overflow = error_on_overflow
+      side = "right"
     )
     # Avoid 0 / 0 when neither side eroded.
     denom <- dw_left + dw_right
@@ -82,7 +75,14 @@ xt_widen <- function(
   # Apply widening to profile cross-sections
   if (!is.null(profile)) {
     profile <- lapply(seq_along(profile), function(i) {
-      widen_profile(profile[[i]], dw = dw[i], prop_left = prop_left[i])
+      do.call(
+        widen_profile,
+        list(
+          profile[[i]],
+          dw[i],
+          prop_left[i]
+        )
+      )
     })
   }
 

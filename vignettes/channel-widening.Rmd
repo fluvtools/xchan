@@ -214,21 +214,6 @@ channel_left <- xt_extend_frame(channel, extender = extender_flat(extent = 20, e
 channel_right <- xt_extend_frame(channel, extender = extender_flat(extent = 20, elevation = elevation_topo_right()))
 ```
 
-## Working with Censored Results
-
-When erosion calculations extend beyond the cross-section extent:
-
-```{r censored-results}
-# Check for censored results
-volumes_with_censored <- xt_erosion_volume(channel, width = 10, side = "both", error_on_overflow = FALSE)
-
-# Check which results are censored
-censored_attr <- attr(volumes_with_censored, "censored")
-if (any(censored_attr)) {
-  cat("Censored results at cross-sections:", which(censored_attr), "\n")
-}
-```
-
 ## Summary
 
 This vignette covered:
@@ -239,6 +224,5 @@ This vignette covered:
 - Erosion volume and width calculations
 - Variable widening patterns
 - Topographic frame extension for realistic simulations
-- Handling censored results
 
 The next vignette will show you how to perform detailed channel calculations and analysis.

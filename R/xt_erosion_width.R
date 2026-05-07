@@ -7,9 +7,6 @@
 #' @inheritParams xt_widen
 #' @param dv Volume of erosion; single positive numeric or vector matching
 #'   number of cross-sections.
-#' @param error_on_overflow Logical; should an error be thrown if asked
-#'   to calculate erosion width beyond cross section extent? `TRUE` if so
-#'   (the default). If `FALSE`, returns the maximum width up to the extent.
 #' @returns A numeric vector of erosion widths for each cross-section in the
 #'   channel.
 #' @examples
@@ -19,8 +16,7 @@
 xt_erosion_width <- function(
   channel,
   dv,
-  side = "both",
-  error_on_overflow = TRUE
+  side = "both"
 ) {
   checkmate::assert_class(channel, "xchan")
 
@@ -36,40 +32,27 @@ xt_erosion_width <- function(
   dv <- vctrs::vec_recycle(dv, length(profile))
 
   # Calculate erosion width for each cross-section
-  widths <- numeric()
-  censored <- logical()
+  widths <- numeric(length(profile))
 
   for (i in seq_along(profile)) {
     xs <- profile[[i]]
     dv_left <- dv[i] * prop_left[i]
     dv_right <- dv[i] - dv_left
 
-    dw1 <- xt_erosion_width_left(
-      xs,
-      dv_left,
-      error_on_overflow = error_on_overflow
-    )
+    dw1 <- xt_erosion_width_left(xs, dv_left)
     xs_flipped <- flip_profile(xs)
-    dw2 <- xt_erosion_width_left(
-      xs_flipped,
-      dv_right,
-      error_on_overflow = error_on_overflow
-    )
+    dw2 <- xt_erosion_width_left(xs_flipped, dv_right)
 
     widths[i] <- dw1 + dw2
-    censored[i] <- attr(dw1, "censored") || attr(dw2, "censored")
   }
 
-  attr(widths, "censored") <- censored
   widths
 }
 
-xt_erosion_width_left <- function(xs, dv, error_on_overflow = TRUE) {
+xt_erosion_width_left <- function(xs, dv) {
   checkmate::assert_numeric(dv, 0, len = 1, any.missing = FALSE)
   if (dv == 0) {
-    dw <- 0
-    attr(dw, "censored") <- FALSE
-    return(dw)
+    return(0)
   }
   # Get left bank information
   left_bank_coords <- get_left_bank_coords(xs)
@@ -92,37 +75,19 @@ xt_erosion_width_left <- function(xs, dv, error_on_overflow = TRUE) {
   # flipped frame, which is the erosion width directly.
   left_nodes_flipped <- left_nodes
   left_nodes_flipped[, 1] <- -left_nodes_flipped[, 1]
-  dw <- tryCatch(
-    find_dx_for_volume_right(
-      v = dv,
-      x0 = -x_old,
-      topo = left_nodes_flipped,
-      thalweg_height = y_bank,
-      valley = "left"
-    ),
-    error = function(e) {
-      if (
-        grepl("Requested volume exceeds", conditionMessage(e), fixed = TRUE)
-      ) {
-        NA_real_
-      } else {
-        stop(e)
-      }
-    }
+  dw <- find_dx_for_volume_right(
+    v = dv,
+    x0 = -x_old,
+    topo = left_nodes_flipped,
+    thalweg_height = y_bank,
+    valley = "left"
   )
 
-  censored <- FALSE
-  if (is.na(dw) || dw > dw_max_available) {
-    if (error_on_overflow) {
-      stop(
-        "Cannot calculate erosion width for given change in volume, as ",
-        "the cross section extent is surpassed."
-      )
-    } else {
-      dw <- dw_max_available
-      censored <- TRUE
-    }
+  if (dw > dw_max_available) {
+    stop(
+      "Cannot calculate erosion width for given change in volume, as ",
+      "the cross section extent is surpassed."
+    )
   }
-  attr(dw, "censored") <- censored
   dw
 }

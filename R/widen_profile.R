@@ -19,7 +19,11 @@
 #' the height of the new bank ignores this bed topography, and is determined
 #' by the outermost point.
 #' @rdname xt_widen_2d
-widen_profile <- function(profile, dw, prop_left) {
+widen_profile <- function(
+  profile,
+  dw,
+  prop_left
+) {
   checkmate::assert_class(profile, "xs_profile")
   checkmate::assert_number(dw, lower = 0)
   checkmate::assert_number(prop_left, lower = 0, upper = 1)
@@ -42,6 +46,12 @@ widen_profile_left <- function(profile, dw) {
   left_bank_coords <- get_left_bank_coords(profile)
   x_old <- left_bank_coords[1]
   x_new <- x_old - dw
+  x_extent <- min(profile$coordinates[, 1])
+  if (x_new < x_extent) {
+    stop(
+      "Cannot widen profile: requested widening exceeds cross section extent."
+    )
+  }
   y_new <- coords_interpolate(profile$coordinates, x_new)[2]
   thalweg_coords <- get_min_thalweg_coords(profile)
   y_thal <- thalweg_coords[2]

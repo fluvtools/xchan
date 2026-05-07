@@ -48,6 +48,10 @@ banks to create a "frame" for erosion analysis. The extent can be specified
 either as a fixed distance or as a multiplier of the channel width.
 Similarly, the sampling distance can be specified either as a fixed
 distance or as a multiplier of the channel width.
+
+Sampling must remain inside DEM coverage. If any sampled point is outside
+the DEM extent, or if a sampled elevation is missing (\code{NA}), the function
+throws an error.
 }
 \examples{
 # Sample DEM with 50m extension and 1m sampling
