@@ -1,9 +1,12 @@
 #' Create a spline tracer for bankline generation
 #'
 #' @param ngrid Number of points to generate along each bankline.
+#' @param method Spline interpolation method passed to `stats::splinefun()`.
+#' @param ... Other arguments to pass to `stats::splinefun()`.
 #' @returns A tracer object that takes a channel and returns banklines.
 #' @export
-tracer_spline <- function(ngrid = 200) {
+tracer_spline <- function(ngrid = 200, method = "fmm", ...) {
+  spline_args <- list(...)
   f <- function(channel) {
     seg <- xt_as_sfc(channel, "plan")
     # but assume the cross sections are not in order
@@ -32,10 +35,8 @@ tracer_spline <- function(ngrid = 200) {
     for (i in 1:2) {
       if (i == 1) {
         edge <- start_edge
-        out_text <- "start_edge"
       } else {
         edge <- end_edge
-        out_text <- "end_edge"
       }
 
       edge_sf <- sf::st_sf(
@@ -53,8 +54,14 @@ tracer_spline <- function(ngrid = 200) {
       t <- cumsum(c(0, sqrt(diff(x)^2 + diff(y)^2)))
 
       # Fit cubic splines for x(t) and y(t)
-      x_spline <- stats::splinefun(t, x)
-      y_spline <- stats::splinefun(t, y)
+      x_spline <- do.call(
+        stats::splinefun,
+        c(list(x = t, y = x, method = method), spline_args)
+      )
+      y_spline <- do.call(
+        stats::splinefun,
+        c(list(x = t, y = y, method = method), spline_args)
+      )
 
       # Generate interpolated path
       t_fine <- seq(min(t), max(t), length.out = ngrid)
@@ -80,7 +87,7 @@ tracer_spline <- function(ngrid = 200) {
   structure(
     f,
     name = "Spline Tracer",
-    params = list(ngrid = ngrid),
+    params = c(list(ngrid = ngrid, method = method), spline_args),
     class = "xchan_tracer"
   )
 }

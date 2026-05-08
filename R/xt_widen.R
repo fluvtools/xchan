@@ -11,8 +11,8 @@
 #'   [side_right()], or [side_both()], or a shorthand string: `"left"`,
 #'   `"right"`, or `"both"`.
 #' @param on_overflow What to do if the widening exceeds the cross section
-#'   extent; either "error" (the default), or "repeat", which will repeat the
-#'   widening with the last available topography elevation.
+#'   extent; either "error" (the default), or "cap", which will use the maximum
+#'   available width within the cross section extent.
 #' @note
 #' While the ellipsis `...` is currently not used, it forces the `dw` and
 #' `dv` arguments to be named to ensure deliberate specification.
@@ -28,9 +28,10 @@ xt_widen <- function(
   dw,
   dv,
   side = "both",
-  on_overflow = c("error", "repeat")
+  on_overflow = c("error", "cap")
 ) {
   on_overflow <- rlang::arg_match(on_overflow)
+  error_on_overflow <- on_overflow == "error"
   rlang::check_dots_empty()
   checkmate::assert_class(channel, "xchan")
 

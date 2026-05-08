@@ -4,10 +4,14 @@
 \alias{tracer_spline}
 \title{Create a spline tracer for bankline generation}
 \usage{
-tracer_spline(ngrid = 200)
+tracer_spline(ngrid = 200, method = "fmm", ...)
 }
 \arguments{
 \item{ngrid}{Number of points to generate along each bankline.}
+
+\item{method}{Spline interpolation method passed to \code{stats::splinefun()}.}
+
+\item{...}{Other arguments to pass to \code{stats::splinefun()}.}
 }
 \value{
 A tracer object that takes a channel and returns banklines.
