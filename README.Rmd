@@ -86,7 +86,7 @@ channel <- xt_generate_profile(
 )
 
 # Plot an example profile cross section
-plot(profile_cross_sections$profile[[1]])
+plot(xt_profile_at(profile_cross_sections, 1))
 ```
 
 Apply a widening scenario to the generated cross sections. In this

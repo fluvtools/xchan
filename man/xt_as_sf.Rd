@@ -5,31 +5,44 @@
 \alias{xt_as_sf}
 \title{Convert channel to spatial object}
 \usage{
-xt_as_sfc(channel, what = c("plan", "profile", "3d"))
+xt_as_sfc(
+  channel,
+  what = c("plan", "profile", "3d"),
+  extent = c("banks", "full")
+)
 
-xt_as_sf(channel, what = c("plan", "profile", "3d"), geom_col = "geometry")
+xt_as_sf(
+  channel,
+  what = c("plan", "profile", "3d"),
+  extent = c("banks", "full"),
+  geom_col = "geometry"
+)
 }
 \arguments{
 \item{channel}{Channel object.}
 
-\item{what}{Type of spatial object to return. Options are "plan" for
-a plan view (line segments; the default); "profile" for a profile view
-(multiline segments); or "3d" for a 3D arrangement.}
+\item{what}{Type of spatial object to return: \code{"plan"} for map-view cross
+sections (default); \code{"profile"} for each profile as a \code{LINESTRING} in
+distance–elevation space (no CRS); \code{"3d"} for 3D multilinestrings built by
+mapping profile elevations onto plan coordinates (same CRS as the plan).}
 
-\item{geom_col}{Name of the geometry column in the resulting sf object.}
+\item{extent}{\code{"banks"} restricts geometry to the bank-to-bank span in each
+representation; \code{"full"} uses the full sampled profile span (and for
+\code{what = "plan"}, map segments spanning each profile's horizontal range).
+For \code{what = "plan"} with \code{"full"}, if there is no profile column a warning
+is issued and bank-to-bank geometries are returned instead.}
+
+\item{geom_col}{Name of the geometry column in the resulting \code{sf} object.}
 }
 \value{
-For \code{xt_as_sfc()}, an "sfc" object containing the cross section
-geometries. For \code{xt_as_sf()}, an "sf" object with the original columns of
-the channel preserved
-except for the columns containing the plan and profile geometries, which
-are combined into a single "geometry" column.
+For \code{xt_as_sfc()}, an \code{"sfc"} object. For \code{xt_as_sf()}, an \code{"sf"}
+object whose geometry column holds the requested representation.
 }
 \description{
-Converts a channel object to an sfc of sf object from the sf package.
-For \code{xt_as_sf()}, original columns are preserved
-except for the plan and profile geometries, which are combined into a single
-geometry column.
+Converts a channel object to an \code{sfc} or \code{\link[sf:sf]{sf::sf}} object.
+For \code{xt_as_sf()}, columns other than the plan and profile list-columns are
+preserved in the attribute table; plan and profile columns are replaced by a
+single geometry column.
 }
 \examples{
 xt_as_sf(demo_channel, what = "profile")

@@ -21,8 +21,9 @@
 #' @details
 #' Requires [xt_has_profile()]. Thalweg `(distance, elevation)` pairs are taken from
 #' the profile coordinate matrix at each `thalwegs` row index; positions along the
-#' plan line use the same bank-span interpolation as [create_3d_coords()] (first
-#' plan vertex = left bank, last = right bank).
+#' plan line use the same chord interpolation as \code{\link[=xt_as_sf]{xt_as_sf()}}
+#' 3D export with \code{extent = "banks"} (first plan vertex = left bank, last =
+#' right bank).
 #'
 #' The axis defines section order only. Thalweg geometry is always recomputed
 #' from current plan/profile geometry, so this function naturally supports

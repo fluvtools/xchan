@@ -88,7 +88,7 @@ channel <- xt_generate_profile(
 )
 
 # Plot an example profile cross section
-plot(profile_cross_sections$profile[[1]])
+plot(xt_profile_at(profile_cross_sections, 1))
 ```
 
 <img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />

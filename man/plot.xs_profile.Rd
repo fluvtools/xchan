@@ -4,20 +4,35 @@
 \alias{plot.xs_profile}
 \title{Plot profile cross section}
 \usage{
-\method{plot}{xs_profile}(x, ..., extent = c("full", "bankline"), add = FALSE, exaggerate = 2)
+\method{plot}{xs_profile}(
+  x,
+  ...,
+  extent = c("banks", "full"),
+  add = FALSE,
+  exaggerate = 2,
+  from = NULL,
+  to = NULL
+)
 }
 \arguments{
 \item{x}{An xs_profile object}
 
 \item{...}{Additional arguments passed to plot}
 
-\item{extent}{Character string indicating the extent of the plot: "full" or
-"bankline". Defaults to "full".}
+\item{extent}{Selects the default horizontal span: \code{"banks"} uses the span
+between the outer bank distances; \code{"full"} uses the full range of profile
+sample distances (default \code{"banks"}).}
 
 \item{add}{Logical. Add to existing plot?}
 
 \item{exaggerate}{Single positive numeric. Vertical exaggeration factor;
 defaults to 2. See details.}
+
+\item{from, to}{Optional adjustments to that window (distance along the
+profile). The plotted range starts at \code{from} when given, otherwise at the
+default left edge for \code{extent}; it ends at \code{to} when given, otherwise at
+the default right edge. You may pass \code{from} only, \code{to} only, both, or
+neither. Values may lie outside the data range (empty band on that side).}
 }
 \value{
 A plot of the profile cross section
@@ -32,6 +47,10 @@ The exaggeration factor is applied to the vertical dimension of the profile,
 and defaults to 2 so that changes in topography can be more easily
 perceived. It is strongly recommended not going beyond 3, because
 exaggeration beyond this point can distort the perception of the profile.
+
+For the horizontal axis, \code{extent} fixes the reference span (\code{rng_default}).
+Each of \code{from} and \code{to} overrides one endpoint only when supplied; omitted
+endpoints use \code{rng_default}.
 }
 \examples{
 # Plot a profile cross section (advanced use)
@@ -39,4 +58,8 @@ plot(profile_object)
 
 # Plot with vertical exaggeration
 plot(profile_object, exaggerate = 2)
+
+# Narrow or shift the window relative to `extent`
+plot(profile_object, extent = "full", from = -100)
+plot(profile_object, extent = "banks", to = 50)
 }

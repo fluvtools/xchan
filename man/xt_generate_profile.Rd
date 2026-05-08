@@ -8,10 +8,11 @@ xt_generate_profile(
   channel,
   dem,
   ...,
-  extent_distance,
-  extent_multiplier,
+  extent_distance = Inf,
+  extent_multiplier = NULL,
   sample_freq,
-  sample_n
+  sample_n,
+  progress = FALSE
 )
 }
 \arguments{
@@ -21,13 +22,18 @@ xt_generate_profile(
 
 \item{...}{Additional arguments (ignored).}
 
-\item{extent_distance}{Distance to extend beyond banks; positive value.
-Plain numeric is interpreted in the channel's CRS length unit; a
-\code{\link[units:units]{units::units()}} length object is converted automatically. Mutually
-exclusive with \code{extent_multiplier}.}
+\item{extent_distance}{Distance to extend beyond banks on each side. Use
+\code{Inf} (the default) to extend along the cross section until the DEM
+bounding box is reached in each direction. A finite plain numeric is
+interpreted in the channel's CRS length unit; a \code{\link[units:units]{units::units()}} length
+object is converted automatically. If larger than the distance from each
+bank to the DEM edge along the cross-section line, the extension is
+shortened silently on that side. Mutually exclusive with passing a
+non-\code{NULL} \code{extent_multiplier}.}
 
 \item{extent_multiplier}{Multiplier of channel width to extend beyond banks;
-positive numeric value. Mutually exclusive with \code{extent_distance}.}
+positive numeric value. Default \code{NULL} uses \code{extent_distance} instead.
+Mutually exclusive with supplying an explicit \code{extent_distance} argument.}
 
 \item{sample_freq}{Distance between DEM sampling points; positive value.
 Same units treatment as \code{extent_distance}. Mutually exclusive with
@@ -35,6 +41,9 @@ Same units treatment as \code{extent_distance}. Mutually exclusive with
 
 \item{sample_n}{number to sample; positive integer value greater than 1.
 Mutually exclusive with \code{sample_freq}.}
+
+\item{progress}{If \code{TRUE}, show a text progress bar while processing cross
+sections (same behaviour as \code{\link[=xt_generate_plan]{xt_generate_plan()}}).}
 }
 \value{
 Updated channel object with profile cross sections in the
@@ -52,9 +61,20 @@ either as a fixed distance or as a multiplier of the channel width.
 Similarly, the sampling distance can be specified either as a fixed
 distance or as a multiplier of the channel width.
 
-Sampling must remain inside DEM coverage. If any sampled point is outside
-the DEM extent, or if a sampled elevation is missing (\code{NA}), the function
-throws an error.
+Extension beyond banks is clipped to the DEM bounding box (in the DEM's
+CRS, projected to the cross-section CRS when needed), so sampling stays
+inside raster coverage if the bank-to-bank segment lies inside the DEM.
+
+Elevations are taken with bilinear interpolation between cell centres (see
+\code{\link[terra:extract]{terra::extract()}} with \code{method = "bilinear"}), which smooths grid-oriented
+steps relative to nearest-neighbour extraction but still respects the DEM
+cell size: expect subtle terrace-like breaks where slope crosses grid
+boundaries if resolution is coarse.
+
+Sample points that fall in nodata cells (\code{NA}) at the \strong{ends} of the
+transect are dropped until all remaining elevations are finite; interior
+gaps still raise an error. Any sample outside the raster bounding box
+raises an error.
 }
 \examples{
 # Sample DEM with 50 m extension beyond banks and 1 m sample spacing
