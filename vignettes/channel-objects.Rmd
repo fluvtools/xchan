@@ -196,6 +196,18 @@ plan <- xt_column_plan(channel)
 # xt_column_plan(channel) <- updated_plan_sfc
 ```
 
+### Plotting One Profile Cross Section
+
+When you want to inspect one profile cross section from a channel, use
+`xt_profile_at()` to extract a single `xs_profile`, then call `plot()` on that
+profile object:
+
+```{r one-profile-plot}
+# Extract one profile (row order) and plot it
+xs1 <- xt_profile_at(channel, 1)
+plot(xs1)
+```
+
 ## Summary
 
 This vignette covered:

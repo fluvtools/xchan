@@ -4,14 +4,19 @@
 \alias{plot.xchan}
 \title{Plot a channel object}
 \usage{
-\method{plot}{xchan}(x, ..., extent = c("full", "bankline"))
+\method{plot}{xchan}(x, ..., extent = c("banks", "full"))
 }
 \arguments{
 \item{x}{Channel object}
 
-\item{...}{Additional arguments passed to the specific plot methods.}
+\item{...}{Additional arguments passed to \code{\link[=plot]{plot()}} for plan geometries and
+to bank-marker styling (\code{col_bank_water}, \code{col_bank_land}, \code{pch_bank},
+\code{cex_bank}) when \code{extent = "full"}.}
 
-\item{extent}{Character string indicating the extent of the plot: "full" or "bankline".}
+\item{extent}{One of \code{"banks"} (default) or \code{"full"}.
+\code{"full"} draws each transect out to the ends of its profile (when profiles
+are present) and marks bank positions; uses bank-to-bank segments only if
+there is no profile column (with a warning).}
 }
 \description{
 Plot a channel object

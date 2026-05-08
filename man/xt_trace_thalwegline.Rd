@@ -33,8 +33,9 @@ but through lowest-point (\code{thalweg}) locations rather than mid-channel.
 \details{
 Requires \code{\link[=xt_has_profile]{xt_has_profile()}}. Thalweg \verb{(distance, elevation)} pairs are taken from
 the profile coordinate matrix at each \code{thalwegs} row index; positions along the
-plan line use the same bank-span interpolation as \code{\link[=create_3d_coords]{create_3d_coords()}} (first
-plan vertex = left bank, last = right bank).
+plan line use the same chord interpolation as \code{\link[=xt_as_sf]{xt_as_sf()}}
+3D export with \code{extent = "banks"} (first plan vertex = left bank, last =
+right bank).
 
 The axis defines section order only. Thalweg geometry is always recomputed
 from current plan/profile geometry, so this function naturally supports
