@@ -7,13 +7,18 @@
 elevation_bottom(.f = mean, ...)
 }
 \arguments{
-\item{.f}{Function to apply to channel bottom elevations (e.g., min, max, mean, quantile)}
+\item{.f}{Summary function (\link[base:Extremes]{base::min}, \link[base:Extremes]{base::max}, \link[base:mean]{base::mean}, \link[stats:quantile]{stats::quantile}, ...).}
 
-\item{...}{Additional arguments for .f (e.g., probs for quantile)}
+\item{...}{Passed to \code{.f} (for example \code{probs} with \link[stats:quantile]{stats::quantile}).}
 }
 \value{
-An elevation specification that returns aggregated bottom elevations
+An elevation specification; see unified topic \code{?elevations} alongside
+\code{\link[=elevation_thalweg]{elevation_thalweg()}} and neighbours.
 }
 \description{
-Create a bottom elevation specification
+Applies \code{.f} to elevations of vertices \strong{between} the outer left and right bank
+distances along the profile (same logic as \code{\link[=elevation_channel]{elevation_channel()}}).
+}
+\seealso{
+\code{\link[=elevation_channel]{elevation_channel()}} on this same help page.
 }

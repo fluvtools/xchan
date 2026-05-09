@@ -1,9 +1,25 @@
+test_that("xt_reverse_flow preserves thalweg elevations from elevation_thalweg()", {
+  skip_if_not_installed("sf")
+  ch <- xt_generate_plan(fraser_bankline, n = 6)
+  w <- as.numeric(xt_width(ch))
+  prof <- lapply(seq_along(w), function(i) {
+    half <- w[i] / 2
+    z0 <- 100 + i
+    m <- matrix(c(-half, z0 + 2, 0, z0, half, z0 + 2), ncol = 2, byrow = TRUE)
+    xchan:::new_profile(m, bankpoints = c(-half, half))
+  })
+  ch <- xchan:::set_channel_profile(ch, prof)
+  z1 <- xt_elevation(ch, elevation_thalweg())
+  z2 <- xt_elevation(xt_reverse_flow(ch), elevation_thalweg())
+  expect_equal(z2, z1)
+})
+
 test_that("xt_reverse_flow works when channel has plan only (no profile)", {
   skip_if_not_installed("sf")
   ch <- xt_generate_plan(fraser_bankline, n = 6)
   expect_no_error(r <- xt_reverse_flow(ch))
-  p0 <- ch$plan
-  p1 <- r$plan
+  p0 <- channel_plan(ch)
+  p1 <- channel_plan(r)
   for (i in seq_along(p0)) {
     m0 <- sf::st_coordinates(p0[i, , drop = FALSE])
     m1 <- sf::st_coordinates(p1[i, , drop = FALSE])
@@ -18,8 +34,8 @@ test_that("xt_reverse_flow is self-inverse on plan (double reverse restores coor
   ch <- xt_generate_plan(fraser_bankline, n = 4)
   ch2 <- xt_reverse_flow(xt_reverse_flow(ch))
   expect_identical(
-    sf::st_coordinates(ch$plan),
-    sf::st_coordinates(ch2$plan)
+    sf::st_coordinates(channel_plan(ch)),
+    sf::st_coordinates(channel_plan(ch2))
   )
 })
 
@@ -29,15 +45,15 @@ test_that("xt_reverse_flow flips profile and is self-inverse with plan+profile",
     crs = 3005
   )
   coords <- matrix(c(-1, 0, 0, -1, 1, 0), ncol = 2, byrow = TRUE)
-  prof <- xt_profile(coords, bankpoints = c(-1, 1))
-  ch <- xt_channel(.plan = seg, .profile = list(prof))
+  prof <- xchan:::new_profile(coords, bankpoints = c(-1, 1))
+  ch <- xchan:::new_channel(seg, profile = list(prof))
   ch2 <- xt_reverse_flow(xt_reverse_flow(ch))
   expect_identical(
-    sf::st_coordinates(ch$plan),
-    sf::st_coordinates(ch2$plan)
+    sf::st_coordinates(channel_plan(ch)),
+    sf::st_coordinates(channel_plan(ch2))
   )
   expect_identical(
-    xchan:::coords_all(ch$profile[[1]]),
-    xchan:::coords_all(ch2$profile[[1]])
+    xchan:::coords_all(channel_profile(ch)[[1]]),
+    xchan:::coords_all(channel_profile(ch2)[[1]])
   )
 })

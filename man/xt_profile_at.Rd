@@ -15,12 +15,12 @@ xt_profile_at(channel, i)
 One \code{xs_profile} object.
 }
 \description{
-Extract a single \code{xs_profile} object from a channel's profile column using
+Extract a single \code{xs_profile} object from a channel's profile view using
 row order.
 }
 \examples{
 coords <- matrix(c(-2, 10, 0, 8, 2, 10), ncol = 2, byrow = TRUE)
-xs <- xt_profile(coords, bankpoints = c(-2, 2))
+xs <- xchan:::new_profile(coords, bankpoints = c(-2, 2))
 ch <- xt_as_channel(c(4, 4), profile = list(xs, xs), crs = 3005)
 xt_profile_at(ch, 1)
 }

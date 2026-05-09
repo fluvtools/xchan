@@ -1,57 +1,86 @@
-#' Calculate Erosion Volume from Width Change
+#' Calculate erosion volume from width change
 #'
-#' This function calculates the erosion volume for each cross-section in
-#' a channel given a specified width change, distributing the change
-#' according to a given scheme.
+#' Estimates volume removed per cross section for a given total width increase `dw`,
+#' split between banks according to `side`.
 #'
-#' @inheritParams xt_widen
-#' @param width Change in width; single positive value or vector matching the
-#'   number of cross sections. Plain numeric is interpreted in the channel's
-#'   CRS length unit; a [units::units()] length object is converted
-#'   automatically (for example `units::set_units(10, "ft")` against a metric
-#'   channel).
-#' @returns A numeric vector of erosion volumes for each cross-section in the
-#'   channel, carrying [units::units()] of (CRS length unit)^3 when the
-#'   channel has a CRS with a defined linear unit.
+#' @param channel An [`xchan_tbl`][xt_as_channel()], [`xchan`][xchan()], or [`xsection`][xsection()]
+#'   with profile geometry.
+#' @param dw Change in width; for [`xsection`][xsection()], a single positive value. For
+#'   \code{xchan_tbl} / [`xchan`][xchan()], a single value recycled to every section or
+#'   one value per cross section. Plain numeric uses the channel CRS length unit;
+#'   [units::units()] lengths are converted automatically.
+#' @param side A side specification controlling how widening is split between left and right
+#'   banks: [side_left()], [side_right()], [side_both()], or `"left"`, `"right"`, `"both"`.
+#' @returns For \code{xchan_tbl} and \code{xchan}, a numeric vector of erosion volumes (one per row /
+#'   section). For \code{xsection}, length-one vector. Values carry [units::units()] of (CRS length
+#'   unit)^3 when a linear CRS unit is defined.
 #' @examples
-#' xt_erosion_volume(channel, width = 10, side = "left")
-#' xt_erosion_volume(channel, width = 10, side = side_left(0.75))
+#' \donttest{
+#' xt_erosion_volume(channel, dw = 10, side = "left")
+#' xt_erosion_volume(channel, dw = 10, side = side_left(0.75))
+#' }
 #' @export
-xt_erosion_volume <- function(
-  channel,
-  width,
-  side = "both"
-) {
-  checkmate::assert_class(channel, "xchan")
+xt_erosion_volume <- function(channel, dw, side = "both") {
+  UseMethod("xt_erosion_volume")
+}
+
+#' @rdname xt_erosion_volume
+#' @export
+xt_erosion_volume.xchan_tbl <- function(channel, dw, side = "both") {
+  checkmate::assert_class(channel, "xchan_tbl")
   unit <- crs_length_unit(channel)
-  width <- to_numeric_length(width, unit, arg = "width")
-  raw <- erosion_volume_numeric(channel, width, side)
+  dw <- to_numeric_length(dw, unit, arg = "dw")
+  raw <- erosion_volume_numeric(channel, dw, side)
   with_volume_units(raw, unit)
 }
 
+#' @rdname xt_erosion_volume
+#' @export
+xt_erosion_volume.xchan <- function(channel, dw, side = "both") {
+  checkmate::assert_class(channel, "xchan")
+  tbl <- xt_as_channel(channel)
+  xt_erosion_volume(tbl, dw = dw, side = side)
+}
+
+#' @rdname xt_erosion_volume
+#' @export
+xt_erosion_volume.xsection <- function(channel, dw, side = "both") {
+  checkmate::assert_class(channel, "xsection")
+  tbl <- xt_as_channel(xchan(list(channel)))
+  xt_erosion_volume(tbl, dw = dw, side = side)
+}
+
+#' @rdname xt_erosion_volume
+#' @exportS3Method xt_erosion_volume default
+xt_erosion_volume.default <- function(channel, dw, side = "both") {
+  stop(
+    "No `xt_erosion_volume()` method for class ",
+    paste(class(channel), collapse = "/"),
+    ". Use an `xchan_tbl`, `xchan`, or `xsection` object.",
+    call. = FALSE
+  )
+}
+
 #' @noRd
-erosion_volume_numeric <- function(channel, width, side = "both") {
-  profile <- xt_column_profile(channel)
+erosion_volume_numeric <- function(channel, dw, side = "both") {
+  profile <- channel_profile(channel)
   if (is.null(profile)) {
     stop("Channel object must have profile cross sections")
   }
 
-  # Parse side argument to get proportions
   prop_left <- parse_side_arg(side, channel)
 
-  # Recycle width to match number of cross-sections
-  width <- vctrs::vec_recycle(width, length(profile))
+  dw <- vctrs::vec_recycle(dw, length(profile))
 
-  # Calculate erosion volume for each cross-section
   volumes <- numeric(length(profile))
   for (i in seq_along(profile)) {
     xs <- profile[[i]]
-    dw_left <- width[i] * prop_left[i]
-    dw_right <- width[i] - dw_left
+    dw_left <- dw[i] * prop_left[i]
+    dw_right <- dw[i] - dw_left
 
-    v1 <- xt_erosion_volume_left(xs, dw_left)
+    v1 <- erosion_volume_left(xs, dw_left)
     xs_flipped <- flip_profile(xs)
-    v2 <- xt_erosion_volume_left(xs_flipped, dw_right)
+    v2 <- erosion_volume_left(xs_flipped, dw_right)
 
     volumes[i] <- v1 + v2
   }
@@ -59,24 +88,22 @@ erosion_volume_numeric <- function(channel, width, side = "both") {
   volumes
 }
 
-xt_erosion_volume_left <- function(xs, width) {
-  checkmate::assert_numeric(width, 0, len = 1, any.missing = FALSE)
+erosion_volume_left <- function(xs, dw) {
+  checkmate::assert_numeric(dw, lower = 0, len = 1, any.missing = FALSE)
 
-  if (width == 0) {
+  if (dw == 0) {
     return(0)
   }
 
-  # xs$banks and xs$thalwegs store indices into xs$coordinates; convert to
-  # actual x-coordinates (distances along the profile) before using them
-  # for geometric comparisons.
   x_old <- get_left_bank_coords(xs)[1]
-  x_new <- x_old - width
+  x_new <- x_old - dw
   nodes <- xs$coordinates
   x_extent <- min(nodes[, 1])
   if (x_new < x_extent) {
     stop(
       "Cannot calculate erosion volume for given change in width, as ",
-      "the cross section extent is surpassed."
+      "the cross section extent is surpassed.",
+      call. = FALSE
     )
   }
 

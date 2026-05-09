@@ -10,15 +10,21 @@
 coverage](https://codecov.io/gh/stochaGBEM/xchan/branch/main/graph/badge.svg)](https://app.codecov.io/gh/stochaGBEM/xchan?branch=main)
 <!-- badges: end -->
 
-The purpose of xchan is to create and manipulate watercourse
-geometries, with a focus on cross sections. Because this package sits on
-top of the sf package, geometries can also be manipulated in the same
-way as in the sf package.
+The purpose of xchan is to create and manipulate watercourse geometries,
+with a focus on cross sections. Because this package sits on top of the
+sf package, geometries can also be manipulated in the same way as in the
+sf package.
 
 The name of the package is inspired by the sf package. Functions in
 xchan start with a common prefix, `xt`, which stands for “cross-section
 type”; this is intended to parallel the sf package’s function prefix,
 `st`, which stands for “spatial type”.
+
+**Data model.** A channel is a data frame (`xchan_tbl`) with one row per
+cross section. Each row stores an `xsection` (planimetric geometry and
+optional long-profile data). `channel_plan()` and
+`channel_profile()` return derived views for plotting and analysis;
+CRS is held once on the channel, like an `sfc` collection.
 
 ## Installation
 
@@ -48,7 +54,6 @@ a channel axis along the cross sections:
 
 ``` r
 planimetric_cross_sections <- xt_generate_plan(fraser_bankline, spacing = 200)
-#> Linking to GEOS 3.13.0, GDAL 3.8.5, PROJ 9.5.1; sf_use_s2() is TRUE
 centerline <- xt_trace_centerline(planimetric_cross_sections)
 
 plot(fraser_bankline, col = "grey90", border = "grey50")
@@ -56,7 +61,7 @@ plot(planimetric_cross_sections, add = TRUE, col = "dodgerblue3")
 plot(centerline, add = TRUE, col = "cadetblue1", lwd = 2)
 ```
 
-<img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-3-1.png" alt="" width="100%" />
 
 Sample the DEM to create profile cross sections:
 
@@ -72,7 +77,7 @@ plot(fraser_bankline, col = "grey90", border = "grey50")
 plot(profile_cross_sections, add = TRUE, col = "coral")
 ```
 
-<img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-4-1.png" alt="" width="100%" />
 
 Profile cross sections can also be generated as distance-elevation
 objects. Each profile cross section contains a distance-elevation
@@ -91,7 +96,7 @@ channel <- xt_generate_profile(
 plot(xt_profile_at(profile_cross_sections, 1))
 ```
 
-<img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-5-1.png" alt="" width="100%" />
 
 Apply a widening scenario to the generated cross sections. In this
 example, the channel is widened by 20 metres on the right bank:
@@ -107,4 +112,4 @@ plot(fraser_bankline)
 plot(widened_cross_sections, add = TRUE)
 ```
 
-<img src="man/figures/README-unnamed-chunk-6-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-6-1.png" alt="" width="100%" />

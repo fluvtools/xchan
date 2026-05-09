@@ -91,17 +91,20 @@ channel_side2 <- xt_widen(channel, dw = 2, side = side_right(0.6))  # 40% left, 
 channel_side3 <- xt_widen(channel, dw = 2, side = side_both(0.7, 0.3))  # 70% left, 30% right
 ```
 
-### Custom Side Functions
+### Varying proportions along the channel
 
-You can create custom side functions (specification factories) for specific scenarios:
+`side_left()`, `side_right()`, and `side_both()` recycle scalar proportions to
+every cross section. For section-wise control, build an `xchan_side` object
+whose `left` (and `right`) entries are numeric vectors of length
+`xt_n_sections(channel)` that sum to 1 at each section:
 
 ```{r custom-side}
-# Create a custom side function that varies along the channel
-custom_side <- function(channel) {
-  n <- xt_n_sections(channel)
-  # Gradually shift from left to right bank erosion
-  seq(0.8, 0.2, length.out = n)
-}
+n <- xt_n_sections(channel)
+prop_left <- seq(0.8, 0.2, length.out = n)
+custom_side <- structure(
+  list(left = prop_left, right = 1 - prop_left),
+  class = "xchan_side"
+)
 
 channel_custom <- xt_widen(channel, dw = 2, side = custom_side)
 ```
@@ -110,16 +113,18 @@ channel_custom <- xt_widen(channel, dw = 2, side = custom_side)
 
 ### Volume from Width
 
-Calculate how much sediment volume would be removed for a given width increase:
+`xt_erosion_volume()` estimates volume removed for a given width increase; it
+requires profile cross sections and a widening that stays within each profile’s
+vertical extent (see the function documentation). With a channel that has
+profiles, for example:
 
-```{r erosion-volume}
-# Calculate erosion volume for 2-meter width increase
-volumes <- xt_erosion_volume(channel, width = 2, side = "both")
-volumes
-
-# With custom side function
-volumes_custom <- xt_erosion_volume(channel, width = 2, side = side_left(0.75))
-volumes_custom
+```{r erosion-volume, eval=FALSE}
+# volumes <- xt_erosion_volume(channel_with_profiles, dw = 1, side = "both")
+# volumes_custom <- xt_erosion_volume(
+#   channel_with_profiles,
+#   dw = 1,
+#   side = side_left(0.75)
+# )
 ```
 
 ### Width from Volume
@@ -153,15 +158,14 @@ data.frame(
 ### Complex Erosion Patterns
 
 ```{r complex-erosion}
-# Create a side function based on channel characteristics
-# For example, more erosion on outside of bends
-bend_side <- function(channel) {
-  n <- xt_n_sections(channel)
-  # Simulate a meandering pattern
-  sin_pattern <- sin(seq(0, 2*pi, length.out = n))
-  # Convert to proportions (0.3 to 0.7)
-  0.5 + 0.2 * sin_pattern
-}
+# Section-wise proportions (e.g. mimicking more erosion on one side along a bend)
+n <- xt_n_sections(channel)
+sin_pattern <- sin(seq(0, 2 * pi, length.out = n))
+prop_left <- 0.5 + 0.2 * sin_pattern
+bend_side <- structure(
+  list(left = prop_left, right = 1 - prop_left),
+  class = "xchan_side"
+)
 
 channel_bend <- xt_widen(channel, dw = 2, side = bend_side)
 ```
@@ -171,8 +175,8 @@ channel_bend <- xt_widen(channel, dw = 2, side = bend_side)
 ```{r visualize-widening}
 # Plot original and widened channels
 par(mfrow = c(1, 2))
-plot(channel, view = "plan", main = "Original Channel")
-plot(channel_widened, view = "plan", main = "Widened Channel")
+plot(channel, main = "Original Channel")
+plot(channel_widened, main = "Widened Channel")
 par(mfrow = c(1, 1))
 ```
 
@@ -182,7 +186,7 @@ This vignette covered:
 
 - Basic channel widening by width and volume
 - Simple and complex side specifications using side functions
-- Custom side function creation for specific scenarios
+- Section-wise side proportions via `xchan_side` objects
 - Erosion volume and width calculations
 - Variable widening patterns
 

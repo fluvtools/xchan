@@ -6,7 +6,7 @@
 #' but through lowest-point (`thalweg`) locations rather than mid-channel.
 #'
 #' @param channel Channel object with **both** planimetric cross sections and a
-#'   profile column (`xs_profile` list).
+#'   profile view (`xs_profile` list).
 #' @param axis Optional LINESTRING axis used to define downstream section order.
 #'   If `NULL`, uses `xt_axis(channel)`; if that is also `NULL`, an error is
 #'   raised (same ordering rules as [xt_trace_centerline()]).
@@ -38,7 +38,7 @@
 #' # plot(th)
 #' }
 xt_trace_thalwegline <- function(channel, axis = NULL) {
-  if (!is_channel(channel)) {
+  if (!xt_is_channel(channel)) {
     stop("Input must be a channel object", call. = FALSE)
   }
   if (!xt_has_profile(channel)) {
@@ -48,14 +48,14 @@ xt_trace_thalwegline <- function(channel, axis = NULL) {
     )
   }
 
-  plan <- xt_column_plan(channel)
-  profs <- xt_column_profile(channel)
+  plan <- channel_plan(channel)
+  profs <- channel_profile(channel)
   if (is.null(plan) || is.null(profs)) {
-    stop("Channel must have plan and profile columns.", call. = FALSE)
+    stop("Channel must have plan and profile geometry.", call. = FALSE)
   }
   n <- length(plan)
   if (length(profs) != n) {
-    stop("Length of plan and profile columns must match.", call. = FALSE)
+    stop("Length of plan and profile views must match.", call. = FALSE)
   }
 
   n_thal <- vapply(profs, function(p) length(p$thalwegs), integer(1))

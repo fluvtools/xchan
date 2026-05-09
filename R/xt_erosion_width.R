@@ -22,7 +22,7 @@ xt_erosion_width <- function(
   dv,
   side = "both"
 ) {
-  checkmate::assert_class(channel, "xchan")
+  checkmate::assert_class(channel, "xchan_tbl")
   unit <- crs_length_unit(channel)
   dv <- to_numeric_volume(dv, unit, arg = "dv")
   raw <- erosion_width_numeric(channel, dv, side)
@@ -31,7 +31,7 @@ xt_erosion_width <- function(
 
 #' @noRd
 erosion_width_numeric <- function(channel, dv, side = "both") {
-  profile <- xt_column_profile(channel)
+  profile <- channel_profile(channel)
   if (is.null(profile)) {
     stop("Channel object must have profile cross sections")
   }
@@ -50,9 +50,9 @@ erosion_width_numeric <- function(channel, dv, side = "both") {
     dv_left <- dv[i] * prop_left[i]
     dv_right <- dv[i] - dv_left
 
-    dw1 <- xt_erosion_width_left(xs, dv_left)
+    dw1 <- erosion_width_left(xs, dv_left)
     xs_flipped <- flip_profile(xs)
-    dw2 <- xt_erosion_width_left(xs_flipped, dv_right)
+    dw2 <- erosion_width_left(xs_flipped, dv_right)
 
     widths[i] <- dw1 + dw2
   }
@@ -60,7 +60,7 @@ erosion_width_numeric <- function(channel, dv, side = "both") {
   widths
 }
 
-xt_erosion_width_left <- function(xs, dv) {
+erosion_width_left <- function(xs, dv) {
   checkmate::assert_numeric(dv, 0, len = 1, any.missing = FALSE)
   if (dv == 0) {
     return(0)

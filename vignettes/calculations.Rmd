@@ -88,7 +88,7 @@ gradient <- xt_gradient(channel)
 gradient
 
 # With custom parameters
-gradient_custom <- xt_gradient(channel, .before = 2, .after = 2, .complete = FALSE)
+gradient_custom <- xt_gradient(channel, before = 2, after = 2, complete = FALSE)
 gradient_custom
 ```
 
@@ -108,12 +108,12 @@ gradient_custom
 
 ```{r downstream-distance}
 # Calculate downstream distances
-distances <- xt_distance_ds(channel)
+distances <- xt_distance_downstream(channel)
 distances
 
 # With a custom axis (sf LINESTRING)
 # axis_line <- ...  # user-defined line along the channel
-# distances_custom <- xt_distance_ds(channel, axis = axis_line)
+# distances_custom <- xt_distance_downstream(channel, axis = axis_line)
 ```
 
 ## Width Analysis
@@ -170,7 +170,7 @@ analysis_results <- data.frame(
   left_width = xt_width_lb(channel),
   right_width = xt_width_rb(channel),
   gradient = xt_gradient(channel),
-  distance = xt_distance_ds(channel)
+  distance = xt_distance_downstream(channel)
   # Add more calculations as needed
 )
 

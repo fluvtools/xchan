@@ -2,33 +2,57 @@
 % Please edit documentation in R/xt_elevation.R
 \name{xt_elevation}
 \alias{xt_elevation}
-\title{Get elevation values from a channel using elevation specification}
+\alias{xt_elevation.xchan_tbl}
+\alias{xt_elevation.xchan}
+\alias{xt_elevation.xsection}
+\alias{xt_elevation.default}
+\title{Get elevation values using an elevation specification}
 \usage{
-xt_elevation(channel, reference)
+xt_elevation(channel, reference, ...)
+
+\method{xt_elevation}{xchan_tbl}(channel, reference, ...)
+
+\method{xt_elevation}{xchan}(channel, reference, ...)
+
+\method{xt_elevation}{xsection}(channel, reference, ...)
+
+\method{xt_elevation}{default}(channel, reference, ...)
 }
 \arguments{
-\item{channel}{Channel object}
+\item{channel}{An \code{\link[=xt_as_channel]{xchan_tbl}}, \code{\link[=xchan]{xchan}}, or \code{\link[=xsection]{xsection}}
+object. Single-section inputs are wrapped for evaluation.}
 
-\item{reference}{Elevation specification}
+\item{reference}{An elevation specification from \code{\link[=elevation_thalweg]{elevation_thalweg()}} and related
+helpers (class \code{"xchan_elevation"}).}
+
+\item{...}{Reserved for methods (must be empty).}
 }
 \value{
-A vector of elevation values for each cross-section
+A numeric vector of elevations, one per cross section (length \code{nrow()} for
+tables, \code{length()} for \code{\link{xchan}}, or \code{1} for a single \code{\link{xsection}}).
+
+\strong{Order:} Values follow \strong{storage order only} — position \code{i} is always row \code{i} of the
+channel table (or \verb{[[i]]} of the \code{\link[=xchan]{xchan()}} list). There is \strong{no} sorting inside
+\code{xt_elevation()}. Reorder the table first (e.g. \code{\link[=xt_arrange_downstream]{xt_arrange_downstream()}} for increasing
+chainage along the axis from its current start; after \code{\link[=xt_reverse_flow]{xt_reverse_flow()}}, the stored axis
+is reversed so that sort follows hydrologic downstream).
 }
 \description{
-Get elevation values from a channel using elevation specification
+Get elevation values using an elevation specification
 }
 \details{
-This function extracts elevation values from a channel object using the specified
-elevation reference. The elevation specification determines how elevation values
-are calculated for each cross-section.
+Elevation specifications read each cross section's profile from the channel table or
+geometry container; profile geometry must exist when the chosen reference requires it.
 }
 \examples{
-# Get thalweg elevations
+# Get thalweg elevations (channel table)
 elevations <- xt_elevation(channel, reference = elevation_thalweg())
 
-# Get water surface elevations from a column
-elevations <- xt_elevation(channel, reference = elevation_column("water_surface"))
+# Same elevations from the `xchan` geometry column
+xc <- channel[[attr(channel, "xsection_col", exact = TRUE)]]
+elevations <- xt_elevation(xc, reference = elevation_thalweg())
 
-# Get mean bank elevations
-elevations <- xt_elevation(channel, reference = elevation_bank(.f = mean))
+# One section
+xs <- xc[[1]]
+z <- xt_elevation(xs, reference = elevation_thalweg())
 }

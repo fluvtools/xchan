@@ -28,18 +28,25 @@ This vignette covers creating channel objects from different data sources and ge
 ## Creating Channels from Different Inputs
 
 Use [xt_as_channel()] to **coerce** common inputs (widths, `sfc`, or a data
-frame with a **plan** column and optional profile column) to a channel.
-Use [xt_channel()] when you already have `sfc_LINESTRING` (and optionally
-`xs_profile` objects) ready to bind into a table, similar to [sf::st_sf()]. Set CRS
-on plan geometries with `sf::st_set_crs()` before constructing if needed.
+frame whose rows you pair with planimetric lines via `plan_col` and optional
+`profile_col`) into a channel table. Storage is always a single **`xsection`**
+list-column (plan plus optional profile per row); [channel_plan()] and
+[channel_profile()] are derived views of that column, not separate stored
+fields.
+
+When you already have `sfc_LINESTRING` transects (and optionally a same-length
+list of `xs_profile` objects), pass them to [xt_as_channel()] --- the `sfc`
+method binds plan and profiles into one `xsection` column per row, similar in
+spirit to [sf::st_sf()]. Set CRS on the geometries with `sf::st_set_crs()`
+before constructing if needed, or pass `crs` to [xt_as_channel()].
 
 When `xt_as_channel()` **creates** the table from a width vector or from `sfc`
 geometries, you can pass extra channel columns as further named arguments (like
-extra columns in `xt_channel()`). When you **already** have a data frame, add any
-extra variables as columns on that frame first, then call `xt_as_channel()` ---
-or use `xt_channel()` to bind plan, profile, and other columns in one step.
+extra columns in [base::data.frame()]). When you **already** have a data frame,
+add any extra variables as columns on that frame first, then call
+`xt_as_channel()` with `plan_col` / optional `profile_col`.
 
-When both plan and profile columns are supplied, construction checks that each
+When both plan and profile inputs are supplied, construction checks that each
 profile spans the same horizontal distance as its planimetric cross section
 (width from `xt_width()` matches between the two). The same [xt_width()]
 function also accepts a single `xs_profile` object if you need that width in
@@ -76,11 +83,11 @@ xt_width(channel)
 ### From Data Frames
 
 Put metadata and other fields on the data frame **before** coercing; optional
-CRS can be set on the plan column with `xt_as_channel(..., crs = )` or by
-setting CRS on the geometries beforehand.
+CRS can be set with `xt_as_channel(..., crs = )` or by setting CRS on the
+geometries beforehand (the channel stores CRS once on the cross-section column).
 
 ```{r df-input}
-# Data frame whose `plan` column holds LINESTRING geometries
+# Data frame with a column of LINESTRING geometries (coercion reads `plan_col`)
 df <- data.frame(
   station = c(0, 100, 200),
   roughness = c(0.03, 0.035, 0.025)
@@ -89,6 +96,7 @@ df$plan <- plan_sfc
 
 channel <- xt_as_channel(df, plan_col = "plan")
 channel
+# Planimetric lines: channel_plan(channel)
 ```
 
 ## Generating Channels from Banklines
@@ -97,12 +105,11 @@ channel
 
 ```{r bankline-generation}
 # Bankline polygon (package data)
-bl <- st_sfc(demo_bankline, crs = 3005)
-plot(bl, main = "Demo Bankline")
+plot(fraser_bankline, main = "Fraser demo bankline")
 
-# Channel whose plan column holds cross-section LINESTRINGs
-channel <- xt_generate_plan(bl, n = 20)
-plot(xt_column_plan(channel), add = TRUE, col = "blue")
+# Channel table with one xsection per row (plan from bankline sampling)
+channel <- xt_generate_plan(fraser_bankline, n = 20)
+plot(channel_plan(channel), add = TRUE, col = "blue")
 ```
 
 ### From DEM Data
@@ -113,7 +120,7 @@ plot(xt_column_plan(channel), add = TRUE, col = "blue")
 # profile <- xt_generate_profile(channel, dem = my_dem)
 
 # For now, we'll create a simple example
-# channel_with_profile <- xt_channel(channel, profile_col = profile)
+# channel_with_profile <- xt_as_channel(df, plan_col = "plan", profile_col = "profile")
 ```
 
 ## Generating Derived Geometries
@@ -123,7 +130,7 @@ plot(xt_column_plan(channel), add = TRUE, col = "blue")
 ```{r channel-axis}
 # Trace an axis along the channel from cross-section midpoints
 centerline <- xt_trace_centerline(channel)
-plot(channel, view = "plan")
+plot(channel)
 plot(centerline, add = TRUE, col = "red", lwd = 2)
 ```
 
@@ -133,11 +140,11 @@ Sometimes the auto-generated streamflow direction may be incorrect:
 
 ```{r reverse-flow}
 # Check current flow direction
-plot(channel, view = "plan")
+plot(channel)
 
 # Reverse flow direction if needed
 channel_reversed <- xt_reverse_flow(channel)
-plot(channel_reversed, view = "plan")
+plot(channel_reversed)
 ```
 
 ## Spatial Outputs
@@ -145,14 +152,13 @@ plot(channel_reversed, view = "plan")
 ### Converting to sf Objects
 
 ```{r spatial-outputs}
-# Convert channel to sf objects
+# Convert channel to sf objects (plan always; profile only if present)
 plan_sf <- xt_as_sf(channel, what = "plan")
-profile_sf <- xt_as_sf(channel, what = "profile")
-# three_d_sf <- xt_as_sf(channel, what = "3d")  # if both plan and profile exist
-
-# Work with sf objects
 class(plan_sf)
 plot(plan_sf)
+
+# profile_sf <- xt_as_sf(channel, what = "profile")
+# three_d_sf <- xt_as_sf(channel, what = "3d")
 ```
 
 ### Converting to sfc Objects
@@ -160,9 +166,8 @@ plot(plan_sf)
 ```{r sfc-outputs}
 # Convert to sfc objects (geometry only)
 plan_sfc <- xt_as_sfc(channel, what = "plan")
-profile_sfc <- xt_as_sfc(channel, what = "profile")
+# profile_sfc <- xt_as_sfc(channel, what = "profile")
 
-# Use in spatial operations
 st_length(plan_sfc)
 ```
 
@@ -171,14 +176,14 @@ st_length(plan_sfc)
 Check if objects are valid channels:
 
 ```{r validation}
-# Check if object is a channel
-is_channel(channel)
+# Check if object is a channel (table or xchan column container)
+xt_is_channel(channel)
 
 # Check if channel has profile cross sections
 xt_has_profile(channel)
 
 # Validate planimetric cross-sections
-xt_validate_plan(xt_column_plan(channel))
+validate_plan(channel_plan(channel))
 ```
 
 ## Working with Channel Components
@@ -187,13 +192,13 @@ xt_validate_plan(xt_column_plan(channel))
 
 ```{r column-access}
 # Get planimetric cross-sections
-plan <- xt_column_plan(channel)
+plan <- channel_plan(channel)
 
 # Get profile cross-sections (if they exist)
-# profile <- xt_column_profile(channel)
+# profile <- channel_profile(channel)
 
 # Replace plan geometries with a validated `sfc_LINESTRING`, for example:
-# xt_column_plan(channel) <- updated_plan_sfc
+# channel_plan(channel) <- updated_plan_sfc
 ```
 
 ### Plotting One Profile Cross Section
@@ -203,18 +208,20 @@ When you want to inspect one profile cross section from a channel, use
 profile object:
 
 ```{r one-profile-plot}
-# Extract one profile (row order) and plot it
-xs1 <- xt_profile_at(channel, 1)
-plot(xs1)
+# Extract one profile (row order) and plot it (requires profile geometry)
+coords <- matrix(c(-2, 10, 0, 8, 2, 10), ncol = 2, byrow = TRUE)
+xs <- xchan:::new_profile(coords, bankpoints = c(-2, 2))
+ch_prof <- xt_as_channel(c(4, 4), profile = list(xs, xs), crs = 3005)
+plot(xt_profile_at(ch_prof, 1))
 ```
 
 ## Summary
 
 This vignette covered:
 
-- Creating channels via coercion (`xt_as_channel()`) or explicit assembly (`xt_channel()`)
+- Creating channels via coercion with `xt_as_channel()`
 - Generating channels from banklines and DEMs
-- Creating derived geometries (channel axis, banklines)
+- Creating derived geometries (channel axis)
 - Correcting streamflow direction
 - Converting channels to spatial objects
 - Validating and accessing channel components

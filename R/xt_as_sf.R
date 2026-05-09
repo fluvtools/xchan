@@ -1,9 +1,9 @@
 #' Convert channel to spatial object
 #'
 #' Converts a channel object to an `sfc` or [`sf::sf`] object.
-#' For `xt_as_sf()`, columns other than the plan and profile list-columns are
-#' preserved in the attribute table; plan and profile columns are replaced by a
-#' single geometry column.
+#' For `xt_as_sf()`, columns other than the active cross-section geometry column
+#' are preserved in the attribute table; the selected spatial representation is
+#' written to a single geometry column.
 #'
 #' @param channel Channel object.
 #' @param what Type of spatial object to return: `"plan"` for map-view cross
@@ -13,7 +13,7 @@
 #' @param extent `"banks"` restricts geometry to the bank-to-bank span in each
 #'   representation; `"full"` uses the full sampled profile span (and for
 #'   `what = "plan"`, map segments spanning each profile's horizontal range).
-#'   For `what = "plan"` with `"full"`, if there is no profile column a warning
+#'   For `what = "plan"` with `"full"`, if there is no profile view a warning
 #'   is issued and bank-to-bank geometries are returned instead.
 #' @param geom_col Name of the geometry column in the resulting `sf` object.
 #' @returns For `xt_as_sfc()`, an `"sfc"` object. For `xt_as_sf()`, an `"sf"`
@@ -31,11 +31,11 @@ xt_as_sfc <- function(
   what = c("plan", "profile", "3d"),
   extent = c("banks", "full")
 ) {
-  checkmate::assert_class(channel, "xchan")
+  checkmate::assert_class(channel, "xchan_tbl")
   what <- match.arg(what)
   extent <- match.arg(extent)
 
-  plan <- xt_column_plan(channel)
+  plan <- channel_plan(channel)
   checkmate::assert_class(plan, "sfc")
 
   if (what == "plan") {
@@ -49,7 +49,7 @@ xt_as_sfc <- function(
       )
       return(plan)
     }
-    profiles <- xt_column_profile(channel)
+    profiles <- channel_profile(channel)
     geoms <- vector("list", length(plan))
     for (i in seq_along(plan)) {
       rng <- range(profiles[[i]]$coordinates[, 1])
@@ -58,21 +58,31 @@ xt_as_sfc <- function(
     return(sf::st_sfc(geoms, crs = sf::st_crs(plan)))
   }
 
-  profile <- xt_column_profile(channel)
+  profile <- channel_profile(channel)
   if (is.null(profile)) {
     stop("Profile geometry is not available for this channel object.", call. = FALSE)
   }
 
   if (what == "profile") {
-    profile_geoms <- lapply(profile, profile_linestring_for_extent, extent = extent)
+    profile_geoms <- lapply(
+      profile,
+      function(pr) profile_linestring_for_extent(pr, extent)
+    )
     return(sf::st_sfc(profile_geoms))
   }
 
-  coords_3d <- Map(
-    function(p, pr) create_3d_coords(p, pr, extent = extent),
-    plan,
-    profile
-  )
+  ext <- extent
+  coords_3d <- vector("list", length(plan))
+  for (i in seq_along(plan)) {
+    coords_3d[[i]] <- do.call(
+      create_3d_coords,
+      list(
+        plan = plan[[i]],
+        profile = profile[[i]],
+        extent = ext
+      )
+    )
+  }
   sf::st_sfc(coords_3d, crs = sf::st_crs(plan))
 }
 
@@ -84,15 +94,14 @@ xt_as_sf <- function(
   extent = c("banks", "full"),
   geom_col = "geometry"
 ) {
-  checkmate::assert_class(channel, "xchan")
+  checkmate::assert_class(channel, "xchan_tbl")
   what <- match.arg(what)
   extent <- match.arg(extent)
 
   geometry <- xt_as_sfc(channel, what = what, extent = extent)
 
-  plan_nm <- attr(channel, "plan_col", exact = TRUE)
-  prof_nm <- attr(channel, "profile_col", exact = TRUE)
-  drop <- unique(stats::na.omit(c(plan_nm, prof_nm)))
+  xsec_nm <- attr(channel, "xsection_col", exact = TRUE)
+  drop <- unique(stats::na.omit(c(xsec_nm)))
   keep <- setdiff(names(channel), drop)
   if (geom_col %in% keep) {
     stop(

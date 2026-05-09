@@ -1,6 +1,6 @@
 test_that("xt_exaggerate_relief(xs_profile) scales height above thalweg", {
   coords <- matrix(c(-2, 10, 0, 8, 2, 12), ncol = 2, byrow = TRUE)
-  xs <- xt_profile(coords, bankpoints = c(-2, 2))
+  xs <- xchan:::new_profile(coords, bankpoints = c(-2, 2))
 
   out <- xt_exaggerate_relief(xs, times = 2)
 
@@ -9,9 +9,9 @@ test_that("xt_exaggerate_relief(xs_profile) scales height above thalweg", {
   expect_equal(out$coordinates[, 2], c(12, 8, 16))
 })
 
-test_that("xt_exaggerate_relief(xchan) updates all profiles", {
+test_that("xt_exaggerate_relief(xchan_tbl) updates all profiles", {
   coords <- matrix(c(-2, 10, 0, 8, 2, 12), ncol = 2, byrow = TRUE)
-  xs <- xt_profile(coords, bankpoints = c(-2, 2))
+  xs <- xchan:::new_profile(coords, bankpoints = c(-2, 2))
   ch <- xt_as_channel(
     c(4, 4),
     profile = list(xs, xs),
@@ -19,9 +19,9 @@ test_that("xt_exaggerate_relief(xchan) updates all profiles", {
   )
 
   out <- xt_exaggerate_relief(ch)
-  prof <- xt_column_profile(out)
+  prof <- channel_profile(out)
 
-  expect_s3_class(out, "xchan")
+  expect_s3_class(out, "xchan_tbl")
   expect_equal(prof[[1]]$coordinates[, 2], c(12, 8, 16))
   expect_equal(prof[[2]]$coordinates[, 2], c(12, 8, 16))
 })

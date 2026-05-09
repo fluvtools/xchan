@@ -29,7 +29,7 @@ mapping profile elevations onto plan coordinates (same CRS as the plan).}
 \item{extent}{\code{"banks"} restricts geometry to the bank-to-bank span in each
 representation; \code{"full"} uses the full sampled profile span (and for
 \code{what = "plan"}, map segments spanning each profile's horizontal range).
-For \code{what = "plan"} with \code{"full"}, if there is no profile column a warning
+For \code{what = "plan"} with \code{"full"}, if there is no profile view a warning
 is issued and bank-to-bank geometries are returned instead.}
 
 \item{geom_col}{Name of the geometry column in the resulting \code{sf} object.}
@@ -40,9 +40,9 @@ object whose geometry column holds the requested representation.
 }
 \description{
 Converts a channel object to an \code{sfc} or \code{\link[sf:sf]{sf::sf}} object.
-For \code{xt_as_sf()}, columns other than the plan and profile list-columns are
-preserved in the attribute table; plan and profile columns are replaced by a
-single geometry column.
+For \code{xt_as_sf()}, columns other than the active cross-section geometry column
+are preserved in the attribute table; the selected spatial representation is
+written to a single geometry column.
 }
 \examples{
 xt_as_sf(demo_channel, what = "profile")

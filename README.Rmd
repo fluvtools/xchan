@@ -25,6 +25,12 @@ The purpose of xchan is to create and manipulate watercourse geometries, with a 
 
 The name of the package is inspired by the sf package. Functions in xchan start with a common prefix, `xt`, which stands for "cross-section type"; this is intended to parallel the sf package's function prefix, `st`, which stands for "spatial type".
 
+**Data model.** A channel is a data frame (`xchan_tbl`) with one row per cross
+section. Each row stores an `xsection` (planimetric geometry and optional
+long-profile data). `channel_plan()` and `channel_profile()` return derived
+views for plotting and analysis; CRS is held once on the channel, like an `sfc`
+collection.
+
 ## Installation
 
 You can install the development version of xchan from [GitHub](https://github.com/) with:

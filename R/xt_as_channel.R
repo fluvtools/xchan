@@ -1,27 +1,26 @@
 #' Coerce to a channel object (`xchan`)
 #'
 #' Convert widths, line geometries, or a data frame into a channel object.
-#' This is the coercion analogue of [xt_channel()], which **constructs** a
-#' channel from planimetric (and optional profile) columns. Coercion methods
-#' always attach a plan column; profile remains optional.
+#' This is the primary way to obtain a channel table from widths, geometries,
+#' or tabular inputs. Coercion methods attach an `xsection` geometry column,
+#' with CRS stored at the channel-geometry container level.
 #'
 #' **Extra columns (`...`):** When the method **builds** the channel table from
 #' widths or geometries (`numeric`, `sfc`, `sfg`), named arguments in `...`
-#' become extra columns (same recycling as [xt_channel()]). When you **already
-#' have a data frame**, add variables as columns on that table first, then call
-#' `xt_as_channel()` --- `...` is not used there (see [xt_channel()] if you need
-#' to assemble plan/profile from vectors in one call).
+#' become extra columns (recycled with [vctrs::vec_recycle_common()], like
+#' [base::data.frame()]). When you **already have a data frame**, add variables
+#' as columns on that table first, then call `xt_as_channel()` --- `...` is not used there.
 #'
 #' @param x Object to coerce (numeric vector of widths, `sfc`, `data.frame`, or
-#'   existing `xchan`).
+#'   existing `xchan`/`xchan_tbl`).
 #' @param ... Used only by `numeric`, `sfc`, and `sfg` methods: named arguments
-#'   become extra columns in the channel table (recycled like [xt_channel()]).
+#'   become extra columns in the channel table (recycled like [base::data.frame()]).
 #'   Not used when coercing a `data.frame` (must be empty). Ignored when coercing
 #'   an existing `xchan`, with a warning if non-empty.
 #'
-#' @returns An object of class `"xchan"`.
+#' @returns An object of class `"xchan_tbl"`.
 #'
-#' @seealso [xt_channel()]
+#' @seealso [xchan()], [xsection()]
 #'
 #' @examples
 #' # Synthetic widths (integer positions along the channel)
@@ -116,15 +115,12 @@ xt_as_channel.numeric <- function(
     plan <- build_plan_from_widths_axis(x, axis_obj)
   }
 
-  args <- c(list(plan = plan), rlang::dots_list(...))
+  xsec <- xchan_from_plan_profile(plan, profile)
+  xsec <- `xchan_crs<-`(xsec, sf::st_crs(plan))
+  args <- c(list(xsection = xsec), rlang::dots_list(...))
   df <- rlang::exec(create_data_frame, !!!args)
-  prof_col <- NULL
-  if (!is.null(profile)) {
-    prof_col <- "profile"
-    df$profile <- profile
-  }
-  out <- new_channel(df, plan_col = "plan", profile_col = prof_col, axis = axis_obj)
-  xt_validate_plan_profile_widths(out)
+  out <- new_channel(df, xsection_col = "xsection", axis = axis_obj)
+  validate_plan_profile_widths(out)
   out
 }
 
@@ -166,39 +162,54 @@ xt_as_channel.sfc <- function(x, ..., profile = NULL, crs = NULL, axis = NULL) {
     x <- sf::st_cast(x, "LINESTRING")
   }
 
-  args <- c(list(plan = x), rlang::dots_list(...))
+  xsec <- xchan_from_plan_profile(x, profile)
+  xsec <- `xchan_crs<-`(xsec, sf::st_crs(x))
+  args <- c(list(xsection = xsec), rlang::dots_list(...))
   df <- rlang::exec(create_data_frame, !!!args)
-  prof_col <- NULL
-  if (!is.null(profile)) {
-    prof_col <- "profile"
-    df$profile <- profile
-  }
   axis_obj <- if (!is.null(axis)) validate_axis_sf(axis, sf::st_crs(x)) else NULL
-  out <- new_channel(df, plan_col = "plan", profile_col = prof_col, axis = axis_obj)
-  xt_validate_plan_profile_widths(out)
+  out <- new_channel(df, xsection_col = "xsection", axis = axis_obj)
+  validate_plan_profile_widths(out)
   out
 }
 
 #' @rdname xt_as_channel
 #' @param plan_col Name of the column holding planimetric `sfc_LINESTRING`
-#'   geometries (required).
-#' @param profile_col Name of the profile list-column, if any.
+#'   geometries. Ignored when `xsection_col` is supplied.
+#' @param profile_col Name of the profile column, if any, when constructing
+#'   `xsection` objects from `plan_col`.
+#' @param xsection_col Name of column holding `xchan` cross-section geometry.
 #' @export
 xt_as_channel.data.frame <- function(
   x,
   plan_col,
   ...,
   profile_col = NULL,
+  xsection_col = NULL,
   crs = NULL,
   axis = NULL
 ) {
   if (...length() > 0) {
     stop("`...` is not used when coercing a data frame.")
   }
+  if (!is.null(xsection_col)) {
+    if (!xsection_col %in% names(x)) {
+      stop("Cross-section column '", xsection_col, "' not found in data frame")
+    }
+    if (!inherits(x[[xsection_col]], "xchan")) {
+      stop("`xsection_col` must contain an `xchan` object.", call. = FALSE)
+    }
+    if (!is.null(crs)) {
+      x[[xsection_col]] <- `xchan_crs<-`(x[[xsection_col]], crs)
+    }
+    xcrs <- xchan_crs(x[[xsection_col]])
+    axis_obj <- if (!is.null(axis)) validate_axis_sf(axis, xcrs) else NULL
+    out <- new_channel(x, xsection_col = xsection_col, axis = axis_obj)
+    validate_plan_profile_widths(out)
+    return(out)
+  }
+
   if (missing(plan_col) || is.null(plan_col)) {
-    stop(
-      "`plan_col` must name the column containing planimetric cross sections."
-    )
+    stop("Provide either `xsection_col` or `plan_col`.", call. = FALSE)
   }
   if (!plan_col %in% names(x)) {
     stop("Plan column '", plan_col, "' not found in data frame")
@@ -207,18 +218,23 @@ xt_as_channel.data.frame <- function(
     stop("Profile column '", profile_col, "' not found in data frame")
   }
 
+  plan <- x[[plan_col]]
+  if (!inherits(plan, "sfc_LINESTRING")) {
+    plan <- sf::st_cast(plan, "LINESTRING")
+  }
   if (!is.null(crs)) {
-    x[[plan_col]] <- sf::st_set_crs(x[[plan_col]], crs)
+    plan <- sf::st_set_crs(plan, crs)
   }
+  profile <- if (!is.null(profile_col)) x[[profile_col]] else NULL
+  xsec <- xchan_from_plan_profile(plan, profile)
+  xsec <- `xchan_crs<-`(xsec, sf::st_crs(plan))
+  x[["xsection"]] <- xsec
+  if (plan_col %in% names(x)) x[[plan_col]] <- NULL
+  if (!is.null(profile_col) && profile_col %in% names(x)) x[[profile_col]] <- NULL
 
-  axis_obj <- if (!is.null(axis)) {
-    validate_axis_sf(axis, sf::st_crs(x[[plan_col]]))
-  } else {
-    NULL
-  }
-
-  out <- new_channel(x, plan_col = plan_col, profile_col = profile_col, axis = axis_obj)
-  xt_validate_plan_profile_widths(out)
+  axis_obj <- if (!is.null(axis)) validate_axis_sf(axis, sf::st_crs(plan)) else NULL
+  out <- new_channel(x, xsection_col = "xsection", axis = axis_obj)
+  validate_plan_profile_widths(out)
   out
 }
 
@@ -231,14 +247,34 @@ xt_as_channel.xchan <- function(x, ..., crs = NULL) {
       call. = FALSE
     )
   }
+  if (!is.null(crs)) {
+    x <- `xchan_crs<-`(x, crs)
+  }
+  out <- new_channel(
+    create_data_frame(xsection = x),
+    xsection_col = "xsection"
+  )
+  validate_plan_profile_widths(out)
+  out
+}
+
+#' @rdname xt_as_channel
+#' @export
+xt_as_channel.xchan_tbl <- function(x, ..., crs = NULL) {
+  if (...length() > 0) {
+    warning(
+      "extra arguments are ignored when coercing an existing `xchan_tbl` object",
+      call. = FALSE
+    )
+  }
   if (is.null(crs)) {
     return(x)
   }
-  pc <- attr(x, "plan_col", exact = TRUE)
-  if (is.null(pc)) {
+  xcol <- attr(x, "xsection_col", exact = TRUE)
+  if (!is.null(xcol) && xcol %in% names(x)) {
+    x[[xcol]] <- `xchan_crs<-`(x[[xcol]], crs)
     return(x)
   }
-  x[[pc]] <- sf::st_set_crs(x[[pc]], crs)
   x
 }
 
@@ -248,7 +284,7 @@ xt_as_channel.default <- function(x, ...) {
   stop(
     "Can't coerce an object of class ",
     paste(class(x), collapse = "/"),
-    " to a channel; use `xt_channel()` or define an S3 method.",
+    " to a channel; use `xt_as_channel()` or define an S3 method.",
     call. = FALSE
   )
 }

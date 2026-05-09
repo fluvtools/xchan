@@ -22,11 +22,11 @@
 #' plot(centerline, col = "red", lwd = 2)
 #' @export
 xt_trace_centerline <- function(channel, axis = NULL) {
-  if (!is_channel(channel)) {
+  if (!xt_is_channel(channel)) {
     stop("Input must be a channel object")
   }
 
-  plan <- xt_column_plan(channel)
+  plan <- channel_plan(channel)
   if (is.null(plan)) {
     stop("Channel object must have planimetric cross sections")
   }

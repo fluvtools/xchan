@@ -1,4 +1,4 @@
-xt_nodes_channel <- function(profile) {
+nodes_channel <- function(profile) {
   checkmate::assert_class(profile, "xs_profile")
   nodes <- profile$coordinates
   i_left <- get_left_bank_index(profile) + 1L
@@ -33,7 +33,7 @@ i_channel <- function(nodes, x_left, x_right) {
   i_left:i_right
 }
 
-`xt_nodes_channel<-` <- function(profile, value) {
+`nodes_channel<-` <- function(profile, value) {
   checkmate::assert_class(profile, "xs_profile")
   checkmate::assert_matrix(value, ncol = 2L, min.rows = 1L, mode = "numeric")
   nodes <- profile$coordinates

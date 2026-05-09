@@ -1,13 +1,19 @@
 #' Channel axis (LINESTRING)
 #'
 #' Get or set the reference axis used for downstream distance and ordering:
-#' [xt_trace_centerline()], [xt_arrange_downstream()], [xt_distance_ds()],
+#' [xt_trace_centerline()], [xt_arrange_downstream()], [xt_distance_downstream()],
 #' [xt_gradient()], etc. Channels built with [xt_generate_plan()] store the
 #' sampling axis automatically.
 #'
-#' @param channel An object of class `"xchan"`.
+#' @param channel An \code{xchan_tbl} object (the channel table), not a
+#'   bare \link[=xchan]{xchan} geometry vector.
 #' @param value A single **LINESTRING** as `sfc` or `sfg`, same CRS as the plan
 #'   column (else transformed with a warning).
+#'
+#' @details
+#' The axis is **reach-scale** geometry (one polyline along the channel). It is
+#' stored only on the `xchan_tbl` wrapper (attribute `"axis"`), not duplicated
+#' onto each `xchan` row. Call `xt_axis(bar)`, not `xt_axis(bar$xsection)`.
 #'
 #' @returns For `xt_axis()`, the stored `sfc_LINESTRING` or `NULL`. For
 #'   assignment, an updated channel with attribute `axis`.
@@ -22,22 +28,77 @@
 #' plot(ax)
 #' }
 xt_axis <- function(channel) {
-  checkmate::assert_class(channel, "xchan")
+  UseMethod("xt_axis")
+}
+
+#' @rdname xt_axis
+#' @export
+xt_axis.xchan_tbl <- function(channel) {
+  checkmate::assert_class(channel, "xchan_tbl")
   attr(channel, "axis", exact = TRUE)
 }
 
 #' @rdname xt_axis
 #' @export
+xt_axis.xchan <- function(channel) {
+  stop(
+    "The channel axis is stored on the channel table (`xchan_tbl`), not on ",
+    "individual cross-section geometry (`xchan`). Use `xt_axis(<tbl>)` ",
+    "(e.g. `xt_axis(bar)` instead of `xt_axis(bar$xsection)`).",
+    call. = FALSE
+  )
+}
+
+#' @rdname xt_axis
+#' @export
+xt_axis.default <- function(channel) {
+  stop(
+    "`xt_axis()` expects an `xchan_tbl`. Got class(es): ",
+    paste(class(channel), collapse = ", "),
+    ".",
+    call. = FALSE
+  )
+}
+
+#' @rdname xt_axis
+#' @export
 `xt_axis<-` <- function(channel, value) {
-  checkmate::assert_class(channel, "xchan")
+  UseMethod("xt_axis<-")
+}
+
+#' @rdname xt_axis
+#' @export
+`xt_axis<-.xchan_tbl` <- function(channel, value) {
+  checkmate::assert_class(channel, "xchan_tbl")
   if (is.null(value)) {
     attr(channel, "axis") <- NULL
     return(channel)
   }
-  pc <- attributes(channel)$plan_col
-  crs_hint <- if (!is.null(pc)) sf::st_crs(channel[[pc]]) else NULL
+  plan <- channel_plan(channel)
+  crs_hint <- if (!is.null(plan)) sf::st_crs(plan) else NULL
   attr(channel, "axis") <- validate_axis_sf(value, crs_hint)
   channel
+}
+
+#' @rdname xt_axis
+#' @export
+`xt_axis<-.xchan` <- function(channel, value) {
+  stop(
+    "Assign the axis on the `xchan_tbl`, not on `xchan` geometry: ",
+    "`xt_axis(bar) <- value`, not `xt_axis(bar$xsection) <- value`.",
+    call. = FALSE
+  )
+}
+
+#' @rdname xt_axis
+#' @export
+`xt_axis<-.default` <- function(channel, value) {
+  stop(
+    "`xt_axis<-()` expects an `xchan_tbl`. Got class(es): ",
+    paste(class(channel), collapse = ", "),
+    ".",
+    call. = FALSE
+  )
 }
 
 #' @noRd
@@ -82,7 +143,7 @@ plan_midpoints_sfc <- function(plan) {
 
 #' @noRd
 resolve_channel_axis <- function(channel, axis = NULL, axis_arg_name = "axis") {
-  plan <- xt_column_plan(channel)
+  plan <- channel_plan(channel)
   crs <- sf::st_crs(plan)
   if (!is.null(axis)) {
     return(validate_axis_sf(axis, crs))

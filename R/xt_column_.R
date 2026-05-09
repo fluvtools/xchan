@@ -1,52 +1,65 @@
-#' Extract or replace the profile or plan column in a channel object
+#' Plan/profile helpers for channel objects
 #'
-#' This function allows you to extract or replace the profile or plan column
-#' in a channel object of class `xchan`. The profile column contains
-#' xs_profile objects, while the plan column contains sfc_LINESTRING objects.
+#' Access planimetric and profile cross-section views from a channel object.
+#' Channel rows store one `xsection` object in the active cross-section column.
 #'
-#' @param channel An object of class `xchan` containing cross-section data.
-#' @param value For profile, a list of "xs_profile" objects; for plan, a list of
-#' "sfc_LINESTRING" objects. If `NULL`, the column is removed.
-#' @returns
-#' For `xt_column_*()`, extracts the requested column from the
-#' channel data frame. For plan view, this is an "sfc" object, which is a list
-#' of sf_LINESTRINGs from the sf package. For profile view, this is a list of
-#' of "xs_profile" objects.
+#' @name channel_views
+#' @param channel An object of class `xchan_tbl`.
+#' @param value For profile, a list of `xs_profile` objects (or `NULL` to drop
+#'   profile from all sections); for plan, an `sfc_LINESTRING` object.
+#' @returns Derived plan/profile views, or the updated channel on assignment.
+#' @keywords internal
+#' @noRd
+NULL
+
+#' Extract or replace plan/profile views from channel sections
 #'
-#' For `xt_column_*<-`, the original `channel` objects with the specified
-#' column updated (or removed if `NULL` for the profile column only). Plan
-#' columns cannot be removed: every `xchan` object must retain planimetric cross
-#' sections.
-#' @rdname xt_column
-xt_column_profile <- function(channel) {
-  checkmate::assert_class(channel, "xchan")
-  profile_col <- attributes(channel)$profile_col
-  if (is.null(profile_col)) {
-    return(NULL)
+#' Channel rows store one `xsection` object in the active cross-section column.
+#' `channel_plan()` and `channel_profile()` provide derived plan/profile views
+#' from those `xsection` objects.
+#'
+#' @param channel An object of class `xchan_tbl`.
+#' @param value For profile, a list of `xs_profile` objects (or `NULL` to drop
+#'   profile from all sections); for plan, an `sfc_LINESTRING` object.
+#' @returns Derived plan/profile views, or the updated channel on assignment.
+#' @noRd
+get_xsection_col <- function(channel) {
+  col <- attr(channel, "xsection_col", exact = TRUE)
+  if (!is.null(col) && col %in% names(channel)) {
+    return(col)
   }
-  channel[[profile_col]]
+  NULL
 }
 
-#' @rdname xt_column
-xt_column_plan <- function(channel) {
-  checkmate::assert_class(channel, "xchan")
-  plan_col <- attributes(channel)$plan_col
-  if (is.null(plan_col)) {
-    return(NULL)
+#' @noRd
+channel_profile <- function(channel) {
+  checkmate::assert_class(channel, "xchan_tbl")
+  xcol <- get_xsection_col(channel)
+  if (!is.null(xcol)) {
+    return(xchan_to_profile(channel[[xcol]]))
   }
-  channel[[plan_col]]
+  NULL
 }
 
-#' @rdname xt_column
-`xt_column_profile<-` <- function(channel, value) {
-  checkmate::assert_class(channel, "xchan")
-  profile_colname <- attributes(channel)$profile_col
+#' @noRd
+channel_plan <- function(channel) {
+  checkmate::assert_class(channel, "xchan_tbl")
+  xcol <- get_xsection_col(channel)
+  if (!is.null(xcol)) {
+    return(xchan_to_plan(channel[[xcol]]))
+  }
+  NULL
+}
+
+#' @noRd
+set_channel_profile <- function(channel, value) {
+  checkmate::assert_class(channel, "xchan_tbl")
+  xcol <- get_xsection_col(channel)
+  if (is.null(xcol)) {
+    stop("Profile replacement requires channel with `xsection` column.", call. = FALSE)
+  }
   if (is.null(value)) {
-    if (is.null(profile_colname)) {
-      return(channel)
-    }
-    channel[[profile_colname]] <- NULL
-    attributes(channel)$profile_col <- NULL
+    channel[[xcol]] <- xchan_with_profile(channel[[xcol]], NULL)
     return(channel)
   }
   if (!is.list(value)) {
@@ -60,21 +73,18 @@ xt_column_plan <- function(channel) {
       paste(invalid_indices, collapse = ", ")
     )
   }
-
-  if (is.null(profile_colname)) {
-    profile_colname <- "profile"
-    attributes(channel)$profile_col <- profile_colname
-  }
-
-  channel[[profile_colname]] <- value
-  xt_validate_plan_profile_widths(channel)
+  channel[[xcol]] <- xchan_with_profile(channel[[xcol]], value)
+  validate_plan_profile_widths(channel)
   channel
 }
 
-#' @rdname xt_column
-`xt_column_plan<-` <- function(channel, value) {
-  checkmate::assert_class(channel, "xchan")
-  plan_colname <- attributes(channel)$plan_col
+#' @noRd
+set_channel_plan <- function(channel, value) {
+  checkmate::assert_class(channel, "xchan_tbl")
+  xcol <- get_xsection_col(channel)
+  if (is.null(xcol)) {
+    stop("Plan replacement requires channel with `xsection` column.", call. = FALSE)
+  }
   if (is.null(value)) {
     stop(
       "Cannot remove planimetric cross sections from a channel.",
@@ -82,19 +92,14 @@ xt_column_plan <- function(channel) {
     )
   }
 
-  validation_result <- xt_validate_plan(value)
+  validation_result <- validate_plan(value)
   if (!validation_result$valid) {
     stop(
       "Invalid plan view cross sections: ",
       paste(validation_result$issues, collapse = "; ")
     )
   }
-
-  if (is.null(plan_colname)) {
-    plan_colname <- "plan"
-    attributes(channel)$plan_col <- plan_colname
-  }
-  channel[[plan_colname]] <- value
-  xt_validate_plan_profile_widths(channel)
+  channel[[xcol]] <- xchan_with_plan(channel[[xcol]], value)
+  validate_plan_profile_widths(channel)
   channel
 }

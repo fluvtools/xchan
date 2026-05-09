@@ -2,35 +2,46 @@
 % Please edit documentation in R/xt_erosion_volume.R
 \name{xt_erosion_volume}
 \alias{xt_erosion_volume}
-\title{Calculate Erosion Volume from Width Change}
+\alias{xt_erosion_volume.xchan_tbl}
+\alias{xt_erosion_volume.xchan}
+\alias{xt_erosion_volume.xsection}
+\alias{xt_erosion_volume.default}
+\title{Calculate erosion volume from width change}
 \usage{
-xt_erosion_volume(channel, width, side = "both")
+xt_erosion_volume(channel, dw, side = "both")
+
+\method{xt_erosion_volume}{xchan_tbl}(channel, dw, side = "both")
+
+\method{xt_erosion_volume}{xchan}(channel, dw, side = "both")
+
+\method{xt_erosion_volume}{xsection}(channel, dw, side = "both")
+
+\method{xt_erosion_volume}{default}(channel, dw, side = "both")
 }
 \arguments{
-\item{channel}{Channel object}
+\item{channel}{An \code{\link[=xt_as_channel]{xchan_tbl}}, \code{\link[=xchan]{xchan}}, or \code{\link[=xsection]{xsection}}
+with profile geometry.}
 
-\item{width}{Change in width; single positive value or vector matching the
-number of cross sections. Plain numeric is interpreted in the channel's
-CRS length unit; a \code{\link[units:units]{units::units()}} length object is converted
-automatically (for example \code{units::set_units(10, "ft")} against a metric
-channel).}
+\item{dw}{Change in width; for \code{\link[=xsection]{xsection}}, a single positive value. For
+\code{xchan_tbl} / \code{\link[=xchan]{xchan}}, a single value recycled to every section or
+one value per cross section. Plain numeric uses the channel CRS length unit;
+\code{\link[units:units]{units::units()}} lengths are converted automatically.}
 
-\item{side}{A side specification controlling how widening is split between
-left and right banks. Supply either a side object from \code{\link[=side_left]{side_left()}},
-\code{\link[=side_right]{side_right()}}, or \code{\link[=side_both]{side_both()}}, or a shorthand string: \code{"left"},
-\code{"right"}, or \code{"both"}.}
+\item{side}{A side specification controlling how widening is split between left and right
+banks: \code{\link[=side_left]{side_left()}}, \code{\link[=side_right]{side_right()}}, \code{\link[=side_both]{side_both()}}, or \code{"left"}, \code{"right"}, \code{"both"}.}
 }
 \value{
-A numeric vector of erosion volumes for each cross-section in the
-channel, carrying \code{\link[units:units]{units::units()}} of (CRS length unit)^3 when the
-channel has a CRS with a defined linear unit.
+For \code{xchan_tbl} and \code{xchan}, a numeric vector of erosion volumes (one per row /
+section). For \code{xsection}, length-one vector. Values carry \code{\link[units:units]{units::units()}} of (CRS length
+unit)^3 when a linear CRS unit is defined.
 }
 \description{
-This function calculates the erosion volume for each cross-section in
-a channel given a specified width change, distributing the change
-according to a given scheme.
+Estimates volume removed per cross section for a given total width increase \code{dw},
+split between banks according to \code{side}.
 }
 \examples{
-xt_erosion_volume(channel, width = 10, side = "left")
-xt_erosion_volume(channel, width = 10, side = side_left(0.75))
+\donttest{
+xt_erosion_volume(channel, dw = 10, side = "left")
+xt_erosion_volume(channel, dw = 10, side = side_left(0.75))
+}
 }
