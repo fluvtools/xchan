@@ -1,6 +1,6 @@
 #' Erode a 2D cross section
 #'
-#' @param xs A single 2D cross section.
+#' @param profile A single 2D cross section (`xs_profile`).
 #' @param dw Change in width; single positive numeric.
 #' @param prop_left Proportion of erosion occuring on the left bank
 #' (the right bank will have `1 - prop_left` of the change in width).

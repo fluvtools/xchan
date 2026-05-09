@@ -37,14 +37,11 @@ thalweg_elev <- elevation_thalweg()
 # Bank elevation (using minimum bank height by default)
 bank_elev <- elevation_bank()
 
-# Constant elevation
-constant_elev <- elevation_constant(100)
-
 # Column-based elevation (if channel has elevation columns)
 # column_elev <- elevation_column("water_surface")
 
 # Bottom elevation (average of channel bottom)
-bottom_elev <- elevation_bottom()
+#bottom_elev <- elevation_bottom()
 ```
 
 ### Using Elevation Specifications
@@ -183,22 +180,30 @@ analysis_results
 # Summary statistics
 summary_stats <- data.frame(
   metric = c("Width", "Left Width", "Right Width", "Gradient"),
-  mean = c(mean(xt_width(channel)), 
-           mean(xt_width_lb(channel)), 
-           mean(xt_width_rb(channel)), 
-           mean(xt_gradient(channel), na.rm = TRUE)),
-  sd = c(sd(xt_width(channel)), 
-         sd(xt_width_lb(channel)), 
-         sd(xt_width_rb(channel)), 
-         sd(xt_gradient(channel), na.rm = TRUE)),
-  min = c(min(xt_width(channel)), 
-          min(xt_width_lb(channel)), 
-          min(xt_width_rb(channel)), 
-          min(xt_gradient(channel), na.rm = TRUE)),
-  max = c(max(xt_width(channel)), 
-          max(xt_width_lb(channel)), 
-          max(xt_width_rb(channel)), 
-          max(xt_gradient(channel), na.rm = TRUE))
+  mean = c(
+    mean(xt_width(channel)),
+    mean(xt_width_lb(channel)),
+    mean(xt_width_rb(channel)),
+    mean(xt_gradient(channel), na.rm = TRUE)
+  ),
+  sd = c(
+    sd(xt_width(channel)),
+    sd(xt_width_lb(channel)),
+    sd(xt_width_rb(channel)),
+    sd(xt_gradient(channel), na.rm = TRUE)
+  ),
+  min = c(
+    min(xt_width(channel)),
+    min(xt_width_lb(channel)),
+    min(xt_width_rb(channel)),
+    min(xt_gradient(channel), na.rm = TRUE)
+  ),
+  max = c(
+    max(xt_width(channel)),
+    max(xt_width_lb(channel)),
+    max(xt_width_rb(channel)),
+    max(xt_gradient(channel), na.rm = TRUE)
+  )
 )
 
 summary_stats
