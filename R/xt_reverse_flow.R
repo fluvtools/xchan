@@ -11,15 +11,30 @@
 #' vertex now corresponds to what was the right bank (and vice versa). Profile
 #' cross sections, when present, are flipped with `flip_profile()` so signed
 #' distances across the section stay aligned with the plan. When there is no
-#' profile column, only the planimetric geometries are updated.
-#' @note While the channel flow direction is reversed, the original order
-#' of the rows in the `channel` data frame is preserved.
+#' profile geometry, only the planimetric geometries are updated.
+#'
+#' If a channel axis is stored ([xt_axis()]), it is reversed end-for-end with [sf::st_reverse()]
+#' so downstream distance ([xt_distance_downstream()]) is still measured from the **start** of the
+#' axis line — which is now the opposite physical end of the reach. Cross sections keep the
+#' same projected positions along the same geographic line, but chainage is recomputed from
+#' the new zero at the former downstream end. Then [xt_arrange_downstream()] sorts by
+#' increasing chainage along **hydrologic** downstream after the reversal (for example order
+#' D, C, B, A instead of A, B, C, D when those letters ran upstream-to-downstream before).
+#' Row order of the table is unchanged by this function.
+#' @note Summaries that treat left and right symmetrically (e.g. [elevation_bank()] with
+#' default `min`) are unchanged until you reorder rows.
 #' @export
 xt_reverse_flow <- function(channel) {
-  xt_column_plan(channel) <- flip_plan(xt_column_plan(channel))
+  channel <- set_channel_plan(channel, flip_plan(channel_plan(channel)))
   if (xt_has_profile(channel)) {
-    profiles <- xt_column_profile(channel)
-    xt_column_profile(channel) <- lapply(profiles, flip_profile)
+    channel <- set_channel_profile(
+      channel,
+      lapply(channel_profile(channel), flip_profile)
+    )
+  }
+  ax <- attr(channel, "axis", exact = TRUE)
+  if (!is.null(ax)) {
+    attr(channel, "axis") <- sf::st_reverse(ax)
   }
   channel
 }

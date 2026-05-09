@@ -8,7 +8,7 @@ xt_trace_thalwegline(channel, axis = NULL)
 }
 \arguments{
 \item{channel}{Channel object with \strong{both} planimetric cross sections and a
-profile column (\code{xs_profile} list).}
+profile view (\code{xs_profile} list).}
 
 \item{axis}{Optional LINESTRING axis used to define downstream section order.
 If \code{NULL}, uses \code{xt_axis(channel)}; if that is also \code{NULL}, an error is

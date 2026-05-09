@@ -41,7 +41,7 @@ coords <- matrix(c(
 ), ncol = 2, byrow = TRUE)
 
 # Create simple channel profile (water from -3 to 3)
-profile_simple <- xt_new_profile(coords, bankpoints = c(-3, 3))
+profile_simple <- xchan:::new_profile(coords, bankpoints = c(-3, 3))
 profile_simple
 ```
 
@@ -61,7 +61,7 @@ coords_island <- matrix(c(
 ), ncol = 2, byrow = TRUE)
 
 # Create profile with island (water from -3 to -1 and 1 to 3)
-profile_island <- xt_new_profile(coords_island, bankpoints = c(-3, -1, 1, 3))
+profile_island <- xchan:::new_profile(coords_island, bankpoints = c(-3, -1, 1, 3))
 profile_island
 ```
 
@@ -84,7 +84,7 @@ coords_multi <- matrix(c(
 ), ncol = 2, byrow = TRUE)
 
 # Create profile with multiple islands
-profile_multi <- xt_new_profile(coords_multi, bankpoints = c(-6, -4, -2, 0, 2, 4, 6))
+profile_multi <- xchan:::new_profile(coords_multi, bankpoints = c(-6, -4, -2, 0, 2, 4, 6))
 profile_multi
 ```
 
@@ -116,7 +116,7 @@ total_widths <- xt_width(channel_with_islands)
 
 ```{r bank-spanning}
 # Analyze bank characteristics
-# bank_analysis <- xt_span_banks(channel_with_islands)
+# bank_analysis <- xchan:::span_banks(pt, angle, bankline)
 # bank_analysis
 ```
 
@@ -137,7 +137,7 @@ coords_asym <- matrix(c(
 ), ncol = 2, byrow = TRUE)
 
 # Create asymmetric profile
-profile_asym <- xt_new_profile(coords_asym, bankpoints = c(-3, 4))
+profile_asym <- xchan:::new_profile(coords_asym, bankpoints = c(-3, 4))
 profile_asym
 ```
 
@@ -160,7 +160,7 @@ coords_braided <- matrix(c(
 ), ncol = 2, byrow = TRUE)
 
 # Create braided profile
-profile_braided <- xt_new_profile(coords_braided, bankpoints = c(-8, -6, -4, -2, 0, 2, 4))
+profile_braided <- xchan:::new_profile(coords_braided, bankpoints = c(-8, -6, -4, -2, 0, 2, 4))
 profile_braided
 ```
 
@@ -191,7 +191,7 @@ par(mfrow = c(1, 1))
 
 ```{r 3d-visualization}
 # Create channel with complex profiles
-# channel_complex <- xt_channel(.plan = plan_sfc, .profile = list(profile_island, profile_multi))
+# channel_complex <- xt_as_channel(plan_sfc, profile = list(profile_island, profile_multi))
 
 # Plot 3D view
 # plot(channel_complex, view = "3d", exaggerate = 2)
@@ -235,9 +235,9 @@ complexity_metrics <- function(channel) {
 
 This vignette covered:
 
-- Creating profile cross-sections with islands using `xt_new_profile()`
+- Creating profile cross-sections with islands using the internal constructor `new_profile()`
 - Understanding active width vs total width with `xt_width_active()`
-- Bank analysis with `xt_span_banks()`
+- Bank analysis with the internal helper `span_banks()`
 - Working with irregular channel shapes (asymmetric, braided)
 - Visualizing complex geometries
 - Advanced analysis of islands and channel complexity

@@ -5,8 +5,9 @@
 #' carry [units::units()] into bare numerics in the channel's own unit, and to
 #' attach units to numeric lengths/volumes returned by package functions.
 #'
-#' @param x A `xchan`, `sf`/`sfc` object, CRS object, or anything else
-#'   `[sf::st_crs()]` accepts. `xchan` objects use the plan column's CRS.
+#' @param x A `xchan_tbl`, `xchan`, `sf`/`sfc` object, CRS object, or anything
+#'   else `[sf::st_crs()]` accepts. Channel objects use the CRS stored on their
+#'   cross-section geometry container.
 #' @returns A unit symbol (for example `"m"` or `"US_survey_foot"`) suitable
 #'   for `units::set_units(..., mode = "standard")`, or `NULL` when no CRS is
 #'   set, the CRS has no defined linear unit, or the `units` package is not
@@ -19,12 +20,14 @@ crs_length_unit <- function(x) {
   if (!requireNamespace("units", quietly = TRUE)) {
     return(NULL)
   }
-  if (inherits(x, "xchan")) {
-    pc <- attr(x, "plan_col", exact = TRUE)
-    if (is.null(pc)) {
+  if (inherits(x, "xchan_tbl")) {
+    x <- channel_plan(x)
+    if (is.null(x)) {
       return(NULL)
     }
-    x <- x[[pc]]
+  }
+  if (inherits(x, "xchan")) {
+    x <- xchan_to_plan(x)
   }
   crs <- tryCatch(sf::st_crs(x), error = function(e) NA)
   if (length(crs) == 0L || is.na(crs)) {
@@ -124,7 +127,7 @@ to_numeric_volume <- function(x, target_unit = NULL, arg = "value") {
 #' Wraps `units::set_units()` with `NULL`-tolerant behaviour: if `unit` is
 #' `NULL` (no CRS unit known) or the `units` package is unavailable, returns
 #' `x` unchanged. Used to give length-bearing return values (for example,
-#' from `xt_width()` or `xt_distance_ds()`) the same unit as the channel's
+#' from `xt_width()` or `xt_distance_downstream()`) the same unit as the channel's
 #' coordinate system, so downstream arithmetic stays unit-checked.
 #'
 #' @noRd

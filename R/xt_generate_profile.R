@@ -25,8 +25,8 @@
 #'   Mutually exclusive with `sample_freq`.
 #' @param progress If `TRUE`, show a text progress bar while processing cross
 #'   sections (same behaviour as [xt_generate_plan()]).
-#' @returns Updated channel object with profile cross sections in the
-#'   profile column.
+#' @returns Updated channel object with profile geometry attached to each
+#'   cross section.
 #' @details This function extends the planimetric cross sections beyond the
 #'   banks to create a "frame" for erosion analysis. The extent can be specified
 #'   either as a fixed distance or as a multiplier of the channel width.
@@ -73,9 +73,9 @@ xt_generate_profile <- function(
     stop("`progress` must be TRUE or FALSE.")
   }
 
-  checkmate::assert_class(channel, "xchan")
+  checkmate::assert_class(channel, "xchan_tbl")
 
-  plan <- xt_column_plan(channel)
+  plan <- channel_plan(channel)
   if (is.null(plan)) {
     stop("Channel object must have planimetric cross sections")
   }
@@ -182,7 +182,7 @@ xt_generate_profile <- function(
   }
 
   # Update channel object with profiles
-  xt_column_profile(channel) <- profiles
+  channel <- set_channel_profile(channel, profiles)
   channel
 }
 

@@ -17,9 +17,9 @@ test_that("xt_width returns units when CRS has linear units, plain numeric other
   expect_false(inherits(xt_width(ch_nocrs), "units"))
 })
 
-test_that("xt_distance_ds returns units when CRS has linear units", {
+test_that("xt_distance_downstream returns units when CRS has linear units", {
   ch <- xt_generate_plan(fraser_bankline, n = 5)
-  ds <- xt_distance_ds(ch)
+  ds <- xt_distance_downstream(ch)
   expect_s3_class(ds, "units")
   expect_equal(units::deparse_unit(ds), "m")
 })
@@ -50,7 +50,7 @@ test_that("xt_widen rejects units that aren't lengths", {
 })
 
 test_that("xt_erosion_width accepts volume units, returns length units", {
-  profile <- xt_profile(
+  profile <- xchan:::new_profile(
     coords = matrix(
       c(
         -3, 11,
@@ -83,7 +83,7 @@ test_that("xt_erosion_width accepts volume units, returns length units", {
 })
 
 test_that("xt_erosion_volume accepts length units, returns m^3", {
-  profile <- xt_profile(
+  profile <- xchan:::new_profile(
     coords = matrix(
       c(
         -3, 11,
@@ -101,21 +101,27 @@ test_that("xt_erosion_volume accepts length units, returns m^3", {
   )
   ch <- xt_as_channel(2, profile = list(profile), crs = 3005)
 
-  out_num <- xt_erosion_volume(ch, width = 0.5)
+  out_num <- xt_erosion_volume(ch, dw = 0.5)
   expect_s3_class(out_num, "units")
   # `units` deparses cubic metres as "m3" (no caret); both round-trip.
   expect_equal(units::deparse_unit(out_num), "m3")
 
-  out_m <- xt_erosion_volume(ch, width = units::set_units(0.5, "m"))
+  out_m <- xt_erosion_volume(ch, dw = units::set_units(0.5, "m"))
   expect_equal(as.numeric(out_m), as.numeric(out_num))
 
   # 50 cm == 0.5 m
-  out_cm <- xt_erosion_volume(ch, width = units::set_units(50, "cm"))
+  out_cm <- xt_erosion_volume(ch, dw = units::set_units(50, "cm"))
   expect_equal(as.numeric(out_cm), as.numeric(out_num), tolerance = 1e-9)
+
+  xcol <- attr(ch, "xsection_col", exact = TRUE)
+  xc <- ch[[xcol]]
+  xs <- xc[[1]]
+  expect_equal(as.numeric(xt_erosion_volume(xc, dw = 0.5)), as.numeric(out_num))
+  expect_equal(as.numeric(xt_erosion_volume(xs, dw = 0.5)), as.numeric(out_num))
 })
 
 test_that("xt_widen with dv (volume) accepts units and matches plain numeric", {
-  profile <- xt_profile(
+  profile <- xchan:::new_profile(
     coords = matrix(
       c(
         -3, 11,
@@ -176,7 +182,7 @@ test_that("xt_gradient stays unitless even when CRS carries units", {
   # gradient comes out. Use elevation_topo() which works with the current
   # xs_profile data structure.
   make_profile <- function(elev_offset) {
-    xt_profile(
+    xchan:::new_profile(
       coords = matrix(
         c(-2, 10 + elev_offset, -1, 9 + elev_offset, 0, 8 + elev_offset,
           1, 9 + elev_offset, 2, 10 + elev_offset),
@@ -199,9 +205,9 @@ test_that("xt_gradient stays unitless even when CRS carries units", {
   )
   g <- xt_gradient(
     ch,
-    .before = 1L,
-    .after = 1L,
-    .complete = TRUE,
+    before = 1L,
+    after = 1L,
+    complete = TRUE,
     elevation = elevation_topo(.f = min)
   )
   expect_type(g, "double")
@@ -210,8 +216,45 @@ test_that("xt_gradient stays unitless even when CRS carries units", {
   expect_equal(g, c(-0.1, -0.1, -0.1, -0.1))
 })
 
+test_that("xt_gradient complete=FALSE yields one NA at each end (before=after=1)", {
+  make_profile <- function(elev_offset) {
+    xchan:::new_profile(
+      coords = matrix(
+        c(-2, 10 + elev_offset, -1, 9 + elev_offset, 0, 8 + elev_offset,
+          1, 9 + elev_offset, 2, 10 + elev_offset),
+        ncol = 2,
+        byrow = TRUE
+      ),
+      bankpoints = c(-1, 1)
+    )
+  }
+  ch <- xt_as_channel(
+    rep(2, 5),
+    spacing = 10,
+    profile = list(
+      make_profile(4),
+      make_profile(3),
+      make_profile(2),
+      make_profile(1),
+      make_profile(0)
+    ),
+    crs = 3005
+  )
+  g <- xt_gradient(
+    ch,
+    before = 1L,
+    after = 1L,
+    complete = FALSE,
+    elevation = elevation_topo(.f = min)
+  )
+  expect_equal(sum(is.na(g)), 2L)
+  expect_true(is.na(g[1L]))
+  expect_true(is.na(g[5L]))
+  expect_false(any(is.na(g[2:4])))
+})
+
 test_that("xt_as_sfc(channel, what = '3d') preserves CRS", {
-  profile <- xt_profile(
+  profile <- xchan:::new_profile(
     coords = matrix(
       c(-2, 10, -1, 9, 0, 8, 1, 9, 2, 10),
       ncol = 2,

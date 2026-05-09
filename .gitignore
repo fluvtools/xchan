@@ -7,3 +7,6 @@ docs
 .vscode/
 air.toml
 **.tif.aux.xml
+joss-paper.html
+joss-paper.pdf
+Rplots.pdf

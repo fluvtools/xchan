@@ -15,7 +15,7 @@
 #'   when more than one bank boundary exists (for example islands).
 #' @param pch_bank,cex_bank Passed to [graphics::points()] for bank markers.
 #' @param warn_if_no_profile Warning when `extent = "full"` but the channel has
-#'   no profile column.
+#'   no profile geometry.
 #' @returns `NULL` invisibly (called for side effect).
 #' @noRd
 plot_plan <- function(
@@ -31,11 +31,11 @@ plot_plan <- function(
   cex_bank = 0.65,
   warn_if_no_profile = TRUE
 ) {
-  checkmate::assert_class(channel, "xchan")
+  checkmate::assert_class(channel, "xchan_tbl")
 
   extent <- match.arg(extent)
 
-  plan <- xt_column_plan(channel)
+  plan <- channel_plan(channel)
   if (is.null(plan)) {
     stop("Channel object must have planimetric cross sections")
   }
@@ -52,7 +52,7 @@ plot_plan <- function(
   }
 
   if (want_full) {
-    profiles <- xt_column_profile(channel)
+    profiles <- channel_profile(channel)
     geoms <- vector("list", length(plan))
     for (i in seq_along(plan)) {
       rng <- range(profiles[[i]]$coordinates[, 1])
@@ -70,7 +70,7 @@ plot_plan <- function(
   }
 
   if (want_full) {
-    profiles <- xt_column_profile(channel)
+    profiles <- channel_profile(channel)
     for (i in seq_along(plan)) {
       bc <- get_bank_coords(profiles[[i]])
       nb <- nrow(bc)

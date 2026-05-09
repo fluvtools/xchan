@@ -10,7 +10,7 @@ test_that("xt_as_sf drops plan/profile columns and adds geometry", {
 test_that("xt_as_sfc profile builds distance–elevation LINESTRINGs", {
   skip_if_not_installed("sf")
   coords <- matrix(c(-1, 10, 0, 8, 1, 10), ncol = 2, byrow = TRUE)
-  prof <- xt_profile(coords, bankpoints = c(-1, 1))
+  prof <- xchan:::new_profile(coords, bankpoints = c(-1, 1))
   ch <- xt_as_channel(2, profile = list(prof), crs = 3005)
   g <- xt_as_sfc(ch, what = "profile")
   expect_equal(length(g), 1L)
@@ -24,16 +24,16 @@ test_that("xt_as_sfc warns for full plan extent without profiles", {
     g <- xt_as_sfc(ch, what = "plan", extent = "full"),
     "profile"
   )
-  expect_equal(length(g), length(xt_column_plan(ch)))
+  expect_equal(length(g), length(channel_plan(ch)))
 })
 
 test_that("xt_as_sfc plan full extent spans profile horizontal range", {
   skip_if_not_installed("sf")
   coords <- matrix(c(-5, 10, 0, 8, 5, 10), ncol = 2, byrow = TRUE)
-  prof <- xt_profile(coords, bankpoints = c(-2, 2))
+  prof <- xchan:::new_profile(coords, bankpoints = c(-2, 2))
   ch <- xt_as_channel(4, profile = list(prof), crs = 3005)
   g <- xt_as_sfc(ch, what = "plan", extent = "full")
-  plan <- xt_column_plan(ch)
+  plan <- channel_plan(ch)
   len_bank <- as.numeric(sf::st_length(plan[[1]]))
   len_full <- as.numeric(sf::st_length(g[[1]]))
   expect_true(len_full >= len_bank)
@@ -46,7 +46,7 @@ test_that("xt_as_sfc profile extent full retains vertices outside bank span", {
     ncol = 2,
     byrow = TRUE
   )
-  prof <- xt_profile(coords, bankpoints = c(-2, 2))
+  prof <- xchan:::new_profile(coords, bankpoints = c(-2, 2))
   ch <- xt_as_channel(4, profile = list(prof), crs = 3005)
   gb <- xt_as_sfc(ch, what = "profile", extent = "banks")
   gf <- xt_as_sfc(ch, what = "profile", extent = "full")

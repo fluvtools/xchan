@@ -8,6 +8,7 @@
 \alias{xt_as_channel.sfc}
 \alias{xt_as_channel.data.frame}
 \alias{xt_as_channel.xchan}
+\alias{xt_as_channel.xchan_tbl}
 \alias{xt_as_channel.default}
 \title{Coerce to a channel object (\code{xchan})}
 \usage{
@@ -21,18 +22,28 @@ xt_as_channel(x, ...)
 
 \method{xt_as_channel}{sfc}(x, ..., profile = NULL, crs = NULL, axis = NULL)
 
-\method{xt_as_channel}{data.frame}(x, plan_col, ..., profile_col = NULL, crs = NULL, axis = NULL)
+\method{xt_as_channel}{data.frame}(
+  x,
+  plan_col,
+  ...,
+  profile_col = NULL,
+  xsection_col = NULL,
+  crs = NULL,
+  axis = NULL
+)
 
 \method{xt_as_channel}{xchan}(x, ..., crs = NULL)
+
+\method{xt_as_channel}{xchan_tbl}(x, ..., crs = NULL)
 
 \method{xt_as_channel}{default}(x, ...)
 }
 \arguments{
 \item{x}{Object to coerce (numeric vector of widths, \code{sfc}, \code{data.frame}, or
-existing \code{xchan}).}
+existing \code{xchan}/\code{xchan_tbl}).}
 
 \item{...}{Used only by \code{numeric}, \code{sfc}, and \code{sfg} methods: named arguments
-become extra columns in the channel table (recycled like \code{\link[=xt_channel]{xt_channel()}}).
+become extra columns in the channel table (recycled like \code{\link[base:data.frame]{base::data.frame()}}).
 Not used when coercing a \code{data.frame} (must be empty). Ignored when coercing
 an existing \code{xchan}, with a warning if non-empty.}
 
@@ -54,26 +65,28 @@ error is raised. When \code{axis} is \code{NULL} and \code{spacing} is omitted,
 \code{spacing = 1} is used.}
 
 \item{plan_col}{Name of the column holding planimetric \code{sfc_LINESTRING}
-geometries (required).}
+geometries. Ignored when \code{xsection_col} is supplied.}
 
-\item{profile_col}{Name of the profile list-column, if any.}
+\item{profile_col}{Name of the profile column, if any, when constructing
+\code{xsection} objects from \code{plan_col}.}
+
+\item{xsection_col}{Name of column holding \code{xchan} cross-section geometry.}
 }
 \value{
-An object of class \code{"xchan"}.
+An object of class \code{"xchan_tbl"}.
 }
 \description{
 Convert widths, line geometries, or a data frame into a channel object.
-This is the coercion analogue of \code{\link[=xt_channel]{xt_channel()}}, which \strong{constructs} a
-channel from planimetric (and optional profile) columns. Coercion methods
-always attach a plan column; profile remains optional.
+This is the primary way to obtain a channel table from widths, geometries,
+or tabular inputs. Coercion methods attach an \code{xsection} geometry column,
+with CRS stored at the channel-geometry container level.
 }
 \details{
 \strong{Extra columns (\code{...}):} When the method \strong{builds} the channel table from
 widths or geometries (\code{numeric}, \code{sfc}, \code{sfg}), named arguments in \code{...}
-become extra columns (same recycling as \code{\link[=xt_channel]{xt_channel()}}). When you \strong{already
-have a data frame}, add variables as columns on that table first, then call
-\code{xt_as_channel()} --- \code{...} is not used there (see \code{\link[=xt_channel]{xt_channel()}} if you need
-to assemble plan/profile from vectors in one call).
+become extra columns (recycled with \code{\link[vctrs:vec_recycle]{vctrs::vec_recycle_common()}}, like
+\code{\link[base:data.frame]{base::data.frame()}}). When you \strong{already have a data frame}, add variables
+as columns on that table first, then call \code{xt_as_channel()} --- \code{...} is not used there.
 }
 \examples{
 # Synthetic widths (integer positions along the channel)
@@ -97,5 +110,5 @@ xt_as_channel(df, plan_col = "plan")
 
 }
 \seealso{
-\code{\link[=xt_channel]{xt_channel()}}
+\code{\link[=xchan]{xchan()}}, \code{\link[=xsection]{xsection()}}
 }

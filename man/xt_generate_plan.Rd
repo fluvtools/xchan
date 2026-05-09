@@ -34,15 +34,17 @@ and \code{at}). Plain numeric is interpreted in the \code{banks} CRS length unit
 
 \item{axis}{Channel axis as a multilinestring: the line along which cross
 sections are placed. If \code{NULL} (the default), an axis is generated
-automatically using the \strong{centerline} package (\code{centerline::cnt_path_guess()}).}
+automatically from the \strong{island-free} footprint (\code{polygon_sans_holes()})
+using the \strong{centerline} package (\code{centerline::cnt_path_guess()}).}
 
 \item{progress}{Logical; if \code{TRUE}, display a text progress bar while
 generating planimetric cross sections.}
 }
 \value{
-A channel object with planimetric cross sections in the plan column.
-Rows follow downstream order along the sampling axis. After \code{arrange()} or
-subsetting, restore order with \code{\link[=xt_arrange_downstream]{xt_arrange_downstream()}}. Use \code{\link[=xt_distance_ds]{xt_distance_ds()}}
+A channel object with one \code{xsection} per row. Planimetric
+cross-section views follow downstream order along the sampling axis.
+After \code{arrange()} or
+subsetting, restore order with \code{\link[=xt_arrange_downstream]{xt_arrange_downstream()}}. Use \code{\link[=xt_distance_downstream]{xt_distance_downstream()}}
 for distance along the axis from its start to each section (requires the axis
 from \code{\link[=xt_axis]{xt_axis()}}, which this function sets). The sampling axis is stored for
 geometry that requires it.
@@ -57,12 +59,19 @@ multipolygon) so its boundary is a closed loop around the wetted/plan
 corridor. If you only have two bank polylines, convert them to a closed
 polygon (e.g. connect upstream/downstream ends) before calling this function.
 
-This function takes the definition of "cross section" relative
-to a point in the channel to be the line segment intersecting the point
-whose bank-to-bank segment width is the smallest. Note that this does not
-imply that the cross section is unique, and in this case the cross section
-is arbitrarily taken to be the one closest to a 0-degree angle --
-although in almost all cases this should not be an issue.
+Interior rings (islands) are dropped with \code{polygon_sans_holes()} for axis
+generation (when \code{axis} is \code{NULL}) and for the minimum-width transect search:
+each station gets the \strong{shortest bank-to-bank segment} through that point on
+the filled corridor, matching the original algorithm and ignoring islands by
+construction.
+
+The holed footprint (\code{banks}) is then used to \strong{refine} that transect:
+the filled chord is intersected with the polygon boundary (outer bank plus
+island outlines). Distinct intersection points are merged with the chord
+endpoints, ordered along the transect, and deduplicated, producing a plan
+\code{LINESTRING} with \strong{two or more} vertices (extra vertices where the transect
+meets island banks). Relative distances for profiles still use the chord from
+\strong{first to last} vertex (\code{transect_xy_from_relative()}).
 
 To define the spacing of the cross sections, a channel axis is
 first calculated, and equally spaced points are sampled along that
@@ -79,11 +88,12 @@ routine.
 the axis and \strong{facing downstream}, in the map plane of the CRS (planar
 coordinates).
 
-\strong{Vertex order (planimetric convention):} each output segment is a
-\code{LINESTRING} from left bank to right bank: the \strong{first} coordinate is on the
-left bank, the \strong{last} on the right bank. Increasing distance along the
-segment (first to last vertex) thus matches profile cross sections where
-distance increases from left to right bank.
+\strong{Vertex order (planimetric convention):} each output is a \code{LINESTRING} from
+left bank to right bank: the \strong{first} coordinate is on the left bank, the
+\strong{last} on the right bank (with optional intermediate vertices on island
+banks). Increasing distance along the polyline (first to last vertex) matches
+profile cross sections where distance increases from left to right along the
+overall chord.
 
 \strong{How orientation is computed:} for each station we take a unit tangent to
 the axis pointing downstream (\code{axis_unit_tangent_downstream()}). For each

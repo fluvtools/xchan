@@ -8,7 +8,7 @@
 #' as if rotating each cross section by 180 degrees.
 #' @noRd
 flip_plan <- function(plan) {
-  xt_validate_plan(plan)
+  validate_plan(plan)
   coords_list <- lapply(seq_along(plan), function(i) {
     m <- sf::st_coordinates(plan[i, , drop = FALSE])
     m <- m[, 1:2, drop = FALSE]
