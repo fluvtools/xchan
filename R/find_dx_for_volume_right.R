@@ -87,6 +87,7 @@
 #' find_dx_for_volume_right(
 #'   0, x0 = 2.5, topo = topo, thalweg_height = 11, valley = "left"
 #' )
+#' @noRd
 find_dx_for_volume_right <- function(
   v,
   x0,

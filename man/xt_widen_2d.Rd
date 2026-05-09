@@ -10,12 +10,12 @@ widen_profile(profile, dw, prop_left)
 widen_profile_left(profile, dw)
 }
 \arguments{
+\item{profile}{A single 2D cross section (\code{xs_profile}).}
+
 \item{dw}{Change in width; single positive numeric.}
 
 \item{prop_left}{Proportion of erosion occuring on the left bank
 (the right bank will have \code{1 - prop_left} of the change in width).}
-
-\item{xs}{A single 2D cross section.}
 }
 \value{
 An eroded version of the input 2D cross section.
