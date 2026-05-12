@@ -64,7 +64,7 @@ coords <- matrix(c(-3, 10, 0, 8, 3, 10), ncol = 2, byrow = TRUE)
 prof <- xchan:::new_profile(coords, bankpoints = c(-3, 3))
 plan_ls <- sf::st_linestring(matrix(c(0, 0, 6, 0), ncol = 2))
 seg <- sf::st_sfc(plan_ls, crs = 3005)
-ch <- xt_as_channel(seg, profile = list(prof))
+ch <- xchan:::new_channel(seg, profile = list(prof))
 plot(ch[[1]])
 
 }

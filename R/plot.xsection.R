@@ -20,7 +20,7 @@
 #' prof <- xchan:::new_profile(coords, bankpoints = c(-3, 3))
 #' plan_ls <- sf::st_linestring(matrix(c(0, 0, 6, 0), ncol = 2))
 #' seg <- sf::st_sfc(plan_ls, crs = 3005)
-#' ch <- xt_as_channel(seg, profile = list(prof))
+#' ch <- xchan:::new_channel(seg, profile = list(prof))
 #' plot(ch[[1]])
 #'
 #' @exportS3Method base::plot
@@ -67,8 +67,8 @@ plot.xsection <- function(
     xc <- xchan(list(x), crs = NA)
     plot_plan(
       xc,
-      ...,
       extent = extent,
+      axis = "none",
       add = add,
       col = col,
       lwd = lwd,
@@ -76,7 +76,8 @@ plot.xsection <- function(
       col_bank_land = col_bank_land,
       pch_bank = pch_bank,
       cex_bank = cex_bank,
-      warn_if_no_profile = warn_if_no_profile
+      warn_if_no_profile = warn_if_no_profile,
+      ...
     )
   }
 }

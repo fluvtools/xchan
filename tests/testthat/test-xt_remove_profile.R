@@ -1,7 +1,7 @@
 test_that("xt_remove_profile.xchan strips profiles", {
   coords <- matrix(c(-1, 10, 0, 8, 1, 10), ncol = 2, byrow = TRUE)
   prof <- xchan:::new_profile(coords, bankpoints = c(-1, 1))
-  ch <- xt_as_channel(c(2, 2), profile = list(prof, prof), crs = 3005)
+  ch <- xchan:::set_channel_profile(xt_as_channel(c(2, 2), crs = 3005), list(prof, prof))
   expect_true(xt_has_profile(ch))
   out <- xt_remove_profile(ch)
   expect_false(xt_has_profile(out))

@@ -51,10 +51,10 @@ xt_width(channel_widened)
 
 If a profile view is available, you can also widen by volume -- provided there is enough volume to erode in the first place.
 
-Sometimes it's useful to know how much volume of erosion would result from a given change in width, or vice versa, the width change resulting from a volume change.
+Sometimes it's useful to know how much volume of erosion would result from a given change in width, or vice versa, the width change resulting from a volume change. Note that because volume is in squared length units, not cubed, because it corresponds to a cross section.
 
 ```{r}
-xt_erosion_width(channel, dv = units::set_units(10, "m3"))
+xt_erosion_width(channel, dv = units::set_units(10, "m2"))
 xt_erosion_volume(channel, dw = units::set_units(100, "m"))
 ```
 

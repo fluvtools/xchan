@@ -66,7 +66,7 @@ test_that("xt_erosion_width accepts volume units, returns length units", {
     ),
     bankpoints = c(-1, 1)
   )
-  ch <- xt_as_channel(2, profile = list(profile), crs = 3005)
+  ch <- xchan:::set_channel_profile(xt_as_channel(2, crs = 3005), list(profile))
 
   # numeric dv (interpreted in m^3)
   out_num <- xt_erosion_width(ch, dv = 0.5)
@@ -99,7 +99,7 @@ test_that("xt_erosion_volume accepts length units, returns m^3", {
     ),
     bankpoints = c(-1, 1)
   )
-  ch <- xt_as_channel(2, profile = list(profile), crs = 3005)
+  ch <- xchan:::set_channel_profile(xt_as_channel(2, crs = 3005), list(profile))
 
   out_num <- xt_erosion_volume(ch, dw = 0.5)
   expect_s3_class(out_num, "units")
@@ -136,7 +136,7 @@ test_that("xt_widen with dv (volume) accepts units and matches plain numeric", {
     ),
     bankpoints = c(-1, 1)
   )
-  ch <- xt_as_channel(2, profile = list(profile), crs = 3005)
+  ch <- xchan:::set_channel_profile(xt_as_channel(2, crs = 3005), list(profile))
 
   out_num <- xt_widen(ch, dv = 0.5, side = "left")
   out_m3 <- xt_widen(ch, dv = units::set_units(0.5, "m^3"), side = "left")
@@ -158,21 +158,12 @@ test_that("xt_generate_plan accepts units for spacing and at", {
   expect_equal(xt_n_sections(ch_at_num), xt_n_sections(ch_at_m))
 })
 
-test_that("xt_as_channel.numeric accepts units for x and spacing", {
-  ch_num <- xt_as_channel(c(10, 12, 14), spacing = 5, crs = 3005)
-  ch_m <- xt_as_channel(
-    units::set_units(c(10, 12, 14), "m"),
-    spacing = units::set_units(5, "m"),
-    crs = 3005
-  )
+test_that("xt_as_channel.numeric accepts units for widths", {
+  ch_num <- xt_as_channel(c(10, 12, 14), crs = 3005)
+  ch_m <- xt_as_channel(units::set_units(c(10, 12, 14), "m"), crs = 3005)
   expect_equal(as.numeric(xt_width(ch_num)), as.numeric(xt_width(ch_m)))
 
-  # Mixed: cm widths against a metric CRS
-  ch_cm <- xt_as_channel(
-    units::set_units(c(1000, 1200, 1400), "cm"),
-    spacing = units::set_units(500, "cm"),
-    crs = 3005
-  )
+  ch_cm <- xt_as_channel(units::set_units(c(1000, 1200, 1400), "cm"), crs = 3005)
   expect_equal(as.numeric(xt_width(ch_num)), as.numeric(xt_width(ch_cm)))
 })
 
@@ -191,16 +182,26 @@ test_that("xt_gradient stays unitless even when CRS carries units", {
       bankpoints = c(-1, 1)
     )
   }
-  ch <- xt_as_channel(
-    rep(2, 4),
-    spacing = 10,
+  sts <- (seq_len(4L) - 1L) * 10
+  plan <- sf::st_sfc(
+    lapply(sts, function(x) {
+      sf::st_linestring(matrix(c(x, -1, x, 1), ncol = 2, byrow = TRUE))
+    }),
+    crs = 3005
+  )
+  axis <- sf::st_sfc(
+    sf::st_linestring(cbind(sts, rep(0, length(sts)))),
+    crs = 3005
+  )
+  ch <- xchan:::new_channel(
+    plan,
+    axis = axis,
     profile = list(
       make_profile(3),
       make_profile(2),
       make_profile(1),
       make_profile(0)
-    ),
-    crs = 3005
+    )
   )
   g <- xt_gradient(
     ch,
@@ -227,17 +228,27 @@ test_that("xt_gradient complete=FALSE yields one NA at each end (before=after=1)
       bankpoints = c(-1, 1)
     )
   }
-  ch <- xt_as_channel(
-    rep(2, 5),
-    spacing = 10,
+  sts <- (seq_len(5L) - 1L) * 10
+  plan <- sf::st_sfc(
+    lapply(sts, function(x) {
+      sf::st_linestring(matrix(c(x, -1, x, 1), ncol = 2, byrow = TRUE))
+    }),
+    crs = 3005
+  )
+  axis <- sf::st_sfc(
+    sf::st_linestring(cbind(sts, rep(0, length(sts)))),
+    crs = 3005
+  )
+  ch <- xchan:::new_channel(
+    plan,
+    axis = axis,
     profile = list(
       make_profile(4),
       make_profile(3),
       make_profile(2),
       make_profile(1),
       make_profile(0)
-    ),
-    crs = 3005
+    )
   )
   g <- xt_gradient(
     ch,
@@ -261,12 +272,18 @@ test_that("xt_as_sfc(channel, what = '3d') preserves CRS", {
     ),
     bankpoints = c(-1, 1)
   )
-  ch <- xt_as_channel(
-    rep(2, 3),
-    spacing = 10,
-    profile = rep(list(profile), 3),
+  sts <- (seq_len(3L) - 1L) * 10
+  plan <- sf::st_sfc(
+    lapply(sts, function(x) {
+      sf::st_linestring(matrix(c(x, -1, x, 1), ncol = 2, byrow = TRUE))
+    }),
     crs = 3005
   )
+  axis <- sf::st_sfc(
+    sf::st_linestring(cbind(sts, rep(0, length(sts)))),
+    crs = 3005
+  )
+  ch <- xchan:::new_channel(plan, axis = axis, profile = rep(list(profile), 3))
   g3d <- xt_as_sfc(ch, what = "3d")
   expect_equal(sf::st_crs(g3d), sf::st_crs(3005))
 })

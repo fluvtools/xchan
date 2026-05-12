@@ -108,10 +108,16 @@ xchan_reorder_sections <- function(x, ord) {
   for (i in seq_along(ord)) {
     secs[[i]] <- x[[ord[i]]]
   }
+  sid <- attr(x, "section_i", exact = TRUE)
+  if (is.null(sid) || length(sid) != n) {
+    sid <- seq_len(n)
+  }
+  new_sid <- sid[ord]
   structure(
     secs,
     crs = attr(x, "crs", exact = TRUE),
     axis = attr(x, "axis", exact = TRUE),
+    section_i = new_sid,
     class = class(x)
   )
 }

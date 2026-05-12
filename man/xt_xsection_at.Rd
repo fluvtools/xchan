@@ -2,25 +2,31 @@
 % Please edit documentation in R/xt_profile_at.R
 \name{xt_xsection_at}
 \alias{xt_xsection_at}
-\title{Get one cross section by row index}
+\alias{xt_profile_at}
+\title{Get one cross section or its profile by row index}
 \usage{
 xt_xsection_at(channel, i)
+
+xt_profile_at(channel, i)
 }
 \arguments{
-\item{channel}{A channel object.}
+\item{channel}{A channel object (\code{\link{xchan}}).}
 
 \item{i}{Single positive integer row index.}
 }
 \value{
-One cross section, \code{xchannel} object.
+\code{xt_xsection_at()}: one \code{\link{xsection}}. \code{xt_profile_at()}: one
+\code{xs_profile}.
 }
 \description{
-Extract a single cross section from a channel's profile view using
-row order.
+\code{xt_xsection_at()} extracts a single \code{\link{xsection}} by row order.
+\code{xt_profile_at()} returns the embedded \code{xs_profile} for that section (and
+requires profile geometry on the channel).
 }
 \examples{
 coords <- matrix(c(-2, 10, 0, 8, 2, 10), ncol = 2, byrow = TRUE)
 xs <- xchan:::new_profile(coords, bankpoints = c(-2, 2))
-ch <- xt_as_channel(c(4, 4), profile = list(xs, xs), crs = 3005)
+ch <- xchan:::set_channel_profile(xt_as_channel(c(4, 4), crs = 3005), list(xs, xs))
+xt_xsection_at(ch, 1)
 xt_profile_at(ch, 1)
 }

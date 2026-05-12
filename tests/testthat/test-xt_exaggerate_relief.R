@@ -12,11 +12,7 @@ test_that("xt_exaggerate_relief(xs_profile) scales height above thalweg", {
 test_that("xt_exaggerate_relief(xchan) updates all profiles", {
   coords <- matrix(c(-2, 10, 0, 8, 2, 12), ncol = 2, byrow = TRUE)
   xs <- xchan:::new_profile(coords, bankpoints = c(-2, 2))
-  ch <- xt_as_channel(
-    c(4, 4),
-    profile = list(xs, xs),
-    crs = 3005
-  )
+  ch <- xchan:::set_channel_profile(xt_as_channel(c(4, 4), crs = 3005), list(xs, xs))
 
   out <- xt_exaggerate_relief(ch)
   prof <- channel_profile(out)
