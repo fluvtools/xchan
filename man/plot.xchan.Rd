@@ -4,10 +4,16 @@
 \alias{plot.xchan}
 \title{Plot a channel object}
 \usage{
-\method{plot}{xchan}(x, ..., extent = c("banks", "full"))
+\method{plot}{xchan}(
+  x,
+  ...,
+  extent = c("banks", "full"),
+  axis = c("line", "arrows", "none"),
+  add = FALSE
+)
 }
 \arguments{
-\item{x}{Channel object}
+\item{x}{An \code{\link{xchan}} object.}
 
 \item{...}{Additional arguments passed to \code{\link[=plot]{plot()}} for plan geometries and
 to bank-marker styling (\code{col_bank_water}, \code{col_bank_land}, \code{pch_bank},
@@ -16,12 +22,24 @@ to bank-marker styling (\code{col_bank_water}, \code{col_bank_land}, \code{pch_b
 \item{extent}{One of \code{"banks"} (default) or \code{"full"}.
 \code{"full"} draws each transect out to the ends of its profile (when profiles
 are present) and marks bank positions; uses bank-to-bank segments only if
-there is no profile column (with a warning).}
+there is no profile geometry (with a warning).}
+
+\item{axis}{How to draw the stored channel axis (\code{\link[=xt_axis]{xt_axis()}}), when one is
+present: \code{"line"} (default) draws the axis as a plain line, \code{"arrows"} draws
+flow direction along the axis, \code{"none"} omits it.}
+
+\item{add}{If \code{TRUE}, draw on the current plot (same rules as \code{\link[graphics:plot.default]{graphics::plot()}}).}
 }
 \description{
 Plot a channel object
 }
 \details{
+For the plan view, when \code{add = FALSE} and you do not pass \code{xlim} / \code{ylim},
+the plot limits are adjusted so the on-screen aspect is not extremely
+stretched (for example when synthetic width-only channels use a large
+default station spacing relative to transect width). Pass your own
+\code{xlim} and \code{ylim} to reproduce the raw map scale.
+
 For "profile" and "3d" views, you can specify \code{exaggerate} to vertically
 exaggerate the relief. For example, \code{exaggerate = 2} doubles the vertical scale.
 The default is \code{exaggerate = 1} (no exaggeration). It is strongly recommended not going beyond 3, because

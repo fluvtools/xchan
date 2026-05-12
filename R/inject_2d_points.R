@@ -30,5 +30,5 @@ inject_coords <- function(profile, x) {
   }
 
   bankpoints <- mat[profile$banks, 1]
-  xt_profile(new_mat, bankpoints = bankpoints)
+  new_profile(new_mat, bankpoints = bankpoints)
 }

@@ -30,13 +30,13 @@
 #' # Different elevation reference
 #' channel <- xt_extend_frame(
 #'   channel,
-#'   extender = extender_flat(extent = 20, elevation = elevation_topo_left())
+#'   extender = extender_flat(extent = 20, elevation = elevation_bank_left())
 #' )
 #' @export
 xt_extend_frame <- function(channel, extender) {
   checkmate::assert_class(channel, "xchan")
 
-  profile <- xt_column_profile(channel)
+  profile <- channel_profile(channel)
   if (is.null(profile)) {
     stop("Channel object must have profile cross sections")
   }
@@ -110,6 +110,6 @@ xt_extend_frame <- function(channel, extender) {
   }
 
   # Update the channel
-  xt_column_profile(channel) <- profile
+  channel = set_channel_profile(channel, profile)
   channel
 }

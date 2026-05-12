@@ -5,7 +5,7 @@
 #' @export
 tracer_concaveman <- function(...) {
   f <- function(channel) {
-    plan <- xt_column_plan(channel)
+    plan <- channel_plan(channel)
     pts <- sf::st_cast(plan, "POINT")
     pts_sf <- sf::st_sf(geometry = pts)
     concaveman::concaveman(pts_sf, ...)

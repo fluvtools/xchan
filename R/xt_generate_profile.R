@@ -4,9 +4,9 @@
 #' elevation model (DEM). This function samples the DEM along the planimetric
 #' cross sections and creates xs_profile objects for each cross section.
 #'
-#' @param channel Channel object with planimetric cross sections.
+#' @param channel [`xchan`] with planimetric cross sections.
 #' @param dem Digital elevation model (raster or terra object).
-#' @param ... Additional arguments (ignored).
+#' @param ... Must be empty.
 #' @param extent_distance Distance to extend beyond banks on each side. Use
 #'   `Inf` (the default) to extend along the cross section until the DEM
 #'   bounding box is reached in each direction. A finite plain numeric is
@@ -25,8 +25,7 @@
 #'   Mutually exclusive with `sample_freq`.
 #' @param progress If `TRUE`, show a text progress bar while processing cross
 #'   sections (same behaviour as [xt_generate_plan()]).
-#' @returns Updated channel object with profile cross sections in the
-#'   profile column.
+#' @returns Updated [`xchan`] with profile geometry attached to each cross section.
 #' @details This function extends the planimetric cross sections beyond the
 #'   banks to create a "frame" for erosion analysis. The extent can be specified
 #'   either as a fixed distance or as a multiplier of the channel width.
@@ -75,7 +74,7 @@ xt_generate_profile <- function(
 
   checkmate::assert_class(channel, "xchan")
 
-  plan <- xt_column_plan(channel)
+  plan <- channel_plan(channel)
   if (is.null(plan)) {
     stop("Channel object must have planimetric cross sections")
   }
@@ -182,7 +181,7 @@ xt_generate_profile <- function(
   }
 
   # Update channel object with profiles
-  xt_column_profile(channel) <- profiles
+  channel <- set_channel_profile(channel, profiles)
   channel
 }
 

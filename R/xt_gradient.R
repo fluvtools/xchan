@@ -1,74 +1,136 @@
 #' Calculate channel gradient
 #'
-#' @param channel Channel object
-#' @param ... Additional arguments (ignored)
-#' @param .before Number of cross-sections before current to include in calculation
-#' @param .after Number of cross-sections after current to include in calculation
-#' @param .complete Whether to include incomplete windows at boundaries
-#' @param elevation Elevation specification for gradient calculation
-#' @param axis Optional channel axis passed to [xt_distance_ds()] (same rules as
-#'   [xt_trace_centerline()]: explicit `axis`, else `xt_axis(channel)`, else error).
-#' @returns A vector of gradient values for each cross-section
-#' @details
-#' This function calculates channel gradient using a sliding window approach,
-#' inspired by the `slider` package. The gradient is calculated as the change
-#' in elevation divided by the change in distance along the channel axis.
+#' Compares elevations between cross sections along the channel axis (see **Details**).
+#' A gradient is undefined for a single cross section (there is no along-channel segment),
+#' so there is no method for [`xsection`][xsection()] — use at least two stations in an
+#' [`xchan`][xchan()].
 #'
-#' The elevation specification determines which elevation value is used for
-#' each cross-section. The axis is used to calculate distances between
-#' cross-sections for the gradient calculation.
+#' @param channel An [`xchan`][xchan()] with one or more cross sections (length `n`).
+#'   With `n == 1`, every gradient is `NA` because no segment exists.
+#' @param ... Must be empty.
+#' @param before Number of cross sections **before** the current index to include as the
+#'   **start** of the segment (inclusive). The gradient uses elevations and axis distances
+#'   at indices `i - before` and `i + after` when the window is valid.
+#' @param after Number of cross sections **after** the current index to include as the
+#'   **end** of the segment (inclusive).
+#' @param complete If `TRUE`, allow **truncated** windows at the upstream and downstream
+#'   ends of the channel: for station `i`, the window is clipped to `[1, n]` so the segment
+#'   runs from `max(1, i - before)` to `min(n, i + after)`. Every station gets a value
+#'   whenever that clipped window spans at least two distinct stations (otherwise `NA`).
+#'
+#'   If `FALSE`, require a **full** window: station `i` is only computed when
+#'   `i - before >= 1` and `i + after <= n`. Otherwise the value is `NA`. So with
+#'   `before = 1` and `after = 1`, only interior stations `2, ..., n-1` are filled; you get
+#'   exactly **one** `NA` at the front (first station) and **one** at the end (last station),
+#'   not two at either boundary.
+#' @param elevation Elevation specification ([elevation_thalweg()], [elevation_bank()], …).
+#' @param axis Optional channel axis (same interpretation as [xt_distance_downstream()]; distances
+#'   are computed without attaching units so the gradient ratio stays dimensionless).
+#' @returns Numeric vector of gradients (length matches number of cross sections), unitless
+#'   even when axis distances carry units.
+#'
+#' @details
+#' At each station `i`, the gradient is `(z_end - z_start) / (s_end - s_start)` where `z`
+#' comes from [xt_elevation()] and `s` from downstream distance along the axis (same
+#' convention as [xt_distance_downstream()], stored as plain numeric for the ratio).
+#'
 #' @examples
-#' # Calculate gradient using thalweg elevation
 #' gradient <- xt_gradient(channel, elevation = elevation_thalweg())
 #'
-#' # Calculate gradient using water surface elevation
-#' gradient <- xt_gradient(channel, elevation = elevation_column("water_surface"))
+#' # Interior stations only (one NA first and last when before = after = 1)
+#' gradient <- xt_gradient(channel, before = 1L, after = 1L, complete = FALSE)
 #'
-#' # Use wider window for smoother gradient
-#' gradient <- xt_gradient(channel, .before = 2L, .after = 2L, elevation = elevation_bank(.f = mean))
+#' # Smoothed using a wider full window
+#' gradient <- xt_gradient(channel, before = 2L, after = 2L, elevation = elevation_bank(.f = mean))
 #' @export
 xt_gradient <- function(
   channel,
   ...,
-  .before = 1L,
-  .after = 1L,
-  .complete = FALSE,
+  before = 1L,
+  after = 1L,
+  complete = FALSE,
+  elevation = elevation_bank(),
+  axis = NULL
+) {
+  rlang::check_dots_empty()
+  UseMethod("xt_gradient")
+}
+
+#' @rdname xt_gradient
+#' @usage NULL
+#' @export
+xt_gradient.xchan <- function(
+  channel,
+  ...,
+  before = 1L,
+  after = 1L,
+  complete = FALSE,
   elevation = elevation_bank(),
   axis = NULL
 ) {
   rlang::check_dots_empty()
   checkmate::assert_class(channel, "xchan")
 
-  # Get elevation values for each cross-section
   elevations <- xt_elevation(channel, reference = elevation)
-
-  # Use the unit-stripped helper so arithmetic with elevation stays unitless.
-  # `xt_distance_ds()` would carry units for CRS-aware channels and break the
-  # delta_elevation / delta_distance ratio (no elevation units to cancel).
   distances <- axis_distances_numeric(channel, axis)
 
-  # Calculate gradient using sliding window
+  gradient_sliding_window(elevations, distances, before, after, complete)
+}
+
+#' @rdname xt_gradient
+#' @usage NULL
+#' @exportS3Method xt_gradient default
+xt_gradient.default <- function(
+  channel,
+  ...,
+  before = 1L,
+  after = 1L,
+  complete = FALSE,
+  elevation = elevation_bank(),
+  axis = NULL
+) {
+  stop(
+    "No `xt_gradient()` method for class ",
+    paste(class(channel), collapse = "/"),
+    ". Use an `xchan` object (gradient needs multiple cross sections).",
+    call. = FALSE
+  )
+}
+
+#' @noRd
+gradient_sliding_window <- function(elevations, distances, before, after, complete) {
   n <- length(elevations)
-  gradient <- numeric(n)
+  gradient <- rep(NA_real_, n)
+  checkmate::assert_numeric(elevations, len = n, any.missing = TRUE)
+  checkmate::assert_numeric(distances, len = n, any.missing = TRUE)
+
+  before <- as.integer(before)[1L]
+  after <- as.integer(after)[1L]
+  checkmate::assert_int(before, lower = 0L)
+  checkmate::assert_int(after, lower = 0L)
 
   for (i in seq_len(n)) {
-    # Define window indices
-    start_idx <- max(1, i - .before)
-    end_idx <- min(n, i + .after)
+    if (complete) {
+      start_idx <- max(1L, i - before)
+      end_idx <- min(n, i + after)
+    } else {
+      if (i < before + 1L || i > n - after) {
+        next
+      }
+      start_idx <- i - before
+      end_idx <- i + after
+    }
 
-    # Skip if window is incomplete and .complete = FALSE
-    if (!.complete && (start_idx == 1 || end_idx == n)) {
-      gradient[i] <- NA
+    if (end_idx <= start_idx) {
       next
     }
 
-    # Calculate gradient as change in elevation / change in distance
-    if (end_idx > start_idx) {
-      delta_elevation <- elevations[end_idx] - elevations[start_idx]
-      delta_distance <- distances[end_idx] - distances[start_idx]
-      gradient[i] <- delta_elevation / delta_distance
+    delta_elevation <- elevations[end_idx] - elevations[start_idx]
+    delta_distance <- distances[end_idx] - distances[start_idx]
+    if (!is.finite(delta_distance) || delta_distance == 0) {
+      gradient[i] <- NA_real_
     } else {
-      gradient[i] <- NA
+      gradient[i] <- delta_elevation / delta_distance
     }
   }
 

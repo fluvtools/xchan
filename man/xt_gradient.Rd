@@ -2,56 +2,70 @@
 % Please edit documentation in R/xt_gradient.R
 \name{xt_gradient}
 \alias{xt_gradient}
+\alias{xt_gradient.xchan}
+\alias{xt_gradient.default}
 \title{Calculate channel gradient}
 \usage{
 xt_gradient(
   channel,
   ...,
-  .before = 1L,
-  .after = 1L,
-  .complete = FALSE,
+  before = 1L,
+  after = 1L,
+  complete = FALSE,
   elevation = elevation_bank(),
   axis = NULL
 )
 }
 \arguments{
-\item{channel}{Channel object}
+\item{channel}{An \code{\link[=xchan]{xchan}} with one or more cross sections (length \code{n}).
+With \code{n == 1}, every gradient is \code{NA} because no segment exists.}
 
-\item{...}{Additional arguments (ignored)}
+\item{...}{Must be empty.}
 
-\item{.before}{Number of cross-sections before current to include in calculation}
+\item{before}{Number of cross sections \strong{before} the current index to include as the
+\strong{start} of the segment (inclusive). The gradient uses elevations and axis distances
+at indices \code{i - before} and \code{i + after} when the window is valid.}
 
-\item{.after}{Number of cross-sections after current to include in calculation}
+\item{after}{Number of cross sections \strong{after} the current index to include as the
+\strong{end} of the segment (inclusive).}
 
-\item{.complete}{Whether to include incomplete windows at boundaries}
+\item{complete}{If \code{TRUE}, allow \strong{truncated} windows at the upstream and downstream
+ends of the channel: for station \code{i}, the window is clipped to \verb{[1, n]} so the segment
+runs from \code{max(1, i - before)} to \code{min(n, i + after)}. Every station gets a value
+whenever that clipped window spans at least two distinct stations (otherwise \code{NA}).
 
-\item{elevation}{Elevation specification for gradient calculation}
+If \code{FALSE}, require a \strong{full} window: station \code{i} is only computed when
+\code{i - before >= 1} and \code{i + after <= n}. Otherwise the value is \code{NA}. So with
+\code{before = 1} and \code{after = 1}, only interior stations \verb{2, ..., n-1} are filled; you get
+exactly \strong{one} \code{NA} at the front (first station) and \strong{one} at the end (last station),
+not two at either boundary.}
 
-\item{axis}{Optional channel axis passed to \code{\link[=xt_distance_ds]{xt_distance_ds()}} (same rules as
-\code{\link[=xt_trace_centerline]{xt_trace_centerline()}}: explicit \code{axis}, else \code{xt_axis(channel)}, else error).}
+\item{elevation}{Elevation specification (\code{\link[=elevation_thalweg]{elevation_thalweg()}}, \code{\link[=elevation_bank]{elevation_bank()}}, …).}
+
+\item{axis}{Optional channel axis (same interpretation as \code{\link[=xt_distance_downstream]{xt_distance_downstream()}}; distances
+are computed without attaching units so the gradient ratio stays dimensionless).}
 }
 \value{
-A vector of gradient values for each cross-section
+Numeric vector of gradients (length matches number of cross sections), unitless
+even when axis distances carry units.
 }
 \description{
-Calculate channel gradient
+Compares elevations between cross sections along the channel axis (see \strong{Details}).
+A gradient is undefined for a single cross section (there is no along-channel segment),
+so there is no method for \code{\link[=xsection]{xsection}} — use at least two stations in an
+\code{\link[=xchan]{xchan}}.
 }
 \details{
-This function calculates channel gradient using a sliding window approach,
-inspired by the \code{slider} package. The gradient is calculated as the change
-in elevation divided by the change in distance along the channel axis.
-
-The elevation specification determines which elevation value is used for
-each cross-section. The axis is used to calculate distances between
-cross-sections for the gradient calculation.
+At each station \code{i}, the gradient is \code{(z_end - z_start) / (s_end - s_start)} where \code{z}
+comes from \code{\link[=xt_elevation]{xt_elevation()}} and \code{s} from downstream distance along the axis (same
+convention as \code{\link[=xt_distance_downstream]{xt_distance_downstream()}}, stored as plain numeric for the ratio).
 }
 \examples{
-# Calculate gradient using thalweg elevation
 gradient <- xt_gradient(channel, elevation = elevation_thalweg())
 
-# Calculate gradient using water surface elevation
-gradient <- xt_gradient(channel, elevation = elevation_column("water_surface"))
+# Interior stations only (one NA first and last when before = after = 1)
+gradient <- xt_gradient(channel, before = 1L, after = 1L, complete = FALSE)
 
-# Use wider window for smoother gradient
-gradient <- xt_gradient(channel, .before = 2L, .after = 2L, elevation = elevation_bank(.f = mean))
+# Smoothed using a wider full window
+gradient <- xt_gradient(channel, before = 2L, after = 2L, elevation = elevation_bank(.f = mean))
 }

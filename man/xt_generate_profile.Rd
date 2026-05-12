@@ -16,11 +16,11 @@ xt_generate_profile(
 )
 }
 \arguments{
-\item{channel}{Channel object with planimetric cross sections.}
+\item{channel}{\code{\link{xchan}} with planimetric cross sections.}
 
 \item{dem}{Digital elevation model (raster or terra object).}
 
-\item{...}{Additional arguments (ignored).}
+\item{...}{Must be empty.}
 
 \item{extent_distance}{Distance to extend beyond banks on each side. Use
 \code{Inf} (the default) to extend along the cross section until the DEM
@@ -46,8 +46,7 @@ Mutually exclusive with \code{sample_freq}.}
 sections (same behaviour as \code{\link[=xt_generate_plan]{xt_generate_plan()}}).}
 }
 \value{
-Updated channel object with profile cross sections in the
-profile column.
+Updated \code{\link{xchan}} with profile geometry attached to each cross section.
 }
 \description{
 Generate profile cross sections for a channel object using a digital

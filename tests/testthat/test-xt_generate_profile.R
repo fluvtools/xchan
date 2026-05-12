@@ -16,7 +16,7 @@ test_that("xt_generate_profile errors when cross section lies outside DEM extent
     sf::st_linestring(matrix(c(5, 0, 7, 0), ncol = 2, byrow = TRUE)),
     crs = "EPSG:3857"
   )
-  channel <- xt_channel(.plan = seg)
+  channel <- xchan:::new_channel(seg)
 
   expect_error(
     xt_generate_profile(channel, dem, extent_distance = 0, sample_n = 10),

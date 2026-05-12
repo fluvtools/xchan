@@ -1,6 +1,5 @@
 ---
 title: "Getting Started with xchan"
-author: "Vincenzo Coia"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
@@ -20,62 +19,31 @@ knitr::opts_chunk$set(
 library(xchan)
 ```
 
-# Getting Started with xchan
+The `xchan` package provides tools for creating and manipulating river channel cross-sections. This vignette walks you through a typical workflow.
 
-The `xchan` package provides tools for creating and manipulating river channel cross-sections. This vignette will get you started with the basics.
-
-## Creating Your First Channel Object
-
-The core data structure in `xchan` is the **channel object**. A channel contains planimetric cross-sections (top-down view) and/or profile cross-sections (side view).
-
-### Simple Channel from Widths
-
-Let's get set up with a quick, simple channel. The simplest way to do this is by specifying a vector of widths corresponding to channel cross sections.
-
-```{r simple-channel}
-# Create a channel with 6 cross-sections of varying widths
-widths <- c(10, 12, 8, 15, 11, 9)
-channel <- xt_as_channel(widths)
-channel
-```
-
-Notice that channels are simply data frames where each row is a cross section. So far there is only one column: the planimetric (overhead view) cross-sections created from the specified widths. Add other columns using your usual data frame workflow:
-
-```{r df-channel}
-# Add columns using ordinary data frame semantics
-channel$roughness <- c(0.03, 0.035, 0.025, 0.04, 0.03, 0.025)
-channel$station <- c(0, 100, 200, 300, 400, 500)
-channel
-```
-
-Planimetric cross sections are sufficient for defining a channel, and are sufficient for this demo. You can also add a profile (side) view, and make more realistic channels; see vigette XYZ for more.
-
-Here is what our channel looks like:
-
-```{r}
-plot(channel, view = "plan")
-```
 
 ## Basic Channel Operations
 
 Go ahead and widen the channel, and compare the new channel (blue) with the original (red).
 
 ```{r}
-channel2 <- xt_widen(channel, width = c(2, 1, 3, 0, 0, 0)
-plot(channel2, view = "plan", col = "blue")
-plot(channel, view = "plan", col = "red", add = TRUE)
+channel2 <- xt_widen(channel, dw = c(2, 1, 3, 0, 0, 0))
+plot(channel2, col = "blue")
+plot(channel, col = "red", add = TRUE)
 ```
 
-Once you have a channel object, you can perform various calculations. You can generate bankline polygons, calculate widths, and more. Remember, pretty much everything is customizable; see the various other vignettes for more.
+Once you have a channel object, you can perform various calculations: widths,
+downstream spacing, tracing an approximate axis through the cross-sections, and
+more. Remember, pretty much everything is customizable; see the various other
+vignettes for more.
 
-Generate banklines and trace a channel axis from the cross-sections (if you want to build an axis from a bankline polygon alone, use the **centerline** package on CRAN).
+Trace a channel axis from the cross-sections (if you want to build an axis from
+a bankline polygon alone, use the **centerline** package on CRAN).
 
 ```{r}
-bankline <- xt_bankline(channel2)
 centerline <- xt_trace_centerline(channel2)
-plot(bankline, view = "plan", col = "blue")
-plot(channel2, view = "plan", col = "red", add = TRUE)
-plot(centerline, view = "plan", add = TRUE)
+plot(channel2, col = "red")
+plot(centerline, add = TRUE, col = "blue", lwd = 2)
 ```
 
 
@@ -97,7 +65,7 @@ Calculate downstream distances.
 
 ```{r distance}
 # Calculate downstream distances
-distances <- xt_distance_ds(channel)
+distances <- xt_distance_downstream(channel)
 distances
 ```
 
