@@ -41,13 +41,11 @@ using the \strong{centerline} package (\code{centerline::cnt_path_guess()}).}
 generating planimetric cross sections.}
 }
 \value{
-A channel object with one \code{xsection} per row. Planimetric
-cross-section views follow downstream order along the sampling axis.
-After \code{arrange()} or
-subsetting, restore order with \code{\link[=xt_arrange_downstream]{xt_arrange_downstream()}}. Use \code{\link[=xt_distance_downstream]{xt_distance_downstream()}}
+An \code{\link{xchan}} with one \code{\link{xsection}} per list position, in downstream order along the sampling axis.
+After subsetting, restore order with \code{\link[=xt_arrange_downstream]{xt_arrange_downstream()}}. Use \code{\link[=xt_distance_downstream]{xt_distance_downstream()}}
 for distance along the axis from its start to each section (requires the axis
-from \code{\link[=xt_axis]{xt_axis()}}, which this function sets). The sampling axis is stored for
-geometry that requires it.
+from \code{\link[=xt_axis]{xt_axis()}}, which this function sets). The sampling axis is stored on the
+\code{\link{xchan}} object.
 }
 \description{
 Generate a channel object with planimetric cross sections from a

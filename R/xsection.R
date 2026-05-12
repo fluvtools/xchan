@@ -1,6 +1,6 @@
-#' Predicate tests for \code{xchan}, \code{xchan_tbl}, and \code{xsection}
+#' Predicate tests for \code{xchan} and \code{xsection}
 #'
-#' These functions test inheritance from a single class each. For tables or list
+#' These functions test inheritance from a single class each. For list
 #' containers holding cross sections, see [xt_is_channel()] and [xt_is_cross_section()].
 #'
 #' @name is.xchan
@@ -11,9 +11,7 @@
 #'
 #' @examples
 #' \donttest{
-#' tbl <- xt_as_channel(c(10, 12, 11))
-#' is.xchan_tbl(tbl)
-#' xc <- tbl[[attr(tbl, "xsection_col", exact = TRUE)]]
+#' xc <- xt_as_channel(c(10, 12, 11))
 #' is.xchan(xc)
 #' xs <- xc[[1]]
 #' is.xsection(xs)
@@ -21,10 +19,6 @@
 #'
 #' @export
 is.xchan <- function(x) inherits(x, "xchan")
-
-#' @rdname is.xchan
-#' @export
-is.xchan_tbl <- function(x) inherits(x, "xchan_tbl")
 
 #' @rdname is.xchan
 #' @export
@@ -105,13 +99,22 @@ assert_xchan_profile_homogeneity <- function(x) {
 #' Construct a vector of cross sections (`xchan`)
 #'
 #' `xchan` is a list-like geometry container, analogous to an `sfc` object in
-#' `{sf}`. CRS is stored once at the container level.
+#' **sf**. CRS (and optionally the channel axis; see [xt_axis()]) are stored as
+#' attributes on the container, not repeated on each section.
+#'
+#' The internal layout is deliberately exposed: each cross section is one
+#' element of the list (`[[i]]` is an [`xsection`]). You can inspect or replace
+#' sections directly, and combine them with ordinary list tools. Single-bracket
+#' subsetting (`[`) is implemented so **`crs` and `axis` are preserved** on the
+#' result; double-bracket (`[[`) returns a bare [`xsection`] by design.
 #'
 #' @param sections A list of `xsection` objects.
 #' @param crs Optional CRS accepted by [sf::st_crs()].
+#' @param axis Optional reach-scale axis as a single `LINESTRING` (`sfc` or
+#'   `sfg`), same CRS as the plan geometry; see [xt_axis()].
 #' @returns An object of class `"xchan"` / `"xchan_geom"`.
 #' @export
-xchan <- function(sections, crs = NULL) {
+xchan <- function(sections, crs = NULL, axis = NULL) {
   if (!is.list(sections)) {
     stop("`sections` must be a list of `xsection` objects.", call. = FALSE)
   }
@@ -126,10 +129,34 @@ xchan <- function(sections, crs = NULL) {
     }
     assert_section_profiles_homogeneous(sections)
   }
-  structure(
+  crs_val <- if (is.null(crs)) NA else sf::st_crs(crs)
+  out <- structure(
     sections,
-    crs = if (is.null(crs)) NA else sf::st_crs(crs),
+    crs = crs_val,
     class = c("xchan", "xchan_geom", "list")
+  )
+  if (!is.null(axis)) {
+    attr(out, "axis") <- axis
+  }
+  out
+}
+
+#' @describeIn xchan Subset by section index; preserves \code{crs} and \code{axis}.
+#' @export
+`[.xchan` <- function(x, i, ...) {
+  rlang::check_dots_empty()
+  if (missing(i)) {
+    i <- seq_along(x)
+  }
+  subs <- unclass(x)[i]
+  if (!is.list(subs)) {
+    subs <- list(subs)
+  }
+  structure(
+    subs,
+    crs = attr(x, "crs", exact = TRUE),
+    axis = attr(x, "axis", exact = TRUE),
+    class = class(x)
   )
 }
 
@@ -193,13 +220,6 @@ xchan_crs <- function(x) {
   if (inherits(x, "xchan")) {
     return(attr(x, "crs", exact = TRUE))
   }
-  if (inherits(x, "xchan_tbl")) {
-    col <- attr(x, "xsection_col", exact = TRUE)
-    if (is.null(col) || !col %in% names(x)) {
-      return(NA)
-    }
-    return(attr(x[[col]], "crs", exact = TRUE))
-  }
   NA
 }
 
@@ -210,41 +230,7 @@ xchan_crs <- function(x) {
     attr(x, "crs") <- crs
     return(x)
   }
-  if (inherits(x, "xchan_tbl")) {
-    col <- attr(x, "xsection_col", exact = TRUE)
-    if (!is.null(col) && col %in% names(x)) {
-      attr(x[[col]], "crs") <- crs
-    }
-    return(x)
-  }
   stop("Unsupported object for CRS replacement.", call. = FALSE)
-}
-
-#' @noRd
-xchan_to_plan <- function(x) {
-  checkmate::assert_class(x, "xchan")
-  geoms <- lapply(x, xsection_to_linestring)
-  cr <- xchan_crs(x)
-  crs_use <- if (inherits(cr, "crs")) {
-    cr
-  } else {
-    suppressWarnings(sf::st_crs(cr))
-  }
-  if (inherits(crs_use, "crs") && is.na(crs_use)) {
-    crs_use <- sf::NA_crs_
-  }
-  sf::st_sfc(geoms, crs = crs_use)
-}
-
-#' @noRd
-xchan_to_profile <- function(x) {
-  checkmate::assert_class(x, "xchan")
-  assert_xchan_profile_homogeneity(x)
-  prof <- lapply(x, function(xs) xs$profile)
-  if (all(vapply(prof, is.null, logical(1)))) {
-    return(NULL)
-  }
-  prof
 }
 
 #' @noRd

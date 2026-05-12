@@ -1,13 +1,9 @@
-test_that("xt_is_channel and is.xchan* distinguish table vs container", {
+test_that("xt_is_channel and is.xchan identify xchan container", {
   skip_if_not_installed("sf")
-  tbl <- xt_as_channel(c(8, 7, 6))
-  xc <- tbl[[attr(tbl, "xsection_col", exact = TRUE)]]
-  expect_true(xt_is_channel(tbl))
+  xc <- xt_as_channel(c(8, 7, 6))
   expect_true(xt_is_channel(xc))
-  expect_true(is.xchan_tbl(tbl))
-  expect_false(is.xchan(tbl))
   expect_true(is.xchan(xc))
-  expect_false(is.xchan_tbl(xc))
+  expect_false(is.xsection(xc))
 })
 
 test_that("cross-section predicates agree", {
@@ -32,10 +28,10 @@ test_that("xt_has_profile works on xsection and xchan", {
   expect_false(xt_has_profile(xchan(list(xsection(plan), xsection(plan + 1)))))
 })
 
-test_that("xt_has_profile works on xchan_tbl", {
+test_that("xt_has_profile is false on xchan without profiles", {
   skip_if_not_installed("sf")
-  tbl <- xt_as_channel(c(4, 4))
-  expect_false(xt_has_profile(tbl))
+  xc <- xt_as_channel(c(4, 4))
+  expect_false(xt_has_profile(xc))
 })
 
 test_that("mixed profile state across sections is rejected", {

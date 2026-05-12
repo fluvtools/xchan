@@ -1,12 +1,3 @@
-test_that("xt_as_sf drops plan/profile columns and adds geometry", {
-  skip_if_not_installed("sf")
-  ch <- xt_as_channel(c(2, 2), crs = 3005)
-  out <- xt_as_sf(ch, what = "plan")
-  expect_s3_class(out, "sf")
-  expect_true("geometry" %in% names(out))
-  expect_false("plan" %in% names(out))
-})
-
 test_that("xt_as_sfc profile builds distance–elevation LINESTRINGs", {
   skip_if_not_installed("sf")
   coords <- matrix(c(-1, 10, 0, 8, 1, 10), ncol = 2, byrow = TRUE)

@@ -7,7 +7,7 @@
 xt_has_profile(x)
 }
 \arguments{
-\item{x}{An \code{xsection}, \code{xchan}, or \code{xchan_tbl} object.}
+\item{x}{An \code{xsection} or \code{xchan} object.}
 }
 \value{
 \code{TRUE} if profile geometry is present as described above; \code{FALSE} if
@@ -15,8 +15,8 @@ uniformly absent.
 }
 \description{
 For an \code{xsection}, returns whether \code{profile} is non-\code{NULL}.
-For \code{xchan} and \code{xchan_tbl}, returns \code{TRUE} only when \strong{every}
-cross section carries an \code{xs_profile}, and \code{FALSE} when \strong{none} do.
+For \code{xchan}, returns \code{TRUE} only when \strong{every} cross section carries an
+\code{xs_profile}, and \code{FALSE} when \strong{none} do.
 }
 \details{
 Mixing sections with and without profiles is not allowed; constructors and

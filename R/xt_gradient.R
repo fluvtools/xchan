@@ -2,19 +2,11 @@
 #'
 #' Compares elevations between cross sections along the channel axis (see **Details**).
 #' A gradient is undefined for a single cross section (there is no along-channel segment),
-#' so there is no method for [`xsection`][xsection()] — use at least two stations ([`xchan`][xchan()]
-#' or \code{xchan_tbl}).
+#' so there is no method for [`xsection`][xsection()] — use at least two stations in an
+#' [`xchan`][xchan()].
 #'
-#' @section Methods:
-#' Registered classes for `channel`:
-#' \itemize{
-#' \item \code{xchan_tbl}: computed on the channel table (primary implementation).
-#' \item \code{xchan}: same as calling [`xt_as_channel()`] on `channel`, then using the
-#'   \code{xchan_tbl} method.
-#' }
-#'
-#' @param channel An \code{xchan_tbl} or [`xchan`][xchan()] with one or more cross
-#'   sections (length `n`). With `n == 1`, every gradient is `NA` because no segment exists.
+#' @param channel An [`xchan`][xchan()] with one or more cross sections (length `n`).
+#'   With `n == 1`, every gradient is `NA` because no segment exists.
 #' @param ... Must be empty.
 #' @param before Number of cross sections **before** the current index to include as the
 #'   **start** of the segment (inclusive). The gradient uses elevations and axis distances
@@ -50,10 +42,6 @@
 #'
 #' # Smoothed using a wider full window
 #' gradient <- xt_gradient(channel, before = 2L, after = 2L, elevation = elevation_bank(.f = mean))
-#'
-#' # Same calculation from the geometry column (`xchan`)
-#' xc <- channel[[attr(channel, "xsection_col", exact = TRUE)]]
-#' gradient <- xt_gradient(xc, elevation = elevation_thalweg())
 #' @export
 xt_gradient <- function(
   channel,
@@ -71,27 +59,6 @@ xt_gradient <- function(
 #' @rdname xt_gradient
 #' @usage NULL
 #' @export
-xt_gradient.xchan_tbl <- function(
-  channel,
-  ...,
-  before = 1L,
-  after = 1L,
-  complete = FALSE,
-  elevation = elevation_bank(),
-  axis = NULL
-) {
-  rlang::check_dots_empty()
-  checkmate::assert_class(channel, "xchan_tbl")
-
-  elevations <- xt_elevation(channel, reference = elevation)
-  distances <- axis_distances_numeric(channel, axis)
-
-  gradient_sliding_window(elevations, distances, before, after, complete)
-}
-
-#' @rdname xt_gradient
-#' @usage NULL
-#' @export
 xt_gradient.xchan <- function(
   channel,
   ...,
@@ -103,14 +70,11 @@ xt_gradient.xchan <- function(
 ) {
   rlang::check_dots_empty()
   checkmate::assert_class(channel, "xchan")
-  xt_gradient(
-    xt_as_channel(channel),
-    before = before,
-    after = after,
-    complete = complete,
-    elevation = elevation,
-    axis = axis
-  )
+
+  elevations <- xt_elevation(channel, reference = elevation)
+  distances <- axis_distances_numeric(channel, axis)
+
+  gradient_sliding_window(elevations, distances, before, after, complete)
 }
 
 #' @rdname xt_gradient
@@ -128,7 +92,7 @@ xt_gradient.default <- function(
   stop(
     "No `xt_gradient()` method for class ",
     paste(class(channel), collapse = "/"),
-    ". Use an `xchan_tbl` or `xchan` object (gradient needs multiple cross sections).",
+    ". Use an `xchan` object (gradient needs multiple cross sections).",
     call. = FALSE
   )
 }

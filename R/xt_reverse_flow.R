@@ -3,9 +3,8 @@
 #' Swaps what is called the "left" and "right" banks (from the perspective
 #' of someone looking downstream).
 #'
-#' @param channel A cross section object.
-#' @returns A cross section object with the flow direction reversed. That is,
-#' what was previously called the left bank is now the right, and vice versa.
+#' @param channel An [`xchan`] object.
+#' @returns An [`xchan`] with flow direction reversed (see **Details**).
 #' @details
 #' Planimetric segments are reversed end-for-end (`flip_plan()`), so the first
 #' vertex now corresponds to what was the right bank (and vice versa). Profile
@@ -20,11 +19,12 @@
 #' the new zero at the former downstream end. Then [xt_arrange_downstream()] sorts by
 #' increasing chainage along **hydrologic** downstream after the reversal (for example order
 #' D, C, B, A instead of A, B, C, D when those letters ran upstream-to-downstream before).
-#' Row order of the table is unchanged by this function.
+#' Section order in the [`xchan`] list is unchanged by this function.
 #' @note Summaries that treat left and right symmetrically (e.g. [elevation_bank()] with
-#' default `min`) are unchanged until you reorder rows.
+#' default `min`) are unchanged until you reorder sections (e.g. [xt_arrange_downstream()]).
 #' @export
 xt_reverse_flow <- function(channel) {
+  checkmate::assert_class(channel, "xchan")
   channel <- set_channel_plan(channel, flip_plan(channel_plan(channel)))
   if (xt_has_profile(channel)) {
     channel <- set_channel_profile(

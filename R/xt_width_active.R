@@ -9,7 +9,7 @@
 #' containing the active widths of each cross section.
 #' @export
 xt_width_active <- function(channel) {
-  checkmate::assert_class(channel, "xchan_tbl")
+  checkmate::assert_class(channel, "xchan")
 
   profile <- channel_profile(channel)
   if (is.null(profile)) {

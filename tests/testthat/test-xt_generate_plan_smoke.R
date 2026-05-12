@@ -9,7 +9,7 @@ test_that("xt_generate_plan orders sections downstream along axis", {
   skip_if_not_installed("sf")
   ch <- xt_generate_plan(fraser_bankline, n = 12)
   ds <- xt_distance_downstream(ch)
-  expect_identical(length(ds), nrow(ch))
+  expect_identical(length(ds), length(ch))
   # `ds` carries CRS units; strip before the bare-numeric comparison with 0.
   expect_true(all(diff(as.numeric(ds)) >= 0))
 })

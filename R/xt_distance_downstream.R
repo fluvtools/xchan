@@ -5,17 +5,17 @@
 #' to each cross section's bank-to-bank midpoint. **`xt_distance_upstream()`** returns
 #' distance along the axis **from each midpoint to the end** of the axis (equivalently:
 #' axis length minus downstream distance). Together they satisfy
-#' `xt_distance_downstream(x) + xt_distance_upstream(x) == axis_length` at each row when
+#' `xt_distance_downstream(x) + xt_distance_upstream(x) == axis_length` at each section when
 #' lengths are numeric.
 #'
-#' @param channel A channel object with planimetric cross sections.
+#' @param channel An [`xchan`] with planimetric cross sections.
 #' @param axis Optional **LINESTRING** (`sfc` / `sfg`). Resolution matches
 #'   [xt_trace_centerline()]: use this geometry, else `xt_axis(channel)`, else an
 #'   error (set an axis with `xt_axis(channel) <- ...` or use [xt_generate_plan()]).
-#' @returns A numeric vector of length `nrow(channel)` (same row order as `channel`). The
+#' @returns A numeric vector of length `length(channel)` (same section order as `channel`). The
 #'   result carries [units::units()] when the channel has a CRS with a defined linear unit;
 #'   plain numeric otherwise.
-#' @note Use [xt_arrange_downstream()] if you need rows ordered by downstream chainage.
+#' @note Use [xt_arrange_downstream()] if you need sections ordered by downstream chainage.
 #'
 #' @examples
 #' \donttest{

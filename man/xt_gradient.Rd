@@ -2,7 +2,6 @@
 % Please edit documentation in R/xt_gradient.R
 \name{xt_gradient}
 \alias{xt_gradient}
-\alias{xt_gradient.xchan_tbl}
 \alias{xt_gradient.xchan}
 \alias{xt_gradient.default}
 \title{Calculate channel gradient}
@@ -18,8 +17,8 @@ xt_gradient(
 )
 }
 \arguments{
-\item{channel}{An \code{xchan_tbl} or \code{\link[=xchan]{xchan}} with one or more cross
-sections (length \code{n}). With \code{n == 1}, every gradient is \code{NA} because no segment exists.}
+\item{channel}{An \code{\link[=xchan]{xchan}} with one or more cross sections (length \code{n}).
+With \code{n == 1}, every gradient is \code{NA} because no segment exists.}
 
 \item{...}{Must be empty.}
 
@@ -53,24 +52,14 @@ even when axis distances carry units.
 \description{
 Compares elevations between cross sections along the channel axis (see \strong{Details}).
 A gradient is undefined for a single cross section (there is no along-channel segment),
-so there is no method for \code{\link[=xsection]{xsection}} — use at least two stations (\code{\link[=xchan]{xchan}}
-or \code{xchan_tbl}).
+so there is no method for \code{\link[=xsection]{xsection}} — use at least two stations in an
+\code{\link[=xchan]{xchan}}.
 }
 \details{
 At each station \code{i}, the gradient is \code{(z_end - z_start) / (s_end - s_start)} where \code{z}
 comes from \code{\link[=xt_elevation]{xt_elevation()}} and \code{s} from downstream distance along the axis (same
 convention as \code{\link[=xt_distance_downstream]{xt_distance_downstream()}}, stored as plain numeric for the ratio).
 }
-\section{Methods}{
-
-Registered classes for \code{channel}:
-\itemize{
-\item \code{xchan_tbl}: computed on the channel table (primary implementation).
-\item \code{xchan}: same as calling \code{\link[=xt_as_channel]{xt_as_channel()}} on \code{channel}, then using the
-\code{xchan_tbl} method.
-}
-}
-
 \examples{
 gradient <- xt_gradient(channel, elevation = elevation_thalweg())
 
@@ -79,8 +68,4 @@ gradient <- xt_gradient(channel, before = 1L, after = 1L, complete = FALSE)
 
 # Smoothed using a wider full window
 gradient <- xt_gradient(channel, before = 2L, after = 2L, elevation = elevation_bank(.f = mean))
-
-# Same calculation from the geometry column (`xchan`)
-xc <- channel[[attr(channel, "xsection_col", exact = TRUE)]]
-gradient <- xt_gradient(xc, elevation = elevation_thalweg())
 }

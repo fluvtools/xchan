@@ -2,7 +2,7 @@
 #'
 #' Maps profile elevation data to plan-view coordinates. Horizontal positions use
 #' the same chord mapping as plan export with \code{extent = "full"} in
-#' \code{\link[=xt_as_sf]{xt_as_sf()}} (first to last vertex of the plan line).
+#' \code{\link[=xt_as_sfc]{xt_as_sfc()}} (first to last vertex of the plan line).
 #'
 #' @param plan Planimetric cross section (`LINESTRING`).
 #' @param profile Profile cross section (`xs_profile`).

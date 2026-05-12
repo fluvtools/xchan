@@ -2,15 +2,12 @@
 % Please edit documentation in R/xt_erosion_volume.R
 \name{xt_erosion_volume}
 \alias{xt_erosion_volume}
-\alias{xt_erosion_volume.xchan_tbl}
 \alias{xt_erosion_volume.xchan}
 \alias{xt_erosion_volume.xsection}
 \alias{xt_erosion_volume.default}
 \title{Calculate erosion volume from width change}
 \usage{
 xt_erosion_volume(channel, dw, side = "both")
-
-\method{xt_erosion_volume}{xchan_tbl}(channel, dw, side = "both")
 
 \method{xt_erosion_volume}{xchan}(channel, dw, side = "both")
 
@@ -19,20 +16,19 @@ xt_erosion_volume(channel, dw, side = "both")
 \method{xt_erosion_volume}{default}(channel, dw, side = "both")
 }
 \arguments{
-\item{channel}{An \code{\link[=xt_as_channel]{xchan_tbl}}, \code{\link[=xchan]{xchan}}, or \code{\link[=xsection]{xsection}}
-with profile geometry.}
+\item{channel}{An \code{\link[=xchan]{xchan}} or \code{\link[=xsection]{xsection}} with profile geometry.}
 
 \item{dw}{Change in width; for \code{\link[=xsection]{xsection}}, a single positive value. For
-\code{xchan_tbl} / \code{\link[=xchan]{xchan}}, a single value recycled to every section or
-one value per cross section. Plain numeric uses the channel CRS length unit;
+\code{\link[=xchan]{xchan}}, a single value recycled to every section or one value per cross
+section. Plain numeric uses the channel CRS length unit;
 \code{\link[units:units]{units::units()}} lengths are converted automatically.}
 
 \item{side}{A side specification controlling how widening is split between left and right
 banks: \code{\link[=side_left]{side_left()}}, \code{\link[=side_right]{side_right()}}, \code{\link[=side_both]{side_both()}}, or \code{"left"}, \code{"right"}, \code{"both"}.}
 }
 \value{
-For \code{xchan_tbl} and \code{xchan}, a numeric vector of erosion volumes (one per row /
-section). For \code{xsection}, length-one vector. Values carry \code{\link[units:units]{units::units()}} of (CRS length
+For \code{\link[=xchan]{xchan}}, a numeric vector of erosion volumes (one per section).
+For \code{\link[=xsection]{xsection}}, length-one vector. Values carry \code{\link[units:units]{units::units()}} of (CRS length
 unit)^3 when a linear CRS unit is defined.
 }
 \description{

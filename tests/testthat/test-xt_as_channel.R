@@ -74,17 +74,9 @@ test_that("xt_as_channel is stable on existing channels", {
   expect_identical(sf::st_crs(channel_plan(xt_as_channel(x, crs = 3005))), sf::st_crs(3005))
 })
 
-test_that("xt_as_channel.data.frame rejects ... and applies crs to plan column", {
+test_that("xt_as_channel.sfc applies crs when supplied", {
   l <- sf::st_linestring(matrix(c(0, 1, 0, 1), ncol = 2))
   sfc <- sf::st_sfc(l, sf::st_linestring(matrix(c(-1, 1, 0, 1), ncol = 2)))
-  df <- data.frame(id = 1:2)
-  df$plan <- sfc
-
-  expect_error(
-    xt_as_channel(df, plan_col = "plan", extra = 1),
-    "`...` is not used when coercing a data frame"
-  )
-
-  x <- xt_as_channel(df, plan_col = "plan", crs = 3005)
+  x <- xt_as_channel(sfc, crs = 3005)
   expect_identical(sf::st_crs(channel_plan(x)), sf::st_crs(3005))
 })

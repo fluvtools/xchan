@@ -4,7 +4,7 @@ test_that("plot.xsection works for plan-only and profile views", {
     crs = 3005
   )
   ch <- xchan:::new_channel(seg)
-  xs <- ch$xsection[[1]]
+  xs <- ch[[1]]
 
   grDevices::pdf(NULL)
   on.exit(grDevices::dev.off(), add = TRUE)
@@ -19,7 +19,7 @@ test_that("plot.xsection works for plan-only and profile views", {
   coords <- matrix(c(-3, 10, 0, 8, 3, 10), ncol = 2, byrow = TRUE)
   prof <- xchan:::new_profile(coords, bankpoints = c(-3, 3))
   ch2 <- xchan:::new_channel(seg6, profile = list(prof))
-  xs2 <- ch2$xsection[[1]]
+  xs2 <- ch2[[1]]
 
   expect_no_error(plot(xs2))
   expect_no_error(plot(xs2, view = "plan"))

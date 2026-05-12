@@ -113,8 +113,7 @@ test_that("xt_erosion_volume accepts length units, returns m^3", {
   out_cm <- xt_erosion_volume(ch, dw = units::set_units(50, "cm"))
   expect_equal(as.numeric(out_cm), as.numeric(out_num), tolerance = 1e-9)
 
-  xcol <- attr(ch, "xsection_col", exact = TRUE)
-  xc <- ch[[xcol]]
+  xc <- ch
   xs <- xc[[1]]
   expect_equal(as.numeric(xt_erosion_volume(xc, dw = 0.5)), as.numeric(out_num))
   expect_equal(as.numeric(xt_erosion_volume(xs, dw = 0.5)), as.numeric(out_num))

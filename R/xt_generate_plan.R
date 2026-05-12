@@ -29,13 +29,11 @@
 #'   using the **centerline** package (`centerline::cnt_path_guess()`).
 #' @param progress Logical; if `TRUE`, display a text progress bar while
 #'   generating planimetric cross sections.
-#' @returns A channel object with one `xsection` per row. Planimetric
-#'   cross-section views follow downstream order along the sampling axis.
-#'   After `arrange()` or
-#'   subsetting, restore order with [xt_arrange_downstream()]. Use [xt_distance_downstream()]
+#' @returns An [`xchan`] with one [`xsection`] per list position, in downstream order along the sampling axis.
+#'   After subsetting, restore order with [xt_arrange_downstream()]. Use [xt_distance_downstream()]
 #'   for distance along the axis from its start to each section (requires the axis
-#'   from [xt_axis()], which this function sets). The sampling axis is stored for
-#'   geometry that requires it.
+#'   from [xt_axis()], which this function sets). The sampling axis is stored on the
+#'   [`xchan`] object.
 #' @details **Bank geometry:** Supply the channel as one polygon (or
 #' multipolygon) so its boundary is a closed loop around the wetted/plan
 #' corridor. If you only have two bank polylines, convert them to a closed
