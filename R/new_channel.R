@@ -1,33 +1,27 @@
-#' Constructor function for channel objects
+#' Assemble an [`xchan`] from plan linestrings (internal)
 #'
-#' @param l Object to turn into a channel.
-#' @param plan_col Name of the plan column (or NULL if not present)
-#' @param profile_col Name of the profile column (or NULL if not present)
-#' @param axis Optional channel axis as `sfc` LINESTRING (length 1); see [xt_axis()].
-#' @param ... Additional attributes to add to the object.
-#' @param class If making a subclass, specify its name here.
-#' @returns An object of class `"xchan"`, which is a data frame with plan
-#' and/or profile columns.
+#' Used by tests and coercion helpers. Validates plan widths against profiles
+#' when profiles are present.
+#'
+#' @param l `sfc_LINESTRING` of cross sections.
+#' @param axis Optional validated axis (`sfc` LINESTRING length 1), or `NULL`.
+#' @param profile Optional list of `xs_profile` objects, same length as `l`.
+#' @returns An [`xchan`] object.
 #' @noRd
-new_channel <- function(
-  l,
-  plan_col = NULL,
-  profile_col = NULL,
-  axis = NULL,
-  ...,
-  class = character()
-) {
-  original_class <- class(l)
+new_channel <- function(l, axis = NULL, profile = NULL) {
+  if (!inherits(l, "sfc") || !inherits(l, "sfc_LINESTRING")) {
+    stop("`new_channel()` expects an `sfc_LINESTRING`.", call. = FALSE)
+  }
+  vp <- validate_plan(l)
+  if (!vp$valid) {
+    stop(paste(vp$issues, collapse = "; "), call. = FALSE)
+  }
 
-  # if (!is.null(plan_col)) attrs$plan_col <- plan_col
-  # if (!is.null(profile_col)) attrs$profile_col <- profile_col
-
-  structure(
-    l,
-    plan_col = plan_col,
-    profile_col = profile_col,
-    axis = axis,
-    ...,
-    class = c(class, "xchan", original_class)
-  )
+  xsec <- xchan_from_plan_profile(l, profile)
+  xsec <- `xchan_crs<-`(xsec, sf::st_crs(l))
+  if (!is.null(axis)) {
+    attr(xsec, "axis") <- axis
+  }
+  validate_plan_profile_widths(xsec)
+  xsec
 }

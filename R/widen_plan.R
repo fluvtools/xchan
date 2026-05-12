@@ -1,5 +1,5 @@
 widen_plan <- function(plan, dw, prop_left) {
-  validation <- xt_validate_plan(plan)
+  validation <- validate_plan(plan)
   if (!validation$valid) {
     stop(
       "Invalid plan view cross sections: ",
@@ -23,7 +23,7 @@ widen_plan <- function(plan, dw, prop_left) {
 }
 
 widen_plan_right <- function(plan, dw) {
-  validation <- xt_validate_plan(plan)
+  validation <- validate_plan(plan)
   if (!validation$valid) {
     stop(
       "Invalid plan view cross sections: ",
@@ -42,10 +42,18 @@ widen_plan_right <- function(plan, dw) {
     if (nrow(mat) < 2) {
       stop("Each plan cross section must have at least two vertices.")
     }
-    base_pt <- mat[1, 1:2] # left
-    end_pt <- mat[nrow(mat), 1:2] # right
-    vec <- end_pt - base_pt
+    # Extend along the final segment (bank tangent), not the first-to-last
+    # chord. Profile widening adds exactly `dw` along the transect axis; path
+    # length must increase by the same amount or plan vs profile widths diverge
+    # for non-straight cross section polylines.
+    end_pt <- mat[nrow(mat), 1:2] # right bank
+    penultimate <- mat[nrow(mat) - 1L, 1:2]
+    vec <- end_pt - penultimate
     mag <- sqrt(sum(vec^2))
+    if (mag == 0) {
+      vec <- end_pt - mat[1, 1:2]
+      mag <- sqrt(sum(vec^2))
+    }
     if (mag == 0) {
       stop("Encountered zero-length plan cross section; cannot widen.")
     }

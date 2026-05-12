@@ -4,7 +4,7 @@
 #' @export
 tracer_linear <- function() {
   f <- function(channel) {
-    plan <- xt_column_plan(channel)
+    plan <- channel_plan(channel)
 
     # Extract bank points from planimetric cross sections
     bank_points <- lapply(plan, function(xs) {

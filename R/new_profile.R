@@ -39,6 +39,7 @@
 #' 3. Bank points are always present in the profile coordinates.
 #' 4. Thalwegs are re-computed.
 #'
+#' @keywords internal
 #' @examples
 #' # Create a profile cross section
 #' coords <- matrix(c(
@@ -50,12 +51,11 @@
 #' ), ncol = 2, byrow = TRUE)
 #'
 #' # Simple channel: water from -3 to 3
-#' profile <- xt_profile(coords, bankpoints = c(-3, 3))
+#' profile <- new_profile(coords, bankpoints = c(-3, 3))
 #'
 #' # Channel with island: water from -3 to -1, land from -1 to 1, water from 1 to 3
-#' profile <- xt_profile(coords, bankpoints = c(-3, -1, 1, 3))
-#' @export
-xt_profile <- function(coords, bankpoints) {
+#' profile <- new_profile(coords, bankpoints = c(-3, -1, 1, 3))
+new_profile <- function(coords, bankpoints) {
   checkmate::assert_matrix(
     coords,
     mode = "numeric",

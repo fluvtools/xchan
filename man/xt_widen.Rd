@@ -2,14 +2,20 @@
 % Please edit documentation in R/xt_widen.R
 \name{xt_widen}
 \alias{xt_widen}
-\title{Widen a channel}
+\alias{xt_widen.xchan}
+\alias{xt_widen.xsection}
+\title{Widen cross sections}
 \usage{
 xt_widen(channel, ..., dw, dv, side = "both")
+
+\method{xt_widen}{xchan}(channel, ..., dw, dv, side = "both")
+
+\method{xt_widen}{xsection}(channel, ..., dw, dv, side = "both")
 }
 \arguments{
-\item{channel}{Channel object}
+\item{channel}{An \code{\link{xchan}} or \code{\link{xsection}} object.}
 
-\item{...}{Additional arguments (ignored)}
+\item{...}{Must be empty (named \code{dw} / \code{dv} arguments are required).}
 
 \item{dw}{The total width to add to the channel. Positive numeric, or a
 \code{\link[units:units]{units::units()}} length object (for example
@@ -27,14 +33,13 @@ left and right banks. Supply either a side object from \code{\link[=side_left]{s
 \code{"right"}, or \code{"both"}.}
 }
 \value{
-A modified channel object
+Object of the same class as \code{channel}, with widened sections.
 }
 \description{
-Widen a channel
+Widen cross sections
 }
 \note{
-While the ellipsis \code{...} is currently not used, it forces the \code{dw} and
-\code{dv} arguments to be named to ensure deliberate specification.
+The ellipsis \code{...} must be empty; named \code{dw} and \code{dv} keep widening deliberate.
 }
 \examples{
 xt_widen(channel, dw = 10)

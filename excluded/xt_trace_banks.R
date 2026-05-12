@@ -34,7 +34,7 @@
 xt_trace_banks <- function(channel, tracer = "linear") {
   checkmate::assert_class(channel, "xchan")
 
-  plan <- xt_column_plan(channel)
+  plan <- channel_plan(channel)
   if (is.null(plan)) {
     stop("Channel object must have planimetric cross sections")
   }

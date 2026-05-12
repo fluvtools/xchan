@@ -6,18 +6,18 @@
 #' @export
 dredger_rectangle <- function(depth, wse = elevation_bank()) {
   f <- function(channel) {
-    if (!is_channel(channel)) {
+    if (!xt_is_channel(channel)) {
       stop("Input must be a channel object.")
     }
     if (xt_has_profile(channel)) {
-      profile <- xt_column_profile(channel)
+      profile <- channel_profile(channel)
       x_left <- profile$banks[1]
       x_right <- profile$banks[length(profile$banks)]
       elev <- wse(channel)
       z_bottom <- elev - depth
       new_profile <- Map(
         f = function(prof, z) {
-          xt_nodes_channel(prof) <- matrix(
+          nodes_channel(prof) <- matrix(
             c(x_left, z, x_right, z),
             ncol = 2,
             byrow = TRUE
@@ -29,7 +29,7 @@ dredger_rectangle <- function(depth, wse = elevation_bank()) {
     } else {
       widths <- xt_width(channel)
       new_profile <- lapply(widths, function(w) {
-        xt_profile(
+        xchan:::new_profile(
           coords = matrix(
             c(
               -w / 2,
@@ -48,7 +48,7 @@ dredger_rectangle <- function(depth, wse = elevation_bank()) {
         )
       })
     }
-    xt_column_profile(channel) <- new_profile
+    channel = set_channel_profile(channel, new_profile)
     channel
   }
   structure(

@@ -12,5 +12,5 @@
 \item{...}{Additional arguments (ignored)}
 }
 \description{
-Print method for xchan_side objects
+Prints the left/right proportions only (constructors \code{\link[=side_left]{side_left()}}, etc., are equivalent).
 }

@@ -9,7 +9,7 @@
   ...,
   extent = c("banks", "full"),
   add = FALSE,
-  exaggerate = 2,
+  exaggerate = 1,
   from = NULL,
   to = NULL
 )
@@ -25,8 +25,11 @@ sample distances (default \code{"banks"}).}
 
 \item{add}{Logical. Add to existing plot?}
 
-\item{exaggerate}{Single positive numeric. Vertical exaggeration factor;
-defaults to 2. See details.}
+\item{exaggerate}{Positive numeric. \strong{Physical} vertical exaggeration: passed
+as \code{asp} to \link[graphics:plot.default]{graphics::plot.default}, so one data unit along \strong{y} is drawn
+with the same length as \code{exaggerate} data units along \strong{x} (default \code{1}
+gives true 1:1 scaling on the device). Values above 1 stretch the profile
+vertically; values between 0 and 1 compress it. Ignored when \code{add = TRUE}.}
 
 \item{from, to}{Optional adjustments to that window (distance along the
 profile). The plotted range starts at \code{from} when given, otherwise at the
@@ -43,10 +46,14 @@ This function is primarily for internal use or advanced users.
 Most users should work with channel objects using plot_plan() or plot_3d().
 }
 \details{
-The exaggeration factor is applied to the vertical dimension of the profile,
-and defaults to 2 so that changes in topography can be more easily
-perceived. It is strongly recommended not going beyond 3, because
-exaggeration beyond this point can distort the perception of the profile.
+Elevation values are not rescaled; only the plot aspect ratio changes. For
+actually modifying stored elevations, use \code{\link[=xt_exaggerate_relief]{xt_exaggerate_relief()}}.
+
+Finite \code{asp} (from \code{exaggerate}) is implemented by \link[graphics:plot.window]{graphics::plot.window},
+which \strong{may expand} \code{xlim} / \code{ylim} so the aspect ratio can be satisfied in
+the physical plotting region. That is strongest for very large \code{exaggerate};
+see \code{?plot.window} (\code{asp}). It is not mis-handling of \code{from} /
+\code{to} in this package.
 
 For the horizontal axis, \code{extent} fixes the reference span (\code{rng_default}).
 Each of \code{from} and \code{to} overrides one endpoint only when supplied; omitted

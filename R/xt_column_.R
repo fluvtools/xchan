@@ -1,53 +1,44 @@
-#' Extract or replace the profile or plan column in a channel object
+#' Plan/profile helpers for [`xchan`] objects
 #'
-#' This function allows you to extract or replace the profile or plan column
-#' in a channel object of class `xchan`. The profile column contains
-#' xs_profile objects, while the plan column contains sfc_LINESTRING objects.
-#'
-#' @param channel An object of class `xchan` containing cross-section data.
-#' @param value For profile, a list of "xs_profile" objects; for plan, a list of
-#' "sfc_LINESTRING" objects. If `NULL`, the column is removed.
-#' @returns
-#' For `xt_column_*()`, extracts the requested column from the
-#' channel data frame. For plan view, this is an "sfc" object, which is a list
-#' of sf_LINESTRINGs from the sf package. For profile view, this is a list of
-#' of "xs_profile" objects.
-#'
-#' For `xt_column_*<-`, the original `channel` objects with the specified
-#' column updated (or removed if `NULL` for the profile column only). Plan
-#' columns cannot be removed: every `xchan` object must retain planimetric cross
-#' sections.
-#' @rdname xt_column
-xt_column_profile <- function(channel) {
+#' @name channel_views
+#' @keywords internal
+#' @noRd
+NULL
+
+#' @noRd
+channel_profile <- function(channel) {
   checkmate::assert_class(channel, "xchan")
-  profile_col <- attributes(channel)$profile_col
-  if (is.null(profile_col)) {
+  assert_xchan_profile_homogeneity(channel)
+  prof <- lapply(channel, function(xs) xs$profile)
+  if (all(vapply(prof, is.null, logical(1)))) {
     return(NULL)
   }
-  channel[[profile_col]]
+  prof
 }
 
-#' @rdname xt_column
-xt_column_plan <- function(channel) {
+#' @noRd
+channel_plan <- function(channel) {
   checkmate::assert_class(channel, "xchan")
-  plan_col <- attributes(channel)$plan_col
-  if (is.null(plan_col)) {
-    return(NULL)
+  geoms <- lapply(channel, xsection_to_linestring)
+  cr <- xchan_crs(channel)
+  crs_use <- if (inherits(cr, "crs")) {
+    cr
+  } else {
+    suppressWarnings(sf::st_crs(cr))
   }
-  channel[[plan_col]]
+  if (inherits(crs_use, "crs") && is.na(crs_use)) {
+    crs_use <- sf::NA_crs_
+  }
+  sf::st_sfc(geoms, crs = crs_use)
 }
 
-#' @rdname xt_column
-`xt_column_profile<-` <- function(channel, value) {
+#' @noRd
+set_channel_profile <- function(channel, value) {
   checkmate::assert_class(channel, "xchan")
-  profile_colname <- attributes(channel)$profile_col
   if (is.null(value)) {
-    if (is.null(profile_colname)) {
-      return(channel)
-    }
-    channel[[profile_colname]] <- NULL
-    attributes(channel)$profile_col <- NULL
-    return(channel)
+    out <- xchan_with_profile(channel, NULL)
+    validate_plan_profile_widths(out)
+    return(out)
   }
   if (!is.list(value)) {
     stop("Profile value must be a list")
@@ -60,21 +51,14 @@ xt_column_plan <- function(channel) {
       paste(invalid_indices, collapse = ", ")
     )
   }
-
-  if (is.null(profile_colname)) {
-    profile_colname <- "profile"
-    attributes(channel)$profile_col <- profile_colname
-  }
-
-  channel[[profile_colname]] <- value
-  xt_validate_plan_profile_widths(channel)
-  channel
+  out <- xchan_with_profile(channel, value)
+  validate_plan_profile_widths(out)
+  out
 }
 
-#' @rdname xt_column
-`xt_column_plan<-` <- function(channel, value) {
+#' @noRd
+set_channel_plan <- function(channel, value) {
   checkmate::assert_class(channel, "xchan")
-  plan_colname <- attributes(channel)$plan_col
   if (is.null(value)) {
     stop(
       "Cannot remove planimetric cross sections from a channel.",
@@ -82,19 +66,14 @@ xt_column_plan <- function(channel) {
     )
   }
 
-  validation_result <- xt_validate_plan(value)
+  validation_result <- validate_plan(value)
   if (!validation_result$valid) {
     stop(
       "Invalid plan view cross sections: ",
       paste(validation_result$issues, collapse = "; ")
     )
   }
-
-  if (is.null(plan_colname)) {
-    plan_colname <- "plan"
-    attributes(channel)$plan_col <- plan_colname
-  }
-  channel[[plan_colname]] <- value
-  xt_validate_plan_profile_widths(channel)
-  channel
+  out <- xchan_with_plan(channel, value)
+  validate_plan_profile_widths(out)
+  out
 }

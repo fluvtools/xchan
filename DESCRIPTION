@@ -30,9 +30,7 @@ URL: https://stochagbem.github.io/xchan/
 Imports:
     centerline,
     checkmate,
-    concaveman,
     graphics,
-    lwgeom,
     rlang,
     sf,
     stats,
@@ -41,8 +39,11 @@ Imports:
     utils,
     vctrs
 Suggests: 
+    knitr,
+    rmarkdown,
     testthat (>= 3.0.0),
     tibble
+VignetteBuilder: knitr
 Config/testthat/edition: 3
 Depends: 
     R (>= 3.5)

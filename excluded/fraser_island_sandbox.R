@@ -73,10 +73,14 @@ inject_demo_islands <- function(
   if (k < 1L) {
     stop("Provide at least one island.")
   }
-  if (length(width_fractions) != k ||
+  if (
+    length(width_fractions) != k ||
       length(length_fractions) != k ||
-      length(offsets) != k) {
-    stop("`fractions`, `width_fractions`, `length_fractions`, and `offsets` must have equal length.")
+      length(offsets) != k
+  ) {
+    stop(
+      "`fractions`, `width_fractions`, `length_fractions`, and `offsets` must have equal length."
+    )
   }
   if (any(fractions < 0 | fractions > 1)) {
     stop("All `fractions` must be in [0, 1].")
@@ -93,7 +97,7 @@ inject_demo_islands <- function(
   islands <- vector("list", k)
 
   for (j in seq_len(k)) {
-    s <- .island_station(ch$plan, fractions[j])
+    s <- .island_station(xchan::xt_as_sfc(ch, what = "plan"), fractions[j])
     island_try <- .build_capsule_island(
       station_info = s,
       width_fraction = width_fractions[j],
@@ -120,7 +124,8 @@ inject_demo_islands <- function(
     }
     if (!ok) {
       stop(
-        "Could not place island ", j,
+        "Could not place island ",
+        j,
         " fully within bankline; try smaller width/length fractions or different offsets."
       )
     }
@@ -132,13 +137,14 @@ inject_demo_islands <- function(
   bankline_with_islands <- sf::st_difference(bankline, merged_islands)
 
   # Useful diagnostic: do any sampled cross sections intersect all islands?
-  ix <- sf::st_intersects(ch$plan, islands_sfc, sparse = FALSE)
+  plan_sfc <- xchan::xt_as_sfc(ch, what = "plan")
+  ix <- sf::st_intersects(plan_sfc, islands_sfc, sparse = FALSE)
   overlap_sections <- which(rowSums(ix) == ncol(ix))
 
   list(
     bankline_with_islands = bankline_with_islands,
     islands = islands_sfc,
-    sampled_plan = ch$plan,
+    sampled_plan = plan_sfc,
     overlap_sections = overlap_sections
   )
 }
@@ -170,24 +176,31 @@ inject_demo_island <- function(
 # library(xchan)
 # source("excluded/fraser_island_sandbox.R")
 #
-# # Single long/narrow island:
-# one <- inject_demo_island(
-#   fraction = 0.57,
-#   width_fraction = 0.12,
-#   length_fraction = 1.1,
-#   offset = 0.1
-# )
-#
-# # Two islands configured to overlap the same cross sections:
-# two <- inject_demo_islands(
-#   fractions = c(0.57, 0.57),
-#   width_fractions = c(0.12, 0.12),
-#   length_fractions = c(1.0, 1.0),
-#   offsets = c(-0.35, 0.35)
-# )
-# length(two$overlap_sections)  # should usually be > 0
-#
-# plot(fraser_bankline, col = "grey90", border = "grey50")
-# plot(two$bankline_with_islands, add = TRUE, col = "#9ecae1", border = "#3182bd")
-# plot(two$islands, add = TRUE, col = "#fdd0a2", border = "#e6550d")
-# plot(two$sampled_plan[two$overlap_sections], add = TRUE, col = "#6a51a3", lwd = 2)
+# Single long/narrow island:
+one <- inject_demo_island(
+  fraction = 0.57,
+  width_fraction = 0.12,
+  length_fraction = 1.1,
+  offset = 0.1
+)
+
+# Two islands configured to overlap the same cross sections:
+two <- inject_demo_islands(
+  fractions = c(0.57, 0.57),
+  width_fractions = c(0.12, 0.12),
+  length_fractions = c(1.0, 1.0),
+  offsets = c(-0.35, 0.35)
+)
+length(two$overlap_sections) # should usually be > 0
+
+plot(fraser_bankline, col = "grey90", border = "grey50")
+plot(two$bankline_with_islands, add = TRUE, col = "#9ecae1", border = "#3182bd")
+plot(two$islands, add = TRUE, col = "#fdd0a2", border = "#e6550d")
+plot(
+  two$sampled_plan[two$overlap_sections],
+  add = TRUE,
+  col = "#6a51a3",
+  lwd = 2
+)
+
+foo <- xt_generate_plan(two$bankline_with_islands, n = 100, progress = TRUE)

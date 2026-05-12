@@ -8,7 +8,7 @@ xt_trace_thalwegline(channel, axis = NULL)
 }
 \arguments{
 \item{channel}{Channel object with \strong{both} planimetric cross sections and a
-profile column (\code{xs_profile} list).}
+profile view (\code{xs_profile} list).}
 
 \item{axis}{Optional LINESTRING axis used to define downstream section order.
 If \code{NULL}, uses \code{xt_axis(channel)}; if that is also \code{NULL}, an error is
@@ -33,7 +33,7 @@ but through lowest-point (\code{thalweg}) locations rather than mid-channel.
 \details{
 Requires \code{\link[=xt_has_profile]{xt_has_profile()}}. Thalweg \verb{(distance, elevation)} pairs are taken from
 the profile coordinate matrix at each \code{thalwegs} row index; positions along the
-plan line use the same chord interpolation as \code{\link[=xt_as_sf]{xt_as_sf()}}
+plan line use the same chord interpolation as \code{\link[=xt_as_sfc]{xt_as_sfc()}}
 3D export with \code{extent = "banks"} (first plan vertex = left bank, last =
 right bank).
 

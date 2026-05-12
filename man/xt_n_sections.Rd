@@ -7,7 +7,7 @@
 xt_n_sections(channel)
 }
 \arguments{
-\item{channel}{An object of class \code{xchan} representing a channel.}
+\item{channel}{Cross-section geometry container (\code{\link{xchan}}).}
 }
 \value{
 A single integer representing the number of cross sections.

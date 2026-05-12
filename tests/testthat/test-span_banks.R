@@ -13,9 +13,9 @@ test_that("Spanning banks works on a square", {
   # ---- Vertical line ------
   middle <- st_point(c(0.5, 0.5))
   # plot(square); plot(middle, add = TRUE)
-  span_vertical1 <- xt_span_banks(middle, pi / 2, square)
+  span_vertical1 <- xchan:::span_banks(middle, pi / 2, square)
   # plot(span_vertical1, add = TRUE)
-  span_vertical2 <- xt_span_banks(middle, pi / 2, square_sfc)
+  span_vertical2 <- xchan:::span_banks(middle, pi / 2, square_sfc)
   # plot(span_vertical2, add = TRUE)
   vertical <- st_linestring(matrix(
     c(0.5, 0,
@@ -38,9 +38,9 @@ test_that("Spanning banks works on a square", {
   )
   # ---- Angled line ------
   # plot(square); plot(middle, add = TRUE)
-  span_diag1 <- xt_span_banks(middle, pi / 4, square)
+  span_diag1 <- xchan:::span_banks(middle, pi / 4, square)
   # plot(span_diag1, add = TRUE)
-  span_diag2 <- xt_span_banks(middle, pi / 4, square_sfc)
+  span_diag2 <- xchan:::span_banks(middle, pi / 4, square_sfc)
   # plot(span_diag2, add = TRUE)
   diag <- st_linestring(matrix(
     c(0, 0,

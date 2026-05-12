@@ -1,16 +1,16 @@
 #' Width of cross sections
 #'
-#' `xt_width()` returns geometric width. For a `xchan` object, this is one
-#' value per cross section from planimetric line lengths. For a single `xs_profile`
+#' `xt_width()` returns geometric width. For an [`xchan`], this is one value per
+#' cross section from planimetric line lengths. For a single `xs_profile`
 #' object, it is the span along the profile horizontal axis between the
 #' outermost left and right banks (the same convention as
-#' [xt_generate_profile()] and [xt_profile()]).
+#' [xt_generate_profile()] and [new_profile()]).
 #'
-#' @param x A `xchan` or `xs_profile` object.
+#' @param x An [`xchan`] or `xs_profile` object.
 #' @param ... Unused (reserved for methods).
 #'
 #' @returns
-#' For `xchan`: a numeric vector with one width per row, carrying
+#' For [`xchan`]: a numeric vector with one width per cross section, carrying
 #'   [units::units()] when the channel has a CRS with a defined linear unit
 #'   (for example metres). When no CRS is set the result is plain numeric.
 #' For `xs_profile`: a non-negative numeric scalar (no CRS context, so plain
@@ -23,7 +23,7 @@
 #'   crs = 3005
 #' )
 #' coords <- matrix(c(-1, 0, 0, -1, 1, 0), ncol = 2, byrow = TRUE)
-#' xs <- xt_profile(coords, bankpoints = c(-1, 1))
+#' xs <- xchan:::new_profile(coords, bankpoints = c(-1, 1))
 #' xt_width(xs)
 #'
 #' # xt_width(demo_channel)
@@ -37,7 +37,7 @@ xt_width <- function(x, ...) {
 #' @rdname widths
 xt_width.xchan <- function(x, ...) {
   checkmate::assert_class(x, "xchan")
-  plan <- xt_column_plan(x)
+  plan <- channel_plan(x)
   raw <- vapply(plan, function(g) as.numeric(sf::st_length(g)), numeric(1))
   with_length_units(raw, crs_length_unit(plan))
 }
@@ -54,23 +54,23 @@ xt_width.default <- function(x, ...) {
   stop(
     "No `xt_width()` method for class ",
     paste(class(x), collapse = "/"),
-    ". Use a `xchan` or `xs_profile` object.",
+    ". Use an `xchan` or `xs_profile` object.",
     call. = FALSE
   )
 }
 
 #' @noRd
-xt_validate_plan_profile_widths <- function(channel, tol = 1e-6) {
+validate_plan_profile_widths <- function(channel, tol = 1e-6) {
   checkmate::assert_class(channel, "xchan")
   checkmate::assert_number(tol, lower = 0)
   if (!xt_has_profile(channel)) {
     return(invisible(channel))
   }
-  plan <- xt_column_plan(channel)
-  profile <- xt_column_profile(channel)
+  plan <- channel_plan(channel)
+  profile <- channel_profile(channel)
   if (length(plan) != length(profile)) {
     stop(
-      "Planimetric and profile columns must have the same length (got ",
+      "Planimetric and profile views must have the same length (got ",
       length(plan), " and ", length(profile), ").",
       call. = FALSE
     )

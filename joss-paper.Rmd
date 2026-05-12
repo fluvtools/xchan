@@ -40,20 +40,33 @@ The package provides a unified data structure for channel objects that integrate
 
 ## Data Structures
 
-The package deals with two main object types:
+The package uses a three-level object model analogous to the `sf` / `sfc` / `sfg`
+pattern:
 
-- **Channels**: The primary objects, comprised of cross-sections
-- **Profile cross-sections**: Specialized geometry objects requiring custom handling
+- **`xsection`**: one cross section (singular object), containing one planimetric
+  transect and optional profile geometry.
+- **`xchan`**: a list-like geometry container of `xsection` objects, analogous to
+  `sfc`. CRS and an optional channel axis are stored as attributes on the container;
+  single-bracket subsetting preserves them.
+- **User tables**: attribute data (reach identifiers, roughness, etc.) live in
+  ordinary data frames or tibbles that you own; combine them with an `xchan`
+  column or parallel vectors as in any tidy workflow.
 
-Plan-view cross-sections are represented as simple line segments (using `sf` geometries), avoiding unnecessary complexity and keeping the package lightweight.
+This separation keeps cross-section geometry coherent without a bespoke
+data-frame subclass for channels.
 
-### Channel Objects
+### CRS Handling
 
-Channels are implemented as data frames (or tibbles [@muller2020tibble] when available), with plan and profile cross-sections stored as columns. Additional columns can represent channel properties at each cross-section, following the design philosophy of the `sf` package where spatial objects are just enhanced data frames.
+Coordinate reference system (CRS) metadata is stored at the `xchan` geometry
+container level, not duplicated inside each `xsection`. This follows `sf` design
+principles and avoids redundant per-feature CRS state while keeping geometric
+operations unit-aware.
 
-### Profile Cross-Sections
+### Profile Representation
 
-Profile cross-sections are specified as coordinate matrices with distance along the profile in the first column and elevation in the second. They encode bank locations and thalweg points (potentially multiple thalwegs for complex channels).
+Profile cross-sections are represented as distance-elevation matrices with
+associated bank and thalweg indices. This representation supports both simple
+single-thread channels and multi-thread sections with internal bars or islands.
 
 ## Design Philosophy
 
