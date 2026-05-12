@@ -29,11 +29,13 @@ attributes on the container, not repeated on each section.
 The internal layout is deliberately exposed: each cross section is one
 element of the list (\verb{[[i]]} is an \code{\link{xsection}}). You can inspect or replace
 sections directly, and combine them with ordinary list tools. Single-bracket
-subsetting (\code{[}) is implemented so \strong{\code{crs} and \code{axis} are preserved} on the
-result; double-bracket (\code{[[}) returns a bare \code{\link{xsection}} by design.
+subsetting (\code{[}) preserves \strong{\code{crs}}, \strong{\code{axis}}, and \strong{\code{section_i}} (source
+section index per row, used by \code{\link[=print.xchan]{print.xchan()}}); double-bracket (\code{[[})
+returns a bare \code{\link{xsection}} by design.
 }
 \section{Methods (by generic)}{
 \itemize{
-\item \code{[}: Subset by section index; preserves \code{crs} and \code{axis}.
+\item \code{[}: Subset by section index; preserves \code{crs}, \code{axis},
+and \code{section_i}.
 
 }}

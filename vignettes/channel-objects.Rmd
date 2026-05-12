@@ -36,10 +36,6 @@ optionally, a _profile_ view.
 A _channel_ is a list of cross sections, optionally strung together along
 a channel _axis_ like a centerline.
 
-There are two methods for creating channels: either by generating them with
-spatial data -- bankline polygons and (optoionally) a digital elevation model
-(DEM), or by coercing lower-level R objects, like line segments or numbers.
-
 ## Generating from spatial data
 
 

@@ -105,8 +105,9 @@ assert_xchan_profile_homogeneity <- function(x) {
 #' The internal layout is deliberately exposed: each cross section is one
 #' element of the list (`[[i]]` is an [`xsection`]). You can inspect or replace
 #' sections directly, and combine them with ordinary list tools. Single-bracket
-#' subsetting (`[`) is implemented so **`crs` and `axis` are preserved** on the
-#' result; double-bracket (`[[`) returns a bare [`xsection`] by design.
+#' subsetting (`[`) preserves **`crs`**, **`axis`**, and **`section_i`** (source
+#' section index per row, used by [print.xchan()]); double-bracket (`[[`)
+#' returns a bare [`xsection`] by design.
 #'
 #' @param sections A list of `xsection` objects.
 #' @param crs Optional CRS accepted by [sf::st_crs()].
@@ -130,9 +131,12 @@ xchan <- function(sections, crs = NULL, axis = NULL) {
     assert_section_profiles_homogeneous(sections)
   }
   crs_val <- if (is.null(crs)) NA else sf::st_crs(crs)
+  nsec <- length(sections)
+  sec_ids <- if (nsec > 0L) seq_len(nsec) else integer()
   out <- structure(
     sections,
     crs = crs_val,
+    section_i = sec_ids,
     class = c("xchan", "xchan_geom", "list")
   )
   if (!is.null(axis)) {
@@ -141,21 +145,69 @@ xchan <- function(sections, crs = NULL, axis = NULL) {
   out
 }
 
-#' @describeIn xchan Subset by section index; preserves \code{crs} and \code{axis}.
+#' @noRd
+normalize_xchan_subset_positions <- function(n, i) {
+  if (length(i) == 0L) {
+    return(integer())
+  }
+  if (is.logical(i)) {
+    if (length(i) != n) {
+      stop(
+        "Logical subset index must match channel length (",
+        n,
+        ").",
+        call. = FALSE
+      )
+    }
+    return(which(i))
+  }
+  if (is.character(i)) {
+    stop("Character subsetting of xchan is not supported.", call. = FALSE)
+  }
+  if (!is.numeric(i)) {
+    stop("Unsupported index type for xchan.", call. = FALSE)
+  }
+  ii <- as.integer(i)
+  if (anyNA(ii)) {
+    stop("NA indices are not supported in xchan subsetting.", call. = FALSE)
+  }
+  if (any(ii == 0L)) {
+    stop("Zero indices are not valid.", call. = FALSE)
+  }
+  if (any(ii < 0L)) {
+    if (any(ii > 0L)) {
+      stop("Cannot mix positive and negative indices.", call. = FALSE)
+    }
+    return(setdiff(seq_len(n), -ii))
+  }
+  ii
+}
+
+#' @describeIn xchan Subset by section index; preserves \code{crs}, \code{axis},
+#' and \code{section_i}.
 #' @export
 `[.xchan` <- function(x, i, ...) {
   rlang::check_dots_empty()
-  if (missing(i)) {
-    i <- seq_along(x)
+  n <- length(x)
+  parent_ids <- attr(x, "section_i", exact = TRUE)
+  if (is.null(parent_ids) || length(parent_ids) != n) {
+    parent_ids <- seq_len(n)
   }
+  missing_i <- missing(i)
+  if (missing_i) {
+    i <- seq_len(n)
+  }
+  pos <- normalize_xchan_subset_positions(n, i)
   subs <- unclass(x)[i]
   if (!is.list(subs)) {
     subs <- list(subs)
   }
+  new_ids <- parent_ids[pos]
   structure(
     subs,
     crs = attr(x, "crs", exact = TRUE),
     axis = attr(x, "axis", exact = TRUE),
+    section_i = new_ids,
     class = class(x)
   )
 }

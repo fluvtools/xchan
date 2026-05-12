@@ -1,18 +1,38 @@
 #' Coerce to a channel object (`xchan`)
 #'
-#' Convert widths, line geometries, or an existing [`xchan`] into
-#' cross-section geometry. Width and `sfc` methods return an [`xchan`].
+#' Convert widths, line geometries, a list of [`xsection`] objects, or an
+#' existing [`xchan`] into cross-section geometry. Width, `sfc`, and `list`
+#' methods return an [`xchan`].
 #'
-#' @param x Object to coerce (`numeric` vector of widths, `sfc`, or existing
-#'   [`xchan`]).
+#' @param x Object to coerce (`numeric` vector of widths, `sfc`, `list` of
+#'   [`xsection`], or existing [`xchan`]).
 #' @param ... Must be empty except where documented below.
 #'
-#' @returns An [`xchan`] for `numeric`, `units`, `sfc`, `sfg`, and `xchan` methods.
+#' @details
+#' For **`sfg`** / **`sfc`** inputs, coercion targets **planimetric-only**
+#' cross sections at this stage of package development: geometries are cast to
+#' **LINESTRING** bank-to-bank segments. Users should supply line geometries
+#' (not polygons or points). Profile views must be attached separately (for
+#' example with [xt_profile_at()] or [xchan()] / [xsection()]).
+#'
+#' When coercing **`numeric`** widths without an explicit `axis`, cross sections
+#' are placed on **vertical** transects (constant \eqn{x}, width in \eqn{y}) so
+#' the synthetic channel runs **horizontally** along \eqn{x}. Each transect’s
+#' first vertex is the **left** bank and the second the **right** bank, facing
+#' downstream (increasing \eqn{x} along the default axis). Consecutive
+#' stations are spaced by **twice** a reference width: twice
+#' [stats::median()] of \code{x} when that value is positive, otherwise twice
+#' \code{mean(x)}. If every width is zero, a reference width of \code{1} is used
+#' (so consecutive stations lie 2 map units apart). The same length unit applies
+#' as for \code{x} (typically metres under a projected CRS).
+#'
+#' @returns An [`xchan`] for `numeric`, `units`, `sfc`, `sfg`, `list`, and
+#'   `xchan` methods.
 #'
 #' @seealso [xchan()], [xsection()]
 #'
 #' @examples
-#' # Synthetic widths (integer positions along the channel)
+#' # Synthetic widths (stations spaced ~2 median widths along x by default)
 #' xt_as_channel(c(10, 15, 12, 8))
 #'
 #' library(sf)
@@ -29,50 +49,28 @@ xt_as_channel <- function(x, ...) {
 }
 
 #' @rdname xt_as_channel
-#' @param profile Optional list of `xs_profile` objects (same length as plan).
 #' @param axis Optional channel axis (`sfc`/`sfg` LINESTRING, length 1); see [xt_axis()].
-#'   Used when coercing from `numeric`, `sfc`, or `sfg`.
-#' @param spacing Single positive value used by the `numeric` method only when
-#'   `axis` is `NULL`: spacing between consecutive synthetic cross sections.
-#'   Plain numeric is interpreted in the supplied `crs`'s length unit (or
-#'   unitless when `crs` is `NULL`); a [units::units()] length object is
-#'   converted automatically. If both `axis` and `spacing` are supplied, an
-#'   error is raised. When `axis` is `NULL` and `spacing` is omitted,
-#'   `spacing = 1` is used.
-#' @param crs For `numeric` and `sfc` methods:
+#'   Used when coercing from `numeric`, `sfc`, or `sfg`, or when assembling a
+#'   channel from a `list` of [`xsection`].
+#' @param crs For `numeric`, `sfc`, and `list` methods:
 #'   CRS applied to plan geometries via [sf::st_set_crs()]. `NULL` leaves
-#'   existing CRS unchanged.
+#'   existing CRS unchanged (for `list`, sets the container CRS on the [`xchan`]).
 #' @export
-xt_as_channel.numeric <- function(
-  x,
-  ...,
-  profile = NULL,
-  crs = NULL,
-  axis = NULL,
-  spacing = NULL
-) {
+xt_as_channel.numeric <- function(x, ..., crs = NULL, axis = NULL) {
   rlang::check_dots_empty()
   checkmate::assert_numeric(x, lower = 0, any.missing = FALSE)
-  spacing_supplied <- !missing(spacing) && !is.null(spacing)
-  if (!is.null(axis) && spacing_supplied) {
-    stop("`spacing` cannot be supplied when `axis` is provided.", call. = FALSE)
-  }
-  unit <- if (!is.null(crs)) crs_length_unit(crs) else NULL
-  if (is.null(axis)) {
-    if (is.null(spacing)) {
-      spacing <- 1
-    } else {
-      spacing <- to_numeric_length(spacing, unit, arg = "spacing")
-    }
-    checkmate::assert_number(spacing, lower = .Machine$double.eps, finite = TRUE)
-  }
+  spacing_default <- default_numeric_channel_spacing(x)
   n <- length(x)
-  station <- if (is.null(axis)) (seq_len(n) - 1) * spacing else NULL
+  station <- if (is.null(axis)) (seq_len(n) - 1L) * spacing_default else NULL
 
   if (is.null(axis)) {
     plan <- sf::st_sfc(Map(
-      function(w, y) {
-        sf::st_linestring(matrix(c(-w / 2, w / 2, y, y), ncol = 2))
+      function(w, x_coord) {
+        sf::st_linestring(matrix(
+          c(x_coord, w / 2, x_coord, -w / 2),
+          ncol = 2L,
+          byrow = TRUE
+        ))
       },
       x,
       station
@@ -81,12 +79,12 @@ xt_as_channel.numeric <- function(
       plan <- sf::st_set_crs(plan, crs)
     }
     if (length(station) == 1L) {
-      axis_y <- c(station[1] - spacing / 2, station[1] + spacing / 2)
+      axis_x <- c(station[1L] - spacing_default / 2, station[1L] + spacing_default / 2)
     } else {
-      axis_y <- station
+      axis_x <- station
     }
     axis_obj <- sf::st_sfc(
-      sf::st_linestring(cbind(rep(0, length(axis_y)), axis_y)),
+      sf::st_linestring(cbind(axis_x, rep(0, length(axis_x)))),
       crs = sf::st_crs(plan)
     )
   } else {
@@ -97,7 +95,7 @@ xt_as_channel.numeric <- function(
     plan <- build_plan_from_widths_axis(x, axis_obj)
   }
 
-  xsec <- xchan_from_plan_profile(plan, profile)
+  xsec <- xchan_from_plan_profile(plan, NULL)
   xsec <- `xchan_crs<-`(xsec, sf::st_crs(plan))
   attr(xsec, "axis") <- axis_obj
   validate_plan_profile_widths(xsec)
@@ -106,37 +104,23 @@ xt_as_channel.numeric <- function(
 
 #' @rdname xt_as_channel
 #' @export
-xt_as_channel.units <- function(
-  x,
-  ...,
-  profile = NULL,
-  crs = NULL,
-  axis = NULL,
-  spacing = NULL
-) {
+xt_as_channel.units <- function(x, ..., crs = NULL, axis = NULL) {
   rlang::check_dots_empty()
   unit <- if (!is.null(crs)) crs_length_unit(crs) else NULL
   x <- to_numeric_length(x, unit, arg = "x")
-  xt_as_channel(
-    x,
-    ...,
-    profile = profile,
-    crs = crs,
-    axis = axis,
-    spacing = spacing
-  )
+  xt_as_channel(x, ..., crs = crs, axis = axis)
 }
 
 #' @rdname xt_as_channel
 #' @export
-xt_as_channel.sfg <- function(x, ..., profile = NULL, crs = NULL, axis = NULL) {
+xt_as_channel.sfg <- function(x, ..., crs = NULL, axis = NULL) {
   rlang::check_dots_empty()
-  xt_as_channel(sf::st_sfc(x), profile = profile, crs = crs, axis = axis)
+  xt_as_channel(sf::st_sfc(x), ..., crs = crs, axis = axis)
 }
 
 #' @rdname xt_as_channel
 #' @export
-xt_as_channel.sfc <- function(x, ..., profile = NULL, crs = NULL, axis = NULL) {
+xt_as_channel.sfc <- function(x, ..., crs = NULL, axis = NULL) {
   rlang::check_dots_empty()
   if (!is.null(crs)) {
     x <- sf::st_set_crs(x, crs)
@@ -145,7 +129,7 @@ xt_as_channel.sfc <- function(x, ..., profile = NULL, crs = NULL, axis = NULL) {
     x <- sf::st_cast(x, "LINESTRING")
   }
 
-  xsec <- xchan_from_plan_profile(x, profile)
+  xsec <- xchan_from_plan_profile(x, NULL)
   xsec <- `xchan_crs<-`(xsec, sf::st_crs(x))
   axis_obj <- if (!is.null(axis)) validate_axis_sf(axis, sf::st_crs(x)) else NULL
   if (!is.null(axis_obj)) {
@@ -153,6 +137,40 @@ xt_as_channel.sfc <- function(x, ..., profile = NULL, crs = NULL, axis = NULL) {
   }
   validate_plan_profile_widths(xsec)
   xsec
+}
+
+#' @rdname xt_as_channel
+#' @export
+xt_as_channel.list <- function(x, ..., crs = NULL, axis = NULL) {
+  rlang::check_dots_empty()
+  if (length(x) == 0L) {
+    out <- xchan(list(), crs = crs, axis = NULL)
+    if (!is.null(axis)) {
+      stop(
+        "`axis` cannot be set when coercing an empty list of cross sections.",
+        call. = FALSE
+      )
+    }
+    return(out)
+  }
+  bad <- !vapply(x, is_xsection, logical(1L))
+  if (any(bad)) {
+    stop(
+      "Each list element must be an `xsection` object. Bad indices: ",
+      paste(which(bad), collapse = ", "),
+      ".",
+      call. = FALSE
+    )
+  }
+  assert_section_profiles_homogeneous(x)
+  out <- xchan(x, crs = crs, axis = NULL)
+  if (!is.null(axis)) {
+    plan <- channel_plan(out)
+    crs_hint <- if (!is.null(plan)) sf::st_crs(plan) else if (!is.null(crs)) sf::st_crs(crs) else NULL
+    attr(out, "axis") <- validate_axis_sf(axis, crs_hint)
+  }
+  validate_plan_profile_widths(out)
+  out
 }
 
 #' @rdname xt_as_channel
@@ -176,6 +194,19 @@ xt_as_channel.default <- function(x, ...) {
     " to a channel; use `xt_as_channel()` or define an S3 method.",
     call. = FALSE
   )
+}
+
+#' @noRd
+default_numeric_channel_spacing <- function(x) {
+  checkmate::assert_numeric(x, lower = 0, any.missing = FALSE, min.len = 1L)
+  w_ref <- stats::median(x)
+  if (!is.finite(w_ref) || w_ref <= 0) {
+    w_ref <- mean(x)
+  }
+  if (!is.finite(w_ref) || w_ref <= 0) {
+    w_ref <- 1
+  }
+  2 * w_ref
 }
 
 #' @noRd
