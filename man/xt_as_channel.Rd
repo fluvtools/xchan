@@ -6,9 +6,7 @@
 \alias{xt_as_channel.units}
 \alias{xt_as_channel.sfg}
 \alias{xt_as_channel.sfc}
-\alias{xt_as_channel.data.frame}
 \alias{xt_as_channel.xchan}
-\alias{xt_as_channel.xchan_tbl}
 \alias{xt_as_channel.default}
 \title{Coerce to a channel object (\code{xchan})}
 \usage{
@@ -22,39 +20,24 @@ xt_as_channel(x, ...)
 
 \method{xt_as_channel}{sfc}(x, ..., profile = NULL, crs = NULL, axis = NULL)
 
-\method{xt_as_channel}{data.frame}(
-  x,
-  plan_col,
-  ...,
-  profile_col = NULL,
-  xsection_col = NULL,
-  crs = NULL,
-  axis = NULL
-)
-
 \method{xt_as_channel}{xchan}(x, ..., crs = NULL)
-
-\method{xt_as_channel}{xchan_tbl}(x, ..., crs = NULL)
 
 \method{xt_as_channel}{default}(x, ...)
 }
 \arguments{
-\item{x}{Object to coerce (numeric vector of widths, \code{sfc}, \code{data.frame}, or
-existing \code{xchan}/\code{xchan_tbl}).}
+\item{x}{Object to coerce (\code{numeric} vector of widths, \code{sfc}, or existing
+\code{\link{xchan}}).}
 
-\item{...}{Used only by \code{numeric}, \code{sfc}, and \code{sfg} methods: named arguments
-become extra columns in the channel table (recycled like \code{\link[base:data.frame]{base::data.frame()}}).
-Not used when coercing a \code{data.frame} (must be empty). Ignored when coercing
-an existing \code{xchan}, with a warning if non-empty.}
+\item{...}{Must be empty except where documented below.}
 
 \item{profile}{Optional list of \code{xs_profile} objects (same length as plan).}
 
-\item{crs}{For \code{numeric}, \code{sfc}, and \code{data.frame} methods:
+\item{crs}{For \code{numeric} and \code{sfc} methods:
 CRS applied to plan geometries via \code{\link[sf:st_crs]{sf::st_set_crs()}}. \code{NULL} leaves
 existing CRS unchanged.}
 
 \item{axis}{Optional channel axis (\code{sfc}/\code{sfg} LINESTRING, length 1); see \code{\link[=xt_axis]{xt_axis()}}.
-Used when coercing from \code{numeric}, \code{sfc}, \code{sfg}, or \code{data.frame}.}
+Used when coercing from \code{numeric}, \code{sfc}, or \code{sfg}.}
 
 \item{spacing}{Single positive value used by the \code{numeric} method only when
 \code{axis} is \code{NULL}: spacing between consecutive synthetic cross sections.
@@ -63,37 +46,17 @@ unitless when \code{crs} is \code{NULL}); a \code{\link[units:units]{units::unit
 converted automatically. If both \code{axis} and \code{spacing} are supplied, an
 error is raised. When \code{axis} is \code{NULL} and \code{spacing} is omitted,
 \code{spacing = 1} is used.}
-
-\item{plan_col}{Name of the column holding planimetric \code{sfc_LINESTRING}
-geometries. Ignored when \code{xsection_col} is supplied.}
-
-\item{profile_col}{Name of the profile column, if any, when constructing
-\code{xsection} objects from \code{plan_col}.}
-
-\item{xsection_col}{Name of column holding \code{xchan} cross-section geometry.}
 }
 \value{
-An object of class \code{"xchan_tbl"}.
+An \code{\link{xchan}} for \code{numeric}, \code{units}, \code{sfc}, \code{sfg}, and \code{xchan} methods.
 }
 \description{
-Convert widths, line geometries, or a data frame into a channel object.
-This is the primary way to obtain a channel table from widths, geometries,
-or tabular inputs. Coercion methods attach an \code{xsection} geometry column,
-with CRS stored at the channel-geometry container level.
-}
-\details{
-\strong{Extra columns (\code{...}):} When the method \strong{builds} the channel table from
-widths or geometries (\code{numeric}, \code{sfc}, \code{sfg}), named arguments in \code{...}
-become extra columns (recycled with \code{\link[vctrs:vec_recycle]{vctrs::vec_recycle_common()}}, like
-\code{\link[base:data.frame]{base::data.frame()}}). When you \strong{already have a data frame}, add variables
-as columns on that table first, then call \code{xt_as_channel()} --- \code{...} is not used there.
+Convert widths, line geometries, or an existing \code{\link{xchan}} into
+cross-section geometry. Width and \code{sfc} methods return an \code{\link{xchan}}.
 }
 \examples{
 # Synthetic widths (integer positions along the channel)
 xt_as_channel(c(10, 15, 12, 8))
-
-# Extra columns are recycled as in [base::data.frame()]
-xt_as_channel(c(10, 15, 12, 8), section_id = c("A", "B", "C", "D"))
 
 library(sf)
 seg <- st_sfc(
@@ -102,11 +65,6 @@ seg <- st_sfc(
   crs = 3005
 )
 xt_as_channel(seg)
-
-df <- data.frame(section = c("u", "v"), roughness = c(0.02, 0.03))
-df$plan <- seg
-# Extra variables live on `df` before coercing (not via `...`)
-xt_as_channel(df, plan_col = "plan")
 
 }
 \seealso{

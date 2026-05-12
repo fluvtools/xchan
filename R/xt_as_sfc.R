@@ -1,11 +1,11 @@
-#' Convert channel to spatial object
+#' Convert channel geometry to `sfc`
 #'
-#' Converts a channel object to an `sfc` or [`sf::sf`] object.
-#' For `xt_as_sf()`, columns other than the active cross-section geometry column
-#' are preserved in the attribute table; the selected spatial representation is
-#' written to a single geometry column.
+#' Returns simple feature geometry columns for plan, profile, or 3D views of
+#' an [`xchan`]. Combine with [sf::st_sf()] yourself if you need a data frame
+#' of attributes alongside geometry.
 #'
-#' @param channel Channel object.
+#' @param channel An [`xchan`] object.
+#' @param ... Must be empty.
 #' @param what Type of spatial object to return: `"plan"` for map-view cross
 #'   sections (default); `"profile"` for each profile as a `LINESTRING` in
 #'   distance–elevation space (no CRS); `"3d"` for 3D multilinestrings built by
@@ -15,23 +15,21 @@
 #'   `what = "plan"`, map segments spanning each profile's horizontal range).
 #'   For `what = "plan"` with `"full"`, if there is no profile view a warning
 #'   is issued and bank-to-bank geometries are returned instead.
-#' @param geom_col Name of the geometry column in the resulting `sf` object.
-#' @returns For `xt_as_sfc()`, an `"sfc"` object. For `xt_as_sf()`, an `"sf"`
-#'   object whose geometry column holds the requested representation.
+#' @returns An `"sfc"` object.
 #' @examples
-#' xt_as_sf(demo_channel, what = "profile")
-#' plan_view <- xt_as_sfc(demo_channel, what = "plan")
+#' ch <- xt_as_channel(c(2, 2), crs = 3005)
+#' plan_view <- xt_as_sfc(ch, what = "plan")
 #' plan_view
-#' plot(plan_view)
-#' plot(xt_as_sfc(demo_channel, what = "3d"))
-#' @rdname xt_as_sf
+#' plot(xt_as_sfc(ch, what = "plan"))
 #' @export
 xt_as_sfc <- function(
   channel,
+  ...,
   what = c("plan", "profile", "3d"),
   extent = c("banks", "full")
 ) {
-  checkmate::assert_class(channel, "xchan_tbl")
+  rlang::check_dots_empty()
+  checkmate::assert_class(channel, "xchan")
   what <- match.arg(what)
   extent <- match.arg(extent)
 
@@ -84,33 +82,4 @@ xt_as_sfc <- function(
     )
   }
   sf::st_sfc(coords_3d, crs = sf::st_crs(plan))
-}
-
-#' @rdname xt_as_sf
-#' @export
-xt_as_sf <- function(
-  channel,
-  what = c("plan", "profile", "3d"),
-  extent = c("banks", "full"),
-  geom_col = "geometry"
-) {
-  checkmate::assert_class(channel, "xchan_tbl")
-  what <- match.arg(what)
-  extent <- match.arg(extent)
-
-  geometry <- xt_as_sfc(channel, what = what, extent = extent)
-
-  xsec_nm <- attr(channel, "xsection_col", exact = TRUE)
-  drop <- unique(stats::na.omit(c(xsec_nm)))
-  keep <- setdiff(names(channel), drop)
-  if (geom_col %in% keep) {
-    stop(
-      "`geom_col` must not duplicate a retained attribute column name.",
-      call. = FALSE
-    )
-  }
-
-  df <- channel[, keep, drop = FALSE]
-  df[[geom_col]] <- geometry
-  sf::st_sf(df, crs = sf::st_crs(geometry), sf_column_name = geom_col)
 }

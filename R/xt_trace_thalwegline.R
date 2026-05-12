@@ -21,7 +21,7 @@
 #' @details
 #' Requires [xt_has_profile()]. Thalweg `(distance, elevation)` pairs are taken from
 #' the profile coordinate matrix at each `thalwegs` row index; positions along the
-#' plan line use the same chord interpolation as \code{\link[=xt_as_sf]{xt_as_sf()}}
+#' plan line use the same chord interpolation as \code{\link[=xt_as_sfc]{xt_as_sfc()}}
 #' 3D export with \code{extent = "banks"} (first plan vertex = left bank, last =
 #' right bank).
 #'

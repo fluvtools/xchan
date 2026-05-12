@@ -1,6 +1,5 @@
 ---
 title: "Getting Started with xchan"
-author: "Vincenzo Coia"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
@@ -20,46 +19,8 @@ knitr::opts_chunk$set(
 library(xchan)
 ```
 
-# Getting Started with xchan
+The `xchan` package provides tools for creating and manipulating river channel cross-sections. This vignette walks you through a typical workflow.
 
-The `xchan` package provides tools for creating and manipulating river channel cross-sections. This vignette will get you started with the basics.
-
-## Creating Your First Channel Object
-
-The core data structure in `xchan` is the **channel object** (`xchan_tbl`): a
-data frame with one row per cross section. Each row stores an **`xsection`**
-(planimetric geometry plus optional profile). Use [channel_plan()] and
-[channel_profile()] to work with those as `sfc` or profile lists.
-
-### Simple Channel from Widths
-
-Let's get set up with a quick, simple channel. The simplest way to do this is by specifying a vector of widths corresponding to channel cross sections.
-
-```{r simple-channel}
-# Create a channel with 6 cross-sections of varying widths
-widths <- c(10, 12, 8, 15, 11, 9)
-channel <- xt_as_channel(widths)
-channel
-```
-
-Notice that channels are data frames where each row is a cross section. Besides
-the internal cross-section column, you can add attributes (roughness, station,
-and so on) using your usual data frame workflow:
-
-```{r df-channel}
-# Add columns using ordinary data frame semantics
-channel$roughness <- c(0.03, 0.035, 0.025, 0.04, 0.03, 0.025)
-channel$station <- c(0, 100, 200, 300, 400, 500)
-channel
-```
-
-Planimetric cross sections are sufficient for defining a channel, and are sufficient for this demo. You can also add a profile (side) view, and make more realistic channels; see the *Channel Objects and Generation* vignette for more.
-
-Here is what our channel looks like:
-
-```{r}
-plot(channel)
-```
 
 ## Basic Channel Operations
 

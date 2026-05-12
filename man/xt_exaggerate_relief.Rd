@@ -7,12 +7,12 @@
 xt_exaggerate_relief(x, times = 2, ...)
 }
 \arguments{
-\item{x}{An \code{xs_profile}, \code{xchan_tbl}, or \code{xchan} object with profile geometry.}
+\item{x}{An \code{xs_profile} or \code{\link{xchan}} object with profile geometry.}
 
 \item{times}{Single non-negative numeric exaggeration factor. Values above
 1 increase vertical relief; values between 0 and 1 compress it.}
 
-\item{...}{Unused.}
+\item{...}{Must be empty.}
 }
 \value{
 Object of the same class as \code{x}, with exaggerated profile

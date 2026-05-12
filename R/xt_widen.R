@@ -1,7 +1,7 @@
 #' Widen cross sections
 #'
-#' @param channel A `xchan_tbl`, `xchan`, or `xsection` object.
-#' @param ... Additional arguments (ignored)
+#' @param channel An [`xchan`] or [`xsection`] object.
+#' @param ... Must be empty (named `dw` / `dv` arguments are required).
 #' @param dw The total width to add to the channel. Positive numeric, or a
 #'   [units::units()] length object (for example
 #'   `units::set_units(2, "m")`); units are converted to the channel's CRS
@@ -15,8 +15,7 @@
 #'   [side_right()], or [side_both()], or a shorthand string: `"left"`,
 #'   `"right"`, or `"both"`.
 #' @note
-#' While the ellipsis `...` is currently not used, it forces the `dw` and
-#' `dv` arguments to be named to ensure deliberate specification.
+#' The ellipsis `...` must be empty; named `dw` and `dv` keep widening deliberate.
 #' @returns Object of the same class as `channel`, with widened sections.
 #' @examples
 #' xt_widen(channel, dw = 10)
@@ -35,7 +34,7 @@ xt_widen <- function(
 
 #' @export
 #' @rdname xt_widen
-xt_widen.xchan_tbl <- function(
+xt_widen.xchan <- function(
   channel,
   ...,
   dw,
@@ -43,25 +42,20 @@ xt_widen.xchan_tbl <- function(
   side = "both"
 ) {
   rlang::check_dots_empty()
-  checkmate::assert_class(channel, "xchan_tbl")
+  checkmate::assert_class(channel, "xchan")
 
   if (!xor(missing(dw), missing(dv))) {
     stop("Must specify either `dw` or `dv`, but not both.")
   }
 
-  # Get derived plan and profile views
   plan <- channel_plan(channel)
   profile <- channel_profile(channel)
 
-  # Parse side argument to get proportions
   prop_left <- parse_side_arg(side, channel)
   n_sections <- xt_n_sections(channel)
 
-  # Strip user-supplied units (if any) into the channel's CRS unit so that
-  # downstream coordinate arithmetic stays plain numeric.
   unit <- crs_length_unit(channel)
 
-  # Get dw if dv was provided
   if (missing(dw)) {
     if (is.null(profile)) {
       stop(
@@ -80,7 +74,6 @@ xt_widen.xchan_tbl <- function(
       dv * (1 - prop_left),
       side = "right"
     )
-    # Avoid 0 / 0 when neither side eroded.
     denom <- dw_left + dw_right
     prop_left <- ifelse(denom > 0, dw_left / denom, 0.5)
     dw <- dw_left + dw_right
@@ -90,12 +83,10 @@ xt_widen.xchan_tbl <- function(
   dw <- vctrs::vec_recycle(dw, n_sections)
   prop_left <- vctrs::vec_recycle(prop_left, n_sections)
 
-  # Apply widening to planimetric cross-sections
   if (!is.null(plan)) {
     plan <- widen_plan(plan, dw = dw, prop_left = prop_left)
   }
 
-  # Apply widening to profile cross-sections
   if (!is.null(profile)) {
     profile <- lapply(seq_along(profile), function(i) {
       do.call(
@@ -109,12 +100,7 @@ xt_widen.xchan_tbl <- function(
     })
   }
 
-  # Update xsection geometry once, then validate once.
-  xcol <- attr(channel, "xsection_col", exact = TRUE)
-  if (is.null(xcol) || !xcol %in% names(channel)) {
-    stop("Channel has no `xsection` geometry column.", call. = FALSE)
-  }
-  xsec <- channel[[xcol]]
+  xsec <- channel
   if (!is.null(plan)) {
     vp <- validate_plan(plan)
     if (!vp$valid) {
@@ -129,26 +115,9 @@ xt_widen.xchan_tbl <- function(
   if (!is.null(profile)) {
     xsec <- xchan_with_profile(xsec, profile)
   }
-  channel[[xcol]] <- xsec
-  validate_plan_profile_widths(channel)
+  validate_plan_profile_widths(xsec)
 
-  channel
-}
-
-#' @export
-#' @rdname xt_widen
-xt_widen.xchan <- function(
-  channel,
-  ...,
-  dw,
-  dv,
-  side = "both"
-) {
-  rlang::check_dots_empty()
-  checkmate::assert_class(channel, "xchan")
-  out <- xt_widen(xt_as_channel(channel), dw = dw, dv = dv, side = side)
-  xcol <- attr(out, "xsection_col", exact = TRUE)
-  out[[xcol]]
+  xsec
 }
 
 #' @export
@@ -177,7 +146,7 @@ xt_widen.default <- function(
   stop(
     "No `xt_widen()` method for class ",
     paste(class(channel), collapse = "/"),
-    ". Use a `xchan_tbl`, `xchan`, or `xsection` object.",
+    ". Use an `xchan` or `xsection` object.",
     call. = FALSE
   )
 }

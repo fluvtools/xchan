@@ -5,7 +5,7 @@
 #' carry [units::units()] into bare numerics in the channel's own unit, and to
 #' attach units to numeric lengths/volumes returned by package functions.
 #'
-#' @param x A `xchan_tbl`, `xchan`, `sf`/`sfc` object, CRS object, or anything
+#' @param x An [`xchan`], `sf`/`sfc` object, CRS object, or anything
 #'   else `[sf::st_crs()]` accepts. Channel objects use the CRS stored on their
 #'   cross-section geometry container.
 #' @returns A unit symbol (for example `"m"` or `"US_survey_foot"`) suitable
@@ -20,14 +20,8 @@ crs_length_unit <- function(x) {
   if (!requireNamespace("units", quietly = TRUE)) {
     return(NULL)
   }
-  if (inherits(x, "xchan_tbl")) {
-    x <- channel_plan(x)
-    if (is.null(x)) {
-      return(NULL)
-    }
-  }
   if (inherits(x, "xchan")) {
-    x <- xchan_to_plan(x)
+    x <- channel_plan(x)
   }
   crs <- tryCatch(sf::st_crs(x), error = function(e) NA)
   if (length(crs) == 0L || is.na(crs)) {

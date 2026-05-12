@@ -49,7 +49,7 @@ default left edge for \code{extent}; it ends at \code{to} when given, otherwise 
 the default right edge. You may pass \code{from} only, \code{to} only, both, or
 neither. Values may lie outside the data range (empty band on that side).}
 
-\item{col, lwd, col_bank_water, col_bank_land, pch_bank, cex_bank, warn_if_no_profile}{Used for the plan view only (see \code{\link{plot.xchan_tbl}}).}
+\item{col, lwd, col_bank_water, col_bank_land, pch_bank, cex_bank, warn_if_no_profile}{Used for the plan view only (see \code{\link{plot.xchan}}).}
 }
 \value{
 Called for its graphical side effect.
@@ -65,6 +65,6 @@ prof <- xchan:::new_profile(coords, bankpoints = c(-3, 3))
 plan_ls <- sf::st_linestring(matrix(c(0, 0, 6, 0), ncol = 2))
 seg <- sf::st_sfc(plan_ls, crs = 3005)
 ch <- xt_as_channel(seg, profile = list(prof))
-plot(ch$xsection[[1]])
+plot(ch[[1]])
 
 }

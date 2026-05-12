@@ -16,20 +16,18 @@ xt_is_cross_section(x)
 \code{TRUE} or \code{FALSE}.
 }
 \description{
-\code{xt_is_channel()} is \code{TRUE} for a channel table (\code{xchan_tbl}) or for the
-geometry container (\code{xchan}) holding cross sections. \code{xt_is_cross_section()}
+\code{xt_is_channel()} is \code{TRUE} for the cross-section list container
+(\code{xchan}). \code{xt_is_cross_section()}
 tests for a single cross section (same check as \code{\link[=is.xsection]{is.xsection()}}).
 }
 \examples{
 \donttest{
-tbl <- xt_as_channel(c(10, 12, 11))
-xt_is_channel(tbl)
-xc <- tbl[[attr(tbl, "xsection_col", exact = TRUE)]]
+xc <- xt_as_channel(c(10, 12, 11))
 xt_is_channel(xc)
 xt_is_cross_section(xc[[1]])
 }
 
 }
 \seealso{
-\link{is.xchan}, \link{is.xchan_tbl}, \link{is.xsection}
+\link{is.xchan}, \link{is.xsection}
 }

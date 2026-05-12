@@ -40,14 +40,15 @@ separate name for readability in long-profile / “bed” contexts.
 }
 \value{
 An object inheriting \code{"xchan_elevation"}: a function \code{(channel)} that returns
-a numeric vector of elevations, one per row of \code{channel}. Also used as \code{reference}
+a numeric vector of elevations, one per cross section in storage order (\verb{[[i]]} of
+\code{channel} when it is an \code{\link{xchan}}). Also used as \code{reference}
 in other package functions expecting an elevation specification.
 }
 \description{
 These functions construct \strong{elevation specification} objects (class \code{"xchan_elevation"}).
 An elevation specification is a small callable wrapper: passing it as \code{reference} to
 \code{\link[=xt_elevation]{xt_elevation()}} runs it against the channel and returns one elevation per cross section
-(aligned with rows of the \code{"xchan_tbl"}).
+(aligned with \verb{[[i]]} storage order of the \code{\link{xchan}}).
 }
 \details{
 \code{\link[=elevation_thalweg]{elevation_thalweg()}} takes no arguments: each section contributes its stored

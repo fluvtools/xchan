@@ -4,18 +4,8 @@ test_that("Cross section widening works", {
   expect_equal(xt_width(x), xt_width(a) + 2)
 })
 
-test_that("Cross section widening works for channel with extra columns", {
-  a <- xt_as_channel(1:10, id = seq_len(10))
-  x <- xt_widen(a, dw = 2)
-  expect_equal(xt_width(x), xt_width(a) + 2)
-  expect_identical(x$id, a$id)
-})
-
 test_that("Cross section widening dispatches for xchan", {
-  ch <- xt_as_channel(1:3)
-  xcol <- attr(ch, "xsection_col", exact = TRUE)
-  geom <- ch[[xcol]]
-
+  geom <- xt_as_channel(1:3)
   out <- xt_widen(geom, dw = 2)
   expect_s3_class(out, "xchan")
   expect_equal(xt_width(out), xt_width(geom) + 2)
@@ -23,13 +13,12 @@ test_that("Cross section widening dispatches for xchan", {
 
 test_that("Cross section widening dispatches for xsection", {
   ch <- xt_as_channel(2)
-  xcol <- attr(ch, "xsection_col", exact = TRUE)
-  xs <- ch[[xcol]][[1]]
+  xs <- ch[[1]]
 
   out <- xt_widen(xs, dw = 2)
   expect_s3_class(out, "xsection")
-  out_width <- as.numeric(sf::st_length(xsection_to_linestring(out)))
-  in_width <- as.numeric(sf::st_length(xsection_to_linestring(xs)))
+  out_width <- as.numeric(sf::st_length(xchan:::xsection_to_linestring(out)))
+  in_width <- as.numeric(sf::st_length(xchan:::xsection_to_linestring(xs)))
   expect_equal(out_width, in_width + 2)
 })
 

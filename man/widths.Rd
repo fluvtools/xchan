@@ -2,7 +2,6 @@
 % Please edit documentation in R/xt_width.R, R/xt_width_-b.R
 \name{xt_width}
 \alias{xt_width}
-\alias{xt_width.xchan_tbl}
 \alias{xt_width.xchan}
 \alias{xt_width.xs_profile}
 \alias{xt_width_lb}
@@ -10,8 +9,6 @@
 \title{Width of cross sections}
 \usage{
 xt_width(x, ...)
-
-\method{xt_width}{xchan_tbl}(x, ...)
 
 \method{xt_width}{xchan}(x, ...)
 
@@ -22,22 +19,22 @@ xt_width_lb(xs)
 xt_width_rb(xs)
 }
 \arguments{
-\item{x}{A \code{xchan_tbl}, \code{xchan}, or \code{xs_profile} object.}
+\item{x}{An \code{\link{xchan}} or \code{xs_profile} object.}
 
 \item{...}{Unused (reserved for methods).}
 
 \item{xs}{\code{xs_profile}; left/right half-width helpers below.}
 }
 \value{
-For \code{xchan_tbl}/\code{xchan}: a numeric vector with one width per cross section, carrying
+For \code{\link{xchan}}: a numeric vector with one width per cross section, carrying
 \code{\link[units:units]{units::units()}} when the channel has a CRS with a defined linear unit
 (for example metres). When no CRS is set the result is plain numeric.
 For \code{xs_profile}: a non-negative numeric scalar (no CRS context, so plain
 numeric).
 }
 \description{
-\code{xt_width()} returns geometric width. For a \code{xchan_tbl} object, this is one
-value per cross section from planimetric line lengths. For a single \code{xs_profile}
+\code{xt_width()} returns geometric width. For an \code{\link{xchan}}, this is one value per
+cross section from planimetric line lengths. For a single \code{xs_profile}
 object, it is the span along the profile horizontal axis between the
 outermost left and right banks (the same convention as
 \code{\link[=xt_generate_profile]{xt_generate_profile()}} and \code{\link[=new_profile]{new_profile()}}).

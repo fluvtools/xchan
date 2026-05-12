@@ -2,7 +2,7 @@
 #'
 #' Plot the planimetric cross sections from a channel object.
 #'
-#' @param channel Channel object with planimetric cross sections
+#' @param channel [`xchan`] with planimetric cross sections
 #' @param extent Draw bank-to-bank segments only (`"banks"`), or extend each
 #'   transect to match the horizontal span of its profile when profiles exist
 #'   (`"full"`).
@@ -31,7 +31,7 @@ plot_plan <- function(
   cex_bank = 0.65,
   warn_if_no_profile = TRUE
 ) {
-  checkmate::assert_class(channel, "xchan_tbl")
+  checkmate::assert_class(channel, "xchan")
 
   extent <- match.arg(extent)
 

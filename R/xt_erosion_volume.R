@@ -3,16 +3,15 @@
 #' Estimates volume removed per cross section for a given total width increase `dw`,
 #' split between banks according to `side`.
 #'
-#' @param channel An [`xchan_tbl`][xt_as_channel()], [`xchan`][xchan()], or [`xsection`][xsection()]
-#'   with profile geometry.
+#' @param channel An [`xchan`][xchan()] or [`xsection`][xsection()] with profile geometry.
 #' @param dw Change in width; for [`xsection`][xsection()], a single positive value. For
-#'   \code{xchan_tbl} / [`xchan`][xchan()], a single value recycled to every section or
-#'   one value per cross section. Plain numeric uses the channel CRS length unit;
+#'   [`xchan`][xchan()], a single value recycled to every section or one value per cross
+#'   section. Plain numeric uses the channel CRS length unit;
 #'   [units::units()] lengths are converted automatically.
 #' @param side A side specification controlling how widening is split between left and right
 #'   banks: [side_left()], [side_right()], [side_both()], or `"left"`, `"right"`, `"both"`.
-#' @returns For \code{xchan_tbl} and \code{xchan}, a numeric vector of erosion volumes (one per row /
-#'   section). For \code{xsection}, length-one vector. Values carry [units::units()] of (CRS length
+#' @returns For [`xchan`][xchan()], a numeric vector of erosion volumes (one per section).
+#'   For [`xsection`][xsection()], length-one vector. Values carry [units::units()] of (CRS length
 #'   unit)^3 when a linear CRS unit is defined.
 #' @examples
 #' \donttest{
@@ -26,8 +25,8 @@ xt_erosion_volume <- function(channel, dw, side = "both") {
 
 #' @rdname xt_erosion_volume
 #' @export
-xt_erosion_volume.xchan_tbl <- function(channel, dw, side = "both") {
-  checkmate::assert_class(channel, "xchan_tbl")
+xt_erosion_volume.xchan <- function(channel, dw, side = "both") {
+  checkmate::assert_class(channel, "xchan")
   unit <- crs_length_unit(channel)
   dw <- to_numeric_length(dw, unit, arg = "dw")
   raw <- erosion_volume_numeric(channel, dw, side)
@@ -36,18 +35,10 @@ xt_erosion_volume.xchan_tbl <- function(channel, dw, side = "both") {
 
 #' @rdname xt_erosion_volume
 #' @export
-xt_erosion_volume.xchan <- function(channel, dw, side = "both") {
-  checkmate::assert_class(channel, "xchan")
-  tbl <- xt_as_channel(channel)
-  xt_erosion_volume(tbl, dw = dw, side = side)
-}
-
-#' @rdname xt_erosion_volume
-#' @export
 xt_erosion_volume.xsection <- function(channel, dw, side = "both") {
   checkmate::assert_class(channel, "xsection")
-  tbl <- xt_as_channel(xchan(list(channel)))
-  xt_erosion_volume(tbl, dw = dw, side = side)
+  xc <- xchan(list(channel), crs = sf::NA_crs_)
+  xt_erosion_volume(xc, dw = dw, side = side)
 }
 
 #' @rdname xt_erosion_volume
@@ -56,7 +47,7 @@ xt_erosion_volume.default <- function(channel, dw, side = "both") {
   stop(
     "No `xt_erosion_volume()` method for class ",
     paste(class(channel), collapse = "/"),
-    ". Use an `xchan_tbl`, `xchan`, or `xsection` object.",
+    ". Use an `xchan` or `xsection` object.",
     call. = FALSE
   )
 }

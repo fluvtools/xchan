@@ -1,66 +1,44 @@
-#' Plan/profile helpers for channel objects
-#'
-#' Access planimetric and profile cross-section views from a channel object.
-#' Channel rows store one `xsection` object in the active cross-section column.
+#' Plan/profile helpers for [`xchan`] objects
 #'
 #' @name channel_views
-#' @param channel An object of class `xchan_tbl`.
-#' @param value For profile, a list of `xs_profile` objects (or `NULL` to drop
-#'   profile from all sections); for plan, an `sfc_LINESTRING` object.
-#' @returns Derived plan/profile views, or the updated channel on assignment.
 #' @keywords internal
 #' @noRd
 NULL
 
-#' Extract or replace plan/profile views from channel sections
-#'
-#' Channel rows store one `xsection` object in the active cross-section column.
-#' `channel_plan()` and `channel_profile()` provide derived plan/profile views
-#' from those `xsection` objects.
-#'
-#' @param channel An object of class `xchan_tbl`.
-#' @param value For profile, a list of `xs_profile` objects (or `NULL` to drop
-#'   profile from all sections); for plan, an `sfc_LINESTRING` object.
-#' @returns Derived plan/profile views, or the updated channel on assignment.
-#' @noRd
-get_xsection_col <- function(channel) {
-  col <- attr(channel, "xsection_col", exact = TRUE)
-  if (!is.null(col) && col %in% names(channel)) {
-    return(col)
-  }
-  NULL
-}
-
 #' @noRd
 channel_profile <- function(channel) {
-  checkmate::assert_class(channel, "xchan_tbl")
-  xcol <- get_xsection_col(channel)
-  if (!is.null(xcol)) {
-    return(xchan_to_profile(channel[[xcol]]))
+  checkmate::assert_class(channel, "xchan")
+  assert_xchan_profile_homogeneity(channel)
+  prof <- lapply(channel, function(xs) xs$profile)
+  if (all(vapply(prof, is.null, logical(1)))) {
+    return(NULL)
   }
-  NULL
+  prof
 }
 
 #' @noRd
 channel_plan <- function(channel) {
-  checkmate::assert_class(channel, "xchan_tbl")
-  xcol <- get_xsection_col(channel)
-  if (!is.null(xcol)) {
-    return(xchan_to_plan(channel[[xcol]]))
+  checkmate::assert_class(channel, "xchan")
+  geoms <- lapply(channel, xsection_to_linestring)
+  cr <- xchan_crs(channel)
+  crs_use <- if (inherits(cr, "crs")) {
+    cr
+  } else {
+    suppressWarnings(sf::st_crs(cr))
   }
-  NULL
+  if (inherits(crs_use, "crs") && is.na(crs_use)) {
+    crs_use <- sf::NA_crs_
+  }
+  sf::st_sfc(geoms, crs = crs_use)
 }
 
 #' @noRd
 set_channel_profile <- function(channel, value) {
-  checkmate::assert_class(channel, "xchan_tbl")
-  xcol <- get_xsection_col(channel)
-  if (is.null(xcol)) {
-    stop("Profile replacement requires channel with `xsection` column.", call. = FALSE)
-  }
+  checkmate::assert_class(channel, "xchan")
   if (is.null(value)) {
-    channel[[xcol]] <- xchan_with_profile(channel[[xcol]], NULL)
-    return(channel)
+    out <- xchan_with_profile(channel, NULL)
+    validate_plan_profile_widths(out)
+    return(out)
   }
   if (!is.list(value)) {
     stop("Profile value must be a list")
@@ -73,18 +51,14 @@ set_channel_profile <- function(channel, value) {
       paste(invalid_indices, collapse = ", ")
     )
   }
-  channel[[xcol]] <- xchan_with_profile(channel[[xcol]], value)
-  validate_plan_profile_widths(channel)
-  channel
+  out <- xchan_with_profile(channel, value)
+  validate_plan_profile_widths(out)
+  out
 }
 
 #' @noRd
 set_channel_plan <- function(channel, value) {
-  checkmate::assert_class(channel, "xchan_tbl")
-  xcol <- get_xsection_col(channel)
-  if (is.null(xcol)) {
-    stop("Plan replacement requires channel with `xsection` column.", call. = FALSE)
-  }
+  checkmate::assert_class(channel, "xchan")
   if (is.null(value)) {
     stop(
       "Cannot remove planimetric cross sections from a channel.",
@@ -99,7 +73,7 @@ set_channel_plan <- function(channel, value) {
       paste(validation_result$issues, collapse = "; ")
     )
   }
-  channel[[xcol]] <- xchan_with_plan(channel[[xcol]], value)
-  validate_plan_profile_widths(channel)
-  channel
+  out <- xchan_with_plan(channel, value)
+  validate_plan_profile_widths(out)
+  out
 }

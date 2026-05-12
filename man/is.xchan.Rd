@@ -2,14 +2,11 @@
 % Please edit documentation in R/xsection.R
 \name{is.xchan}
 \alias{is.xchan}
-\alias{is.xchan_tbl}
 \alias{is.xsection}
 \alias{is_xsection}
-\title{Predicate tests for \code{xchan}, \code{xchan_tbl}, and \code{xsection}}
+\title{Predicate tests for \code{xchan} and \code{xsection}}
 \usage{
 is.xchan(x)
-
-is.xchan_tbl(x)
 
 is.xsection(x)
 
@@ -22,14 +19,12 @@ is_xsection(x)
 \code{TRUE} or \code{FALSE}.
 }
 \description{
-These functions test inheritance from a single class each. For tables or list
+These functions test inheritance from a single class each. For list
 containers holding cross sections, see \code{\link[=xt_is_channel]{xt_is_channel()}} and \code{\link[=xt_is_cross_section]{xt_is_cross_section()}}.
 }
 \examples{
 \donttest{
-tbl <- xt_as_channel(c(10, 12, 11))
-is.xchan_tbl(tbl)
-xc <- tbl[[attr(tbl, "xsection_col", exact = TRUE)]]
+xc <- xt_as_channel(c(10, 12, 11))
 is.xchan(xc)
 xs <- xc[[1]]
 is.xsection(xs)

@@ -3,7 +3,7 @@
 #' These functions construct **elevation specification** objects (class `"xchan_elevation"`).
 #' An elevation specification is a small callable wrapper: passing it as `reference` to
 #' [xt_elevation()] runs it against the channel and returns one elevation per cross section
-#' (aligned with rows of the `"xchan_tbl"`).
+#' (aligned with `[[i]]` storage order of the [`xchan`]).
 #'
 #' [elevation_thalweg()] takes no arguments: each section contributes its stored
 #' `thalweg_elev` value — the minimum elevation among sampled profile vertices —
@@ -43,7 +43,8 @@
 #' @param ... Further arguments forwarded to `.f` (for example `probs` for [stats::quantile]).
 #'
 #' @returns An object inheriting `"xchan_elevation"`: a function `(channel)` that returns
-#'   a numeric vector of elevations, one per row of `channel`. Also used as `reference`
+#'   a numeric vector of elevations, one per cross section in storage order (`[[i]]` of
+#'   `channel` when it is an [`xchan`]). Also used as `reference`
 #'   in other package functions expecting an elevation specification.
 #'
 #' @rdname elevations

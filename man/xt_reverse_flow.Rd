@@ -7,11 +7,10 @@
 xt_reverse_flow(channel)
 }
 \arguments{
-\item{channel}{A cross section object.}
+\item{channel}{An \code{\link{xchan}} object.}
 }
 \value{
-A cross section object with the flow direction reversed. That is,
-what was previously called the left bank is now the right, and vice versa.
+An \code{\link{xchan}} with flow direction reversed (see \strong{Details}).
 }
 \description{
 Swaps what is called the "left" and "right" banks (from the perspective
@@ -31,9 +30,9 @@ same projected positions along the same geographic line, but chainage is recompu
 the new zero at the former downstream end. Then \code{\link[=xt_arrange_downstream]{xt_arrange_downstream()}} sorts by
 increasing chainage along \strong{hydrologic} downstream after the reversal (for example order
 D, C, B, A instead of A, B, C, D when those letters ran upstream-to-downstream before).
-Row order of the table is unchanged by this function.
+Section order in the \code{\link{xchan}} list is unchanged by this function.
 }
 \note{
 Summaries that treat left and right symmetrically (e.g. \code{\link[=elevation_bank]{elevation_bank()}} with
-default \code{min}) are unchanged until you reorder rows.
+default \code{min}) are unchanged until you reorder sections (e.g. \code{\link[=xt_arrange_downstream]{xt_arrange_downstream()}}).
 }

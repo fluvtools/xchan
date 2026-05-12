@@ -11,7 +11,7 @@
 #'   the plan view. Use `"profile"` or `"plan"` to force one view.
 #' @inheritParams plot.xs_profile
 #' @param col,lwd,col_bank_water,col_bank_land,pch_bank,cex_bank,warn_if_no_profile
-#'   Used for the plan view only (see \code{\link{plot.xchan_tbl}}).
+#'   Used for the plan view only (see \code{\link{plot.xchan}}).
 #'
 #' @returns Called for its graphical side effect.
 #'
@@ -21,7 +21,7 @@
 #' plan_ls <- sf::st_linestring(matrix(c(0, 0, 6, 0), ncol = 2))
 #' seg <- sf::st_sfc(plan_ls, crs = 3005)
 #' ch <- xt_as_channel(seg, profile = list(prof))
-#' plot(ch$xsection[[1]])
+#' plot(ch[[1]])
 #'
 #' @exportS3Method base::plot
 plot.xsection <- function(
@@ -65,9 +65,8 @@ plot.xsection <- function(
     )
   } else {
     xc <- xchan(list(x), crs = NA)
-    ch <- new_channel(create_data_frame(xsection = xc), xsection_col = "xsection")
     plot_plan(
-      ch,
+      xc,
       ...,
       extent = extent,
       add = add,

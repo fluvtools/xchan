@@ -46,20 +46,21 @@ pattern:
 - **`xsection`**: one cross section (singular object), containing one planimetric
   transect and optional profile geometry.
 - **`xchan`**: a list-like geometry container of `xsection` objects, analogous to
-  `sfc`.
-- **`xchan_tbl`**: a tabular object (data frame or tibble
-  [@muller2020tibble]) with one active cross-section geometry column and
-  user-defined attribute columns, analogous to `sf`.
+  `sfc`. CRS and an optional channel axis are stored as attributes on the container;
+  single-bracket subsetting preserves them.
+- **User tables**: attribute data (reach identifiers, roughness, etc.) live in
+  ordinary data frames or tibbles that you own; combine them with an `xchan`
+  column or parallel vectors as in any tidy workflow.
 
-This separation keeps cross-section geometry coherent while preserving a familiar
-data-frame workflow for analysis and joins.
+This separation keeps cross-section geometry coherent without a bespoke
+data-frame subclass for channels.
 
 ### CRS Handling
 
 Coordinate reference system (CRS) metadata is stored at the `xchan` geometry
-container level (and therefore inherited by `xchan_tbl` geometry columns), not
-duplicated inside each `xsection`. This follows `sf` design principles and avoids
-redundant per-feature CRS state while keeping geometric operations unit-aware.
+container level, not duplicated inside each `xsection`. This follows `sf` design
+principles and avoids redundant per-feature CRS state while keeping geometric
+operations unit-aware.
 
 ### Profile Representation
 

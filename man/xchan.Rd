@@ -2,19 +2,38 @@
 % Please edit documentation in R/xsection.R
 \name{xchan}
 \alias{xchan}
+\alias{[.xchan}
 \title{Construct a vector of cross sections (\code{xchan})}
 \usage{
-xchan(sections, crs = NULL)
+xchan(sections, crs = NULL, axis = NULL)
+
+\method{[}{xchan}(x, i, ...)
 }
 \arguments{
 \item{sections}{A list of \code{xsection} objects.}
 
 \item{crs}{Optional CRS accepted by \code{\link[sf:st_crs]{sf::st_crs()}}.}
+
+\item{axis}{Optional reach-scale axis as a single \code{LINESTRING} (\code{sfc} or
+\code{sfg}), same CRS as the plan geometry; see \code{\link[=xt_axis]{xt_axis()}}.}
 }
 \value{
 An object of class \code{"xchan"} / \code{"xchan_geom"}.
 }
 \description{
 \code{xchan} is a list-like geometry container, analogous to an \code{sfc} object in
-\code{{sf}}. CRS is stored once at the container level.
+\strong{sf}. CRS (and optionally the channel axis; see \code{\link[=xt_axis]{xt_axis()}}) are stored as
+attributes on the container, not repeated on each section.
 }
+\details{
+The internal layout is deliberately exposed: each cross section is one
+element of the list (\verb{[[i]]} is an \code{\link{xsection}}). You can inspect or replace
+sections directly, and combine them with ordinary list tools. Single-bracket
+subsetting (\code{[}) is implemented so \strong{\code{crs} and \code{axis} are preserved} on the
+result; double-bracket (\code{[[}) returns a bare \code{\link{xsection}} by design.
+}
+\section{Methods (by generic)}{
+\itemize{
+\item \code{[}: Subset by section index; preserves \code{crs} and \code{axis}.
+
+}}

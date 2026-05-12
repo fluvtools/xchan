@@ -1,6 +1,6 @@
 #' Plot a channel object
 #'
-#' @param x Channel object
+#' @param x An [`xchan`] object.
 #' @param extent One of `"banks"` (default) or `"full"`.
 #'   `"full"` draws each transect out to the ends of its profile (when profiles
 #'   are present) and marks bank positions; uses bank-to-bank segments only if
@@ -14,12 +14,6 @@
 #' The default is `exaggerate = 1` (no exaggeration). It is strongly recommended not going beyond 3, because
 #' exaggeration beyond this point can distort the perception of the profile.
 #' @export
-plot.xchan_tbl <- function(x, ..., extent = c("banks", "full")) {
-  plot_plan(x, extent = extent, ...)
-}
-
-#' @export
 plot.xchan <- function(x, ..., extent = c("banks", "full")) {
-  channel <- new_channel(create_data_frame(xsection = x), xsection_col = "xsection")
-  plot_plan(channel, extent = extent, ...)
+  plot_plan(x, extent = extent, ...)
 }
