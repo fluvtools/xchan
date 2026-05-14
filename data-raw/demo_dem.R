@@ -1,3 +1,6 @@
+# The source GeoTIFF is intentionally not tracked in git because it is large.
+# Recreate it with data-raw/download_dem.py before running this script.
+
 target_crs <- 3005
 
 # Work in projected CRS so spacing/extent are in metres.
