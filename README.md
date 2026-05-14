@@ -95,13 +95,13 @@ channel <- xt_generate_profile(
 )
 
 # Plot an example profile cross section
-plot(xt_profile_at(profile_cross_sections, 1))
+plot(xt_profile_at(profile_cross_sections, 1), exaggerate = 10)
 ```
 
 <img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
 
 Apply a widening scenario to the generated cross sections. In this
-example, the channel is widened by 20 metres on the right bank:
+example, the channel is widened by 200 metres on the right bank:
 
 ``` r
 widened_cross_sections <- xt_widen(

@@ -12,4 +12,8 @@ joss-paper.html
 joss-paper.pdf
 Rplots.pdf
 ..Rcheck
-
+data-raw/*.tif
+data-raw/*.gpkg
+# Large raw raster downloads
+*.tif
+*.tiff
