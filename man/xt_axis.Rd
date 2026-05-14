@@ -2,28 +2,44 @@
 % Please edit documentation in R/xt_axis.R
 \name{xt_axis}
 \alias{xt_axis}
+\alias{xt_axis.xchan}
+\alias{xt_axis.default}
 \alias{xt_axis<-}
+\alias{xt_axis<-.xchan}
+\alias{xt_axis<-.default}
 \title{Channel axis (LINESTRING)}
 \usage{
 xt_axis(channel)
 
+\method{xt_axis}{xchan}(channel)
+
+\method{xt_axis}{default}(channel)
+
 xt_axis(channel) <- value
+
+\method{xt_axis}{xchan}(channel) <- value
+
+\method{xt_axis}{default}(channel) <- value
 }
 \arguments{
-\item{channel}{An object of class \code{"xchan"}.}
+\item{channel}{An \code{\link{xchan}} object (cross-section geometry container).}
 
 \item{value}{A single \strong{LINESTRING} as \code{sfc} or \code{sfg}, same CRS as the plan
-column (else transformed with a warning).}
+geometry (else transformed with a warning).}
 }
 \value{
 For \code{xt_axis()}, the stored \code{sfc_LINESTRING} or \code{NULL}. For
-assignment, an updated channel with attribute \code{axis}.
+assignment, an updated \code{\link{xchan}} with attribute \code{axis}.
 }
 \description{
 Get or set the reference axis used for downstream distance and ordering:
-\code{\link[=xt_trace_centerline]{xt_trace_centerline()}}, \code{\link[=xt_arrange_downstream]{xt_arrange_downstream()}}, \code{\link[=xt_distance_ds]{xt_distance_ds()}},
+\code{\link[=xt_trace_centerline]{xt_trace_centerline()}}, \code{\link[=xt_arrange_downstream]{xt_arrange_downstream()}}, \code{\link[=xt_distance_downstream]{xt_distance_downstream()}},
 \code{\link[=xt_gradient]{xt_gradient()}}, etc. Channels built with \code{\link[=xt_generate_plan]{xt_generate_plan()}} store the
-sampling axis automatically.
+sampling axis automatically on the \code{\link{xchan}} object.
+}
+\details{
+The axis is \strong{reach-scale} geometry (one polyline along the channel). It is
+stored as attribute \code{"axis"} on the \code{\link{xchan}} object.
 }
 \examples{
 \donttest{

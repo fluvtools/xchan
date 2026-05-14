@@ -14,20 +14,19 @@ xt_trace_centerline(channel, axis = NULL)
 }
 \value{
 An sf \code{LINESTRING} \code{sfc} (length 1) through section midpoints. Vertex
-order follows increasing \strong{\code{chainage}} when that column is present (see
-\code{\link[=xt_generate_plan]{xt_generate_plan()}}); otherwise increasing projection onto \code{axis}.
+order follows increasing projection onto \code{axis}.
 }
 \description{
 Trace a polyline through planimetric cross-section midpoints in \strong{downstream}
-order along the channel axis (see \strong{Details}).
+order along a channel axis (see \strong{Details}).
 }
 \details{
 Midpoints use the mean of each section’s \strong{first and last} vertices
-(bank-to-bank). If the channel has a valid numeric \strong{\code{chainage}} column
-(\link[=xt_has_profile]{xt_has_chainage()}), downstream vertex order follows \strong{\code{chainage}} and an
-axis need not be stored for this trace. Otherwise order follows
-\code{\link[sf:st_line_project_point]{sf::st_line_project()}} along \code{axis} (\code{\link[=xt_axis]{xt_axis()}} or explicit argument). Use
-\code{\link[=xt_arrange_downstream]{xt_arrange_downstream()}} to sort rows by \strong{\code{chainage}} or projection.
+(bank-to-bank). The supplied or stored axis is used \strong{only} to define
+downstream ordering of sections; the returned line itself is rebuilt from
+current section geometry. This is useful after channel-modifying operations
+(for example widening), where you may want a new centerline while preserving
+an ordering reference axis.
 }
 \examples{
 centerline <- xt_trace_centerline(channel)

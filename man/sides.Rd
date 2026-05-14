@@ -13,24 +13,21 @@ side_right(prop = 1)
 side_both(prop_left = 0.5, prop_right = 0.5)
 }
 \arguments{
-\item{prop}{Numeric vector of values between 0 and 1 indicating how much
-of the widening to apply to the specified bank. Length 1 for constant
-proportion for all cross sections; length equal to the number of
-cross sections for varying proportions.}
+\item{prop}{A single numeric value between 0 and 1 indicating how much
+of the widening to apply to the specified bank.}
 
-\item{prop_left, prop_right}{Numeric vectors of values between 0 and 1
+\item{prop_left, prop_right}{Single numeric values between 0 and 1
 indicating how much of the widening to apply to the left and right banks,
-respectively. Length 1 for constant proportion for all cross sections;
-length equal to the number of cross sections for varying proportions.}
+respectively.}
 }
 \value{
-A side object that can be used in widening functions.
+A side object that can be used in widening functions. It is a list
+with numeric entries \code{left} and \code{right}.
 }
 \description{
 Side functions determine how much of the widening applied to a channel
-is allocated to the left and right banks. They are functions of cross
-sections, and return a numeric vector of proportions indicating how much
-of the widening should be applied to the left bank (left, by convention).
+is allocated to the left and right banks. They return side objects as
+lists with \code{left} and \code{right} proportions.
 }
 \details{
 While these functions are different ways of specifying the same thing,

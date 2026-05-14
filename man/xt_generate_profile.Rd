@@ -8,34 +8,45 @@ xt_generate_profile(
   channel,
   dem,
   ...,
-  extent_distance,
-  extent_multiplier,
+  extent_distance = Inf,
+  extent_multiplier = NULL,
   sample_freq,
-  sample_n
+  sample_n,
+  progress = FALSE
 )
 }
 \arguments{
-\item{channel}{Channel object with planimetric cross sections.}
+\item{channel}{\code{\link{xchan}} with planimetric cross sections.}
 
 \item{dem}{Digital elevation model (raster or terra object).}
 
-\item{...}{Additional arguments (ignored).}
+\item{...}{Must be empty.}
 
-\item{extent_distance}{Distance to extend beyond banks (units);
-positive numeric value. Mutually exclusive with \code{extent_multiplier}.}
+\item{extent_distance}{Distance to extend beyond banks on each side. Use
+\code{Inf} (the default) to extend along the cross section until the DEM
+bounding box is reached in each direction. A finite plain numeric is
+interpreted in the channel's CRS length unit; a \code{\link[units:units]{units::units()}} length
+object is converted automatically. If larger than the distance from each
+bank to the DEM edge along the cross-section line, the extension is
+shortened silently on that side. Mutually exclusive with passing a
+non-\code{NULL} \code{extent_multiplier}.}
 
 \item{extent_multiplier}{Multiplier of channel width to extend beyond banks;
-positive numeric value. Mutually exclusive with \code{extent_distance}.}
+positive numeric value. Default \code{NULL} uses \code{extent_distance} instead.
+Mutually exclusive with supplying an explicit \code{extent_distance} argument.}
 
-\item{sample_freq}{Distance between DEM sampling points (units);
-positive numeric value. Mutually exclusive with \code{sample_n}.}
+\item{sample_freq}{Distance between DEM sampling points; positive value.
+Same units treatment as \code{extent_distance}. Mutually exclusive with
+\code{sample_n}.}
 
 \item{sample_n}{number to sample; positive integer value greater than 1.
 Mutually exclusive with \code{sample_freq}.}
+
+\item{progress}{If \code{TRUE}, show a text progress bar while processing cross
+sections (same behaviour as \code{\link[=xt_generate_plan]{xt_generate_plan()}}).}
 }
 \value{
-Updated channel object with profile cross sections in the
-profile column.
+Updated \code{\link{xchan}} with profile geometry attached to each cross section.
 }
 \description{
 Generate profile cross sections for a channel object using a digital
@@ -48,15 +59,30 @@ banks to create a "frame" for erosion analysis. The extent can be specified
 either as a fixed distance or as a multiplier of the channel width.
 Similarly, the sampling distance can be specified either as a fixed
 distance or as a multiplier of the channel width.
+
+Extension beyond banks is clipped to the DEM bounding box (in the DEM's
+CRS, projected to the cross-section CRS when needed), so sampling stays
+inside raster coverage if the bank-to-bank segment lies inside the DEM.
+
+Elevations are taken with bilinear interpolation between cell centres (see
+\code{\link[terra:extract]{terra::extract()}} with \code{method = "bilinear"}), which smooths grid-oriented
+steps relative to nearest-neighbour extraction but still respects the DEM
+cell size: expect subtle terrace-like breaks where slope crosses grid
+boundaries if resolution is coarse.
+
+Sample points that fall in nodata cells (\code{NA}) at the \strong{ends} of the
+transect are dropped until all remaining elevations are finite; interior
+gaps still raise an error. Any sample outside the raster bounding box
+raises an error.
 }
 \examples{
-# Sample DEM with 50m extension and 1m sampling
-channel_with_profiles <- xt_generate_profile(
-  channel, dem, extent_distance = 50, extent_distance = 1
-)
+# Sample DEM with 50 m extension beyond banks and 1 m sample spacing
+# channel_with_profiles <- xt_generate_profile(
+#   channel, dem, extent_distance = 50, sample_freq = 1
+# )
 
-# Sample DEM with 2x channel width extension and 0.1x width sampling
-channel_with_profiles <- xt_generate_profile(
-  channel, dem, extent_multiplier = 2, extent_multiplier = 0.1
-)
+# 2x channel width extension; sample count sets spacing along extended line
+# channel_with_profiles <- xt_generate_profile(
+#   channel, dem, extent_multiplier = 2, sample_n = 100
+# )
 }

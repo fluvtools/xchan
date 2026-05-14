@@ -2,25 +2,29 @@
 % Please edit documentation in R/xt_has_profile.R
 \name{xt_has_profile}
 \alias{xt_has_profile}
-\alias{xt_has_plan}
-\alias{xt_has_chainage}
-\title{Check if a channel has profile or plan-view cross sections}
+\title{Check if an object has profile cross-section geometry}
 \usage{
 xt_has_profile(x)
-
-xt_has_plan(x)
-
-xt_has_chainage(x)
 }
 \arguments{
-\item{x}{A channel object.}
+\item{x}{An \code{xsection} or \code{xchan} object.}
 }
 \value{
-Single logical. For \code{xt_has_profile()} / \code{xt_has_plan()}, \code{TRUE} if
-the channel has that column tracked. For \code{xt_has_chainage()}, \code{TRUE} if \code{x}
-has a numeric \strong{\code{chainage}} column with one non-missing value per row (see
-\code{\link[=xt_generate_plan]{xt_generate_plan()}}).
+\code{TRUE} if profile geometry is present as described above; \code{FALSE} if
+uniformly absent.
 }
 \description{
-Check if a channel has profile or plan-view cross sections
+For an \code{xsection}, returns whether \code{profile} is non-\code{NULL}.
+For \code{xchan}, returns \code{TRUE} only when \strong{every} cross section carries an
+\code{xs_profile}, and \code{FALSE} when \strong{none} do.
+}
+\details{
+Mixing sections with and without profiles is not allowed; constructors and
+replacement helpers enforce this invariant when building or updating channel
+geometry.
+
+All cross sections in an \code{xchan} must share the same profile state (all
+have \code{xs_profile} geometry or all omit it). If that invariant is
+violated, functions that read profile state — including \code{xt_has_profile()}
+for an \code{xchan} — raise an error naming which positions differ.
 }

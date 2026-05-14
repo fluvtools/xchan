@@ -20,6 +20,14 @@ xchan start with a common prefix, `xt`, which stands for “cross-section
 type”; this is intended to parallel the sf package’s function prefix,
 `st`, which stands for “spatial type”.
 
+**Data model.** The main reach-scale object is \[`xchan`\]: a list of
+\[`xsection`\] objects with CRS (and optionally a channel axis; see
+\[`xt_axis()`\]) stored as attributes on the container. Single-bracket
+subsetting `[` keeps those attributes; use `[[i]]` for one section. If
+you need tabular metadata (reach IDs, roughness, …), keep it in your own
+data frame and hold geometry in an `xchan` column or alongside it—this
+package does not attach a special data-frame class to channels.
+
 ## Installation
 
 You can install the development version of xchan from
@@ -87,7 +95,7 @@ channel <- xt_generate_profile(
 )
 
 # Plot an example profile cross section
-plot(profile_cross_sections$profile[[1]])
+plot(xt_profile_at(profile_cross_sections, 1))
 ```
 
 <img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />

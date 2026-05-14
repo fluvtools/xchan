@@ -38,6 +38,10 @@
 #' The method is fully vectorized and runs in \eqn{O(n)} time, where \eqn{n}
 #' is the number of cross-section points to the right of `x0`.
 #'
+#' If the requested volume cannot be satisfied within the available topography
+#' to the right of `x0`, the function throws an error rather than extrapolating
+#' beyond the cross-section extent.
+#'
 #' For `v = 0`, the convention is adopted where `x0` is always returned, even
 #' in the unusual case where the bank is below thalweg and `valley = "right"`.
 #'
@@ -83,6 +87,7 @@
 #' find_dx_for_volume_right(
 #'   0, x0 = 2.5, topo = topo, thalweg_height = 11, valley = "left"
 #' )
+#' @noRd
 find_dx_for_volume_right <- function(
   v,
   x0,
@@ -113,8 +118,7 @@ find_dx_for_volume_right <- function(
 
   # If there are no points to the right of x0 (e.g. x0 is at or beyond the
   # rightmost point of the topo), there is no volume available to satisfy
-  # v > 0. Treat as overflow so callers with error_on_overflow = FALSE can
-  # recover with the maximum available width (which is also 0 here).
+  # v > 0.
   if (n_topo < 2) {
     stop("Requested volume exceeds what is available to the right of x0")
   }

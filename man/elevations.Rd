@@ -2,13 +2,13 @@
 % Please edit documentation in R/elevations.R
 \name{elevation_thalweg}
 \alias{elevation_thalweg}
+\alias{elevations}
 \alias{elevation_bank}
 \alias{elevation_bank_left}
 \alias{elevation_bank_right}
-\alias{elevation_topo_left}
-\alias{elevation_topo_right}
+\alias{elevation_channel}
 \alias{elevation_topo}
-\title{Elevation Specifications}
+\title{Elevation specifications for channel profiles}
 \usage{
 elevation_thalweg()
 
@@ -18,22 +18,89 @@ elevation_bank_left()
 
 elevation_bank_right()
 
-elevation_topo_left()
-
-elevation_topo_right()
+elevation_channel(.f = mean, ...)
 
 elevation_topo(.f = mean, ...)
 }
 \arguments{
-\item{.f}{Function to apply to elevation values (e.g., mean, min, max)}
+\item{.f}{Numeric summary function applied per cross section:
+\itemize{
+\item \code{\link[=elevation_bank]{elevation_bank()}} — passes \strong{two} values (left and right \strong{outer bank} elevations)
+through \code{.f}; default \link[base:Extremes]{base::min} is the lower of the two outer bank elevations.
+\item \code{\link[=elevation_channel]{elevation_channel()}} — passes elevations at \strong{all} profile vertices between the
+outer left and right \strong{bank distances} through \code{.f}; default \link[base:mean]{base::mean}.
+\item \code{\link[=elevation_topo]{elevation_topo()}} — passes \strong{all} vertex elevations \code{coordinates[, 2]} through \code{.f};
+default \link[base:mean]{base::mean} is the mean along the full traced polyline (not restricted to
+the bank-to-bank span).
+\item \code{\link[=elevation_bottom]{elevation_bottom()}} — same in-channel vertex set as \code{\link[=elevation_channel]{elevation_channel()}}; kept as a
+separate name for readability in long-profile / “bed” contexts.
+}}
 
-\item{...}{Additional arguments passed to \code{.f}}
+\item{...}{Further arguments forwarded to \code{.f} (for example \code{probs} for \link[stats:quantile]{stats::quantile}).}
 }
 \value{
-An elevation specification object
+An object inheriting \code{"xchan_elevation"}: a function \code{(channel)} that returns
+a numeric vector of elevations, one per cross section in storage order (\verb{[[i]]} of
+\code{channel} when it is an \code{\link{xchan}}). Also used as \code{reference}
+in other package functions expecting an elevation specification.
 }
 \description{
-Elevation specifications define how to calculate elevation values from
-channel cross-sections. These functions return elevation specification
-objects that can be used in various channel operations.
+These functions construct \strong{elevation specification} objects (class \code{"xchan_elevation"}).
+An elevation specification is a small callable wrapper: passing it as \code{reference} to
+\code{\link[=xt_elevation]{xt_elevation()}} runs it against the channel and returns one elevation per cross section
+(aligned with \verb{[[i]]} storage order of the \code{\link{xchan}}).
+}
+\details{
+\code{\link[=elevation_thalweg]{elevation_thalweg()}} takes no arguments: each section contributes its stored
+\code{thalweg_elev} value — the minimum elevation among sampled profile vertices —
+documented as a return component of \code{\link[=new_profile]{new_profile()}}.
+}
+\section{Functions}{
+\itemize{
+\item \code{elevation_bank()}: Banks: apply \code{.f} to the elevations at the \strong{left and right outer
+bank} vertices (same points as \code{\link[=elevation_bank_left]{elevation_bank_left()}} / \code{\link[=elevation_bank_right]{elevation_bank_right()}}).
+Default \code{.f = min} chooses the lower of the two outer bank elevations.
+
+\item \code{elevation_bank_left()}: Elevation (\code{z}) at the \strong{outer left bank} profile vertex only.
+
+\item \code{elevation_bank_right()}: Elevation (\code{z}) at the \strong{outer right bank} profile vertex only.
+
+\item \code{elevation_channel()}: Aggregate vertex elevations \strong{between} the outer left and right
+bank distances (in-channel span) with \code{.f}; default \code{.f = mean}. Unlike
+\code{\link[=elevation_topo]{elevation_topo()}}, excludes profile tails outside both outer banks.
+
+\item \code{elevation_topo()}: Aggregate \strong{every} sampled vertex elevation on the profile
+(\code{coordinates[, 2]}) with \code{.f}; default \code{.f = mean}. Use another summary (for example
+\link[stats:median]{stats::median} or \link[base:Extremes]{base::min}) when a single statistic of the traced polyline is
+desired. Differs from \code{\link[=elevation_bank]{elevation_bank()}}, which only uses the \strong{two outer bank}
+elevations, and from \code{\link[=elevation_channel]{elevation_channel()}}, which restricts to the bank-to-bank span.
+
+}}
+\section{Profile geometry and naming}{
+
+
+Objects of class \code{xs_profile} (from \code{\link[=new_profile]{new_profile()}}) hold a matrix
+\code{coordinates} with column 1 = \strong{distance along the cross section} (left bank toward
+right bank, increasing) and column 2 = \strong{elevation}. \strong{Bank} points are vertices on
+that polyline flagged in \code{banks} (row indices); \strong{thalweg} identifies the deepest
+part of the traced section.
+
+In this vertical slice, \strong{left} and \strong{right} mean smaller vs larger distance along
+the profile (typically left and right banks in map view when the section is oriented
+consistently). \code{\link[=elevation_topo]{elevation_topo()}} uses \strong{every} sampled vertex on the polyline
+(including distances outside the outer bank pair if the profile extends there).
+\code{\link[=elevation_channel]{elevation_channel()}} and \code{\link[=elevation_bottom]{elevation_bottom()}} use only vertices whose distance lies
+\strong{between} the \strong{outer} left and right bank distances (the wetted / in-channel span).
+}
+
+\section{Parameters on “zero-arg” constructors}{
+
+
+Specifications with no arguments (\code{\link[=elevation_thalweg]{elevation_thalweg()}}, \code{\link[=elevation_bank_left]{elevation_bank_left()}}, …)
+are fully determined by convention; there is nothing to configure. Combine them with
+\code{\link[=xt_elevation]{xt_elevation()}} / \code{\link[=xt_gradient]{xt_gradient()}}, etc.
+}
+
+\seealso{
+\code{\link[=xt_elevation]{xt_elevation()}}, \code{\link[=xt_gradient]{xt_gradient()}}, \code{\link[=new_profile]{new_profile()}}
 }

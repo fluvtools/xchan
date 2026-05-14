@@ -19,23 +19,25 @@ xt_width_lb(xs)
 xt_width_rb(xs)
 }
 \arguments{
-\item{x}{A \code{xchan} or \code{xs_profile} object.}
+\item{x}{An \code{\link{xchan}} or \code{xs_profile} object.}
 
 \item{...}{Unused (reserved for methods).}
 
 \item{xs}{\code{xs_profile}; left/right half-width helpers below.}
 }
 \value{
-For \code{xchan}: a numeric vector with one width per row.
-For \code{xs_profile}: a non-negative numeric scalar.
+For \code{\link{xchan}}: a numeric vector with one width per cross section, carrying
+\code{\link[units:units]{units::units()}} when the channel has a CRS with a defined linear unit
+(for example metres). When no CRS is set the result is plain numeric.
+For \code{xs_profile}: a non-negative numeric scalar (no CRS context, so plain
+numeric).
 }
 \description{
-\code{xt_width()} returns geometric width. For a \code{xchan} object, this is typically one
-value per cross section: from planimetric line lengths when a plan column
-exists, otherwise from profile geometry. For a single \code{xs_profile}
+\code{xt_width()} returns geometric width. For an \code{\link{xchan}}, this is one value per
+cross section from planimetric line lengths. For a single \code{xs_profile}
 object, it is the span along the profile horizontal axis between the
 outermost left and right banks (the same convention as
-\code{\link[=xt_generate_profile]{xt_generate_profile()}} and \code{\link[=xt_profile]{xt_profile()}}).
+\code{\link[=xt_generate_profile]{xt_generate_profile()}} and \code{\link[=new_profile]{new_profile()}}).
 }
 \examples{
 library(sf)
@@ -44,7 +46,7 @@ seg <- st_sfc(
   crs = 3005
 )
 coords <- matrix(c(-1, 0, 0, -1, 1, 0), ncol = 2, byrow = TRUE)
-xs <- xt_profile(coords, bankpoints = c(-1, 1))
+xs <- xchan:::new_profile(coords, bankpoints = c(-1, 1))
 xt_width(xs)
 
 # xt_width(demo_channel)

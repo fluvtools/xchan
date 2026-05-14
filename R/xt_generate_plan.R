@@ -1,32 +1,57 @@
 #' Generate channel object from banklines
 #'
 #' Generate a channel object with planimetric cross sections from a
-#' bankline polygon.
+#' single closed polygon outlining the channel footprint (both banks).
 #'
-#' @param banks Bankline polygon (sf POLYGON object)
+#' @param banks Channel footprint as **one closed polygon** (`POLYGON` or
+#'   `MULTIPOLYGON`), typically as [`sf::st_sf()`], [`sf::st_sfc()`], or bare
+#'   [`sf::st_geometry()`]. The ring(s) enclose the plan-view channel area; left
+#'   and right banks are **not** supplied as separate inputs—they are inferred
+#'   from this boundary together with the sampling axis (see **Details**).
+#'
+#'   **Not supported as `banks`:** two independent open bank polylines (e.g. one
+#'   \code{LINESTRING} per bank without closing the corridor). Automatic axis
+#'   generation uses [`centerline::cnt_path_guess()`], which expects polygon
+#'   geometry; bank-to-bank segments are found by intersecting trial transects
+#'   with this closed boundary.
 #' @param ... Additional arguments (ignored).
 #' @param n Number of cross sections to generate (mutually exclusive with
 #'   spacing and at)
-#' @param spacing Distance between cross sections (mutually exclusive with n
-#'   and at)
-#' @param at Specific distances along the channel axis for cross sections (mutually
-#'   exclusive with n and spacing)
+#' @param spacing Distance between cross sections (mutually exclusive with `n`
+#'   and `at`). Plain numeric is interpreted in the `banks` CRS length unit; a
+#'   [units::units()] length object is converted automatically.
+#' @param at Specific distances along the channel axis for cross sections
+#'   (mutually exclusive with `n` and `spacing`). Same units treatment as
+#'   `spacing`.
 #' @param axis Channel axis as a multilinestring: the line along which cross
 #'   sections are placed. If `NULL` (the default), an axis is generated
-#'   automatically using the **centerline** package (`centerline::cnt_path_guess()`).
-#' @returns A channel object with planimetric cross sections in the plan column.
-#'   A numeric column **`chainage`** gives distance along the sampling axis from
-#'   its start to each section’s station (CRS units). Downstream order follows
-#'   increasing **`chainage`**; keep or restore this ordering after `arrange()` via
-#'   [xt_arrange_downstream()] or by sorting on **`chainage`**. The sampling axis
-#'   is also stored ([xt_axis()]) for geometry that requires it (e.g.
-#'   [xt_distance_ds()]).
-#' @details This function takes the definition of "cross section" relative
-#' to a point in the channel to be the line segment intersecting the point
-#' whose bank-to-bank segment width is the smallest. Note that this does not
-#' imply that the cross section is unique, and in this case the cross section
-#' is arbitrarily taken to be the one closest to a 0-degree angle --
-#' although in almost all cases this should not be an issue.
+#'   automatically from the **island-free** footprint (\code{polygon_sans_holes()})
+#'   using the **centerline** package (`centerline::cnt_path_guess()`).
+#' @param progress Logical; if `TRUE`, display a text progress bar while
+#'   generating planimetric cross sections.
+#' @returns An [`xchan`] with one [`xsection`] per list position, in downstream order along the sampling axis.
+#'   After subsetting, restore order with [xt_arrange_downstream()]. Use [xt_distance_downstream()]
+#'   for distance along the axis from its start to each section (requires the axis
+#'   from [xt_axis()], which this function sets). The sampling axis is stored on the
+#'   [`xchan`] object.
+#' @details **Bank geometry:** Supply the channel as one polygon (or
+#' multipolygon) so its boundary is a closed loop around the wetted/plan
+#' corridor. If you only have two bank polylines, convert them to a closed
+#' polygon (e.g. connect upstream/downstream ends) before calling this function.
+#'
+#' Interior rings (islands) are dropped with \code{polygon_sans_holes()} for axis
+#' generation (when `axis` is `NULL`) and for the minimum-width transect search:
+#' each station gets the **shortest bank-to-bank segment** through that point on
+#' the filled corridor, matching the original algorithm and ignoring islands by
+#' construction.
+#'
+#' The holed footprint (`banks`) is then used to **refine** that transect:
+#' the filled chord is intersected with the polygon boundary (outer bank plus
+#' island outlines). Distinct intersection points are merged with the chord
+#' endpoints, ordered along the transect, and deduplicated, producing a plan
+#' `LINESTRING` with **two or more** vertices (extra vertices where the transect
+#' meets island banks). Relative distances for profiles still use the chord from
+#' **first to last** vertex (\code{transect_xy_from_relative()}).
 #'
 #' To define the spacing of the cross sections, a channel axis is
 #' first calculated, and equally spaced points are sampled along that
@@ -43,11 +68,12 @@
 #' the axis and **facing downstream**, in the map plane of the CRS (planar
 #' coordinates).
 #'
-#' **Vertex order (planimetric convention):** each output segment is a
-#' `LINESTRING` from left bank to right bank: the **first** coordinate is on the
-#' left bank, the **last** on the right bank. Increasing distance along the
-#' segment (first to last vertex) thus matches profile cross sections where
-#' distance increases from left to right bank.
+#' **Vertex order (planimetric convention):** each output is a `LINESTRING` from
+#' left bank to right bank: the **first** coordinate is on the left bank, the
+#' **last** on the right bank (with optional intermediate vertices on island
+#' banks). Increasing distance along the polyline (first to last vertex) matches
+#' profile cross sections where distance increases from left to right along the
+#' overall chord.
 #'
 #' **How orientation is computed:** for each station we take a unit tangent to
 #' the axis pointing downstream (`axis_unit_tangent_downstream()`). For each
@@ -67,8 +93,19 @@
 #' # With a custom axis (e.g. user-defined line along the channel)
 #' # channel <- xt_generate_plan(bl, n = 100, axis = my_axis)
 #' @export
-xt_generate_plan <- function(banks, ..., n, spacing, at, axis = NULL) {
+xt_generate_plan <- function(
+  banks,
+  ...,
+  n,
+  spacing,
+  at,
+  axis = NULL,
+  progress = FALSE
+) {
   rlang::check_dots_empty()
+  if (!rlang::is_bool(progress)) {
+    stop("`progress` must be TRUE or FALSE.")
+  }
 
   # Validate input parameters: exactly one of n, spacing, or at is required.
   n_specified <- !missing(n)
@@ -79,13 +116,25 @@ xt_generate_plan <- function(banks, ..., n, spacing, at, axis = NULL) {
     stop("Exactly one of n, spacing, or at must be specified.")
   }
 
+  banks_filled <- polygon_sans_holes(banks)
+
   if (is.null(axis)) {
-    cl <- banks_to_centerline(banks)
+    cl <- banks_to_centerline(banks_filled)
   } else {
     cl <- axis
   }
 
   len <- as.numeric(sum(sf::st_length(cl)))
+
+  # Strip units from length-bearing inputs into the CRS length unit so the
+  # density / sample arithmetic below stays plain numeric.
+  unit <- crs_length_unit(banks)
+  if (spacing_specified) {
+    spacing <- to_numeric_length(spacing, unit, arg = "spacing")
+  }
+  if (at_specified) {
+    at <- to_numeric_length(at, unit, arg = "at")
+  }
 
   # Determine sampling points based on input parameters
   if (n_specified) {
@@ -106,7 +155,6 @@ xt_generate_plan <- function(banks, ..., n, spacing, at, axis = NULL) {
   dists_raw <- as.numeric(sf::st_line_project(cl, pts))
   ord_st <- order(dists_raw)
   pts <- pts[ord_st]
-  chainage <- dists_raw[ord_st]
 
   # Get maximum distance based on bounding box
   bb <- sf::st_bbox(banks)
@@ -115,23 +163,25 @@ xt_generate_plan <- function(banks, ..., n, spacing, at, axis = NULL) {
   )
 
   xs <- list()
+  n_pts <- length(pts)
+  pb <- NULL
+  if (progress && n_pts > 0) {
+    pb <- utils::txtProgressBar(min = 0, max = n_pts, style = 3)
+    on.exit(close(pb), add = TRUE)
+  }
   for (i in seq_along(pts)) {
-    # Make a function to calculate the width of a bank-to-bank line for a
-    # given angle, for the first point along the axis.
     calc_width <- function(angle) {
       seg <- span_banks_engine(
         pts[i],
         angle,
-        bankline = banks,
+        bankline = banks_filled,
         maxd = maxd,
         intersect = TRUE,
         reposition = FALSE
       )
-      sf::st_length(seg)
+      as.numeric(sf::st_length(seg))
     }
 
-    # Optimize on a grid of 50 points first, because this function
-    # is riddled with local minima.
     angles <- seq(0, pi, length.out = 10)
     widths <- vapply(angles, calc_width, numeric(1))
     i_min <- which(widths == min(widths))
@@ -142,16 +192,20 @@ xt_generate_plan <- function(banks, ..., n, spacing, at, axis = NULL) {
     }
     delta <- pi / (length(angles) - 1)
     rng <- angles[i_min] + c(-delta, delta)
-    # Use optimization to find the angle that minimizes the width
     res <- stats::optimize(calc_width, rng)$minimum
-    xs[[i]] <- span_banks_engine(
+
+    chord_filled <- span_banks_engine(
       pts[i],
       res,
-      bankline = banks,
+      bankline = banks_filled,
       maxd = maxd,
       intersect = TRUE,
       reposition = TRUE
     )[[1]]
+    xs[[i]] <- transect_refine_with_island_boundaries(chord_filled, banks)
+    if (!is.null(pb)) {
+      utils::setTxtProgressBar(pb, i)
+    }
   }
 
   ## Combine list of segments in xs into a single sf geometry
@@ -165,15 +219,119 @@ xt_generate_plan <- function(banks, ..., n, spacing, at, axis = NULL) {
 
   attr(geoms, "left_to_right") <- TRUE
 
-  # Chainage + sampling axis for downstream order and distance geometry
-  out <- xt_as_channel(geoms, chainage = chainage)
+  # Sampling axis for downstream order and distance geometry (see xt_distance_downstream)
+  out <- xt_as_channel(geoms)
   xt_axis(out) <- cl
   out
 }
 
+#' Drop interior rings (islands) from polygon geometry; outer shells only.
+#'
+#' @param banks `sfc` or `sf` with `POLYGON` / `MULTIPOLYGON` features.
+#' @returns `sfc` of the same structure with only the first ring of each polygon
+#'   part kept.
+#' @noRd
+polygon_sans_holes <- function(banks) {
+  g <- sf::st_geometry(banks)
+  crs <- sf::st_crs(g)
+  g <- sf::st_make_valid(g)
+  out <- vector("list", length(g))
+  for (i in seq_along(g)) {
+    out[[i]] <- polygon_sans_holes_one(g[[i]])
+  }
+  sf::st_sfc(out, crs = crs)
+}
+
+polygon_sans_holes_one <- function(sfg) {
+  if (inherits(sfg, "POLYGON")) {
+    sf::st_polygon(list(sfg[[1]]))
+  } else if (inherits(sfg, "MULTIPOLYGON")) {
+    parts <- vector("list", length(sfg))
+    for (j in seq_along(sfg)) {
+      poly_j <- sfg[[j]]
+      parts[[j]] <- sf::st_polygon(list(poly_j[[1]]))
+    }
+    sf::st_multipolygon(parts)
+  } else {
+    stop(
+      "Expected POLYGON or MULTIPOLYGON in channel footprint (got ",
+      paste(class(sfg), collapse = ", "),
+      ").",
+      call. = FALSE
+    )
+  }
+}
+
+#' Refine filled chord with holed footprint: add vertices where transect meets
+#' island (hole) boundaries.
+#'
+#' @noRd
+transect_refine_with_island_boundaries <- function(chord_filled, banks_holed) {
+  crs <- sf::st_crs(banks_holed)
+  chord <- if (inherits(chord_filled, "sfg")) {
+    sf::st_sfc(chord_filled, crs = crs)
+  } else {
+    sf::st_crs(chord_filled) <- crs
+    chord_filled
+  }
+  banks_geom <- sf::st_make_valid(sf::st_geometry(banks_holed))
+  chord <- sf::st_make_valid(chord)
+
+  co <- sf::st_coordinates(chord)[, 1:2, drop = FALSE]
+  if (nrow(co) < 2L) {
+    stop("Transect chord must have at least two vertices.", call. = FALSE)
+  }
+  start <- co[1L, , drop = TRUE]
+  end <- co[nrow(co), , drop = TRUE]
+  dvec <- end - start
+  chord_len <- sqrt(sum(dvec^2))
+  if (chord_len < .Machine$double.eps) {
+    stop("Zero-length transect chord.", call. = FALSE)
+  }
+  u <- dvec / chord_len
+
+  proj_along <- function(xy) {
+    sum((xy - start) * u)
+  }
+
+  bd <- sf::st_boundary(banks_geom)
+  hit <- tryCatch(
+    sf::st_intersection(chord, bd),
+    error = function(e) NULL
+  )
+
+  xy_bd <- matrix(numeric(0), 0, 2)
+  if (!is.null(hit) && length(hit) > 0L && !all(sf::st_is_empty(hit))) {
+    hc <- sf::st_coordinates(hit)
+    if (nrow(hc) > 0L) {
+      xy_bd <- hc[, 1:2, drop = FALSE]
+    }
+  }
+
+  mat <- rbind(co, xy_bd)
+  tvals <- apply(mat, 1L, function(r) proj_along(r))
+  keep <- tvals >= -1e-5 & tvals <= chord_len + 1e-5
+  mat <- mat[keep, , drop = FALSE]
+  tvals <- tvals[keep]
+
+  ord <- order(tvals)
+  mat <- mat[ord, , drop = FALSE]
+  tvals <- tvals[ord]
+
+  tq <- round(tvals, 8)
+  keep_u <- !duplicated(tq)
+  mat <- mat[keep_u, , drop = FALSE]
+
+  if (nrow(mat) < 2L) {
+    chord_filled
+  } else {
+    sf::st_linestring(mat)
+  }
+}
+
 #' Unit tangent along the channel axis, downstream
 #'
-#' Approximates the direction of increasing chainage on `cl` at `pt` by taking a
+#' Approximates the downstream direction on `cl` at `pt` by taking a
 #' short finite difference between two nearby interpolations along the line.
 #' Used to define left/right relative to flow when orienting cross sections.
 #' The full downstream / left–right convention is documented under **Details**

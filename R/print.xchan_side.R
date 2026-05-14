@@ -1,25 +1,14 @@
 #' Print method for xchan_side objects
 #'
+#' Prints the left/right proportions only (constructors [side_left()], etc., are equivalent).
+#'
 #' @param x A side object
 #' @param ... Additional arguments (ignored)
 #' @exportS3Method base::print
 print.xchan_side <- function(x, ...) {
-  cat("Side:", attr(x, "name"), "\n")
-
-  # Get function arguments
-  args <- formals(x)
-  if (length(args) > 0) {
-    cat("Parameters:\n")
-    for (i in seq_along(args)) {
-      arg_name <- names(args)[i]
-      arg_value <- args[[i]]
-      if (is.name(arg_value) && arg_value == "") {
-        cat("  ", arg_name, " (required)\n", sep = "")
-      } else {
-        cat("  ", arg_name, " = ", deparse(arg_value), "\n", sep = "")
-      }
-    }
-  }
-
+  cat("Side allocation specification.\n")
+  cat("Proportions:\n")
+  cat("  left =", x$left, "\n")
+  cat("  right =", x$right, "\n")
   invisible(x)
 }

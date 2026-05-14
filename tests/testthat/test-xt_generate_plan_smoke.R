@@ -1,16 +1,17 @@
 test_that("xt_generate_plan returns a channel", {
   skip_if_not_installed("sf")
   ch <- xt_generate_plan(fraser_bankline, n = 10)
-  expect_true(is_channel(ch))
+  expect_true(xt_is_channel(ch))
   expect_identical(xt_n_sections(ch), 10L)
 })
 
-test_that("xt_generate_plan attaches sorted chainage column", {
+test_that("xt_generate_plan orders sections downstream along axis", {
   skip_if_not_installed("sf")
   ch <- xt_generate_plan(fraser_bankline, n = 12)
-  expect_true(xt_has_chainage(ch))
-  expect_identical(length(ch$chainage), nrow(ch))
-  expect_true(all(diff(sort(ch$chainage)) >= 0))
+  ds <- xt_distance_downstream(ch)
+  expect_identical(length(ds), length(ch))
+  # `ds` carries CRS units; strip before the bare-numeric comparison with 0.
+  expect_true(all(diff(as.numeric(ds)) >= 0))
 })
 
 test_that("planimetric segments orient first vertex to left bank (downstream)", {
@@ -21,7 +22,7 @@ test_that("planimetric segments orient first vertex to left bank (downstream)", 
   len <- as.numeric(sum(sf::st_length(cl)))
   n <- 12L
   ch <- xt_generate_plan(fraser_bankline, n = n)
-  plan <- ch$plan
+  plan <- channel_plan(ch)
   pts <- sf::st_line_sample(cl, density = n / len)
   pts <- pts[!vapply(pts, sf::st_is_empty, logical(1))]
   pts <- sf::st_cast(pts, "POINT")

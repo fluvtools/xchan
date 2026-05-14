@@ -13,3 +13,6 @@
 ^\.vscode$
 ^\.positai$
 ^\.claude$
+^excluded$
+^Rplots\.pdf$
+

@@ -1,16 +1,20 @@
 #' Channel axis (LINESTRING)
 #'
 #' Get or set the reference axis used for downstream distance and ordering:
-#' [xt_trace_centerline()], [xt_arrange_downstream()], [xt_distance_ds()],
+#' [xt_trace_centerline()], [xt_arrange_downstream()], [xt_distance_downstream()],
 #' [xt_gradient()], etc. Channels built with [xt_generate_plan()] store the
-#' sampling axis automatically.
+#' sampling axis automatically on the [`xchan`] object.
 #'
-#' @param channel An object of class `"xchan"`.
+#' @param channel An [`xchan`] object (cross-section geometry container).
 #' @param value A single **LINESTRING** as `sfc` or `sfg`, same CRS as the plan
-#'   column (else transformed with a warning).
+#'   geometry (else transformed with a warning).
+#'
+#' @details
+#' The axis is **reach-scale** geometry (one polyline along the channel). It is
+#' stored as attribute `"axis"` on the [`xchan`] object.
 #'
 #' @returns For `xt_axis()`, the stored `sfc_LINESTRING` or `NULL`. For
-#'   assignment, an updated channel with attribute `axis`.
+#'   assignment, an updated [`xchan`] with attribute `axis`.
 #'
 #' @seealso [xt_arrange_downstream()], [xt_trace_centerline()]
 #' @export
@@ -22,22 +26,56 @@
 #' plot(ax)
 #' }
 xt_axis <- function(channel) {
+  UseMethod("xt_axis")
+}
+
+#' @rdname xt_axis
+#' @export
+xt_axis.xchan <- function(channel) {
   checkmate::assert_class(channel, "xchan")
   attr(channel, "axis", exact = TRUE)
 }
 
 #' @rdname xt_axis
 #' @export
+xt_axis.default <- function(channel) {
+  stop(
+    "`xt_axis()` expects an `xchan`. Got class(es): ",
+    paste(class(channel), collapse = ", "),
+    ".",
+    call. = FALSE
+  )
+}
+
+#' @rdname xt_axis
+#' @export
 `xt_axis<-` <- function(channel, value) {
+  UseMethod("xt_axis<-")
+}
+
+#' @rdname xt_axis
+#' @export
+`xt_axis<-.xchan` <- function(channel, value) {
   checkmate::assert_class(channel, "xchan")
   if (is.null(value)) {
     attr(channel, "axis") <- NULL
     return(channel)
   }
-  pc <- attributes(channel)$plan_col
-  crs_hint <- if (!is.null(pc)) sf::st_crs(channel[[pc]]) else NULL
+  plan <- channel_plan(channel)
+  crs_hint <- if (!is.null(plan)) sf::st_crs(plan) else NULL
   attr(channel, "axis") <- validate_axis_sf(value, crs_hint)
   channel
+}
+
+#' @rdname xt_axis
+#' @export
+`xt_axis<-.default` <- function(channel, value) {
+  stop(
+    "`xt_axis<-()` expects an `xchan`. Got class(es): ",
+    paste(class(channel), collapse = ", "),
+    ".",
+    call. = FALSE
+  )
 }
 
 #' @noRd
@@ -52,7 +90,9 @@ validate_axis_sf <- function(x, crs_hint = NULL) {
   if (length(x) != 1L) {
     stop("`axis` must be a single LINESTRING feature.", call. = FALSE)
   }
-  if (!is.null(crs_hint) && !is.na(sf::st_crs(x)) && !is.na(sf::st_crs(crs_hint))) {
+  if (
+    !is.null(crs_hint) && !is.na(sf::st_crs(x)) && !is.na(sf::st_crs(crs_hint))
+  ) {
     if (sf::st_crs(x) != sf::st_crs(crs_hint)) {
       warning(
         "Transforming axis to the channel plan CRS.",
@@ -80,10 +120,7 @@ plan_midpoints_sfc <- function(plan) {
 
 #' @noRd
 resolve_channel_axis <- function(channel, axis = NULL, axis_arg_name = "axis") {
-  plan <- xt_column_plan(channel)
-  if (is.null(plan)) {
-    stop("Channel has no planimetric cross sections.", call. = FALSE)
-  }
+  plan <- channel_plan(channel)
   crs <- sf::st_crs(plan)
   if (!is.null(axis)) {
     return(validate_axis_sf(axis, crs))
@@ -99,45 +136,4 @@ resolve_channel_axis <- function(channel, axis = NULL, axis_arg_name = "axis") {
     "`xt_generate_plan()`, which stores an axis automatically.",
     call. = FALSE
   )
-}
-
-#' Sort channel rows by distance along the axis
-#'
-#' Reorders rows so cross sections progress downstream. If a numeric **`chainage`**
-#' column is present ([xt_has_chainage()][xt_has_profile]), rows are sorted by increasing
-#' **`chainage`** (no axis required). Otherwise rows are ordered by projection onto
-#' `axis` ([xt_axis()] or explicit `axis` argument).
-#'
-#' @param channel A channel object (`xchan`).
-#' @param axis Optional LINESTRING axis (`sfc` / `sfg`). Used only when
-#'   **`chainage`** is absent; passed through for projection ordering.
-#'
-#' @returns The same channel object with rows permuted (attributes such as
-#'   `axis` and `plan_col` preserved).
-#'
-#' @seealso [xt_axis()], [xt_trace_centerline()]
-#' @export
-#' @examples
-#' \donttest{
-#' ch <- xt_generate_plan(fraser_bankline, n = 15)
-#' ch_shuf <- ch[sample.int(xt_n_sections(ch)), ]
-#' ch_back <- xt_arrange_downstream(ch_shuf)
-#' }
-xt_arrange_downstream <- function(channel, axis = NULL) {
-  checkmate::assert_class(channel, "xchan")
-  if (has_chainage_column(channel)) {
-    ord <- order(channel[["chainage"]])
-    return(channel[ord, , drop = FALSE])
-  }
-
-  axis_line <- resolve_channel_axis(channel, axis)
-  plan <- xt_column_plan(channel)
-  if (is.null(plan)) {
-    stop("Channel object must have planimetric cross sections.", call. = FALSE)
-  }
-
-  mid_pts <- plan_midpoints_sfc(plan)
-  d <- as.numeric(sf::st_line_project(axis_line, mid_pts))
-  ord <- order(d)
-  channel[ord, , drop = FALSE]
 }

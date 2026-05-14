@@ -8,3 +8,8 @@ docs
 air.toml
 **.tif.aux.xml
 .positai
+joss-paper.html
+joss-paper.pdf
+Rplots.pdf
+..Rcheck
+

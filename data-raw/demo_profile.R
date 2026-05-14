@@ -1,5 +1,6 @@
 # Load necessary libraries
 library(sf)
+devtools::load_all()
 
 # Adjusted coordinates for the cross-section
 demo_coords <- matrix(c(
@@ -18,6 +19,6 @@ demo_coords <- matrix(c(
   24, 8.5   # extended flat floodplain
 ), ncol = 2, byrow = TRUE)
 
-demo_profile <- xt_profile(demo_coords)
+demo_profile <- new_profile(demo_coords, bankpoints = range(demo_coords[, 1]))
 
 # usethis::use_data(demo_coords, overwrite = TRUE, internal = TRUE)

@@ -1,6 +1,6 @@
 test_that("xt_width(xs_profile) matches outer bank span", {
   coords <- matrix(c(-5, 10, 0, 5, 5, 10), ncol = 2, byrow = TRUE)
-  xs <- xt_profile(coords, bankpoints = c(-3, 3))
+  xs <- xchan:::new_profile(coords, bankpoints = c(-3, 3))
   expect_equal(xt_width(xs), 6)
 })
 
@@ -27,15 +27,15 @@ test_that("plan and profile widths must agree when building a channel", {
     crs = 3005
   )
   coords <- matrix(c(-1, 0, 0, -1, 1, 0), ncol = 2, byrow = TRUE)
-  prof_ok <- xt_profile(coords, bankpoints = c(-1, 1))
+  prof_ok <- xchan:::new_profile(coords, bankpoints = c(-1, 1))
 
-  expect_no_error(xt_channel(.plan = seg, .profile = list(prof_ok)))
+  expect_no_error(xchan:::new_channel(seg, profile = list(prof_ok)))
 
   coords_wide <- matrix(c(-3, 0, 0, -1, 3, 0), ncol = 2, byrow = TRUE)
-  prof_bad <- xt_profile(coords_wide, bankpoints = c(-3, 3))
+  prof_bad <- xchan:::new_profile(coords_wide, bankpoints = c(-3, 3))
 
   expect_error(
-    xt_channel(.plan = seg, .profile = list(prof_bad)),
+    xchan:::new_channel(seg, profile = list(prof_bad)),
     "Planimetric cross section length"
   )
 })
