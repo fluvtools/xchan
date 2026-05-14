@@ -36,7 +36,7 @@ devtools::install_github("stochaGBEM/xchan")
 
 ## Example
 
-The package includes Fraser River demo data that can be used to build a
+The package includes Squamish River demo data that can be used to build a
 typical cross-section workflow. Start by loading the package and
 unwrapping the packaged DEM:
 
@@ -44,17 +44,17 @@ unwrapping the packaged DEM:
 library(xchan)
 
 # Unwrap the packaged DEM to a `terra::SpatRaster` object for use in the package.
-dem <- terra::unwrap(fraser_dem)
+dem <- terra::unwrap(dem)
 ```
 
 Generate planimetric cross sections from the bankline polygon and trace
 a channel axis along the cross sections:
 
 ```{r}
-planimetric_cross_sections <- xt_generate_plan(fraser_bankline, spacing = 200)
+planimetric_cross_sections <- xt_generate_plan(bankline, spacing = 200)
 centerline <- xt_trace_centerline(planimetric_cross_sections)
 
-plot(fraser_bankline, col = "grey90", border = "grey50")
+plot(bankline, col = "grey90", border = "grey50")
 plot(planimetric_cross_sections, add = TRUE, col = "dodgerblue3")
 plot(centerline, add = TRUE, col = "cadetblue1", lwd = 2)
 ```
@@ -69,7 +69,7 @@ profile_cross_sections <- xt_generate_profile(
   sample_n = 151
 )
 
-plot(fraser_bankline, col = "grey90", border = "grey50")
+plot(bankline, col = "grey90", border = "grey50")
 plot(profile_cross_sections, add = TRUE, col = "coral")
 ```
 
@@ -99,6 +99,6 @@ widened_cross_sections <- xt_widen(
   side = "right"
 )
 
-plot(fraser_bankline)
+plot(bankline)
 plot(widened_cross_sections, add = TRUE)
 ```

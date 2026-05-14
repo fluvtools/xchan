@@ -11,3 +11,5 @@
 ^paper\.bib$
 ^[.]?air[.]toml$
 ^\.vscode$
+^\.positai$
+^\.claude$

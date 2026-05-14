@@ -10,10 +10,10 @@
 coverage](https://codecov.io/gh/stochaGBEM/xchan/branch/main/graph/badge.svg)](https://app.codecov.io/gh/stochaGBEM/xchan?branch=main)
 <!-- badges: end -->
 
-The purpose of xchan is to create and manipulate watercourse
-geometries, with a focus on cross sections. Because this package sits on
-top of the sf package, geometries can also be manipulated in the same
-way as in the sf package.
+The purpose of xchan is to create and manipulate watercourse geometries,
+with a focus on cross sections. Because this package sits on top of the
+sf package, geometries can also be manipulated in the same way as in the
+sf package.
 
 The name of the package is inspired by the sf package. Functions in
 xchan start with a common prefix, `xt`, which stands for “cross-section
@@ -32,26 +32,25 @@ devtools::install_github("stochaGBEM/xchan")
 
 ## Example
 
-The package includes Fraser River demo data that can be used to build a
-typical cross-section workflow. Start by loading the package and
+The package includes Squamish River demo data that can be used to build
+a typical cross-section workflow. Start by loading the package and
 unwrapping the packaged DEM:
 
 ``` r
 library(xchan)
 
 # Unwrap the packaged DEM to a `terra::SpatRaster` object for use in the package.
-dem <- terra::unwrap(fraser_dem)
+dem <- terra::unwrap(dem)
 ```
 
 Generate planimetric cross sections from the bankline polygon and trace
 a channel axis along the cross sections:
 
 ``` r
-planimetric_cross_sections <- xt_generate_plan(fraser_bankline, spacing = 200)
-#> Linking to GEOS 3.13.0, GDAL 3.8.5, PROJ 9.5.1; sf_use_s2() is TRUE
+planimetric_cross_sections <- xt_generate_plan(bankline, spacing = 200)
 centerline <- xt_trace_centerline(planimetric_cross_sections)
 
-plot(fraser_bankline, col = "grey90", border = "grey50")
+plot(bankline, col = "grey90", border = "grey50")
 plot(planimetric_cross_sections, add = TRUE, col = "dodgerblue3")
 plot(centerline, add = TRUE, col = "cadetblue1", lwd = 2)
 ```
@@ -68,7 +67,7 @@ profile_cross_sections <- xt_generate_profile(
   sample_n = 151
 )
 
-plot(fraser_bankline, col = "grey90", border = "grey50")
+plot(bankline, col = "grey90", border = "grey50")
 plot(profile_cross_sections, add = TRUE, col = "coral")
 ```
 
@@ -103,7 +102,7 @@ widened_cross_sections <- xt_widen(
   side = "right"
 )
 
-plot(fraser_bankline)
+plot(bankline)
 plot(widened_cross_sections, add = TRUE)
 ```
 

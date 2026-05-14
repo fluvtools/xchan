@@ -205,6 +205,12 @@ create_xs_profile <- function(profile_data, original_line) {
   thalweg_window <- seq.int(left_bank_idx, right_bank_idx)
   thalweg_idx <- thalweg_window[which.min(coordinates[thalweg_window, 2])]
 
+  # Snap bank distances to the plan width so discrete DEM sampling does not
+  # leave planimetric width and profile width disagreeing by a fraction of the
+  # sample spacing.
+  coordinates[left_bank_idx, 1] <- -width / 2
+  coordinates[right_bank_idx, 1] <- width / 2
+
   structure(
     list(
       coordinates = coordinates,

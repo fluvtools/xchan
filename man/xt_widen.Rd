@@ -4,14 +4,7 @@
 \alias{xt_widen}
 \title{Widen a channel}
 \usage{
-xt_widen(
-  channel,
-  ...,
-  dw,
-  dv,
-  side = "both",
-  on_overflow = c("error", "repeat")
-)
+xt_widen(channel, ..., dw, dv, side = "both", on_overflow = c("error", "cap"))
 }
 \arguments{
 \item{channel}{Channel object}
@@ -30,8 +23,8 @@ left and right banks. Supply either a side object from \code{\link[=side_left]{s
 \code{"right"}, or \code{"both"}.}
 
 \item{on_overflow}{What to do if the widening exceeds the cross section
-extent; either "error" (the default), or "repeat", which will repeat the
-widening with the last available topography elevation.}
+extent; either "error" (the default), or "cap", which will use the maximum
+available width within the cross section extent.}
 }
 \value{
 A modified channel object
