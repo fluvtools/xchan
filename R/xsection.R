@@ -105,9 +105,10 @@ assert_xchan_profile_homogeneity <- function(x) {
 #' The internal layout is deliberately exposed: each cross section is one
 #' element of the list (`[[i]]` is an [`xsection`]). You can inspect or replace
 #' sections directly, and combine them with ordinary list tools. Single-bracket
-#' subsetting (`[`) preserves **`crs`**, **`axis`**, and **`section_i`** (source
-#' section index per row, used by [print.xchan()]); double-bracket (`[[`)
-#' returns a bare [`xsection`] by design.
+#' subsetting (`[`) preserves **`crs`**, **`axis`**, **`bankline`**, and **`section_i`**
+#' (parent list positions used to build the subset; query or replace keys with
+#' [xt_section_id()]).
+#' Double-bracket (`[[`) returns a bare [`xsection`] by design.
 #'
 #' @param sections A list of `xsection` objects.
 #' @param crs Optional CRS accepted by [sf::st_crs()].
@@ -184,7 +185,7 @@ normalize_xchan_subset_positions <- function(n, i) {
 }
 
 #' @describeIn xchan Subset by section index; preserves \code{crs}, \code{axis},
-#' and \code{section_i}.
+#' \code{bankline}, and \code{section_i} (parent list positions; see \code{\link{xt_section_id}}).
 #' @export
 `[.xchan` <- function(x, i, ...) {
   rlang::check_dots_empty()
@@ -207,6 +208,7 @@ normalize_xchan_subset_positions <- function(n, i) {
     subs,
     crs = attr(x, "crs", exact = TRUE),
     axis = attr(x, "axis", exact = TRUE),
+    bankline = attr(x, "bankline", exact = TRUE),
     section_i = new_ids,
     class = class(x)
   )

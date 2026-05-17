@@ -1,18 +1,24 @@
 #' Width of cross sections
 #'
 #' `xt_width()` returns geometric width. For an [`xchan`], this is one value per
-#' cross section from planimetric line lengths. For a single `xs_profile`
-#' object, it is the span along the profile horizontal axis between the
-#' outermost left and right banks (the same convention as
-#' [xt_generate_profile()] and [new_profile()]).
+#' cross section from planimetric line lengths. For an [`xsection`], it is the
+#' length of that plan polyline (the same value as the corresponding element of
+#' [xt_width()] on the parent channel). For a single `xs_profile` object, it is
+#' the span along the profile horizontal axis between the outermost left and
+#' right banks (the same convention as [xt_generate_profile()] and
+#' [xt_add_profile()]).
 #'
-#' @param x An [`xchan`] or `xs_profile` object.
+#' @param x An [`xchan`], [`xsection`], or `xs_profile` object.
 #' @param ... Unused (reserved for methods).
 #'
 #' @returns
 #' For [`xchan`]: a numeric vector with one width per cross section, carrying
 #'   [units::units()] when the channel has a CRS with a defined linear unit
 #'   (for example metres). When no CRS is set the result is plain numeric.
+#' For [`xsection`]: a non-negative numeric scalar. If attribute `"crs"` is
+#'   set on `x` (unusual; the container [`xchan`] holds CRS instead), the result
+#'   may carry [units::units()] like a channel with that CRS; otherwise plain
+#'   numeric.
 #' For `xs_profile`: a non-negative numeric scalar (no CRS context, so plain
 #'   numeric).
 #'
@@ -44,6 +50,32 @@ xt_width.xchan <- function(x, ...) {
 
 #' @export
 #' @rdname widths
+xt_width.xsection <- function(x, ...) {
+  checkmate::assert_class(x, "xsection")
+  g <- xsection_to_linestring(x)
+  cr <- attr(x, "crs", exact = TRUE)
+  unit <- NULL
+  raw <- if (!is.null(cr)) {
+    crs_use <- if (inherits(cr, "crs")) {
+      cr
+    } else {
+      suppressWarnings(sf::st_crs(cr))
+    }
+    if (inherits(crs_use, "crs") && !is.na(crs_use)) {
+      g <- sf::st_sfc(g, crs = crs_use)
+      unit <- crs_length_unit(g)
+      as.numeric(sf::st_length(g))
+    } else {
+      as.numeric(sf::st_length(g))
+    }
+  } else {
+    as.numeric(sf::st_length(g))
+  }
+  with_length_units(raw, unit)
+}
+
+#' @export
+#' @rdname widths
 xt_width.xs_profile <- function(x, ...) {
   checkmate::assert_class(x, "xs_profile")
   unname(get_right_bank_coords(x)[1] - get_left_bank_coords(x)[1])
@@ -54,7 +86,7 @@ xt_width.default <- function(x, ...) {
   stop(
     "No `xt_width()` method for class ",
     paste(class(x), collapse = "/"),
-    ". Use an `xchan` or `xs_profile` object.",
+    ". Use an `xchan`, `xsection`, or `xs_profile` object.",
     call. = FALSE
   )
 }

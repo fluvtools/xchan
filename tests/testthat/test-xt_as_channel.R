@@ -31,8 +31,7 @@ test_that("xt_as_channel.numeric plan order is left bank then right (facing +x)"
 test_that("xt_as_channel.numeric places sections evenly along supplied axis", {
   ax <- sf::st_sfc(sf::st_linestring(rbind(c(0, 0), c(10, 0))), crs = 3005)
   ch <- xt_as_channel(c(2, 2, 2), axis = ax)
-  mids <- xchan:::plan_midpoints_sfc(channel_plan(ch))
-  d <- as.numeric(sf::st_line_project(ax, mids))
+  d <- xchan:::plan_chainage_on_axis(channel_plan(ch), ax)
   expect_equal(d, c(0, 5, 10), tolerance = 1e-8)
   expect_true(sf::st_equals(xt_axis(ch), ax, sparse = FALSE)[1, 1])
 })

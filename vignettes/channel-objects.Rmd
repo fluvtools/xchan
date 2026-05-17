@@ -164,10 +164,10 @@ xt_arrange_downstream(channel)
 You can get and set the axis.
 
 ```{r channel-axis}
-# Trace an axis along the channel from cross-section midpoints
-centerline <- xt_trace_centerline(channel)
+# Stored axis from xt_generate_plan() (or set with xt_axis(channel) <- ...)
+axis_line <- xt_axis(channel)
 plot(channel)
-plot(centerline, add = TRUE, col = "red", lwd = 2)
+plot(axis_line, add = TRUE, col = "red", lwd = 2)
 ```
 
 For flexible modelling, there's a function that allows you to change the flow direction.

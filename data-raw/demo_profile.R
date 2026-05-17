@@ -19,6 +19,6 @@ demo_coords <- matrix(c(
   24, 8.5   # extended flat floodplain
 ), ncol = 2, byrow = TRUE)
 
-demo_profile <- new_profile(demo_coords, bankpoints = range(demo_coords[, 1]))
+demo_profile <- xchan:::new_profile(demo_coords, bankpoints = range(demo_coords[, 1]))
 
 # usethis::use_data(demo_coords, overwrite = TRUE, internal = TRUE)

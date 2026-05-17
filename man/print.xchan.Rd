@@ -12,9 +12,14 @@
 \item{...}{Ignored.}
 
 \item{n}{Maximum number of cross sections to print, in \strong{list order} (same
-as \verb{[[1]]}, \verb{[[2]]}, …). Line labels use \code{attr(x, "section_i")} when set
-(see \code{[} subsetting on \code{\link{xchan}}), otherwise \code{1}, \code{2}, …. The default is \code{6}. Use \code{Inf} to
-print every section.}
+as \verb{[[1]]}, \verb{[[2]]}, …). When a channel axis is available (\code{\link[=xt_axis]{xt_axis()}}),
+each line is prefixed with that section’s \strong{upstream-to-downstream} index
+among the sections being printed (\code{1} = most upstream, \code{n} =
+most downstream); otherwise indices are \code{1} … \code{n} in list order.
+If \code{\link[=xt_section_id]{xt_section_id()}} is set to a vector of length \code{length(x)} and it is
+\strong{not} exactly the consecutive integers \code{1}, \code{2}, …, \code{n} in
+list order, each printed line also includes \verb{: ID <key>} for that list
+position’s key. The default is \code{6}. Use \code{Inf} to print every section.}
 }
 \description{
 Print a channel object

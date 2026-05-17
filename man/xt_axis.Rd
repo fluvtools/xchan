@@ -33,13 +33,36 @@ assignment, an updated \code{\link{xchan}} with attribute \code{axis}.
 }
 \description{
 Get or set the reference axis used for downstream distance and ordering:
-\code{\link[=xt_trace_centerline]{xt_trace_centerline()}}, \code{\link[=xt_arrange_downstream]{xt_arrange_downstream()}}, \code{\link[=xt_distance_downstream]{xt_distance_downstream()}},
+\code{\link[=xt_arrange_downstream]{xt_arrange_downstream()}}, \code{\link[=xt_distance_downstream]{xt_distance_downstream()}},
 \code{\link[=xt_gradient]{xt_gradient()}}, etc. Channels built with \code{\link[=xt_generate_plan]{xt_generate_plan()}} store the
 sampling axis automatically on the \code{\link{xchan}} object.
 }
 \details{
 The axis is \strong{reach-scale} geometry (one polyline along the channel). It is
 stored as attribute \code{"axis"} on the \code{\link{xchan}} object.
+
+\strong{What “downstream” means:} \code{\link[=xt_distance_downstream]{xt_distance_downstream()}}, \code{\link[=xt_arrange_downstream]{xt_arrange_downstream()}},
+and related helpers treat \strong{increasing distance along the stored
+\code{LINESTRING}}, measured from its \strong{first vertex to its last} (vertex
+digitization order), as downstream. The package does \strong{not} infer flow from
+a DEM, network topology, or a separate flag—only from this polyline. Use
+\code{\link[=xt_reverse_flow]{xt_reverse_flow()}} to reverse the axis (and flip transects) so the same
+geographic line is traversed from the opposite end.
+
+\strong{Assigning a new axis} (\code{xt_axis(channel) <- value}): the stored polyline’s
+\strong{first vertex is chainage zero} and \strong{increasing distance along the line}
+is the package’s downstream direction for sorting and metrics—but \strong{local
+left/right on each transect} still come from \strong{planimetric encoding}: the
+first plan vertex is the \strong{left bank} and the last is the \strong{right bank},
+defined relative to the downstream \strong{tangent} of the axis at the station where the
+extended bank-to-bank chord meets the axis (same cross-product rule as \code{\link[=xt_generate_plan]{xt_generate_plan()}}).
+After the axis is set, each transect is \strong{re-oriented} if needed (end-for-end) so vertex order
+matches that convention when the axis pierces the segment from the “wrong”
+side, matching profiles are mirrored so profile
+distance still increases toward the right bank, and sections are \strong{re-sorted}
+with \code{\link[=xt_arrange_downstream]{xt_arrange_downstream()}} by increasing projected chainage. A highly
+curved, U-shaped, or self-overlapping axis can still yield counter-intuitive
+chainages; the package does not validate global monotonicity against terrain.
 }
 \examples{
 \donttest{
@@ -50,5 +73,5 @@ plot(ax)
 }
 }
 \seealso{
-\code{\link[=xt_arrange_downstream]{xt_arrange_downstream()}}, \code{\link[=xt_trace_centerline]{xt_trace_centerline()}}
+\code{\link[=xt_arrange_downstream]{xt_arrange_downstream()}}
 }

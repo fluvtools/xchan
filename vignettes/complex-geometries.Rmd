@@ -235,7 +235,7 @@ complexity_metrics <- function(channel) {
 
 This vignette covered:
 
-- Creating profile cross-sections with islands using the internal constructor `new_profile()`
+- Building `xs_profile` cross-sections with islands (see the runnable examples above)
 - Understanding active width vs total width with `xt_width_active()`
 - Bank analysis with the internal helper `span_banks()`
 - Working with irregular channel shapes (asymmetric, braided)

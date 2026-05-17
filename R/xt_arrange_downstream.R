@@ -15,7 +15,9 @@
 #'   `axis` preserved).
 #'
 #' @details
-#' Midpoints for ordering are bank-to-bank means on each planimetric cross section.
+#' Ordering uses the same chainage as [xt_distance_downstream()]: intersection of the
+#' extended bank-to-bank chord with the axis (nearest intersection to the bank midpoint when
+#' there are several), otherwise the nearest point on the axis to the bank midpoint.
 #'
 #' **Reverse flow:** [xt_reverse_flow()] does not permute sections but reverses the stored axis,
 #' so `xt_arrange_downstream()` orders sections for the new downstream direction.
@@ -88,8 +90,7 @@ arrange_xchan_by_ds <- function(channel, axis, upstream = FALSE) {
     stop("Channel object must have planimetric cross sections.", call. = FALSE)
   }
 
-  mid_pts <- plan_midpoints_sfc(plan)
-  d <- as.numeric(sf::st_line_project(axis_line, mid_pts))
+  d <- plan_chainage_on_axis(plan, axis_line)
   ord <- if (upstream) {
     order(d, decreasing = TRUE)
   } else {
@@ -117,6 +118,7 @@ xchan_reorder_sections <- function(x, ord) {
     secs,
     crs = attr(x, "crs", exact = TRUE),
     axis = attr(x, "axis", exact = TRUE),
+    bankline = attr(x, "bankline", exact = TRUE),
     section_i = new_sid,
     class = class(x)
   )

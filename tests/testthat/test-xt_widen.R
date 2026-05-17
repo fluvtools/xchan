@@ -26,9 +26,7 @@ test_that("Cross section widening dispatches for xsection", {
 
   out <- xt_widen(xs, dw = 2)
   expect_s3_class(out, "xsection")
-  out_width <- as.numeric(sf::st_length(xchan:::xsection_to_linestring(out)))
-  in_width <- as.numeric(sf::st_length(xchan:::xsection_to_linestring(xs)))
-  expect_equal(out_width, in_width + 2)
+  expect_equal(as.numeric(xt_width(out)), as.numeric(xt_width(xs)) + 2)
 })
 
 test_that("Width doesn't work when sf object doesn't have channel geom", {

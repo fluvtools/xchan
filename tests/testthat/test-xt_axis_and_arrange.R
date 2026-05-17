@@ -17,15 +17,6 @@ test_that("xt_generate_plan stores a single LINESTRING axis", {
   expect_identical(length(ax), 1L)
 })
 
-test_that("xt_trace_centerline is invariant to row shuffle when axis is stored", {
-  skip_if_not_installed("sf")
-  ch <- xt_generate_plan(fraser_bankline, n = 9)
-  tr <- xt_trace_centerline(ch)
-  set.seed(11)
-  sh <- ch[sample.int(length(ch))]
-  expect_true(sf::st_equals(tr, xt_trace_centerline(sh), sparse = FALSE)[1L, 1L])
-})
-
 test_that("xt_arrange_downstream restores canonical row order", {
   skip_if_not_installed("sf")
   ch <- xt_generate_plan(fraser_bankline, n = 8)
@@ -114,13 +105,3 @@ test_that("xt_arrange_downstream.xchan matches arrange on full channel", {
   expect_identical(xc2, ch2)
 })
 
-test_that("xt_trace_centerline requires an axis when none is supplied/stored", {
-  skip_if_not_installed("sf")
-  seg <- sf::st_sfc(
-    sf::st_linestring(matrix(c(-1, 0, 1, 0), ncol = 2, byrow = TRUE)),
-    sf::st_linestring(matrix(c(-1, 1, 1, 1), ncol = 2, byrow = TRUE)),
-    crs = 3005
-  )
-  ch <- xchan:::new_channel(seg)
-  expect_error(xt_trace_centerline(ch), "No axis stored")
-})

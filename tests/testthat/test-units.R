@@ -169,8 +169,7 @@ test_that("xt_as_channel.numeric accepts units for widths", {
 
 test_that("xt_gradient stays unitless even when CRS carries units", {
   # Build a synthetic CRS-aware channel with a stepped thalweg so a real
-  # gradient comes out. Use elevation_topo() which works with the current
-  # xs_profile data structure.
+  # gradient comes out. Use elevation_thalweg() (lowest profile vertex per section).
   make_profile <- function(elev_offset) {
     xchan:::new_profile(
       coords = matrix(
@@ -208,7 +207,7 @@ test_that("xt_gradient stays unitless even when CRS carries units", {
     before = 1L,
     after = 1L,
     complete = TRUE,
-    elevation = elevation_topo(.f = min)
+    elevation = elevation_thalweg()
   )
   expect_type(g, "double")
   expect_false(inherits(g, "units"))
@@ -255,7 +254,7 @@ test_that("xt_gradient complete=FALSE yields one NA at each end (before=after=1)
     before = 1L,
     after = 1L,
     complete = FALSE,
-    elevation = elevation_topo(.f = min)
+    elevation = elevation_thalweg()
   )
   expect_equal(sum(is.na(g)), 2L)
   expect_true(is.na(g[1L]))

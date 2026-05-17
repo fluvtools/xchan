@@ -2,19 +2,31 @@
 % Please edit documentation in R/xt_width_active.R
 \name{xt_width_active}
 \alias{xt_width_active}
-\title{Active Cross Section Widths}
+\title{Active cross-section widths (water-filled span)}
 \usage{
 xt_width_active(channel)
 }
 \arguments{
-\item{channel}{Channel object}
+\item{channel}{An \code{\link{xchan}}, an \code{\link{xsection}}, or an \code{xs_profile}.}
 }
 \value{
-A numeric vector of length equal to the number of cross-sections in the channel
-containing the active widths of each cross section.
+For \code{\link{xchan}}: a numeric vector, one value per cross section. When the channel
+has a CRS with a defined linear unit, values carry \code{\link[units:units]{units::units()}} like
+\code{\link[=xt_width]{xt_width()}}; otherwise plain numeric.
+For \code{\link{xsection}} or \code{xs_profile}: a single non-negative numeric (plain
+numeric unless the \code{\link{xsection}} carries a \code{"crs"} attribute with a linear
+unit, in which case units may be attached).
 }
 \description{
-Calculate the "active" width of channel cross sections, where an "active" width
-is the width of the cross section occupied by water, not land. This is relevant when
-there are islands / bars within the river.
+The \strong{active} width is the portion of the cross section occupied by water
+(not dry bars or islands): the sum of \strong{water} intervals between consecutive
+bank contacts. With profile geometry, bank positions come from the profile
+(see \code{\link[=xt_add_profile]{xt_add_profile()}} and \code{xs_profile}). With \strong{planimetric geometry only},
+every vertex of the plan polyline is treated as a bank contact along the
+transect, in order from left bank to right bank, alternating water / land /
+water (even vertex count). For a simple two-vertex bank-to-bank segment there
+are no islands and the active width equals \code{\link[=xt_width]{xt_width()}}.
+}
+\seealso{
+\code{\link[=xt_width]{xt_width()}}
 }

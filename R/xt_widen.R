@@ -16,6 +16,17 @@
 #'   `"right"`, or `"both"`.
 #' @note
 #' The ellipsis `...` must be empty; named `dw` and `dv` keep widening deliberate.
+#'
+#' @details
+#' The stored channel axis ([xt_axis()]) is **not** updated when widening:
+#' plan and profile transects move, but the reach-scale axis polyline is left
+#' unchanged. If you set the axis to something tied to the pre-widen plan (for
+#' example a digitized centerline), do not expect it to refit automatically to a
+#' new midline---that is intentional in most workflows, because the axis is used
+#' for cross-section ordering and downstream metrics ([xt_arrange_downstream()],
+#' [xt_distance_downstream()], etc.) rather than as a moving geometric center of
+#' each transect. To install a different axis, use the replacement form
+#' `xt_axis(channel) <- value` (see [xt_axis()]).
 #' @returns Object of the same class as `channel`, with widened sections.
 #' @examples
 #' xt_widen(channel, dw = 10)

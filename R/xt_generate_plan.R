@@ -30,10 +30,13 @@
 #' @param progress Logical; if `TRUE`, display a text progress bar while
 #'   generating planimetric cross sections.
 #' @returns An [`xchan`] with one [`xsection`] per list position, in downstream order along the sampling axis.
+#'   Cross-section identity keys are **not** set; use [xt_section_id()] if you need stable
+#'   keys (for example when joining tabular profiles with [xt_add_profile()]).
 #'   After subsetting, restore order with [xt_arrange_downstream()]. Use [xt_distance_downstream()]
 #'   for distance along the axis from its start to each section (requires the axis
 #'   from [xt_axis()], which this function sets). The sampling axis is stored on the
-#'   [`xchan`] object.
+#'   [`xchan`] object, and the **bank footprint** polygon(s) from `banks` on
+#'   [xt_bankline()] (for plan plotting).
 #' @details **Bank geometry:** Supply the channel as one polygon (or
 #' multipolygon) so its boundary is a closed loop around the wetted/plan
 #' corridor. If you only have two bank polylines, convert them to a closed
@@ -74,6 +77,13 @@
 #' banks). Increasing distance along the polyline (first to last vertex) matches
 #' profile cross sections where distance increases from left to right along the
 #' overall chord.
+#'
+#' **Terminal stations:** Cross sections at the upstream and/or downstream ends
+#' of the axis are sometimes awkward (very short transects, odd intersections
+#' with the bank polygon, or mouth artifacts). Inspect the result and **subset**
+#' the returned [`xchan`] (single-bracket indexing; see \code{\link{xchan}}) to
+#' drop the first and/or last rows if you do not want those sections in later
+#' analysis or plotting.
 #'
 #' **How orientation is computed:** for each station we take a unit tangent to
 #' the axis pointing downstream (`axis_unit_tangent_downstream()`). For each
@@ -222,6 +232,20 @@ xt_generate_plan <- function(
   # Sampling axis for downstream order and distance geometry (see xt_distance_downstream)
   out <- xt_as_channel(geoms)
   xt_axis(out) <- cl
+  bl <- sf::st_geometry(banks)
+  if (!inherits(bl, "sfc")) {
+    bl <- sf::st_as_sfc(list(bl))
+  }
+  plan_crs <- sf::st_crs(geoms)
+  if (!is.na(plan_crs)) {
+    if (is.na(sf::st_crs(bl))) {
+      bl <- sf::st_set_crs(bl, plan_crs)
+    } else if (sf::st_crs(bl) != plan_crs) {
+      bl <- sf::st_transform(bl, plan_crs)
+    }
+  }
+  xt_bankline(out) <- bl
+  xt_section_id(out) <- NULL
   out
 }
 

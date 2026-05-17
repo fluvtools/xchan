@@ -1,16 +1,30 @@
-test_that("xt_distance_downstream uses axis projection and respects explicit axis", {
+test_that("transect_axis_station uses extended chord ∩ axis, not bank-mid projection", {
+  skip_if_not_installed("sf")
+  crs <- 3005
+  ax <- sf::st_sfc(sf::st_linestring(rbind(c(0, 0), c(100, 100))), crs = crs)
+  seg_sfc <- sf::st_sfc(sf::st_linestring(rbind(c(30, 40), c(70, 40))), crs = crs)
+  stn <- xchan:::transect_axis_station_sfc(seg_sfc, ax)
+  s_hit <- as.numeric(sf::st_line_project(ax, stn))
+  mid <- xchan:::transect_bank_midpoint_sfc(seg_sfc)
+  s_mid <- as.numeric(sf::st_line_project(ax, mid))
+  expect_equal(s_hit, 40 * sqrt(2), tolerance = 1e-6)
+  expect_equal(s_mid, 45 * sqrt(2), tolerance = 1e-6)
+  expect_true(abs(s_hit - s_mid) > 1e-3)
+})
+
+test_that("xt_distance_downstream uses chord–axis intersection chainage", {
   skip_if_not_installed("sf")
   ch <- xt_generate_plan(fraser_bankline, n = 7)
   ds <- xt_distance_downstream(ch)
   expect_length(ds, length(ch))
   ax <- xt_axis(ch)
-  mid <- xchan:::plan_midpoints_sfc(channel_plan(ch))
-  # `ds` carries CRS units; compare bare numeric values.
-  expect_equal(as.numeric(ds), as.numeric(sf::st_line_project(ax, mid)))
+  plan <- channel_plan(ch)
+  exp <- xchan:::plan_chainage_on_axis(plan, ax)
+  expect_equal(as.numeric(ds), exp)
   sh <- ch[sample.int(length(ch)), ]
   expect_equal(
     as.numeric(xt_distance_downstream(sh, axis = ax)),
-    as.numeric(sf::st_line_project(ax, xchan:::plan_midpoints_sfc(channel_plan(sh))))
+    xchan:::plan_chainage_on_axis(channel_plan(sh), ax)
   )
 })
 

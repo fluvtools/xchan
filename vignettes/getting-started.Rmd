@@ -41,9 +41,9 @@ Trace a channel axis from the cross-sections (if you want to build an axis from
 a bankline polygon alone, use the **centerline** package on CRAN).
 
 ```{r}
-centerline <- xt_trace_centerline(channel2)
+axis_line <- xt_axis(channel2)
 plot(channel2, col = "red")
-plot(centerline, add = TRUE, col = "blue", lwd = 2)
+plot(axis_line, add = TRUE, col = "blue", lwd = 2)
 ```
 
 

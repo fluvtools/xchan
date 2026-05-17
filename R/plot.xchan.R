@@ -3,14 +3,22 @@
 #' @param x An [`xchan`] object.
 #' @param extent One of `"banks"` (default) or `"full"`.
 #'   `"full"` draws each transect out to the ends of its profile (when profiles
-#'   are present) and marks bank positions; uses bank-to-bank segments only if
-#'   there is no profile geometry (with a warning).
+#'   are present); uses bank-to-bank segments only if
+#'   there is no profile geometry (with a warning). Profile bank markers are
+#'   drawn only when `extent = "full"` and bank markers are enabled (see `banks`).
 #' @param axis How to draw the stored channel axis ([xt_axis()]), when one is
 #'   present: `"line"` (default) draws the axis as a plain line, `"arrows"` draws
 #'   flow direction along the axis, `"none"` omits it.
+#'
+#'   When [xt_bankline()] is set and `add = FALSE`, the footprint is drawn first
+#'   (filled polygon under transects), then cross sections and the axis overlay.
+#' @param banks One of `"auto"`, `"show"`, or `"hide"`: whether to draw bank
+#'   markers on planimetric transects (endpoints, and all profile banks when
+#'   `extent = "full"`). `"auto"` draws markers when there is no [xt_bankline()]
+#'   footprint, and omits them when a footprint is present (markers are redundant
+#'   with the polygon boundary). `"show"` / `"hide"` override that rule.
 #' @param ... Additional arguments passed to [plot()] for plan geometries and
-#'   to bank-marker styling (`col_bank_water`, `col_bank_land`, `pch_bank`,
-#'   `cex_bank`) when `extent = "full"`.
+#'   to bank-marker styling (`col_bank`, `pch_bank`, `cex_bank`).
 #' @param add If `TRUE`, draw on the current plot (same rules as [graphics::plot()]).
 #' @details
 #' For the plan view, when `add = FALSE` and you do not pass `xlim` / `ylim`,
@@ -29,8 +37,10 @@ plot.xchan <- function(
   ...,
   extent = c("banks", "full"),
   axis = c("line", "arrows", "none"),
+  banks = c("auto", "show", "hide"),
   add = FALSE
 ) {
   axis <- match.arg(axis)
-  plot_plan(x, extent = extent, axis = axis, add = add, ...)
+  banks <- match.arg(banks)
+  plot_plan(x, extent = extent, axis = axis, add = add, banks = banks, ...)
 }

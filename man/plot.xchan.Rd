@@ -9,6 +9,7 @@
   ...,
   extent = c("banks", "full"),
   axis = c("line", "arrows", "none"),
+  banks = c("auto", "show", "hide"),
   add = FALSE
 )
 }
@@ -16,17 +17,26 @@
 \item{x}{An \code{\link{xchan}} object.}
 
 \item{...}{Additional arguments passed to \code{\link[=plot]{plot()}} for plan geometries and
-to bank-marker styling (\code{col_bank_water}, \code{col_bank_land}, \code{pch_bank},
-\code{cex_bank}) when \code{extent = "full"}.}
+to bank-marker styling (\code{col_bank}, \code{pch_bank}, \code{cex_bank}).}
 
 \item{extent}{One of \code{"banks"} (default) or \code{"full"}.
 \code{"full"} draws each transect out to the ends of its profile (when profiles
-are present) and marks bank positions; uses bank-to-bank segments only if
-there is no profile geometry (with a warning).}
+are present); uses bank-to-bank segments only if
+there is no profile geometry (with a warning). Profile bank markers are
+drawn only when \code{extent = "full"} and bank markers are enabled (see \code{banks}).}
 
 \item{axis}{How to draw the stored channel axis (\code{\link[=xt_axis]{xt_axis()}}), when one is
 present: \code{"line"} (default) draws the axis as a plain line, \code{"arrows"} draws
-flow direction along the axis, \code{"none"} omits it.}
+flow direction along the axis, \code{"none"} omits it.
+
+When \code{\link[=xt_bankline]{xt_bankline()}} is set and \code{add = FALSE}, the footprint is drawn first
+(filled polygon under transects), then cross sections and the axis overlay.}
+
+\item{banks}{One of \code{"auto"}, \code{"show"}, or \code{"hide"}: whether to draw bank
+markers on planimetric transects (endpoints, and all profile banks when
+\code{extent = "full"}). \code{"auto"} draws markers when there is no \code{\link[=xt_bankline]{xt_bankline()}}
+footprint, and omits them when a footprint is present (markers are redundant
+with the polygon boundary). \code{"show"} / \code{"hide"} override that rule.}
 
 \item{add}{If \code{TRUE}, draw on the current plot (same rules as \code{\link[graphics:plot.default]{graphics::plot()}}).}
 }

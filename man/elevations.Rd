@@ -6,8 +6,7 @@
 \alias{elevation_bank}
 \alias{elevation_bank_left}
 \alias{elevation_bank_right}
-\alias{elevation_channel}
-\alias{elevation_topo}
+\alias{elevation_bed}
 \title{Elevation specifications for channel profiles}
 \usage{
 elevation_thalweg()
@@ -18,22 +17,16 @@ elevation_bank_left()
 
 elevation_bank_right()
 
-elevation_channel(.f = mean, ...)
-
-elevation_topo(.f = mean, ...)
+elevation_bed(.f = mean, ...)
 }
 \arguments{
 \item{.f}{Numeric summary function applied per cross section:
 \itemize{
 \item \code{\link[=elevation_bank]{elevation_bank()}} — passes \strong{two} values (left and right \strong{outer bank} elevations)
 through \code{.f}; default \link[base:Extremes]{base::min} is the lower of the two outer bank elevations.
-\item \code{\link[=elevation_channel]{elevation_channel()}} — passes elevations at \strong{all} profile vertices between the
-outer left and right \strong{bank distances} through \code{.f}; default \link[base:mean]{base::mean}.
-\item \code{\link[=elevation_topo]{elevation_topo()}} — passes \strong{all} vertex elevations \code{coordinates[, 2]} through \code{.f};
-default \link[base:mean]{base::mean} is the mean along the full traced polyline (not restricted to
-the bank-to-bank span).
-\item \code{\link[=elevation_bottom]{elevation_bottom()}} — same in-channel vertex set as \code{\link[=elevation_channel]{elevation_channel()}}; kept as a
-separate name for readability in long-profile / “bed” contexts.
+\item \code{\link[=elevation_bed]{elevation_bed()}} — passes elevations at profile vertices on the \strong{wetted bed}
+(within each water interval between banks; islands excluded) through \code{.f};
+default \link[base:mean]{base::mean}.
 }}
 
 \item{...}{Further arguments forwarded to \code{.f} (for example \code{probs} for \link[stats:quantile]{stats::quantile}).}
@@ -53,7 +46,7 @@ An elevation specification is a small callable wrapper: passing it as \code{refe
 \details{
 \code{\link[=elevation_thalweg]{elevation_thalweg()}} takes no arguments: each section contributes its stored
 \code{thalweg_elev} value — the minimum elevation among sampled profile vertices —
-documented as a return component of \code{\link[=new_profile]{new_profile()}}.
+documented as a return component of each \code{xs_profile}.
 }
 \section{Functions}{
 \itemize{
@@ -65,21 +58,14 @@ Default \code{.f = min} chooses the lower of the two outer bank elevations.
 
 \item \code{elevation_bank_right()}: Elevation (\code{z}) at the \strong{outer right bank} profile vertex only.
 
-\item \code{elevation_channel()}: Aggregate vertex elevations \strong{between} the outer left and right
-bank distances (in-channel span) with \code{.f}; default \code{.f = mean}. Unlike
-\code{\link[=elevation_topo]{elevation_topo()}}, excludes profile tails outside both outer banks.
-
-\item \code{elevation_topo()}: Aggregate \strong{every} sampled vertex elevation on the profile
-(\code{coordinates[, 2]}) with \code{.f}; default \code{.f = mean}. Use another summary (for example
-\link[stats:median]{stats::median} or \link[base:Extremes]{base::min}) when a single statistic of the traced polyline is
-desired. Differs from \code{\link[=elevation_bank]{elevation_bank()}}, which only uses the \strong{two outer bank}
-elevations, and from \code{\link[=elevation_channel]{elevation_channel()}}, which restricts to the bank-to-bank span.
+\item \code{elevation_bed()}: Aggregate vertex elevations on the \strong{wetted bed} (within each
+water interval between banks; dry islands excluded) with \code{.f}; default \code{.f = mean}.
 
 }}
 \section{Profile geometry and naming}{
 
 
-Objects of class \code{xs_profile} (from \code{\link[=new_profile]{new_profile()}}) hold a matrix
+Objects of class \code{xs_profile} hold a matrix
 \code{coordinates} with column 1 = \strong{distance along the cross section} (left bank toward
 right bank, increasing) and column 2 = \strong{elevation}. \strong{Bank} points are vertices on
 that polyline flagged in \code{banks} (row indices); \strong{thalweg} identifies the deepest
@@ -87,10 +73,11 @@ part of the traced section.
 
 In this vertical slice, \strong{left} and \strong{right} mean smaller vs larger distance along
 the profile (typically left and right banks in map view when the section is oriented
-consistently). \code{\link[=elevation_topo]{elevation_topo()}} uses \strong{every} sampled vertex on the polyline
-(including distances outside the outer bank pair if the profile extends there).
-\code{\link[=elevation_channel]{elevation_channel()}} and \code{\link[=elevation_bottom]{elevation_bottom()}} use only vertices whose distance lies
-\strong{between} the \strong{outer} left and right bank distances (the wetted / in-channel span).
+consistently). \code{\link[=elevation_bed]{elevation_bed()}} uses profile vertices that lie on the \strong{wetted bed}:
+distances inside each \strong{water} interval between consecutive banks (alternating
+water / land / water along the section; see \code{\link[=xt_add_profile]{xt_add_profile()}} and \code{xs_profile}
+structure). Dry islands and
+floodplain tails outside the outer banks are excluded.
 }
 
 \section{Parameters on “zero-arg” constructors}{
@@ -102,5 +89,5 @@ are fully determined by convention; there is nothing to configure. Combine them 
 }
 
 \seealso{
-\code{\link[=xt_elevation]{xt_elevation()}}, \code{\link[=xt_gradient]{xt_gradient()}}, \code{\link[=new_profile]{new_profile()}}
+\code{\link[=xt_elevation]{xt_elevation()}}, \code{\link[=xt_gradient]{xt_gradient()}}, \code{\link[=xt_add_profile]{xt_add_profile()}}
 }

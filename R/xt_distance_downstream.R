@@ -1,17 +1,21 @@
-#' Distance along the channel axis to cross-section midpoints
+#' Distance along the channel axis to cross-section stations
 #'
 #' @description
 #' **`xt_distance_downstream()`** returns distance measured along the axis **from its start**
-#' to each cross section's bank-to-bank midpoint. **`xt_distance_upstream()`** returns
-#' distance along the axis **from each midpoint to the end** of the axis (equivalently:
+#' to the intersection of the axis with each cross section’s **extended** bank-to-bank chord
+#' (the line through the first and last plan vertices, extended if needed so it meets the
+#' axis). If that infinite line does not intersect the axis, the chainage of the **nearest**
+#' point on the axis to the bank midpoint is used instead. **`xt_distance_upstream()`** returns
+#' distance along the axis **from that station to the end** of the axis (equivalently:
 #' axis length minus downstream distance). Together they satisfy
 #' `xt_distance_downstream(x) + xt_distance_upstream(x) == axis_length` at each section when
 #' lengths are numeric.
 #'
 #' @param channel An [`xchan`] with planimetric cross sections.
-#' @param axis Optional **LINESTRING** (`sfc` / `sfg`). Resolution matches
-#'   [xt_trace_centerline()]: use this geometry, else `xt_axis(channel)`, else an
-#'   error (set an axis with `xt_axis(channel) <- ...` or use [xt_generate_plan()]).
+#' @param axis Optional **LINESTRING** (`sfc` / `sfg`). If supplied, distances are
+#'   measured along this line; otherwise `xt_axis(channel)` is used; if that is
+#'   `NULL`, an error is raised (set an axis with `xt_axis(channel) <- ...` or use
+#'   [xt_generate_plan()]).
 #' @returns A numeric vector of length `length(channel)` (same section order as `channel`). The
 #'   result carries [units::units()] when the channel has a CRS with a defined linear unit;
 #'   plain numeric otherwise.
@@ -49,8 +53,7 @@ axis_distances_numeric <- function(channel, axis = NULL) {
     stop("Channel object must have planimetric cross sections")
   }
   axis_line <- resolve_channel_axis(channel, axis)
-  mid_pts <- plan_midpoints_sfc(plan)
-  as.numeric(sf::st_line_project(axis_line, mid_pts))
+  as.numeric(plan_chainage_on_axis(plan, axis_line))
 }
 
 #' @noRd

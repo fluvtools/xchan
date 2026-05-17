@@ -28,13 +28,64 @@ The `xt_widen()` function allows you to modify channel cross-sections by adding 
 
 ```{r width-widening}
 # Create a simple channel
-channel <- xt_as_channel(c(10, 12, 8, 15, 11, 9))
+widths <- c(10, 12, 8, 15, 11, 9)
+depths <- c(1, 1, 3, 2, 2, 3)
+channel <- xt_as_channel(units::set_units(widths, "m"))
 
-# Widen by adding 2 meters to each cross-section
-channel_widened <- xt_widen(channel, dw = 2)
+topo <- function(width, depth, ...) {
+  d_left <- -(10:1)
+  d_right <- 1:10 + width
+  d_inner <- c(0, width / 3, width)
+  e_left <- 0.5 + 1.5 * log(10:1 + 1)
+  e_right <- rep(0, 10)
+  e_inner <- c(0.5, -depth, 0)
+  d <- c(d_left, d_inner, d_right)
+  e <- c(e_left, e_inner, e_right)
+  data.frame(
+    distance = units::set_units(d, "m"),
+    elevation = units::set_units(e, "m"),
+    is_bank = d == 0 | d == width,
+    ...
+  )
+}
+
+df_list <- mapply(
+  topo,
+  width = widths,
+  depth = depths,
+  id = seq_along(widths),
+  SIMPLIFY = FALSE
+)
+
+profile <- do.call(rbind, df_list)
+
+channel <- xt_add_profile(
+  channel,
+  distance = distance,
+  elevation = elevation,
+  section = id,
+  banks = is_bank,
+  data = profile,
+)
+```
+
+```{r}
+plot(channel[[3]], extent = "full")
+```
+
+## Profile Widening
+
+```{r}
+# Widen by a set distance
+channel_widened <- xt_widen(channel, dw = 4)
 
 plot(channel_widened, col = "red")
-plot(channel, add = TRUE)
+plot(channel, add = TRUE, axis = "arrows")
+```
+
+```{r}
+plot(channel[[4]], extent = "full")
+plot(channel_widened[[4]], extent = "full")
 ```
 
 This operation is vectorized, so different amounts of erosion can be specified for each cross section.
