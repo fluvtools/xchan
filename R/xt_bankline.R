@@ -20,7 +20,7 @@
 #' @examples
 #' \donttest{
 #' library(sf)
-#' ch <- xt_generate_plan(fraser_bankline, n = 12)
+#' ch <- xt_generate_plan(demo_bankline, n = 12)
 #' bl <- xt_bankline(ch)
 #' plot(bl)
 #' }
@@ -94,8 +94,7 @@ validate_bankline_sf <- function(x, crs_hint = NULL) {
     )
   }
   if (
-    !is.null(crs_hint) && !is.na(sf::st_crs(crs_hint)) &&
-      !is.na(sf::st_crs(x))
+    !is.null(crs_hint) && !is.na(sf::st_crs(crs_hint)) && !is.na(sf::st_crs(x))
   ) {
     if (sf::st_crs(x) != sf::st_crs(crs_hint)) {
       warning(

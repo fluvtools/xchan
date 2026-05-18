@@ -19,24 +19,18 @@
 #'
 #' In this vertical slice, **left** and **right** mean smaller vs larger distance along
 #' the profile (typically left and right banks in map view when the section is oriented
-#' consistently). [elevation_bed()] uses profile vertices that lie on the **wetted bed**:
+#' consistently). `elevation_bed()` uses profile vertices that lie on the **wetted bed**:
 #' distances inside each **water** interval between consecutive banks (alternating
 #' water / land / water along the section; see [xt_add_profile()] and `xs_profile`
 #' structure). Dry islands and
 #' floodplain tails outside the outer banks are excluded.
 #'
-#' @section Parameters on “zero-arg” constructors:
-#'
-#' Specifications with no arguments ([elevation_thalweg()], [elevation_bank_left()], …)
-#' are fully determined by convention; there is nothing to configure. Combine them with
-#' [xt_elevation()] / [xt_gradient()], etc.
-#'
 #' @param .f Numeric summary function applied per cross section:
-#'   * [elevation_bank()] — passes **two** values (left and right **outer bank** elevations)
+#'   * `elevation_bank()` — passes **two** values (left and right **outer bank** elevations)
 #'     through `.f`; default [base::min] is the lower of the two outer bank elevations.
-#'   * [elevation_bed()] — passes elevations at profile vertices on the **wetted bed**
+#'   * `elevation_bed()` — passes elevations at profile vertices on the **wetted bed**
 #'     (within each water interval between banks; islands excluded) through `.f`;
-#'     default [base::mean].
+#'     default `base::mean`.
 #' @param ... Further arguments forwarded to `.f` (for example `probs` for [stats::quantile]).
 #'
 #' @returns An object inheriting `"xchan_elevation"`: a function `(channel)` that returns
@@ -186,7 +180,10 @@ aggregate_elev_on_wetted_bed <- function(xs, .f, ...) {
   }
   elev <- xs$coordinates[on_bed, 2]
   if (!length(elev)) {
-    stop("No profile vertices on the wetted bed for this cross section.", call. = FALSE)
+    stop(
+      "No profile vertices on the wetted bed for this cross section.",
+      call. = FALSE
+    )
   }
   .f(elev, ...)
 }

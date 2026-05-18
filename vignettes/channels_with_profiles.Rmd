@@ -1,10 +1,9 @@
 ---
-title: "Channel Modification"
-author: "Vincenzo Coia"
+title: "Channels with Profiles"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Channel Widening and Erosion}
+  %\VignetteIndexEntry{Channels with Profiles}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -20,14 +19,12 @@ knitr::opts_chunk$set(
 library(xchan)
 ```
 
-## Channel Widening and Erosion
 
-This vignette covers modifying channels through widening operations and calculating erosion volumes. By default, erosion applies to both banks equally; see the [## Side Specifications](## Side Specifications) section below for changing that.
+If your workflow requires profile cross sections, `xchan` allows a profile view to be encoded in addition to a planimetric encoding.
 
-The `xt_widen()` function allows you to modify channel cross-sections by adding width or removing volume.
+## Creating profiles by hand
 
 ```{r width-widening}
-# Create a simple channel
 widths <- c(10, 12, 8, 15, 11, 9)
 depths <- c(1, 1, 3, 2, 2, 3)
 channel <- xt_as_channel(units::set_units(widths, "m"))
@@ -73,7 +70,61 @@ channel <- xt_add_profile(
 plot(channel[[3]], extent = "full")
 ```
 
+
+## Generating profiles from spatial data
+
+```{r}
+chan <- xt_generate_plan(demo_bankline, spacing = units::set_units(100, "m"))
+
+# Plot
+plot(demo_bankline, fill = "#7cb2fe")
+plot(chan, add = TRUE)
+```
+
+```{r}
+xt_axis(chan)
+```
+
+
+
+
+So far, this channel is only planimetric, with no profile view. If a profile view is important to you, you can get that from a DEM, piggybacking off the [**terra**]() package. The `xt_generate_profile()` adds a profile view to a pre-existing channel using a DEM, allowing you to sample the DEM by set spacing (`sample_freq`) or desired number of points (`sample_n`).
+
+```{r}
+demo_demm <- terra::unwrap(demo_dem)
+chann <- xt_generate_profile(
+  chan,
+  dem = demo_demm,
+  sample_freq = units::set_units(2, m),
+  progress = TRUE
+)
+```
+
+
+While `plot()`ing a channel only ever shows the planimetric view, the profiles can be viewed by selecting individual cross sections.
+
+```{r}
+section <- xt_xsection_at(chan, 20)
+section
+plot(section, view = "profile")
+```
+
+
 ## Profile Widening
+
+Channel widening now also applies to the profile cross sections.
+
+```{r}
+channel2 <- xt_widen(channel, dw = c(2, 1, 3, 0, 0, 0))
+plot(channel2, col = "blue")
+plot(channel, col = "red", add = TRUE)
+```
+
+
+With a profile, this has the effect of shifting the between-channel topography on either side of the thalweg further from the thalweg, spreading out the channel bottom at the thalweg. 
+
+Trace a channel axis from the cross-sections (if you want to build an axis from
+a bankline polygon alone, use the **centerline** package on CRAN).
 
 ```{r}
 # Widen by a set distance
@@ -88,6 +139,7 @@ plot(channel[[4]], extent = "full")
 plot(channel_widened[[4]], extent = "full")
 ```
 
+
 This operation is vectorized, so different amounts of erosion can be specified for each cross section.
 
 ```{r width-widening}
@@ -100,6 +152,7 @@ channel_widened <- xt_widen(channel, dw = c(5, 3, 7, 0, 0, 0))
 xt_width(channel_widened)
 ```
 
+
 If a profile view is available, you can also widen by volume -- provided there is enough volume to erode in the first place.
 
 Sometimes it's useful to know how much volume of erosion would result from a given change in width, or vice versa, the width change resulting from a volume change. Note that because volume is in squared length units, not cubed, because it corresponds to a cross section.
@@ -110,38 +163,10 @@ xt_erosion_volume(channel, dw = units::set_units(100, "m"))
 ```
 
 
-## Side Specifications
+## Exporting
 
-You can control how the widening is distributed between left and right banks. Simple side specifications:
+Channels having a profile encoding have more export options. Like for planimetric-only channels, exports go through the [**sf**]() package, making an `"sfc"` object. In addition to the planimetric encoding, you can also choose an export of the profiles alone, or construct a 3D encoding of the channel.
 
-```{r simple-sides}
-# Widen both sides equally (default)
-channel_both <- xt_widen(channel, dw = 2, side = "both")
-
-# Widen only left side
-channel_left <- xt_widen(channel, dw = 2, side = "left")
-
-# Widen only right side
-channel_right <- xt_widen(channel, dw = 2, side = "right")
+```{r}
+xt_as_sfc(channel)
 ```
-
-Under the hood, these arguments call `side_both()`, `side_left()`, and `side_right()` -- functions that provide more control as to how erosion is allocated between the left and right banks. All three functions return the same data structure, but are included for convenience. Currently only a single proportion is allowed; a future version of **xchan** aspires to allow varying proportions along the channel length.
-
-For example, here is a 70-30 left-right split of erosion.
-
-```{r simple-sides}
-channel_both <- xt_widen(channel, dw = 2, side = side_left(0.7))
-xt_width(channel_both)
-```
-
-I could also specify both proportions in `side_both()` as a way of insisting that both proportions sum to 1, but the result is the same.
-
-```{r simple-sides}
-channel_both <- xt_widen(
-  channel,
-  dw = 2,
-  side = side_both(prop_left = 0.7, prop_right = 0.3)
-)
-xt_width(channel_both)
-```
-

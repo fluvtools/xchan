@@ -30,7 +30,7 @@ test_that("Cross section widening dispatches for xsection", {
 })
 
 test_that("Width doesn't work when sf object doesn't have channel geom", {
-  x <- sf::st_sf(geom = fraser_bankline)
+  x <- sf::st_sf(geom = demo_bankline)
   expect_error(xt_width(x))
 })
 
@@ -52,18 +52,26 @@ test_that("xt_widen errors by default when widening exceeds profile extent", {
   profile <- xchan:::new_profile(
     coords = matrix(
       c(
-        -2, 10,
-        -1, 10,
-        0, 9,
-        1, 10,
-        2, 10
+        -2,
+        10,
+        -1,
+        10,
+        0,
+        9,
+        1,
+        10,
+        2,
+        10
       ),
       ncol = 2,
       byrow = TRUE
     ),
     bankpoints = c(-1, 1)
   )
-  channel <- xchan:::set_channel_profile(xt_as_channel(2, crs = 3005), list(profile))
+  channel <- xchan:::set_channel_profile(
+    xt_as_channel(2, crs = 3005),
+    list(profile)
+  )
 
   expect_error(
     xt_widen(channel, dw = 3, side = "left"),

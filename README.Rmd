@@ -14,24 +14,23 @@ knitr::opts_chunk$set(
 devtools::load_all(quiet = TRUE)
 ```
 
-# xchan: simple channel cross sections
+
+# xchan: Cross-Section Based Channels
 
 <!-- badges: start -->
-[![R-CMD-check](https://github.com/stochaGBEM/xchan/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/stochaGBEM/xchan/actions/workflows/R-CMD-check.yaml)
-[![Codecov test coverage](https://codecov.io/gh/stochaGBEM/xchan/branch/main/graph/badge.svg)](https://app.codecov.io/gh/stochaGBEM/xchan?branch=main)
 <!-- badges: end -->
 
-The purpose of xchan is to create and manipulate watercourse geometries, with a focus on cross sections. Because this package sits on top of the sf package, geometries can also be manipulated in the same way as in the sf package.
+The purpose of xchan is to create, widen (erode), and calculate attributes of watercourse geometries. It does this by encoding a channel by its cross sections, which can be planimetric (line segments arranged on a map) or profile (slices into the landscape).
 
-The name of the package is inspired by the sf package. Functions in xchan start with a common prefix, `xt`, which stands for "cross-section type"; this is intended to parallel the sf package's function prefix, `st`, which stands for "spatial type".
+The package concept is inspired by the [**sf**]() package, because xchan encodes both cross section objects (`xsection`) and whole channels (`xchan`), which are simply a list of cross sections. Most functions in xchan start with a common prefix, `xt`, in parallel with the sf package's function prefix, `st`. The `x` stands for "cross" or "cross section".
 
-**Data model.** The main reach-scale object is [`xchan`]: a list of [`xsection`]
-objects with CRS (and optionally a channel axis; see [`xt_axis()`]) stored as
-attributes on the container. Single-bracket subsetting `[` keeps those
-attributes; use `[[i]]` for one section. If you need tabular metadata (reach
-IDs, roughness, …), keep it in your own data frame and hold geometry in an
-`xchan` column or alongside it—this package does not attach a special
-data-frame class to channels.
+## Statement of Need
+
+(automation; randomization)
+
+## Target Audience
+
+
 
 ## Installation
 
@@ -52,20 +51,22 @@ unwrapping the packaged DEM:
 library(xchan)
 
 # Unwrap the packaged DEM to a `terra::SpatRaster` object for use in the package.
-dem <- terra::unwrap(fraser_dem)
+dem <- terra::unwrap(demo_dem)
 ```
+
 
 Generate planimetric cross sections from the bankline polygon and plot the
 stored sampling axis (`xt_generate_plan()` saves it on the channel; use `xt_axis()` to read it):
 
 ```{r}
-planimetric_cross_sections <- xt_generate_plan(fraser_bankline, spacing = 200)
+planimetric_cross_sections <- xt_generate_plan(demo_bankline, spacing = 200)
 axis_line <- xt_axis(planimetric_cross_sections)
 
-plot(fraser_bankline, col = "grey90", border = "grey50")
+plot(demo_bankline, col = "grey90", border = "grey50")
 plot(planimetric_cross_sections, add = TRUE, col = "dodgerblue3")
 plot(axis_line, add = TRUE, col = "cadetblue1", lwd = 2)
 ```
+
 
 Sample the DEM to create profile cross sections:
 
@@ -77,13 +78,15 @@ profile_cross_sections <- xt_generate_profile(
   sample_n = 151
 )
 
-plot(fraser_bankline, col = "grey90", border = "grey50")
+plot(demo_bankline, col = "grey90", border = "grey50")
 plot(profile_cross_sections, add = TRUE, col = "coral")
 ```
+
 
 Profile cross sections can also be generated as distance-elevation
 objects. Each profile cross section contains a distance-elevation geometry that
 can be inspected directly:
+
 ```{r}
 # Profile cross sections (distance-elevation):
 channel <- xt_generate_profile(
@@ -97,6 +100,7 @@ channel <- xt_generate_profile(
 plot(xt_profile_at(profile_cross_sections, 1))
 ```
 
+
 Apply a widening scenario to the generated cross sections. In this
 example, the channel is widened by 20 metres on the right bank:
 
@@ -107,6 +111,15 @@ widened_cross_sections <- xt_widen(
   side = "right"
 )
 
-plot(fraser_bankline)
+plot(demo_bankline)
 plot(widened_cross_sections, add = TRUE)
 ```
+
+
+## xchan in the Context of Other R Packages
+
+The following packages are relevant for channel geometries in R.
+
+- The [**centerline**]() package is used to generate a centerline from a bankline polygon.
+- The [**sf**]() package is used to manipulate vector-based spatial objects.
+- The [**terra**]() package is used to manipulate both vector and raster-based spatial objects.

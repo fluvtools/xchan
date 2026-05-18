@@ -67,7 +67,7 @@ chainages; the package does not validate global monotonicity against terrain.
 \examples{
 \donttest{
 library(sf)
-ch <- xt_generate_plan(fraser_bankline, n = 20)
+ch <- xt_generate_plan(demo_bankline, n = 20)
 ax <- xt_axis(ch)
 plot(ax)
 }

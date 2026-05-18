@@ -28,7 +28,7 @@
 #' @aliases xt_arrange_upstream
 #' @examples
 #' \donttest{
-#' ch <- xt_generate_plan(fraser_bankline, n = 15)
+#' ch <- xt_generate_plan(demo_bankline, n = 15)
 #' ch_down <- xt_arrange_downstream(ch)
 #' ch_up <- xt_arrange_upstream(ch)
 #' }
@@ -104,7 +104,14 @@ arrange_xchan_by_ds <- function(channel, axis, upstream = FALSE) {
 xchan_reorder_sections <- function(x, ord) {
   checkmate::assert_class(x, "xchan")
   n <- length(x)
-  checkmate::assert_integerish(ord, len = n, unique = TRUE, sorted = FALSE, lower = 1, upper = n)
+  checkmate::assert_integerish(
+    ord,
+    len = n,
+    unique = TRUE,
+    sorted = FALSE,
+    lower = 1,
+    upper = n
+  )
   secs <- vector("list", n)
   for (i in seq_along(ord)) {
     secs[[i]] <- x[[ord[i]]]

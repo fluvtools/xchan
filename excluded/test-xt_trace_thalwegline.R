@@ -1,6 +1,6 @@
 test_that("xt_trace_thalwegline errors without profile", {
   skip_if_not_installed("sf")
-  ch <- xt_generate_plan(fraser_bankline, n = 4)
+  ch <- xt_generate_plan(demo_bankline, n = 4)
   expect_error(xt_trace_thalwegline(ch), "profile")
 })
 

@@ -6,12 +6,16 @@ tag_section_ids <- function(ch) {
 }
 
 section_ids <- function(ch) {
-  vapply(seq_along(ch), function(i) attr(ch[[i]], "sid", exact = TRUE), integer(1))
+  vapply(
+    seq_along(ch),
+    function(i) attr(ch[[i]], "sid", exact = TRUE),
+    integer(1)
+  )
 }
 
 test_that("xt_generate_plan stores a single LINESTRING axis", {
   skip_if_not_installed("sf")
-  ch <- xt_generate_plan(fraser_bankline, n = 6)
+  ch <- xt_generate_plan(demo_bankline, n = 6)
   ax <- xt_axis(ch)
   expect_s3_class(ax, "sfc_LINESTRING")
   expect_identical(length(ax), 1L)
@@ -19,7 +23,7 @@ test_that("xt_generate_plan stores a single LINESTRING axis", {
 
 test_that("xt_arrange_downstream restores canonical row order", {
   skip_if_not_installed("sf")
-  ch <- xt_generate_plan(fraser_bankline, n = 8)
+  ch <- xt_generate_plan(demo_bankline, n = 8)
   set.seed(7)
   sh <- ch[sample.int(length(ch))]
   back <- xt_arrange_downstream(sh)
@@ -31,7 +35,7 @@ test_that("xt_arrange_downstream restores canonical row order", {
 
 test_that("xt_arrange_upstream reverses downstream distance order vs downstream arrange", {
   skip_if_not_installed("sf")
-  ch <- xt_generate_plan(fraser_bankline, n = 8)
+  ch <- xt_generate_plan(demo_bankline, n = 8)
   set.seed(7)
   sh <- ch[sample.int(length(ch))]
   down <- xt_arrange_downstream(sh)
@@ -43,7 +47,7 @@ test_that("xt_arrange_upstream reverses downstream distance order vs downstream 
 
 test_that("xt_arrange_downstream after xt_reverse_flow reverses section order along axis", {
   skip_if_not_installed("sf")
-  ch <- tag_section_ids(xt_generate_plan(fraser_bankline, n = 8))
+  ch <- tag_section_ids(xt_generate_plan(demo_bankline, n = 8))
   set.seed(7)
   sh <- ch[sample.int(length(ch))]
   down <- xt_arrange_downstream(sh)
@@ -53,7 +57,7 @@ test_that("xt_arrange_downstream after xt_reverse_flow reverses section order al
 
 test_that("xt_arrange_upstream after xt_reverse_flow matches downstream arrange before reverse", {
   skip_if_not_installed("sf")
-  ch <- tag_section_ids(xt_generate_plan(fraser_bankline, n = 8))
+  ch <- tag_section_ids(xt_generate_plan(demo_bankline, n = 8))
   set.seed(7)
   sh <- ch[sample.int(length(ch))]
   down <- xt_arrange_downstream(sh)
@@ -63,7 +67,7 @@ test_that("xt_arrange_upstream after xt_reverse_flow matches downstream arrange 
 
 test_that("xt_elevation follows mirrored row order after reverse_flow + arrange", {
   skip_if_not_installed("sf")
-  ch <- xt_generate_plan(fraser_bankline, n = 8)
+  ch <- xt_generate_plan(demo_bankline, n = 8)
   w <- as.numeric(xt_width(ch))
   prof <- lapply(seq_along(w), function(i) {
     half <- w[i] / 2
@@ -83,7 +87,7 @@ test_that("xt_elevation follows mirrored row order after reverse_flow + arrange"
 
 test_that("double xt_reverse_flow restores downstream arrange order", {
   skip_if_not_installed("sf")
-  ch <- xt_generate_plan(fraser_bankline, n = 8)
+  ch <- xt_generate_plan(demo_bankline, n = 8)
   set.seed(7)
   sh <- ch[sample.int(length(ch))]
   d1 <- xt_arrange_downstream(sh)
@@ -96,7 +100,7 @@ test_that("double xt_reverse_flow restores downstream arrange order", {
 
 test_that("xt_arrange_downstream.xchan matches arrange on full channel", {
   skip_if_not_installed("sf")
-  ch <- xt_generate_plan(fraser_bankline, n = 6)
+  ch <- xt_generate_plan(demo_bankline, n = 6)
   set.seed(3)
   sh <- ch[sample.int(length(ch))]
   ax <- xt_axis(ch)
@@ -104,4 +108,3 @@ test_that("xt_arrange_downstream.xchan matches arrange on full channel", {
   ch2 <- xt_arrange_downstream(sh)
   expect_identical(xc2, ch2)
 })
-

@@ -45,7 +45,7 @@ unwrapping the packaged DEM:
 library(xchan)
 
 # Unwrap the packaged DEM to a `terra::SpatRaster` object for use in the package.
-dem <- terra::unwrap(fraser_dem)
+dem <- terra::unwrap(demo_dem)
 ```
 
 Generate planimetric cross sections from the bankline polygon and plot the
@@ -53,10 +53,10 @@ stored sampling axis (`xt_generate_plan()` saves it on the channel; use `xt_axis
 
 
 ``` r
-planimetric_cross_sections <- xt_generate_plan(fraser_bankline, spacing = 200)
+planimetric_cross_sections <- xt_generate_plan(demo_bankline, spacing = 200)
 axis_line <- xt_axis(planimetric_cross_sections)
 
-plot(fraser_bankline, col = "grey90", border = "grey50")
+plot(demo_bankline, col = "grey90", border = "grey50")
 plot(planimetric_cross_sections, add = TRUE, col = "dodgerblue3")
 plot(axis_line, add = TRUE, col = "cadetblue1", lwd = 2)
 ```
@@ -77,7 +77,7 @@ profile_cross_sections <- xt_generate_profile(
   sample_n = 151
 )
 
-plot(fraser_bankline, col = "grey90", border = "grey50")
+plot(demo_bankline, col = "grey90", border = "grey50")
 plot(profile_cross_sections, add = TRUE, col = "coral")
 ```
 
@@ -119,7 +119,7 @@ widened_cross_sections <- xt_widen(
   side = "right"
 )
 
-plot(fraser_bankline)
+plot(demo_bankline)
 plot(widened_cross_sections, add = TRUE)
 ```
 

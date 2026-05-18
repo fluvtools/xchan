@@ -1,0 +1,115 @@
+---
+title: "Channel Computations"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Channel Computations}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(xchan)
+library(sf)
+```
+
+Get the number of cross-sections.
+
+```{r}
+# Get number of cross-sections
+xt_n_sections(channel)
+```
+
+
+Calculate downstream distances.
+
+```{r distance}
+# Calculate downstream distances
+distances <- xt_distance_downstream(channel)
+distances
+```
+
+Convert to a spatial object understandable by the `sf` package, in case you want to do some manual operations not supported by `xchan`.
+
+```{r}
+spatial_object <- xt_as_sfc(channel)
+# View
+spatial_object
+```
+
+
+
+
+
+
+
+
+
+
+## Combining a channel with tabular data
+
+Channel objects are deliberately plan lists, so that you can control each cross section. It is also useful to store additional information about cross sections alongside them, like the grain size or bed roughness coefficient. Because channels are just lists, they can go in a list-column in a data frame. There is no special **xchan** structure here; it's possible it will be native in a future version of the package, but at this stage, just use your favourite workflow for this.
+
+```{r df-input}
+chan_tbl <- tibble::tibble(channel = channel, roughness = 0.035)
+chan_tbl
+```
+
+
+
+## Channel axis and ordering
+
+Channels have a stored _axis_ whose main purpose is to define a cross section ordering. strings cross sections together in order. 
+
+In this case, since it was not supplied, `xt_generate_plan()` auto-generated the axis using the centerline of the provided bankline polygon (from the [**centerline**]() package). This axis is also used by `xt_generate_plan()` to sample equally spaced cross sections.
+
+It's important to note that ordering of the cross sections in the channel list is not necessarily in flow order (more on why later). You can rearrange or even subset cross sections while the flow order is still preserved.
+
+```{r}
+chan2 <- chan[c(4, 2, 3, 1)]
+```
+
+If you ever find your cross sections listed out-of-order, you can arrange it like so:
+
+```{r}
+xt_arrange_downstream(channel)
+```
+
+You can get and set the axis.
+
+```{r channel-axis}
+# Stored axis from xt_generate_plan() (or set with xt_axis(channel) <- ...)
+axis_line <- xt_axis(channel)
+plot(channel)
+plot(axis_line, add = TRUE, col = "red", lwd = 2)
+```
+
+For flexible modelling, there's a function that allows you to change the flow direction.
+
+```{r}
+xt_reverse_flow(channel)
+```
+
+
+
+## Spatial Outputs
+
+Converting to `sfc`
+
+```{r sfc-outputs}
+plan_sfc <- xt_as_sfc(channel, what = "plan")
+# profile_sfc <- xt_as_sfc(channel, what = "profile")
+
+st_length(plan_sfc)
+```
+
+To combine with non-spatial columns in an `sf` object, use for example
+`sf::st_sf(your_df, geometry = xt_as_sfc(channel, what = "plan"), crs = st_crs(plan_sfc))`.
+

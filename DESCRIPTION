@@ -1,5 +1,5 @@
 Package: xchan
-Title: Simple Channel Cross Sections
+Title: Cross-Section Based Channels
 Version: 0.1.0.9000
 Authors@R: 
     c(

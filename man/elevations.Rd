@@ -22,11 +22,11 @@ elevation_bed(.f = mean, ...)
 \arguments{
 \item{.f}{Numeric summary function applied per cross section:
 \itemize{
-\item \code{\link[=elevation_bank]{elevation_bank()}} — passes \strong{two} values (left and right \strong{outer bank} elevations)
+\item \code{elevation_bank()} — passes \strong{two} values (left and right \strong{outer bank} elevations)
 through \code{.f}; default \link[base:Extremes]{base::min} is the lower of the two outer bank elevations.
-\item \code{\link[=elevation_bed]{elevation_bed()}} — passes elevations at profile vertices on the \strong{wetted bed}
+\item \code{elevation_bed()} — passes elevations at profile vertices on the \strong{wetted bed}
 (within each water interval between banks; islands excluded) through \code{.f};
-default \link[base:mean]{base::mean}.
+default \code{base::mean}.
 }}
 
 \item{...}{Further arguments forwarded to \code{.f} (for example \code{probs} for \link[stats:quantile]{stats::quantile}).}
@@ -73,19 +73,11 @@ part of the traced section.
 
 In this vertical slice, \strong{left} and \strong{right} mean smaller vs larger distance along
 the profile (typically left and right banks in map view when the section is oriented
-consistently). \code{\link[=elevation_bed]{elevation_bed()}} uses profile vertices that lie on the \strong{wetted bed}:
+consistently). \code{elevation_bed()} uses profile vertices that lie on the \strong{wetted bed}:
 distances inside each \strong{water} interval between consecutive banks (alternating
 water / land / water along the section; see \code{\link[=xt_add_profile]{xt_add_profile()}} and \code{xs_profile}
 structure). Dry islands and
 floodplain tails outside the outer banks are excluded.
-}
-
-\section{Parameters on “zero-arg” constructors}{
-
-
-Specifications with no arguments (\code{\link[=elevation_thalweg]{elevation_thalweg()}}, \code{\link[=elevation_bank_left]{elevation_bank_left()}}, …)
-are fully determined by convention; there is nothing to configure. Combine them with
-\code{\link[=xt_elevation]{xt_elevation()}} / \code{\link[=xt_gradient]{xt_gradient()}}, etc.
 }
 
 \seealso{

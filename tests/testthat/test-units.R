@@ -6,7 +6,7 @@ test_that("crs_length_unit returns the expected unit symbol", {
 })
 
 test_that("xt_width returns units when CRS has linear units, plain numeric otherwise", {
-  ch <- xt_generate_plan(fraser_bankline, n = 5)
+  ch <- xt_generate_plan(demo_bankline, n = 5)
   w <- xt_width(ch)
   expect_s3_class(w, "units")
   expect_equal(units::deparse_unit(w), "m")
@@ -18,14 +18,14 @@ test_that("xt_width returns units when CRS has linear units, plain numeric other
 })
 
 test_that("xt_distance_downstream returns units when CRS has linear units", {
-  ch <- xt_generate_plan(fraser_bankline, n = 5)
+  ch <- xt_generate_plan(demo_bankline, n = 5)
   ds <- xt_distance_downstream(ch)
   expect_s3_class(ds, "units")
   expect_equal(units::deparse_unit(ds), "m")
 })
 
 test_that("xt_widen accepts units inputs for dw, normalised to channel CRS unit", {
-  ch <- xt_generate_plan(fraser_bankline, n = 4)
+  ch <- xt_generate_plan(demo_bankline, n = 4)
   w0 <- as.numeric(xt_width(ch))
 
   # Plain numeric is interpreted in CRS units (metres here).
@@ -42,7 +42,7 @@ test_that("xt_widen accepts units inputs for dw, normalised to channel CRS unit"
 })
 
 test_that("xt_widen rejects units that aren't lengths", {
-  ch <- xt_generate_plan(fraser_bankline, n = 3)
+  ch <- xt_generate_plan(demo_bankline, n = 3)
   expect_error(
     xt_widen(ch, dw = units::set_units(2, "kg")),
     "incompatible with the channel"
@@ -53,13 +53,20 @@ test_that("xt_erosion_width accepts volume units, returns length units", {
   profile <- xchan:::new_profile(
     coords = matrix(
       c(
-        -3, 11,
-        -2, 10,
-        -1, 10,
-        0, 9,
-        1, 10,
-        2, 10,
-        3, 11
+        -3,
+        11,
+        -2,
+        10,
+        -1,
+        10,
+        0,
+        9,
+        1,
+        10,
+        2,
+        10,
+        3,
+        11
       ),
       ncol = 2,
       byrow = TRUE
@@ -86,13 +93,20 @@ test_that("xt_erosion_volume accepts length units, returns m^3", {
   profile <- xchan:::new_profile(
     coords = matrix(
       c(
-        -3, 11,
-        -2, 10,
-        -1, 10,
-        0, 9,
-        1, 10,
-        2, 10,
-        3, 11
+        -3,
+        11,
+        -2,
+        10,
+        -1,
+        10,
+        0,
+        9,
+        1,
+        10,
+        2,
+        10,
+        3,
+        11
       ),
       ncol = 2,
       byrow = TRUE
@@ -123,13 +137,20 @@ test_that("xt_widen with dv (volume) accepts units and matches plain numeric", {
   profile <- xchan:::new_profile(
     coords = matrix(
       c(
-        -3, 11,
-        -2, 10,
-        -1, 10,
-        0, 9,
-        1, 10,
-        2, 10,
-        3, 11
+        -3,
+        11,
+        -2,
+        10,
+        -1,
+        10,
+        0,
+        9,
+        1,
+        10,
+        2,
+        10,
+        3,
+        11
       ),
       ncol = 2,
       byrow = TRUE
@@ -144,7 +165,7 @@ test_that("xt_widen with dv (volume) accepts units and matches plain numeric", {
 })
 
 test_that("xt_generate_plan accepts units for spacing and at", {
-  bl <- fraser_bankline
+  bl <- demo_bankline
   ch_num <- xt_generate_plan(bl, spacing = 5000)
   ch_m <- xt_generate_plan(bl, spacing = units::set_units(5000, "m"))
   expect_equal(xt_n_sections(ch_num), xt_n_sections(ch_m))
@@ -154,7 +175,10 @@ test_that("xt_generate_plan accepts units for spacing and at", {
   expect_equal(xt_n_sections(ch_num), xt_n_sections(ch_km))
 
   ch_at_num <- xt_generate_plan(bl, at = c(1000, 5000, 9000))
-  ch_at_m <- xt_generate_plan(bl, at = units::set_units(c(1000, 5000, 9000), "m"))
+  ch_at_m <- xt_generate_plan(
+    bl,
+    at = units::set_units(c(1000, 5000, 9000), "m")
+  )
   expect_equal(xt_n_sections(ch_at_num), xt_n_sections(ch_at_m))
 })
 
@@ -163,7 +187,10 @@ test_that("xt_as_channel.numeric accepts units for widths", {
   ch_m <- xt_as_channel(units::set_units(c(10, 12, 14), "m"), crs = 3005)
   expect_equal(as.numeric(xt_width(ch_num)), as.numeric(xt_width(ch_m)))
 
-  ch_cm <- xt_as_channel(units::set_units(c(1000, 1200, 1400), "cm"), crs = 3005)
+  ch_cm <- xt_as_channel(
+    units::set_units(c(1000, 1200, 1400), "cm"),
+    crs = 3005
+  )
   expect_equal(as.numeric(xt_width(ch_num)), as.numeric(xt_width(ch_cm)))
 })
 
@@ -173,8 +200,18 @@ test_that("xt_gradient stays unitless even when CRS carries units", {
   make_profile <- function(elev_offset) {
     xchan:::new_profile(
       coords = matrix(
-        c(-2, 10 + elev_offset, -1, 9 + elev_offset, 0, 8 + elev_offset,
-          1, 9 + elev_offset, 2, 10 + elev_offset),
+        c(
+          -2,
+          10 + elev_offset,
+          -1,
+          9 + elev_offset,
+          0,
+          8 + elev_offset,
+          1,
+          9 + elev_offset,
+          2,
+          10 + elev_offset
+        ),
         ncol = 2,
         byrow = TRUE
       ),
@@ -219,8 +256,18 @@ test_that("xt_gradient complete=FALSE yields one NA at each end (before=after=1)
   make_profile <- function(elev_offset) {
     xchan:::new_profile(
       coords = matrix(
-        c(-2, 10 + elev_offset, -1, 9 + elev_offset, 0, 8 + elev_offset,
-          1, 9 + elev_offset, 2, 10 + elev_offset),
+        c(
+          -2,
+          10 + elev_offset,
+          -1,
+          9 + elev_offset,
+          0,
+          8 + elev_offset,
+          1,
+          9 + elev_offset,
+          2,
+          10 + elev_offset
+        ),
         ncol = 2,
         byrow = TRUE
       ),

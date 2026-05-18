@@ -1,0 +1,13 @@
+# The source GeoTIFF is intentionally not tracked in git because it is large.
+# Recreate it with data-raw/download_dem.py before running this script.
+
+target_crs <- 3005
+
+# Work in projected CRS so spacing/extent are in metres.
+dem <- terra::rast(here::here("data-raw", "canada_hrdem_1m_cropped.tif"))
+dem <- terra::project(dem, paste0("EPSG:", target_crs))
+
+# SpatRaster objects do not serialize safely in package data; wrap before saving.
+dem <- terra::wrap(dem, proxy = FALSE)
+
+usethis::use_data(dem, overwrite = TRUE)
