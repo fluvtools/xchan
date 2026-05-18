@@ -15,141 +15,135 @@ knitr::opts_chunk$set(
 )
 ```
 
+
+If your workflow requires profile cross sections, `xchan` allows this in addition to planimetric encoding.
+
 ```{r setup}
 library(xchan)
 ```
 
 
-If your workflow requires profile cross sections, `xchan` allows a profile view to be encoded in addition to a planimetric encoding.
+There are two main ways of creating profile cross sections: by hand, and from a digital elevation model (DEM).
 
-## Creating profiles by hand
+## Creating Profiles by Hand
+
+Creating profiles by hand is useful when a channel has been surveyed and the profile data is available in a tabular format. The `profile_survey` dataset is a toy example of such data.
+
+```{r}
+profile_survey
+```
+
+Note the key features of this survey:
+
+- The `id` column is the cross-section key, matching the order of the cross sections.
+- The `distance` column is the chord distance along the cross section, increasing from left bank toward right bank.
+- The `elevation` column is the elevation at each marked `distance`.
+- The `is_bank` column is a logical flag indicating whether the vertex is a bank vertex. There must be an even number of these.
+
+But before we can add profiles to a channel, we need to set the channel up with its planimetric arrangement. We'll just consider a straight channel; at this point, there is no need to ensure that the channel width matches the survey.
 
 ```{r width-widening}
-widths <- c(10, 12, 8, 15, 11, 9)
-depths <- c(1, 1, 3, 2, 2, 3)
-channel <- xt_as_channel(units::set_units(widths, "m"))
+channel <- xt_as_channel(rep(1, 6))
+channel
+```
 
-topo <- function(width, depth, ...) {
-  d_left <- -(10:1)
-  d_right <- 1:10 + width
-  d_inner <- c(0, width / 3, width)
-  e_left <- 0.5 + 1.5 * log(10:1 + 1)
-  e_right <- rep(0, 10)
-  e_inner <- c(0.5, -depth, 0)
-  d <- c(d_left, d_inner, d_right)
-  e <- c(e_left, e_inner, e_right)
-  data.frame(
-    distance = units::set_units(d, "m"),
-    elevation = units::set_units(e, "m"),
-    is_bank = d == 0 | d == width,
-    ...
-  )
-}
+Now we can add the profiles to the channel by specifying the required columns. 
 
-df_list <- mapply(
-  topo,
-  width = widths,
-  depth = depths,
-  id = seq_along(widths),
-  SIMPLIFY = FALSE
-)
-
-profile <- do.call(rbind, df_list)
-
+```{r}
 channel <- xt_add_profile(
   channel,
   distance = distance,
   elevation = elevation,
   section = id,
   banks = is_bank,
-  data = profile,
+  data = profile_survey
 )
+channel
 ```
 
+Note that the planimetric and profile arrangements are unlikely to have widths that match exactly. For this, the centerpoint of the planimetric and profile cross sections are aligned, and one set of banks are moved to the other set of banks. There are two options:
+
+- `snap_banks_to = "profile"`: The planimetric banks snap to the profile banks. This is the default, because the survey is usually the more accurate source of information.
+- `snap_banks_to = "plan"`: The profile banks snap to the planimetric banks.
+
+An important feature of profile-enabled cross sections is that __they extend outside of the banks__. Here is a planimetric view of the channel showing the full extent of the cross sections.
+
 ```{r}
-plot(channel[[3]], extent = "full")
+plot(channel, extent = "full")
 ```
 
-
-## Generating profiles from spatial data
+Now it makes more sense to view individual cross sections. Grab an individual cross section by subsetting the channel list. Here is a view of the third cross section, with an exaggeration factor of 1.5.
 
 ```{r}
-chan <- xt_generate_plan(demo_bankline, spacing = units::set_units(100, "m"))
-
-# Plot
-plot(demo_bankline, fill = "#7cb2fe")
-plot(chan, add = TRUE)
+section <- channel[[3]]
+plot(section, extent = "full", exaggerate = 1.5)
 ```
 
+When plotting cross sections, you can also choose to plot the planimetric view with `what = "plan"`.
+
+## Creating Profiles from Spatial Data
+
+Sometimes LiDAR data is available in the form of a digital elevation model (DEM). This can be used to create profile cross sections.
+
+LiDAR for the Squamish River comes shipped with the package as a DEM from the [**terra**]() package. It needs to be unpacked first.
+
 ```{r}
-xt_axis(chan)
+library(terra)
+demo_dem <- unwrap(demo_dem)
 ```
 
-
-
-
-So far, this channel is only planimetric, with no profile view. If a profile view is important to you, you can get that from a DEM, piggybacking off the [**terra**]() package. The `xt_generate_profile()` adds a profile view to a pre-existing channel using a DEM, allowing you to sample the DEM by set spacing (`sample_freq`) or desired number of points (`sample_n`).
+This can be used together with the river's bankline polygon to first generate planimetric cross sections (as we did in the [_Getting Started with Channels_]() vignette).
 
 ```{r}
-demo_demm <- terra::unwrap(demo_dem)
-chann <- xt_generate_profile(
-  chan,
-  dem = demo_demm,
-  sample_freq = units::set_units(2, m),
-  progress = TRUE
-)
+squamish <- xt_generate_plan(demo_bankline, spacing = 100)
+plot(demo_dem)
+plot(squamish, add = TRUE)
 ```
 
-
-While `plot()`ing a channel only ever shows the planimetric view, the profiles can be viewed by selecting individual cross sections.
+Now generate the profile cross sections with `xt_generate_profile()`, using a 2 meter sample spacing.
 
 ```{r}
-section <- xt_xsection_at(chan, 20)
-section
-plot(section, view = "profile")
+squamish <- xt_generate_profile(squamish, demo_dem, sample_freq = 2)
+plot(squamish)
 ```
 
-
-## Profile Widening
-
-Channel widening now also applies to the profile cross sections.
+Take a look at the third cross section.
 
 ```{r}
-channel2 <- xt_widen(channel, dw = c(2, 1, 3, 0, 0, 0))
-plot(channel2, col = "blue")
-plot(channel, col = "red", add = TRUE)
+section <- xt_xsection_at(squamish, 3)
+plot(section, extent = "full")
 ```
 
+## Channel Widening
 
-With a profile, this has the effect of shifting the between-channel topography on either side of the thalweg further from the thalweg, spreading out the channel bottom at the thalweg. 
-
-Trace a channel axis from the cross-sections (if you want to build an axis from
-a bankline polygon alone, use the **centerline** package on CRAN).
+Channel widening now also applies to the profile cross sections. Widen the toy channel from before by a range of widths:
 
 ```{r}
-# Widen by a set distance
-channel_widened <- xt_widen(channel, dw = 4)
-
+channel_widened <- xt_widen(channel, dw = c(5, 3, 5, 0, 0, 4))
 plot(channel_widened, col = "red")
-plot(channel, add = TRUE, axis = "arrows")
+plot(channel, add = TRUE)
 ```
+
+For cross section profiles, this has the effect of shifting the between-channel topography on either side of the thalweg further from the thalweg, spreading out the channel bottom at the thalweg. Here is a before-and-after view of the third cross section.
 
 ```{r}
-plot(channel[[4]], extent = "full")
-plot(channel_widened[[4]], extent = "full")
+section_widened <- xt_xsection_at(channel_widened, 3)
+plot(section, extent = "full")
+plot(section_widened, extent = "full")
 ```
 
+Since a profile view is available, there is not only erosion width but also erosion _volume_.
 
-This operation is vectorized, so different amounts of erosion can be specified for each cross section.
+We can calculate the erosion volume resulting from the above width change:
 
-```{r width-widening}
-# Create a simple channel
-channel <- xt_as_channel(c(10, 12, 8, 15, 11, 9))
+```{r}
+xt_erosion_volume(channel, dw = c(5, 3, 5, 0, 0, 4))
+```
 
-# Widen by adding 2 meters to each cross-section
-channel_widened <- xt_widen(channel, dw = c(5, 3, 7, 0, 0, 0))
+But we can also erode by volume; here is the resulting width change for the given cross-section-specific volume change (in squared units).
 
-xt_width(channel_widened)
+```{r}
+xt_erosion_width(channel, dv = c(8, 3, 15, 0, 0, 12))
 ```
 
 
@@ -163,7 +157,8 @@ xt_erosion_volume(channel, dw = units::set_units(100, "m"))
 ```
 
 
-## Exporting
+
+## Exporting Channels
 
 Channels having a profile encoding have more export options. Like for planimetric-only channels, exports go through the [**sf**]() package, making an `"sfc"` object. In addition to the planimetric encoding, you can also choose an export of the profiles alone, or construct a 3D encoding of the channel.
 

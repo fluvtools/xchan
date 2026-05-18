@@ -12,3 +12,5 @@ joss-paper.pdf
 Rplots.pdf
 ..Rcheck
 .positai
+demo_*.rda
+__pycache__/

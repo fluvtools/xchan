@@ -15,11 +15,12 @@ knitr::opts_chunk$set(
 )
 ```
 
+Channel objects are encoded as a list of cross sections. This vignette covers the simple case where cross sections are only planimetric -- that is, they are line segments arranged on a map. Profile geometries are also allowed; see the [_Channels with Profiles_]() vignette to see how.
+
 ```{r setup}
 library(xchan)
 ```
 
-Channel objects are encoded as a list of cross sections. This vignette covers the simple case where cross sections are only planimetric -- that is, they are line segments arranged on a map. Profile geometries are also allowed; see the [_Channels with Profiles_]() vignette to see how.
 
 ## Creating Channels by Hand
 
@@ -179,16 +180,17 @@ By default, erosion occurs evenly on both sides. While you can erode the left ba
 For example, here is a 70-30 left-right split of erosion.
 
 ```{r simple-sides}
-channel_both <- xt_widen(channel, dw = 2, side = side_left(0.7))
-xt_width(channel_both)
+squamish3 <- xt_widen(squamish, dw = 200, side = side_left(0.7))
+xt_width(squamish3)
 ```
 
-Currently only a single proportion is allowed; a future version of **xchan** aspires to allow varying proportions along the channel length.
+Currently only a single proportion is allowed; a future version of xchan aspires to allow varying proportions along the channel length.
 
-## Exporting
+## Exporting Channels
 
 You can export the channel as an object understood by the [**sf**]() package; the channel will be a series of line segments. If there are islands, you have the option of excluding them, resulting in multi-line segments spanning the wet part of the channel.
 
 ```{r}
-xt_as_sfc(squamish)
+squamish_sf <- xt_as_sfc(squamish, extent = "wetted")
+plot(squamish_sf)
 ```
