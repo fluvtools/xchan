@@ -6,18 +6,26 @@
 #' (the right bank will have `1 - prop_left` of the change in width).
 #' @returns An eroded version of the input 2D cross section.
 #' @details
-#' Erosion Rules:
+#' Profile erosion follows three rules (applied on each bank via [flip_profile()]
+#' for the opposite side):
 #'
-#' 1. Sediment between the old bank and the new bank disappears. Even the
-#'    old bank point disappears.
-#' 2. Topography on the channel-side of the old bankpoint shifts over
-#'    to meet the new bank point.
+#' 1. Ground between the old and new bank positions is removed (the old bank
+#'    point is removed as well).
+#' 2. The **left-side channel** (topography between the left bank and the
+#'    leftmost thalweg) slides left by `dw`, preserving its shape. The opposite
+#'    bank is fixed.
+#' 3. The span between the leftmost and rightmost thalwegs widens by `dw` on the
+#'    eroded side; the new strip is filled with a flat channel bottom at the
+#'    thalweg elevation.
 #'
-#' Note that this will form a vertical "cliff" if eroding into an uphill
-#' floodplain, or a "spike" if eroding into a downhill floodplain (where
-#' the old channel bed appears above the new channel height). In all cases,
-#' the height of the new bank ignores this bed topography, and is determined
-#' by the outermost point.
+#' A vertical bank face is placed at the new bank: its elevation is taken from
+#' the pre-erosion ground surface at that distance (linear interpolation along
+#' the profile). Material below the thalweg elevation in the eroded strip does
+#' not count toward [xt_erosion_volume()].
+#'
+#' Eroding into a floodplain depression below the thalweg yields a warning and
+#' a cliff down to the channel; eroding into higher ground yields a cliff that
+#' rises above the channel.
 #' @rdname xt_widen_2d
 widen_profile <- function(
   profile,
@@ -32,7 +40,44 @@ widen_profile <- function(
   profile <- widen_profile_left(profile, dw_left)
   profile <- flip_profile(profile)
   profile <- widen_profile_left(profile, dw_right)
-  flip_profile(profile)
+  profile <- flip_profile(profile)
+  reconcile_profile_banks(profile)
+}
+
+#' Ensure bank indices reference the toe (lowest elevation) at each bank distance
+#' @noRd
+reconcile_profile_banks <- function(profile) {
+  coords <- profile$coordinates
+  bank_toe_index <- function(x_bank) {
+    at <- abs(coords[, 1] - x_bank) < 1e-10
+    if (!any(at)) {
+      return(NA_integer_)
+    }
+    which(at)[which.min(coords[at, 2])]
+  }
+  lb_idx <- bank_toe_index(coords[get_left_bank_index(profile), 1])
+  rb_idx <- bank_toe_index(coords[get_right_bank_index(profile), 1])
+  profile$banks <- c(lb_idx, rb_idx)
+  profile
+}
+
+#' @noRd
+set_node_at_x <- function(nodes, x, y = NULL) {
+  nodes <- inject_coords(nodes, x)
+  idx <- which.min(abs(nodes[, 1] - x))
+  if (!is.null(y)) {
+    nodes[idx, 2] <- y
+  }
+  list(nodes = nodes, idx = idx)
+}
+
+#' @noRd
+profile_indices_at_distances <- function(nodes, distances) {
+  vapply(
+    distances,
+    function(xd) which.min(abs(nodes[, 1] - xd)),
+    integer(1L)
+  )
 }
 
 #' @rdname xt_widen_2d
@@ -42,63 +87,74 @@ widen_profile_left <- function(profile, dw) {
   if (dw == 0) {
     return(profile)
   }
-  # Get left bank information
-  left_bank_coords <- get_left_bank_coords(profile)
-  x_old <- left_bank_coords[1]
+
+  nodes_orig <- profile$coordinates
+  left_bank <- get_left_bank_coords(profile)
+  right_bank <- get_right_bank_coords(profile)
+  x_old <- left_bank[1]
   x_new <- x_old - dw
-  x_extent <- min(profile$coordinates[, 1])
+  x_extent <- min(nodes_orig[, 1])
   if (x_new < x_extent) {
     stop(
-      "Cannot widen profile: requested widening exceeds cross section extent."
+      "Cannot widen profile: requested widening exceeds cross section extent.",
+      call. = FALSE
     )
   }
-  y_new <- coords_interpolate(profile$coordinates, x_new)[2]
-  thalweg_coords <- get_min_thalweg_coords(profile)
-  y_thal <- thalweg_coords[2]
 
-  # Snapshot bank and thalweg distances *before* mutating nodes; we'll re-look
-  # up their indices in the post-mutation node set at the very end. Without
-  # this the right bank and any non-leftmost thalweg indices would silently
-  # drift after we drop rows below.
-  bank_d_old <- get_bank_distances(profile)
-  bank_d_new <- bank_d_old
-  bank_d_new[1] <- x_new
-  thalweg_d_old <- get_thalweg_distances(profile)
-  thalweg_d_new <- thalweg_d_old
-  thalweg_d_new[1] <- thalweg_d_old[1] - dw
+  thal_d_old <- get_thalweg_distances(profile)
+  x_left_thal <- min(thal_d_old)
+  y_bed <- profile$thalweg_elev
+  y_cliff <- coords_interpolate(nodes_orig, x_new)[2]
+  y_top <- coords_interpolate_left(nodes_orig, x_new)[2]
 
-  nodes <- profile$coordinates
-  nodes <- inject_coords(nodes, x_new)
-
-  if (y_new < y_thal) {
+  if (y_cliff < y_bed) {
     warning(
       "River has eroded into a part of the floodplain that's lower in ",
       "elevation than the thalweg. The original thalweg is still being ",
-      "interpreted as the thalweg."
+      "interpreted as the thalweg.",
+      call. = FALSE
     )
   }
 
-  # Erosion rule 1: nodes in between old and new banks disappear,
-  # including the old bank.
-  x_in_between <- nodes[, 1] > x_new & nodes[, 1] <= x_old
-  nodes <- nodes[!x_in_between, , drop = FALSE]
-  # Erosion rule 2: nodes starting from the old bankpoint shift over
-  # to the new bankpoint.
-  x_river_part <- nodes[, 1] >= x_old & nodes[, 1] <= thalweg_d_old[1]
-  nodes[x_river_part, 1] <- nodes[x_river_part, 1] - dw
-  profile$coordinates <- nodes
+  thal_d_new <- thal_d_old
+  on_left_channel <- thal_d_old >= x_left_thal & thal_d_old <= x_old
+  thal_d_new[on_left_channel] <- thal_d_old[on_left_channel] - dw
 
-  # Recompute every bank/thalweg index from x-coordinates against the new
-  # node table, so removed rows don't shift outer-bank or island indices.
-  profile$banks <- vapply(
-    bank_d_new,
-    function(xd) which.min(abs(nodes[, 1] - xd)),
-    integer(1L)
+  nodes <- nodes_orig
+  x_remove <- nodes[, 1] > x_new & nodes[, 1] <= x_old
+  nodes <- nodes[!x_remove, , drop = FALSE]
+
+  left_channel <- nodes[, 1] >= x_left_thal & nodes[, 1] <= x_old
+  nodes[left_channel, 1] <- nodes[left_channel, 1] - dw
+
+  nodes <- set_node_at_x(nodes, x_left_thal, y_bed)$nodes
+  nodes <- set_node_at_x(nodes, right_bank[1], right_bank[2])$nodes
+
+  nodes <- nodes[abs(nodes[, 1] - x_new) > 1e-12, , drop = FALSE]
+  insert_i <- sum(nodes[, 1] < x_new - 1e-12) + 1L
+  cliff_nodes <- if (y_top > y_cliff + 1e-10) {
+    matrix(c(x_new, y_top, x_new, y_cliff), ncol = 2, byrow = TRUE)
+  } else {
+    matrix(c(x_new, y_cliff), ncol = 2)
+  }
+  nodes <- rbind(
+    nodes[seq_len(insert_i - 1L), , drop = FALSE],
+    cliff_nodes,
+    nodes[seq(insert_i, nrow(nodes)), , drop = FALSE]
   )
-  profile$thalwegs <- vapply(
-    thalweg_d_new,
-    function(xd) which.min(abs(nodes[, 1] - xd)),
-    integer(1L)
-  )
-  profile
+  nodes <- nodes[order(nodes[, 1], -nodes[, 2]), , drop = FALSE]
+
+  at_cliff <- abs(nodes[, 1] - x_new) < 1e-10
+  lb_idx <- which(at_cliff)[which.min(nodes[at_cliff, 2])]
+  rb_idx <- profile_indices_at_distances(nodes, right_bank[1])
+  nodes[lb_idx, 2] <- y_cliff
+  nodes[rb_idx, ] <- right_bank
+  flat_idx <- profile_indices_at_distances(nodes, x_left_thal)
+  nodes[flat_idx, 2] <- y_bed
+
+  profile$coordinates <- nodes
+  profile$banks <- c(lb_idx, rb_idx)
+  profile$thalwegs <- profile_indices_at_distances(nodes, thal_d_new)
+  profile$thalweg_elev <- min(nodes[profile$thalwegs, 2])
+  reconcile_profile_banks(profile)
 }

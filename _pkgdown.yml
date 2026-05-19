@@ -2,3 +2,14 @@ url: https://stochagbem.github.io/xchan/
 template:
   bootstrap: 5
 
+articles:
+- title: Getting Started with Channels
+  navbar: ~
+  contents:
+  - basic_channels
+- title: Channels with Profiles
+  contents:
+  - channels_with_profiles
+- title: Channel Computations
+  contents:
+  - channel_computations

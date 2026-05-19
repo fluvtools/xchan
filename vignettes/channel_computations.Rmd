@@ -1,0 +1,104 @@
+---
+title: "Channel Computations"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Channel Computations}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  warning = FALSE
+)
+```
+
+While the [Getting Started with Channels](basic_channels.html) and [Channels with Profiles](channels_with_profiles.html)
+vignettes cover creating and eroding channels, this vignette covers calculations on channels.
+
+First, make a channel for the Squamish River (same workflow as in the [Channels with Profiles](channels_with_profiles.html) vignette).
+
+```{r setup}
+library(xchan)
+library(terra)
+squamish <- xt_generate_plan(demo_bankline, spacing = 100)
+squamish <- xt_generate_profile(squamish, unwrap(demo_dem), sample_freq = 2)
+plot(squamish)
+```
+
+## Distance Downstream
+
+<span class="badge rounded-pill text-bg-secondary">Planiometric cross sections only</span>
+
+Downstream distances can be calculated along the channel axis, where "0" is the canonical distance for the most upstream cross section.
+
+```{r distance}
+dist <- xt_distance_downstream(squamish)
+head(dist)
+```
+
+As with most computational functions, `xt_distance_downstream()` has an optional `axis` argument if you wanted to use a different axis than the stored one.
+
+
+## Elevations
+
+<span class="badge rounded-pill text-bg-secondary">Profile cross sections</span>
+
+Channel elevation can be calculated using a number of different reference concepts.
+Some reference concepts select a specific point, like the thalweg elevations.
+
+```{r}
+head(xt_elevation(squamish, reference = elevation_thalweg()))
+```
+
+Other reference concepts involve combining mulitple points with a function,
+like `elevation_bank()`, which applies a function to the two outer banks -- by default, the minimum.
+
+```{r}
+head(xt_elevation(squamish, reference = elevation_bank()))
+```
+
+Another option is to combine the bed elevations with `elevation_bed()`; here, taking the median elevation.
+
+```{r}
+head(xt_elevation(squamish, reference = elevation_bank(median)))
+```
+
+To learn more about the different elevation reference concepts, see the documentation at `?elevations`.
+
+## Gradient
+
+<span class="badge rounded-pill text-bg-secondary">Profile cross sections</span>
+
+A useful way of approximating flow gradient is differencing some aspect of the topography between cross sections along the channel axis.
+The `xt_gradient()` function calculates this differential using a sliding window approach based on number of cross sections before and after each cross section.
+
+For example, we can calculate the gradient as the slope of the banks three cross sections upstream and downstream of each cross section. Use the [Elevation](#elevations) concept to specify the elevation reference.
+
+```{r}
+grad <- xt_gradient(
+  squamish,
+  before = 3,
+  after = 3,
+  elevation = elevation_thalweg()
+)
+head(grad)
+```
+
+By default, truncated windows are not allowed, which is why the first three cross sections are `NA`. This behaviour can be changed with the `complete` argument.
+
+We can combine this with the `xt_distance_downstream()` function to plot the gradient along the channel axis.
+
+```{r}
+plot(dist, grad)
+lines(dist, grad, type = "l")
+```
+
+While you can make this plot smoother by increasing the window size, it's worth considering combining this with a smoother function like `stats::loess()`.
+
+## Other Computations
+
+If these computations don't cover your needs, you can take a manual approach by first exporting the channel with `xt_as_sfc()` and then using the [**sf**](https://r-spatial.github.io/sf/) package to conduct the calculations. But of course, not until after [submitting an Issue](https://github.com/stochaGBEM/xchan/issues) on the xchan GitHub repository! Your feedback is greatly appreciated.

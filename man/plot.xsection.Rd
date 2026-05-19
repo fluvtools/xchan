@@ -15,8 +15,8 @@
   to = NULL,
   col = "black",
   lwd = 1,
-  col_bank_water = "deepskyblue3",
-  col_bank_land = "gray35",
+  banks = c("auto", "show", "hide"),
+  col_bank = "deepskyblue3",
   pch_bank = 16,
   cex_bank = 0.65,
   warn_if_no_profile = TRUE
@@ -49,7 +49,7 @@ default left edge for \code{extent}; it ends at \code{to} when given, otherwise 
 the default right edge. You may pass \code{from} only, \code{to} only, both, or
 neither. Values may lie outside the data range (empty band on that side).}
 
-\item{col, lwd, col_bank_water, col_bank_land, pch_bank, cex_bank, warn_if_no_profile}{Used for the plan view only (see \code{\link{plot.xchan}}).}
+\item{col, lwd, banks, col_bank, pch_bank, cex_bank, warn_if_no_profile}{Used for the plan view only (see \code{\link{plot.xchan}}).}
 }
 \value{
 Called for its graphical side effect.

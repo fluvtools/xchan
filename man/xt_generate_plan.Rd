@@ -42,10 +42,13 @@ generating planimetric cross sections.}
 }
 \value{
 An \code{\link{xchan}} with one \code{\link{xsection}} per list position, in downstream order along the sampling axis.
+Cross-section identity keys are \strong{not} set; use \code{\link[=xt_section_id]{xt_section_id()}} if you need stable
+keys (for example when joining tabular profiles with \code{\link[=xt_add_profile]{xt_add_profile()}}).
 After subsetting, restore order with \code{\link[=xt_arrange_downstream]{xt_arrange_downstream()}}. Use \code{\link[=xt_distance_downstream]{xt_distance_downstream()}}
 for distance along the axis from its start to each section (requires the axis
 from \code{\link[=xt_axis]{xt_axis()}}, which this function sets). The sampling axis is stored on the
-\code{\link{xchan}} object.
+\code{\link{xchan}} object, and the \strong{bank footprint} polygon(s) from \code{banks} on
+\code{\link[=xt_bankline]{xt_bankline()}} (for plan plotting).
 }
 \description{
 Generate a channel object with planimetric cross sections from a
@@ -92,6 +95,13 @@ left bank to right bank: the \strong{first} coordinate is on the left bank, the
 banks). Increasing distance along the polyline (first to last vertex) matches
 profile cross sections where distance increases from left to right along the
 overall chord.
+
+\strong{Terminal stations:} Cross sections at the upstream and/or downstream ends
+of the axis are sometimes awkward (very short transects, odd intersections
+with the bank polygon, or mouth artifacts). Inspect the result and \strong{subset}
+the returned \code{\link{xchan}} (single-bracket indexing; see \code{\link{xchan}}) to
+drop the first and/or last rows if you do not want those sections in later
+analysis or plotting.
 
 \strong{How orientation is computed:} for each station we take a unit tangent to
 the axis pointing downstream (\code{axis_unit_tangent_downstream()}). For each

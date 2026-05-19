@@ -27,7 +27,7 @@ xt_erosion_volume <- function(channel, dw, side = "both") {
 #' @export
 xt_erosion_volume.xchan <- function(channel, dw, side = "both") {
   checkmate::assert_class(channel, "xchan")
-  unit <- crs_length_unit(channel)
+  unit <- channel_length_unit(channel)
   dw <- to_numeric_length(dw, unit, arg = "dw")
   raw <- erosion_volume_numeric(channel, dw, side)
   with_volume_units(raw, unit)
@@ -64,18 +64,37 @@ erosion_volume_numeric <- function(channel, dw, side = "both") {
   dw <- vctrs::vec_recycle(dw, length(profile))
 
   volumes <- numeric(length(profile))
+  failures <- list()
+
   for (i in seq_along(profile)) {
-    xs <- profile[[i]]
-    dw_left <- dw[i] * prop_left[i]
-    dw_right <- dw[i] - dw_left
+    result <- tryCatch(
+      {
+        xs <- profile[[i]]
+        dw_left <- dw[i] * prop_left[i]
+        dw_right <- dw[i] - dw_left
 
-    v1 <- erosion_volume_left(xs, dw_left)
-    xs_flipped <- flip_profile(xs)
-    v2 <- erosion_volume_left(xs_flipped, dw_right)
+        v1 <- erosion_volume_left(xs, dw_left)
+        xs_flipped <- flip_profile(xs)
+        v2 <- erosion_volume_left(xs_flipped, dw_right)
 
-    volumes[i] <- v1 + v2
+        list(ok = TRUE, value = v1 + v2)
+      },
+      error = function(e) {
+        list(ok = FALSE, error = e)
+      }
+    )
+    if (result$ok) {
+      volumes[i] <- result$value
+    } else {
+      failures[[length(failures) + 1L]] <- list(
+        label = section_label_at(channel, i),
+        message = conditionMessage(result$error)
+      )
+      volumes[i] <- NA_real_
+    }
   }
 
+  stop_erosion_section_errors(failures)
   volumes
 }
 
@@ -98,7 +117,7 @@ erosion_volume_left <- function(xs, dw) {
     )
   }
 
-  y_thalweg <- get_min_thalweg_coords(xs)[2]
+  y_thalweg <- xs$thalweg_elev
   nodes <- inject_coords(nodes, x_new)
   x_in_between <- nodes[, 1] >= x_new & nodes[, 1] <= x_old
   between_nodes <- nodes[x_in_between, , drop = FALSE]

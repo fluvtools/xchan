@@ -32,7 +32,9 @@ downstream with reversed flow. \code{xt_arrange_upstream()} uses \strong{decreas
 the axis start.
 }
 \details{
-Midpoints for ordering are bank-to-bank means on each planimetric cross section.
+Ordering uses the same chainage as \code{\link[=xt_distance_downstream]{xt_distance_downstream()}}: intersection of the
+extended bank-to-bank chord with the axis (nearest intersection to the bank midpoint when
+there are several), otherwise the nearest point on the axis to the bank midpoint.
 
 \strong{Reverse flow:} \code{\link[=xt_reverse_flow]{xt_reverse_flow()}} does not permute sections but reverses the stored axis,
 so \code{xt_arrange_downstream()} orders sections for the new downstream direction.
@@ -40,7 +42,7 @@ so \code{xt_arrange_downstream()} orders sections for the new downstream directi
 }
 \examples{
 \donttest{
-ch <- xt_generate_plan(fraser_bankline, n = 15)
+ch <- xt_generate_plan(demo_bankline, n = 15)
 ch_down <- xt_arrange_downstream(ch)
 ch_up <- xt_arrange_upstream(ch)
 }

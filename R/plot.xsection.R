@@ -10,7 +10,7 @@
 #' @param view `"auto"` plots the profile when `x$profile` is present, otherwise
 #'   the plan view. Use `"profile"` or `"plan"` to force one view.
 #' @inheritParams plot.xs_profile
-#' @param col,lwd,col_bank_water,col_bank_land,pch_bank,cex_bank,warn_if_no_profile
+#' @param col,lwd,banks,col_bank,pch_bank,cex_bank,warn_if_no_profile
 #'   Used for the plan view only (see \code{\link{plot.xchan}}).
 #'
 #' @returns Called for its graphical side effect.
@@ -35,14 +35,15 @@ plot.xsection <- function(
   to = NULL,
   col = "black",
   lwd = 1,
-  col_bank_water = "deepskyblue3",
-  col_bank_land = "gray35",
+  banks = c("auto", "show", "hide"),
+  col_bank = "deepskyblue3",
   pch_bank = 16,
   cex_bank = 0.65,
   warn_if_no_profile = TRUE
 ) {
   checkmate::assert_class(x, "xsection")
   view <- match.arg(view)
+  banks <- match.arg(banks)
   if (view == "auto") {
     view <- if (!is.null(x$profile)) "profile" else "plan"
   }
@@ -72,8 +73,8 @@ plot.xsection <- function(
       add = add,
       col = col,
       lwd = lwd,
-      col_bank_water = col_bank_water,
-      col_bank_land = col_bank_land,
+      banks = banks,
+      col_bank = col_bank,
       pch_bank = pch_bank,
       cex_bank = cex_bank,
       warn_if_no_profile = warn_if_no_profile,

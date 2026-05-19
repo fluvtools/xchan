@@ -29,6 +29,23 @@ test_that("plot.xchan axis argument runs without error", {
   expect_error(plot(ch, axis = "none"), NA)
 })
 
+test_that("plot.xchan banks show/hide/auto runs without error", {
+  skip_if_not_installed("sf")
+  ch <- xt_as_channel(c(2, 2, 2), crs = 3005)
+  grDevices::pdf(NULL)
+  on.exit(grDevices::dev.off(), add = TRUE)
+  expect_error(plot(ch, banks = "show"), NA)
+  expect_error(plot(ch, banks = "hide"), NA)
+  expect_error(plot(ch, banks = "auto"), NA)
+  bl <- sf::st_buffer(
+    sf::st_union(sf::st_geometry(channel_plan(ch))),
+    dist = 0.5
+  )
+  xt_bankline(ch) <- bl
+  expect_error(plot(ch, banks = "auto"), NA)
+  expect_error(plot(ch, banks = "show"), NA)
+})
+
 test_that("plot_plan limits aspect for wide synthetic numeric channels", {
   skip_if_not_installed("sf")
   ch <- xt_as_channel(c(10, 12, 8, 15, 11, 9))

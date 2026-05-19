@@ -1,3 +1,42 @@
+#' Deparse the unit symbol from a `units` vector, if any
+#' @noRd
+units_deparse <- function(x) {
+  if (inherits(x, "units")) {
+    units::deparse_unit(x)
+  } else {
+    NULL
+  }
+}
+
+#' Linear length unit for a channel or CRS-bearing geometry
+#'
+#' For [`xchan`] objects, uses the CRS linear unit when set; otherwise falls back
+#' to attribute `"length_unit"` (for example after [xt_as_channel()] with
+#' [units::units()] widths or [xt_add_profile()] with unit-bearing distances).
+#'
+#' @noRd
+channel_length_unit <- function(x) {
+  if (inherits(x, "xchan")) {
+    cr <- xchan_crs(x)
+    if (!is.na(cr)) {
+      u <- crs_length_unit(cr)
+      if (!is.null(u)) {
+        return(u)
+      }
+    }
+    return(attr(x, "length_unit", exact = TRUE))
+  }
+  crs_length_unit(x)
+}
+
+#' @noRd
+set_xchan_length_unit <- function(x, unit) {
+  if (!is.null(unit) && nzchar(unit)) {
+    attr(x, "length_unit") <- unit
+  }
+  x
+}
+
 #' Linear unit of a CRS, as a string accepted by `units::set_units()`
 #'
 #' Returns the length unit that [sf::st_length()] would use for geometries with
@@ -5,9 +44,9 @@
 #' carry [units::units()] into bare numerics in the channel's own unit, and to
 #' attach units to numeric lengths/volumes returned by package functions.
 #'
-#' @param x An [`xchan`], `sf`/`sfc` object, CRS object, or anything
-#'   else `[sf::st_crs()]` accepts. Channel objects use the CRS stored on their
-#'   cross-section geometry container.
+#' @param x A `sf`/`sfc` object, CRS object, or anything else `[sf::st_crs()]`
+#'   accepts. For channel-level unit lookup (including manually set units),
+#'   use `channel_length_unit()` instead.
 #' @returns A unit symbol (for example `"m"` or `"US_survey_foot"`) suitable
 #'   for `units::set_units(..., mode = "standard")`, or `NULL` when no CRS is
 #'   set, the CRS has no defined linear unit, or the `units` package is not
@@ -19,9 +58,6 @@ crs_length_unit <- function(x) {
   }
   if (!requireNamespace("units", quietly = TRUE)) {
     return(NULL)
-  }
-  if (inherits(x, "xchan")) {
-    x <- channel_plan(x)
   }
   crs <- tryCatch(sf::st_crs(x), error = function(e) NA)
   if (length(crs) == 0L || is.na(crs)) {

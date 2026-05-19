@@ -38,6 +38,17 @@ Object of the same class as \code{channel}, with widened sections.
 \description{
 Widen cross sections
 }
+\details{
+The stored channel axis (\code{\link[=xt_axis]{xt_axis()}}) is \strong{not} updated when widening:
+plan and profile transects move, but the reach-scale axis polyline is left
+unchanged. If you set the axis to something tied to the pre-widen plan (for
+example a digitized centerline), do not expect it to refit automatically to a
+new midline---that is intentional in most workflows, because the axis is used
+for cross-section ordering and downstream metrics (\code{\link[=xt_arrange_downstream]{xt_arrange_downstream()}},
+\code{\link[=xt_distance_downstream]{xt_distance_downstream()}}, etc.) rather than as a moving geometric center of
+each transect. To install a different axis, use the replacement form
+\code{xt_axis(channel) <- value} (see \code{\link[=xt_axis]{xt_axis()}}).
+}
 \note{
 The ellipsis \code{...} must be empty; named \code{dw} and \code{dv} keep widening deliberate.
 }

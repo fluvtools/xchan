@@ -60,9 +60,11 @@ either as a fixed distance or as a multiplier of the channel width.
 Similarly, the sampling distance can be specified either as a fixed
 distance or as a multiplier of the channel width.
 
-Extension beyond banks is clipped to the DEM bounding box (in the DEM's
-CRS, projected to the cross-section CRS when needed), so sampling stays
-inside raster coverage if the bank-to-bank segment lies inside the DEM.
+Extension beyond banks is clipped to the DEM bounding box and, when
+\code{extent_distance} is infinite, to the nearest valid-data edge along each
+bank ray (in the DEM's CRS, projected to the cross-section CRS when
+needed). Sampling therefore stays inside contiguous valid cells when the
+bank-to-bank segment lies inside the DEM.
 
 Elevations are taken with bilinear interpolation between cell centres (see
 \code{\link[terra:extract]{terra::extract()}} with \code{method = "bilinear"}), which smooths grid-oriented

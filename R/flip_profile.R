@@ -17,7 +17,7 @@ flip_profile <- function(profile) {
   bank_distances <- get_bank_distances(profile)
   banks <- sort(-bank_distances)
   out <- new_profile(nodes, bankpoints = banks)
-  # Mirror does not change elevations; rebuilding via new_profile() / inject_coords()
+  # Mirror does not change elevations; rebuilding standardizes banks/thalweg.
   # can shift min(z) (interpolation, float equality on thalweg rows).
   out$thalweg_elev <- te_orig
   out$thalwegs <- which.min(abs(out$coordinates[, 2] - te_orig))

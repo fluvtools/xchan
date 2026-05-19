@@ -1,3 +1,12 @@
+test_that("xt_width(xsection) matches plan length and parent channel slice", {
+  skip_if_not_installed("sf")
+  ch <- xt_as_channel(c(10, 12, 11), crs = 3005)
+  w_ch <- as.numeric(xt_width(ch))
+  for (i in seq_along(ch)) {
+    expect_equal(as.numeric(xt_width(ch[[i]])), w_ch[i])
+  }
+})
+
 test_that("xt_width(xs_profile) matches outer bank span", {
   coords <- matrix(c(-5, 10, 0, 5, 5, 10), ncol = 2, byrow = TRUE)
   xs <- xchan:::new_profile(coords, bankpoints = c(-3, 3))

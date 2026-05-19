@@ -23,7 +23,7 @@ xt_erosion_width <- function(
   side = "both"
 ) {
   checkmate::assert_class(channel, "xchan")
-  unit <- crs_length_unit(channel)
+  unit <- channel_length_unit(channel)
   dv <- to_numeric_volume(dv, unit, arg = "dv")
   raw <- erosion_width_numeric(channel, dv, side)
   with_length_units(raw, unit)
@@ -44,19 +44,37 @@ erosion_width_numeric <- function(channel, dv, side = "both") {
 
   # Calculate erosion width for each cross-section
   widths <- numeric(length(profile))
+  failures <- list()
 
   for (i in seq_along(profile)) {
-    xs <- profile[[i]]
-    dv_left <- dv[i] * prop_left[i]
-    dv_right <- dv[i] - dv_left
+    result <- tryCatch(
+      {
+        xs <- profile[[i]]
+        dv_left <- dv[i] * prop_left[i]
+        dv_right <- dv[i] - dv_left
 
-    dw1 <- erosion_width_left(xs, dv_left)
-    xs_flipped <- flip_profile(xs)
-    dw2 <- erosion_width_left(xs_flipped, dv_right)
+        dw1 <- erosion_width_left(xs, dv_left)
+        xs_flipped <- flip_profile(xs)
+        dw2 <- erosion_width_left(xs_flipped, dv_right)
 
-    widths[i] <- dw1 + dw2
+        list(ok = TRUE, value = dw1 + dw2)
+      },
+      error = function(e) {
+        list(ok = FALSE, error = e)
+      }
+    )
+    if (result$ok) {
+      widths[i] <- result$value
+    } else {
+      failures[[length(failures) + 1L]] <- list(
+        label = section_label_at(channel, i),
+        message = conditionMessage(result$error)
+      )
+      widths[i] <- NA_real_
+    }
   }
 
+  stop_erosion_section_errors(failures)
   widths
 }
 

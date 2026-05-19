@@ -90,7 +90,7 @@ The package implements **specification factories** for operations that need flex
 
 - **Side Factories** create functions that specify erosion allocation during channel widening, allowing users to define how widening or erosion is distributed between left and right banks. Built-in factories handle common cases (e.g., `"left"`, `"right"`, `"both"`), and custom functions can vary allocation along the channel.
 
-- **Elevation Factories** create functions for flexible elevation specification (thalweg, banks, beyond-bank topography), so analyses can reference consistent vertical datums across cross sections.
+- **Elevation Factories** create functions for flexible elevation specification (thalweg, banks, bed), so analyses can reference consistent vertical datums across cross sections.
 
 These factories return objects that can be passed as arguments and composed with core geometry functions, avoiding a proliferation of similarly named top-level functions while keeping call sites readable.
 
@@ -104,7 +104,7 @@ Channel widening simulates bank erosion processes. For plan-view cross-sections,
 
 ## Derived Geometries
 
-The package provides functions to generate derived geometries from channel objects. For example, a channel axis can be traced by connecting the midpoints of planimetric cross-sections (`xt_trace_centerline()`), and where profile cross-sections are present, a thalweg line can be assembled in plan view (`xt_trace_thalwegline()`).
+The package provides functions to generate derived geometries from channel objects (for example plan-view `sfc` outputs via `xt_as_sfc()`).
 
 # Example Usage
 
@@ -126,8 +126,8 @@ channel <- xt_as_channel(c(10, 12, 8, 15, 11, 9))
 # Widen with asymmetric erosion allocation (must pass dw or dv by name)
 channel_widened <- xt_widen(channel, dw = 10, side = side_left(0.75))
 
-# Derived centreline in plan view
-centerline <- xt_trace_centerline(channel)
+# Stored sampling axis in plan view (from xt_generate_plan)
+axis_line <- xt_axis(channel)
 
 # Summaries
 widths <- xt_width(channel_widened)

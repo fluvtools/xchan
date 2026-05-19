@@ -63,7 +63,7 @@ inject_demo_islands <- function(
     stop("Package 'xchan' is required.")
   }
   if (is.null(bankline)) {
-    bankline <- xchan::fraser_bankline
+    bankline <- xchan::demo_bankline
   }
   if (!inherits(bankline, "sfc")) {
     stop("`bankline` must be an sfc polygon geometry.")
@@ -193,7 +193,7 @@ two <- inject_demo_islands(
 )
 length(two$overlap_sections) # should usually be > 0
 
-plot(fraser_bankline, col = "grey90", border = "grey50")
+plot(demo_bankline, col = "grey90", border = "grey50")
 plot(two$bankline_with_islands, add = TRUE, col = "#9ecae1", border = "#3182bd")
 plot(two$islands, add = TRUE, col = "#fdd0a2", border = "#e6550d")
 plot(

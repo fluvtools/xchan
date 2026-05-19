@@ -16,6 +16,17 @@
 #'   `"right"`, or `"both"`.
 #' @note
 #' The ellipsis `...` must be empty; named `dw` and `dv` keep widening deliberate.
+#'
+#' @details
+#' The stored channel axis ([xt_axis()]) is **not** updated when widening:
+#' plan and profile transects move, but the reach-scale axis polyline is left
+#' unchanged. If you set the axis to something tied to the pre-widen plan (for
+#' example a digitized centerline), do not expect it to refit automatically to a
+#' new midline---that is intentional in most workflows, because the axis is used
+#' for cross-section ordering and downstream metrics ([xt_arrange_downstream()],
+#' [xt_distance_downstream()], etc.) rather than as a moving geometric center of
+#' each transect. To install a different axis, use the replacement form
+#' `xt_axis(channel) <- value` (see [xt_axis()]).
 #' @returns Object of the same class as `channel`, with widened sections.
 #' @examples
 #' xt_widen(channel, dw = 10)
@@ -54,7 +65,7 @@ xt_widen.xchan <- function(
   prop_left <- parse_side_arg(side, channel)
   n_sections <- xt_n_sections(channel)
 
-  unit <- crs_length_unit(channel)
+  unit <- channel_length_unit(channel)
 
   if (missing(dw)) {
     if (is.null(profile)) {
@@ -89,13 +100,21 @@ xt_widen.xchan <- function(
 
   if (!is.null(profile)) {
     profile <- lapply(seq_along(profile), function(i) {
-      do.call(
+      prof_i <- profile[[i]]
+      left0 <- get_left_bank_coords(prof_i)[1]
+      right0 <- get_right_bank_coords(prof_i)[1]
+      widened <- do.call(
         widen_profile,
         list(
-          profile[[i]],
+          prof_i,
           dw[i],
           prop_left[i]
         )
+      )
+      snap_profile_bank_positions(
+        widened,
+        left_x = left0 - dw[i] * prop_left[i],
+        right_x = right0 + dw[i] * (1 - prop_left[i])
       )
     })
   }
