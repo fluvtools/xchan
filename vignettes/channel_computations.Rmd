@@ -13,103 +13,131 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
+# Create a custom output hook to truncate vector outputs
+knitr::knit_hooks$set(output = function(x, options) {
+  # Check if our custom option 'truncate_vector' is enabled (we will set it to TRUE by default)
+  if (isTRUE(options$truncate_vector)) {
+    # Clean up the raw string output into R lines
+    lines <- readLines(textConnection(x))
+
+    # We target standard vector outputs (usually starting with [1])
+    if (any(grepl("^\\[\\d+\\]", lines))) {
+      # Extract the actual data elements, discarding the R header/bracket notation
+      clean_elements <- unlist(strsplit(
+        gsub("^\\[\\d+\\]\\s+", "", lines),
+        "\\s+"
+      ))
+
+      total_elements <- length(clean_elements)
+
+      if (total_elements > 6) {
+        remaining <- total_elements - 6
+        # Take the first 6, format them nicely, and append the dynamic message
+        truncated_data <- paste(clean_elements[1:6], collapse = " ")
+
+        # Re-wrap it in R's classic print style
+        x <- paste0(
+          "[1] ",
+          truncated_data,
+          "\n... ",
+          remaining,
+          " more elements.\n"
+        )
+      }
+    }
+  }
+
+  # Pass the (modified or unmodified) output back to knitr's default handler
+  knitr::knit_hooks$get("output")(x, options)
+})
+
+# Set this behavior as the global default for the whole document
+knitr::opts_chunk$set(truncate_vector = TRUE)
 ```
+
+While the [Getting Started with Channels]() and [Channels with Profiles]()
+vignettes cover creating and eroding channels, this vignette covers calculations on channels.
+
+First, make a channel for the Squamish River (same workflow as in the [Channels with Profiles]() vignette).
 
 ```{r setup}
 library(xchan)
-library(sf)
+library(terra)
+squamish <- xt_generate_plan(demo_bankline, spacing = 100)
+squamish <- xt_generate_profile(squamish, unwrap(demo_dem), sample_freq = 2)
+plot(squamish)
 ```
 
-Get the number of cross-sections.
+## Distance Downstream
 
-```{r}
-# Get number of cross-sections
-xt_n_sections(channel)
-```
+\[Only needs planimetric cross sections.\]
 
-
-Calculate downstream distances.
+Downstream distances can be calculated along the channel axis, where "0" is the canonical distance for the most upstream cross section.
 
 ```{r distance}
-# Calculate downstream distances
-distances <- xt_distance_downstream(channel)
-distances
+dist <- xt_distance_downstream(squamish)
+dist
 ```
 
-Convert to a spatial object understandable by the `sf` package, in case you want to do some manual operations not supported by `xchan`.
+As with most computational functions, `xt_distance_downstream()` has an optional `axis` argument if you wanted to use a different axis than the stored one.
+
+
+## Elevations
+
+\[Needs profile cross sections.\]
+
+Channel elevation can be calculated using a number of different reference concepts.
+Some reference concepts select a specific point, like the thalweg elevations.
 
 ```{r}
-spatial_object <- xt_as_sfc(channel)
-# View
-spatial_object
+xt_elevation(squamish, reference = elevation_thalweg())
 ```
 
-
-
-
-
-
-
-
-
-
-## Combining a channel with tabular data
-
-Channel objects are deliberately plan lists, so that you can control each cross section. It is also useful to store additional information about cross sections alongside them, like the grain size or bed roughness coefficient. Because channels are just lists, they can go in a list-column in a data frame. There is no special **xchan** structure here; it's possible it will be native in a future version of the package, but at this stage, just use your favourite workflow for this.
-
-```{r df-input}
-chan_tbl <- tibble::tibble(channel = channel, roughness = 0.035)
-chan_tbl
-```
-
-
-
-## Channel axis and ordering
-
-Channels have a stored _axis_ whose main purpose is to define a cross section ordering. strings cross sections together in order. 
-
-In this case, since it was not supplied, `xt_generate_plan()` auto-generated the axis using the centerline of the provided bankline polygon (from the [**centerline**]() package). This axis is also used by `xt_generate_plan()` to sample equally spaced cross sections.
-
-It's important to note that ordering of the cross sections in the channel list is not necessarily in flow order (more on why later). You can rearrange or even subset cross sections while the flow order is still preserved.
+Other reference concepts involve combining mulitple points with a function,
+like `elevation_bank()`, which applies a function to the two outer banks -- by default, the minimum.
 
 ```{r}
-chan2 <- chan[c(4, 2, 3, 1)]
+xt_elevation(squamish, reference = elevation_bank())
 ```
 
-If you ever find your cross sections listed out-of-order, you can arrange it like so:
+Another option is to combine the bed elevations with `elevation_bed()`; here, taking the median elevation.
 
 ```{r}
-xt_arrange_downstream(channel)
+xt_elevation(squamish, reference = elevation_bank(median))
 ```
 
-You can get and set the axis.
+To learn more about the different elevation reference concepts, see the documentation at `?elevations`.
 
-```{r channel-axis}
-# Stored axis from xt_generate_plan() (or set with xt_axis(channel) <- ...)
-axis_line <- xt_axis(channel)
-plot(channel)
-plot(axis_line, add = TRUE, col = "red", lwd = 2)
-```
+## Gradient
 
-For flexible modelling, there's a function that allows you to change the flow direction.
+\[Needs profile cross sections.\]
+
+A useful way of approximating flow gradient is differencing some aspect of the topography between cross sections along the channel axis.
+The `xt_gradient()` function calculates this differential using a sliding window approach based on number of cross sections before and after each cross section.
+
+For example, we can calculate the gradient as the slope of the banks three cross sections upstream and downstream of each cross section. Use the [Elevation](#elevations) concept to specify the elevation reference.
 
 ```{r}
-xt_reverse_flow(channel)
+grad <- xt_gradient(
+  squamish,
+  before = 3,
+  after = 3,
+  reference = elevation_thalweg()
+)
+grad
 ```
 
+By default, truncated windows are not allowed, which is why the first three cross sections are `NA`. This behaviour can be changed with the `complete` argument.
 
+We can combine this with the `xt_distance_downstream()` function to plot the gradient along the channel axis.
 
-## Spatial Outputs
-
-Converting to `sfc`
-
-```{r sfc-outputs}
-plan_sfc <- xt_as_sfc(channel, what = "plan")
-# profile_sfc <- xt_as_sfc(channel, what = "profile")
-
-st_length(plan_sfc)
+```{r}
+plot(dist, grad)
+lines(dist, grad, type = "l")
 ```
 
-To combine with non-spatial columns in an `sf` object, use for example
-`sf::st_sf(your_df, geometry = xt_as_sfc(channel, what = "plan"), crs = st_crs(plan_sfc))`.
+While you can make this plot smoother by increasing the window size, it's worth considering combining this with a smoother function like `stats::loess()`.
 
+## Other Computations
+
+If these computations don't cover your needs, you can take a manual approach by first exporting the channel with `xt_as_sfc()` and then using the [**sf**]() package to conduct the calculations. But of course, not until after [submitting an Issue]() on the xchan github repository! Your feedback is greatly appreciated.

@@ -25,12 +25,14 @@
 #' structure). Dry islands and
 #' floodplain tails outside the outer banks are excluded.
 #'
-#' @param .f Numeric summary function applied per cross section:
-#'   * `elevation_bank()` — passes **two** values (left and right **outer bank** elevations)
-#'     through `.f`; default [base::min] is the lower of the two outer bank elevations.
-#'   * `elevation_bed()` — passes elevations at profile vertices on the **wetted bed**
-#'     (within each water interval between banks; islands excluded) through `.f`;
-#'     default `base::mean`.
+#' @param .f Numeric summary function applied per cross section. Each call uses a single
+#'   numeric vector `x` as the first argument to `.f` (not separate left/right arguments);
+#'   further arguments are forwarded from `...`:
+#'   * `elevation_bank()` — `x` has length 2: outer **left** then **right** bank elevations
+#'     (`c(z_left, z_right)`). Default [base::min] returns the lower bank elevation;
+#'     [base::mean] averages the two banks.
+#'   * `elevation_bed()` — `x` contains elevations at profile vertices on the **wetted bed**
+#'     (within each water interval between banks; islands excluded). Default [base::mean].
 #' @param ... Further arguments forwarded to `.f` (for example `probs` for [stats::quantile]).
 #'
 #' @returns An object inheriting `"xchan_elevation"`: a function `(channel)` that returns
@@ -60,9 +62,9 @@ elevation_thalweg <- function() {
   structure(fun, name = "thalweg", class = "xchan_elevation")
 }
 
-#' @describeIn elevations Banks: apply `.f` to the elevations at the **left and right outer
-#'   bank** vertices (same points as [elevation_bank_left()] / [elevation_bank_right()]).
-#'   Default `.f = min` chooses the lower of the two outer bank elevations.
+#' @describeIn elevations Banks: apply `.f(x, ...)` where `x` is `c(z_left, z_right)` at the
+#'   **outer left** and **outer right** bank vertices (same points as [elevation_bank_left()]
+#'   / [elevation_bank_right()]). Default `.f = min` returns the lower bank elevation.
 #' @export
 elevation_bank <- function(.f = min, ...) {
   fun <- function(channel) {

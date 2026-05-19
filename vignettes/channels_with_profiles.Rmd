@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
 ```
 
 
-If your workflow requires profile cross sections, `xchan` allows this in addition to planimetric encoding.
+If your workflow requires profile cross sections, `xchan` allows this in addition to planimetric encoding. This vignette shows how to create and work with profile-enabled channels. Since making a channel with profiles first involves making a channel with planimetric geometries, we recommend first reading the [_Getting Started with Channels_]() vignette.
 
 ```{r setup}
 library(xchan)
@@ -127,9 +127,10 @@ plot(channel, add = TRUE)
 For cross section profiles, this has the effect of shifting the between-channel topography on either side of the thalweg further from the thalweg, spreading out the channel bottom at the thalweg. Here is a before-and-after view of the third cross section.
 
 ```{r}
-section_widened <- xt_xsection_at(channel_widened, 3)
-plot(section, extent = "full")
-plot(section_widened, extent = "full")
+sec <- xt_xsection_at(channel, 3)
+sec_widened <- xt_xsection_at(channel_widened, 3)
+plot(sec, extent = "full")
+plot(sec_widened, extent = "full")
 ```
 
 Since a profile view is available, there is not only erosion width but also erosion _volume_.
@@ -140,28 +141,41 @@ We can calculate the erosion volume resulting from the above width change:
 xt_erosion_volume(channel, dw = c(5, 3, 5, 0, 0, 4))
 ```
 
-But we can also erode by volume; here is the resulting width change for the given cross-section-specific volume change (in squared units).
+But we can also erode by volume; here is the resulting width change for the given cross-section-specific volume change (in squared units), this time allocating all volume erosion on the left side bank.
 
 ```{r}
-xt_erosion_width(channel, dv = c(8, 3, 15, 0, 0, 12))
+xt_erosion_width(channel, dv = c(5, 3, 10, 0, 0, 12), side = "left")
 ```
 
+If there is not enough volume to erode, an error is thrown.
 
-If a profile view is available, you can also widen by volume -- provided there is enough volume to erode in the first place.
-
-Sometimes it's useful to know how much volume of erosion would result from a given change in width, or vice versa, the width change resulting from a volume change. Note that because volume is in squared length units, not cubed, because it corresponds to a cross section.
+Go ahead and conduct the erosion.
 
 ```{r}
-xt_erosion_width(channel, dv = units::set_units(10, "m2"))
-xt_erosion_volume(channel, dw = units::set_units(100, "m"))
+channel_widened2 <- xt_widen(channel, dv = c(5, 3, 10, 0, 0, 12), side = "left")
+plot(channel_widened2, col = "red")
+plot(channel, add = TRUE)
 ```
 
+Get the new cross section widths.
 
+```{r}
+xt_width(channel_widened2)
+```
 
 ## Exporting Channels
 
-Channels having a profile encoding have more export options. Like for planimetric-only channels, exports go through the [**sf**]() package, making an `"sfc"` object. In addition to the planimetric encoding, you can also choose an export of the profiles alone, or construct a 3D encoding of the channel.
+With a profile encoding present, the channel can be exported according to its profiles, or in 3D.
+
+The profile objects all appear overtop of each other:
 
 ```{r}
-xt_as_sfc(channel)
+profiles <- xt_as_sfc(channel, what = "profile")
+plot(profiles)
+```
+
+The 3D encoding combines the profile and planimetric views to create a 3D arrangement. Use 3D plotting software like the [**rgl**]() or [**plotly**]() packages to view the 3D channel (not done here because these are not dependencies of the package).
+
+```{r}
+xt_as_sfc(channel, what = "3d")
 ```

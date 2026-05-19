@@ -144,3 +144,32 @@ get_min_thalweg_coords <- function(profile) {
   checkmate::assert_class(profile, "xs_profile")
   profile$coordinates[get_min_thalweg_index(profile), ]
 }
+
+#' Label a channel cross section for error messages
+#'
+#' @param channel An `xchan` object.
+#' @param i Integer index into `channel`.
+#' @noRd
+section_label_at <- function(channel, i) {
+  sid <- attr(channel, "section_i", exact = TRUE)
+  if (!is.null(sid) && length(sid) >= i) {
+    id <- xchan_print_section_id_value(sid[[i]])
+    paste0("cross section ", i, " (id = ", id, ")")
+  } else {
+    paste0("cross section ", i)
+  }
+}
+
+#' @param failures List of `list(label = , message = )` from per-section errors.
+#' @noRd
+stop_erosion_section_errors <- function(failures) {
+  if (!length(failures)) {
+    return(invisible())
+  }
+  lines <- vapply(
+    failures,
+    function(f) paste0(f$label, ": ", f$message),
+    character(1)
+  )
+  stop(paste(lines, collapse = "\n"), call. = FALSE)
+}

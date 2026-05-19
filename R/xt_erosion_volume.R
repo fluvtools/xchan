@@ -64,18 +64,37 @@ erosion_volume_numeric <- function(channel, dw, side = "both") {
   dw <- vctrs::vec_recycle(dw, length(profile))
 
   volumes <- numeric(length(profile))
+  failures <- list()
+
   for (i in seq_along(profile)) {
-    xs <- profile[[i]]
-    dw_left <- dw[i] * prop_left[i]
-    dw_right <- dw[i] - dw_left
+    result <- tryCatch(
+      {
+        xs <- profile[[i]]
+        dw_left <- dw[i] * prop_left[i]
+        dw_right <- dw[i] - dw_left
 
-    v1 <- erosion_volume_left(xs, dw_left)
-    xs_flipped <- flip_profile(xs)
-    v2 <- erosion_volume_left(xs_flipped, dw_right)
+        v1 <- erosion_volume_left(xs, dw_left)
+        xs_flipped <- flip_profile(xs)
+        v2 <- erosion_volume_left(xs_flipped, dw_right)
 
-    volumes[i] <- v1 + v2
+        list(ok = TRUE, value = v1 + v2)
+      },
+      error = function(e) {
+        list(ok = FALSE, error = e)
+      }
+    )
+    if (result$ok) {
+      volumes[i] <- result$value
+    } else {
+      failures[[length(failures) + 1L]] <- list(
+        label = section_label_at(channel, i),
+        message = conditionMessage(result$error)
+      )
+      volumes[i] <- NA_real_
+    }
   }
 
+  stop_erosion_section_errors(failures)
   volumes
 }
 
