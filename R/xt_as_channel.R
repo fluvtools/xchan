@@ -106,9 +106,11 @@ xt_as_channel.numeric <- function(x, ..., crs = NULL, axis = NULL) {
 #' @export
 xt_as_channel.units <- function(x, ..., crs = NULL, axis = NULL) {
   rlang::check_dots_empty()
-  unit <- if (!is.null(crs)) crs_length_unit(crs) else NULL
+  manual_unit <- if (is.null(crs)) units_deparse(x) else NULL
+  unit <- if (!is.null(crs)) crs_length_unit(crs) else manual_unit
   x <- to_numeric_length(x, unit, arg = "x")
-  xt_as_channel(x, ..., crs = crs, axis = axis)
+  out <- xt_as_channel(x, ..., crs = crs, axis = axis)
+  set_xchan_length_unit(out, manual_unit)
 }
 
 #' @rdname xt_as_channel

@@ -11,8 +11,8 @@ xt_width_active(channel)
 }
 \value{
 For \code{\link{xchan}}: a numeric vector, one value per cross section. When the channel
-has a CRS with a defined linear unit, values carry \code{\link[units:units]{units::units()}} like
-\code{\link[=xt_width]{xt_width()}}; otherwise plain numeric.
+has a defined length unit (CRS or manually set), values carry
+\code{\link[units:units]{units::units()}} like \code{\link[=xt_width]{xt_width()}}; otherwise plain numeric.
 For \code{\link{xsection}} or \code{xs_profile}: a single non-negative numeric (plain
 numeric unless the \code{\link{xsection}} carries a \code{"crs"} attribute with a linear
 unit, in which case units may be attached).

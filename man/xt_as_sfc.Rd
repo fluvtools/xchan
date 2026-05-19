@@ -8,7 +8,7 @@ xt_as_sfc(
   channel,
   ...,
   what = c("plan", "profile", "3d"),
-  extent = c("banks", "full")
+  extent = c("banks", "full", "wetted")
 )
 }
 \arguments{
@@ -23,9 +23,14 @@ mapping profile elevations onto plan coordinates (same CRS as the plan).}
 
 \item{extent}{\code{"banks"} restricts geometry to the bank-to-bank span in each
 representation; \code{"full"} uses the full sampled profile span (and for
-\code{what = "plan"}, map segments spanning each profile's horizontal range).
-For \code{what = "plan"} with \code{"full"}, if there is no profile view a warning
-is issued and bank-to-bank geometries are returned instead.}
+\code{what = "plan"}, map segments spanning each profile's horizontal range);
+\code{"wetted"} keeps only \strong{water} intervals between consecutive bank
+contacts (dry islands excluded), so each cross section may be a
+\code{MULTILINESTRING} when an island splits the channel. For \code{what = "plan"}
+with \code{"full"}, if there is no profile view a warning is issued and
+bank-to-bank geometries are returned instead. For \code{"wetted"} without
+profiles, water intervals are taken from plan vertices (even count,
+alternating water / land / water).}
 }
 \value{
 An \code{"sfc"} object.

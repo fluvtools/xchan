@@ -97,7 +97,7 @@ xt_generate_profile <- function(
 
   # Convert any units inputs to bare numerics in the channel's CRS unit so
   # downstream coordinate arithmetic stays plain numeric.
-  unit <- crs_length_unit(channel)
+  unit <- channel_length_unit(channel)
   if (use_multiplier) {
     checkmate::assert_number(extent_multiplier, lower = 0, finite = TRUE)
   } else {

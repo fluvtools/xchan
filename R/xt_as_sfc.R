@@ -12,9 +12,14 @@
 #'   mapping profile elevations onto plan coordinates (same CRS as the plan).
 #' @param extent `"banks"` restricts geometry to the bank-to-bank span in each
 #'   representation; `"full"` uses the full sampled profile span (and for
-#'   `what = "plan"`, map segments spanning each profile's horizontal range).
-#'   For `what = "plan"` with `"full"`, if there is no profile view a warning
-#'   is issued and bank-to-bank geometries are returned instead.
+#'   `what = "plan"`, map segments spanning each profile's horizontal range);
+#'   `"wetted"` keeps only **water** intervals between consecutive bank
+#'   contacts (dry islands excluded), so each cross section may be a
+#'   `MULTILINESTRING` when an island splits the channel. For `what = "plan"`
+#'   with `"full"`, if there is no profile view a warning is issued and
+#'   bank-to-bank geometries are returned instead. For `"wetted"` without
+#'   profiles, water intervals are taken from plan vertices (even count,
+#'   alternating water / land / water).
 #' @returns An `"sfc"` object.
 #' @examples
 #' ch <- xt_as_channel(c(2, 2), crs = 3005)
@@ -26,7 +31,7 @@ xt_as_sfc <- function(
   channel,
   ...,
   what = c("plan", "profile", "3d"),
-  extent = c("banks", "full")
+  extent = c("banks", "full", "wetted")
 ) {
   rlang::check_dots_empty()
   checkmate::assert_class(channel, "xchan")
@@ -40,18 +45,38 @@ xt_as_sfc <- function(
     if (extent == "banks") {
       return(plan)
     }
-    if (!xt_has_profile(channel)) {
-      warning(
-        'extent = "full" requires profile cross sections; returning bank-to-bank geometry instead.',
-        call. = FALSE
-      )
-      return(plan)
+    if (extent == "full") {
+      if (!xt_has_profile(channel)) {
+        warning(
+          'extent = "full" requires profile cross sections; returning bank-to-bank geometry instead.',
+          call. = FALSE
+        )
+        return(plan)
+      }
+      profiles <- channel_profile(channel)
+      geoms <- vector("list", length(plan))
+      for (i in seq_along(plan)) {
+        rng <- range(profiles[[i]]$coordinates[, 1])
+        geoms[[i]] <- transect_segment_from_relative(plan[[i]], rng[1], rng[2])
+      }
+      return(sf::st_sfc(geoms, crs = sf::st_crs(plan)))
     }
     profiles <- channel_profile(channel)
     geoms <- vector("list", length(plan))
     for (i in seq_along(plan)) {
-      rng <- range(profiles[[i]]$coordinates[, 1])
-      geoms[[i]] <- transect_segment_from_relative(plan[[i]], rng[1], rng[2])
+      if (!is.null(profiles)) {
+        intervals <- water_interval_ranges(get_bank_distances(profiles[[i]]))
+        segs <- lapply(seq_len(nrow(intervals)), function(k) {
+          transect_segment_from_relative(
+            plan[[i]],
+            intervals[k, 1],
+            intervals[k, 2]
+          )
+        })
+      } else {
+        segs <- plan_water_linestrings(plan[[i]])
+      }
+      geoms[[i]] <- as_line_or_multilinestring(segs)
     }
     return(sf::st_sfc(geoms, crs = sf::st_crs(plan)))
   }

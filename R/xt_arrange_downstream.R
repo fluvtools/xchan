@@ -127,6 +127,7 @@ xchan_reorder_sections <- function(x, ord) {
     axis = attr(x, "axis", exact = TRUE),
     bankline = attr(x, "bankline", exact = TRUE),
     section_i = new_sid,
+    length_unit = attr(x, "length_unit", exact = TRUE),
     class = class(x)
   )
 }

@@ -17,8 +17,9 @@
 #'   `NULL`, an error is raised (set an axis with `xt_axis(channel) <- ...` or use
 #'   [xt_generate_plan()]).
 #' @returns A numeric vector of length `length(channel)` (same section order as `channel`). The
-#'   result carries [units::units()] when the channel has a CRS with a defined linear unit;
-#'   plain numeric otherwise.
+#'   result carries [units::units()] when the channel has a defined length unit
+#'   (from its CRS or from manual unit-bearing widths/profile input); plain
+#'   numeric otherwise.
 #' @note Use [xt_arrange_downstream()] if you need sections ordered by downstream chainage.
 #'
 #' @examples
@@ -31,16 +32,14 @@
 #' @export
 xt_distance_downstream <- function(channel, axis = NULL) {
   raw <- axis_distances_numeric(channel, axis)
-  plan <- channel_plan(channel)
-  with_length_units(raw, crs_length_unit(plan))
+  with_length_units(raw, channel_length_unit(channel))
 }
 
 #' @rdname xt_distance_downstream
 #' @export
 xt_distance_upstream <- function(channel, axis = NULL) {
   raw <- axis_distances_upstream_numeric(channel, axis)
-  plan <- channel_plan(channel)
-  with_length_units(raw, crs_length_unit(plan))
+  with_length_units(raw, channel_length_unit(channel))
 }
 
 #' @noRd

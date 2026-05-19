@@ -23,7 +23,9 @@ xt_width(x, ...)
 \value{
 For \code{\link{xchan}}: a numeric vector with one width per cross section, carrying
 \code{\link[units:units]{units::units()}} when the channel has a CRS with a defined linear unit
-(for example metres). When no CRS is set the result is plain numeric.
+(for example metres), or when a length unit was set manually (for example
+via \code{\link[units:units]{units::units()}} widths or profile distances). When no unit is known
+the result is plain numeric.
 For \code{\link{xsection}}: a non-negative numeric scalar. If attribute \code{"crs"} is
 set on \code{x} (unusual; the container \code{\link{xchan}} holds CRS instead), the result
 may carry \code{\link[units:units]{units::units()}} like a channel with that CRS; otherwise plain

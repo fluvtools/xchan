@@ -12,8 +12,8 @@
 #' @param channel An [`xchan`], an [`xsection`], or an `xs_profile`.
 #' @returns
 #' For [`xchan`]: a numeric vector, one value per cross section. When the channel
-#'   has a CRS with a defined linear unit, values carry [units::units()] like
-#'   [xt_width()]; otherwise plain numeric.
+#'   has a defined length unit (CRS or manually set), values carry
+#'   [units::units()] like [xt_width()]; otherwise plain numeric.
 #' For [`xsection`] or `xs_profile`: a single non-negative numeric (plain
 #'   numeric unless the [`xsection`] carries a `"crs"` attribute with a linear
 #'   unit, in which case units may be attached).
@@ -40,7 +40,7 @@ xt_width_active.xchan <- function(channel) {
       FUN.VALUE = numeric(1)
     )
   }
-  with_length_units(raw, crs_length_unit(plan))
+  with_length_units(raw, channel_length_unit(channel))
 }
 
 #' @export

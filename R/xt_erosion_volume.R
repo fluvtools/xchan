@@ -27,7 +27,7 @@ xt_erosion_volume <- function(channel, dw, side = "both") {
 #' @export
 xt_erosion_volume.xchan <- function(channel, dw, side = "both") {
   checkmate::assert_class(channel, "xchan")
-  unit <- crs_length_unit(channel)
+  unit <- channel_length_unit(channel)
   dw <- to_numeric_length(dw, unit, arg = "dw")
   raw <- erosion_volume_numeric(channel, dw, side)
   with_volume_units(raw, unit)

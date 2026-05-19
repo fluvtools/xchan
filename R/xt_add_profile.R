@@ -67,7 +67,7 @@ xt_add_profile.xchan <- function(
 ) {
   rlang::check_dots_empty()
   checkmate::assert_class(channel, "xchan")
-  snap_banks_to <- match.arg(snap_banks_to)
+  snap_banks_to <- rlang::arg_match(snap_banks_to)
 
   n <- length(channel)
   sid <- attr(channel, "section_i", exact = TRUE)
@@ -98,7 +98,11 @@ xt_add_profile.xchan <- function(
 
   assert_tab_profile_vectors(d_all, z_all, s_all, b_all, n_row)
 
-  unit <- crs_length_unit(channel)
+  unit <- channel_length_unit(channel)
+  input_unit <- units_deparse(d_all)
+  if (is.null(unit) && !is.null(input_unit)) {
+    unit <- input_unit
+  }
   d_all <- coerce_axis_numeric(d_all, unit, "distance")
   z_all <- coerce_axis_numeric(z_all, NULL, "elevation")
 
@@ -140,7 +144,11 @@ xt_add_profile.xchan <- function(
     out <- xt_widen(out, dw = dw, side = "both")
   }
 
-  set_channel_profile(out, profiles)
+  out <- set_channel_profile(out, profiles)
+  if (is.null(channel_length_unit(channel)) && !is.null(input_unit)) {
+    out <- set_xchan_length_unit(out, input_unit)
+  }
+  out
 }
 
 #' @rdname xt_add_profile
@@ -156,7 +164,7 @@ xt_add_profile.xsection <- function(
 ) {
   rlang::check_dots_empty()
   checkmate::assert_class(channel, "xsection")
-  snap_banks_to <- match.arg(snap_banks_to)
+  snap_banks_to <- rlang::arg_match(snap_banks_to)
 
   dist_q <- rlang::enquo(distance)
   elev_q <- rlang::enquo(elevation)
@@ -180,6 +188,10 @@ xt_add_profile.xsection <- function(
     crs_length_unit(sf::st_sfc(xsection_to_linestring(channel), crs = cr))
   } else {
     NULL
+  }
+  input_unit <- units_deparse(d)
+  if (is.null(unit) && !is.null(input_unit)) {
+    unit <- input_unit
   }
   d <- coerce_axis_numeric(d, unit, "distance")
   z <- coerce_axis_numeric(z, NULL, "elevation")
@@ -223,6 +235,7 @@ clone_xchan_shell <- function(channel) {
     axis = attr(channel, "axis", exact = TRUE),
     bankline = attr(channel, "bankline", exact = TRUE),
     section_i = attr(channel, "section_i", exact = TRUE),
+    length_unit = attr(channel, "length_unit", exact = TRUE),
     class = class(channel)
   )
 }

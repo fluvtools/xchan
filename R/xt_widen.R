@@ -65,7 +65,7 @@ xt_widen.xchan <- function(
   prop_left <- parse_side_arg(side, channel)
   n_sections <- xt_n_sections(channel)
 
-  unit <- crs_length_unit(channel)
+  unit <- channel_length_unit(channel)
 
   if (missing(dw)) {
     if (is.null(profile)) {

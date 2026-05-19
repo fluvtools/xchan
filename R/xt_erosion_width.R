@@ -23,7 +23,7 @@ xt_erosion_width <- function(
   side = "both"
 ) {
   checkmate::assert_class(channel, "xchan")
-  unit <- crs_length_unit(channel)
+  unit <- channel_length_unit(channel)
   dv <- to_numeric_volume(dv, unit, arg = "dv")
   raw <- erosion_width_numeric(channel, dv, side)
   with_length_units(raw, unit)

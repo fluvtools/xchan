@@ -34,6 +34,66 @@ get_bank_distances <- function(profile) {
   profile$coordinates[profile$banks, 1]
 }
 
+#' Water-interval distance pairs from bank contacts along a transect
+#'
+#' @param bank_d Numeric bank distances (even length).
+#' @returns Matrix with two columns (`lo`, `hi`), one row per water interval.
+#' @noRd
+water_interval_ranges <- function(bank_d) {
+  checkmate::assert_numeric(bank_d, any.missing = FALSE, min.len = 2L)
+  if (length(bank_d) %% 2L != 0L) {
+    stop(
+      "Expected an even number of bank points along the transect (got ",
+      length(bank_d),
+      ").",
+      call. = FALSE
+    )
+  }
+  matrix(bank_d, ncol = 2L, byrow = TRUE)
+}
+
+#' Profile coordinate matrices for sf export (one list element per water interval)
+#'
+#' @noRd
+profile_coord_parts_for_extent <- function(
+  profile,
+  extent = c("banks", "full", "wetted")
+) {
+  extent <- match.arg(extent)
+  checkmate::assert_class(profile, "xs_profile")
+  coords <- profile$coordinates
+
+  if (extent == "banks") {
+    bd <- range(get_bank_distances(profile))
+    coords <- coords[
+      coords[, 1] >= bd[1] & coords[, 1] <= bd[2],
+      ,
+      drop = FALSE
+    ]
+    return(list(coords))
+  }
+  if (extent == "full") {
+    return(list(coords))
+  }
+
+  intervals <- water_interval_ranges(get_bank_distances(profile))
+  lapply(seq_len(nrow(intervals)), function(k) {
+    lo <- intervals[k, 1]
+    hi <- intervals[k, 2]
+    coords[coords[, 1] >= lo & coords[, 1] <= hi, , drop = FALSE]
+  })
+}
+
+#' Combine linestrings as one `LINESTRING` or `MULTILINESTRING`
+#'
+#' @noRd
+as_line_or_multilinestring <- function(lines) {
+  if (length(lines) == 1L) {
+    return(lines[[1]])
+  }
+  sf::st_multilinestring(lapply(lines, sf::st_coordinates))
+}
+
 #' Get thalweg distances from profile
 #'
 #' Extract the distance values of thalweg points from a profile cross section.

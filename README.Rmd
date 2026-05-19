@@ -19,6 +19,7 @@ devtools::load_all(quiet = TRUE)
 # xchan <a href="https://stochagbem.github.io/xchan/"><img src="man/figures/logo.png" align="right" height="139" alt="xchan website" /></a>
 
 <!-- badges: start -->
+[![CRAN status](https://www.r-pkg.org/badges/version/xchan)](https://CRAN.R-project.org/package=xchan)
 <!-- badges: end -->
 
 The purpose of xchan is to create, widen (erode), and calculate attributes of watercourse geometries. It does this by encoding a channel by its cross sections, which can be planimetric (line segments arranged on a map) or profile (slices into the landscape).

@@ -5,6 +5,12 @@ test_that("crs_length_unit returns the expected unit symbol", {
   expect_null(xchan:::crs_length_unit(sf::st_sfc(sf::st_point(c(0, 0)))))
 })
 
+test_that("channel_length_unit falls back to length_unit attribute", {
+  ch <- xt_as_channel(units::set_units(c(10, 12), "m"))
+  expect_equal(xchan:::channel_length_unit(ch), "m")
+  expect_null(xchan:::channel_length_unit(xt_as_channel(c(10, 12))))
+})
+
 test_that("xt_width returns units when CRS has linear units, plain numeric otherwise", {
   ch <- xt_generate_plan(demo_bankline, n = 5)
   w <- xt_width(ch)
@@ -192,6 +198,34 @@ test_that("xt_as_channel.numeric accepts units for widths", {
     crs = 3005
   )
   expect_equal(as.numeric(xt_width(ch_num)), as.numeric(xt_width(ch_cm)))
+})
+
+test_that("manual units on widths register without CRS", {
+  ch <- xt_as_channel(units::set_units(c(10, 12, 14), "m"))
+  w <- xt_width(ch)
+  expect_s3_class(w, "units")
+  expect_equal(units::deparse_unit(w), "m")
+  out <- testthat::capture_output(print(ch))
+  expect_match(out, "<xsection 1> 10 m", fixed = TRUE)
+  expect_match(out, "<xsection 2> 12 m", fixed = TRUE)
+})
+
+test_that("manual units from profile_survey register without CRS", {
+  ch <- xt_as_channel(rep(1, 6))
+  ch <- xt_add_profile(
+    ch,
+    distance = distance,
+    elevation = elevation,
+    section = id,
+    banks = is_bank,
+    data = profile_survey
+  )
+  w <- xt_width(ch)
+  expect_s3_class(w, "units")
+  expect_equal(units::deparse_unit(w), "m")
+  out <- testthat::capture_output(print(ch))
+  expect_match(out, "<xsection 1> 10 m", fixed = TRUE)
+  expect_match(out, "With profile view", fixed = TRUE)
 })
 
 test_that("xt_gradient stays unitless even when CRS carries units", {

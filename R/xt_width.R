@@ -14,7 +14,9 @@
 #' @returns
 #' For [`xchan`]: a numeric vector with one width per cross section, carrying
 #'   [units::units()] when the channel has a CRS with a defined linear unit
-#'   (for example metres). When no CRS is set the result is plain numeric.
+#'   (for example metres), or when a length unit was set manually (for example
+#'   via [units::units()] widths or profile distances). When no unit is known
+#'   the result is plain numeric.
 #' For [`xsection`]: a non-negative numeric scalar. If attribute `"crs"` is
 #'   set on `x` (unusual; the container [`xchan`] holds CRS instead), the result
 #'   may carry [units::units()] like a channel with that CRS; otherwise plain
@@ -45,7 +47,7 @@ xt_width.xchan <- function(x, ...) {
   checkmate::assert_class(x, "xchan")
   plan <- channel_plan(x)
   raw <- vapply(plan, function(g) as.numeric(sf::st_length(g)), numeric(1))
-  with_length_units(raw, crs_length_unit(plan))
+  with_length_units(raw, channel_length_unit(x))
 }
 
 #' @export

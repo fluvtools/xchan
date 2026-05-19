@@ -85,11 +85,6 @@ span_banks_engine <- function(
       return(angled_line)
     }
   }
-  # Find the intersection of the rotated line with the bank polygon. For
-  # polygons with holes (islands), this can be several collinear LINESTRING
-  # pieces; several may tie on distance-to-station. We must use the piece that
-  # actually contains the station and is the full bank-to-bank chord for this
-  # angle (the longest such piece).
   intersections <- sf::st_intersection(angled_line, bl_moved)
   if (inherits(intersections, "sfg")) {
     intersections <- sf::st_sfc(intersections)
@@ -123,9 +118,8 @@ span_banks_engine <- function(
   lens <- as.numeric(sf::st_length(lines))
   if (any(on_station)) {
     cand <- which(on_station)
-    pick <- cand[which.max(lens[cand])]
+    pick <- cand[which.min(lens[cand])]
   } else {
-    # Rare: numeric boundary issues; fall back to closest segment
     dists <- as.numeric(sf::st_distance(lines, origin))
     pick <- which.min(dists)
   }

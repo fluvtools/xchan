@@ -210,6 +210,7 @@ normalize_xchan_subset_positions <- function(n, i) {
     axis = attr(x, "axis", exact = TRUE),
     bankline = attr(x, "bankline", exact = TRUE),
     section_i = new_ids,
+    length_unit = attr(x, "length_unit", exact = TRUE),
     class = class(x)
   )
 }

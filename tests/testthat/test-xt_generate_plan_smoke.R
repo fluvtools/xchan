@@ -14,6 +14,34 @@ test_that("xt_generate_plan orders sections downstream along axis", {
   expect_true(all(diff(as.numeric(ds)) >= 0))
 })
 
+test_that("concave bulge stations span opposite banks, not the same bank arc", {
+  skip_if_not_installed("sf")
+  # Footprint with a leftward bulge; minimum-width chords along the bulge can
+  # run along the outer bank unless opposite-bank validation is applied.
+  ring <- matrix(
+    c(
+      0, -50,
+      -40, -20,
+      -40, 20,
+      0, 50,
+      100, 50,
+      100, -50,
+      0, -50
+    ),
+    ncol = 2L,
+    byrow = TRUE
+  )
+  bl <- sf::st_sfc(sf::st_polygon(list(ring)), crs = 3005)
+  ch <- xt_generate_plan(bl, n = 5L)
+  co <- sf::st_coordinates(channel_plan(ch)[[1L]])[, 1:2]
+  e1 <- co[1L, ]
+  e2 <- co[nrow(co), ]
+  # Across the bulge (outer x ~ -40, inner x ~ 0), not a same-bank chord at x ~ -26.
+  expect_true(min(e1[1L], e2[1L]) < -35)
+  expect_true(max(e1[1L], e2[1L]) > -5)
+  expect_gt(abs(e1[1L] - e2[1L]), 5)
+})
+
 test_that("planimetric segments orient first vertex to left bank (downstream)", {
   skip_if_not_installed("sf")
   library(sf)

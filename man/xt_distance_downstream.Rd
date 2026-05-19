@@ -19,8 +19,9 @@ measured along this line; otherwise \code{xt_axis(channel)} is used; if that is
 }
 \value{
 A numeric vector of length \code{length(channel)} (same section order as \code{channel}). The
-result carries \code{\link[units:units]{units::units()}} when the channel has a CRS with a defined linear unit;
-plain numeric otherwise.
+result carries \code{\link[units:units]{units::units()}} when the channel has a defined length unit
+(from its CRS or from manual unit-bearing widths/profile input); plain
+numeric otherwise.
 }
 \description{
 \strong{\code{xt_distance_downstream()}} returns distance measured along the axis \strong{from its start}
