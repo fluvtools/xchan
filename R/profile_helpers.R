@@ -120,6 +120,30 @@ get_right_bank_coords <- function(profile) {
   profile$coordinates[get_right_bank_index(profile), ]
 }
 
+#' Snap outer bank horizontal positions
+#'
+#' Sets left and right bank distances without changing elevations so
+#' [xt_width()] returns `right_x - left_x`.
+#'
+#' @param profile An `xs_profile` object.
+#' @param left_x,right_x Target bank distances along the profile.
+#' @noRd
+snap_profile_bank_positions <- function(profile, left_x, right_x) {
+  checkmate::assert_class(profile, "xs_profile")
+  checkmate::assert_number(left_x, finite = TRUE)
+  checkmate::assert_number(right_x, finite = TRUE)
+  if (left_x >= right_x) {
+    stop("Left bank distance must be less than right bank distance.", call. = FALSE)
+  }
+  coords <- profile$coordinates
+  lb <- get_left_bank_index(profile)
+  rb <- get_right_bank_index(profile)
+  coords[lb, 1] <- left_x
+  coords[rb, 1] <- right_x
+  profile$coordinates <- coords
+  profile
+}
+
 #' Get thalweg index with minimum elevation
 #'
 #' Get the index of the thalweg point with the lowest elevation.

@@ -32,9 +32,11 @@
 #'   Similarly, the sampling distance can be specified either as a fixed
 #'   distance or as a multiplier of the channel width.
 #'
-#'   Extension beyond banks is clipped to the DEM bounding box (in the DEM's
-#'   CRS, projected to the cross-section CRS when needed), so sampling stays
-#'   inside raster coverage if the bank-to-bank segment lies inside the DEM.
+#'   Extension beyond banks is clipped to the DEM bounding box and, when
+#'   `extent_distance` is infinite, to the nearest valid-data edge along each
+#'   bank ray (in the DEM's CRS, projected to the cross-section CRS when
+#'   needed). Sampling therefore stays inside contiguous valid cells when the
+#'   bank-to-bank segment lies inside the DEM.
 #'
 #'   Elevations are taken with bilinear interpolation between cell centres (see
 #'   [terra::extract()] with `method = "bilinear"`), which smooths grid-oriented
@@ -136,7 +138,7 @@ xt_generate_profile <- function(
     xs_line <- plan[i]
 
     bb <- dem_bbox_for_line(dem, sf::st_crs(xs_line))
-    lims <- cross_section_bank_ray_limits(xs_line, bb)
+    lims <- cross_section_bank_ray_limits(xs_line, bb, dem)
 
     if (use_multiplier) {
       width <- as.numeric(sf::st_length(xs_line))
@@ -269,7 +271,77 @@ max_ray_distance_in_rect <- function(origin, dir, xmin, xmax, ymin, ymax) {
 }
 
 #' @noRd
-cross_section_bank_ray_limits <- function(line, bb) {
+dem_sample_step <- function(dem, line_crs) {
+  cell <- min(terra::res(dem))
+  step <- cell / 2
+  dem_crs <- terra::crs(dem, proj = TRUE)
+  if (!is.na(line_crs) && nzchar(dem_crs)) {
+    p0 <- sf::st_coordinates(
+      sf::st_transform(
+        sf::st_sfc(sf::st_point(c(0, 0)), crs = dem_crs),
+        line_crs
+      )
+    )
+    p1 <- sf::st_coordinates(
+      sf::st_transform(
+        sf::st_sfc(sf::st_point(c(cell, 0)), crs = dem_crs),
+        line_crs
+      )
+    )
+    step <- sqrt(sum((p1 - p0)^2)) / 2
+  }
+  step
+}
+
+#' @noRd
+extract_dem_at_xy <- function(xy, dem, line_crs) {
+  lyr <- names(dem)[1L]
+  if (!is.na(line_crs)) {
+    pts <- sf::st_sfc(
+      lapply(seq_len(nrow(xy)), function(i) sf::st_point(xy[i, ])),
+      crs = line_crs
+    )
+    sv <- terra::vect(pts)
+  } else {
+    sv <- terra::vect(xy, crs = terra::crs(dem))
+  }
+  terra::extract(dem, sv, method = "simple")[[lyr]]
+}
+
+#' @noRd
+max_ray_distance_in_valid_dem <- function(origin, dir, dem, line_crs, bb) {
+  hi <- max_ray_distance_in_rect(
+    origin,
+    dir,
+    bb$xmin,
+    bb$xmax,
+    bb$ymin,
+    bb$ymax
+  )
+  if (hi <= 0) {
+    return(0)
+  }
+
+  step <- dem_sample_step(dem, line_crs)
+  ts <- seq(0, hi, by = step)
+  xy <- t(vapply(ts, function(t) origin + dir * t, numeric(2)))
+  vals <- extract_dem_at_xy(xy, dem, line_crs)
+  if (length(vals) == 0L || is.na(vals[1L])) {
+    return(0)
+  }
+
+  na_idx <- which(is.na(vals))
+  if (length(na_idx) == 0L) {
+    return(hi)
+  }
+  if (na_idx[1L] == 1L) {
+    return(0)
+  }
+  ts[na_idx[1L] - 1L]
+}
+
+#' @noRd
+cross_section_bank_ray_limits <- function(line, bb, dem) {
   coords <- sf::st_coordinates(line)
   start_point <- coords[1, 1:2]
   end_point <- coords[nrow(coords), 1:2]
@@ -279,22 +351,21 @@ cross_section_bank_ray_limits <- function(line, bb) {
     return(list(left = 0, right = 0))
   }
   unit_direction <- direction / seg_len
+  line_crs <- sf::st_crs(line)
   list(
-    left = max_ray_distance_in_rect(
+    left = max_ray_distance_in_valid_dem(
       start_point,
       -unit_direction,
-      bb$xmin,
-      bb$xmax,
-      bb$ymin,
-      bb$ymax
+      dem,
+      line_crs,
+      bb
     ),
-    right = max_ray_distance_in_rect(
+    right = max_ray_distance_in_valid_dem(
       end_point,
       unit_direction,
-      bb$xmin,
-      bb$xmax,
-      bb$ymin,
-      bb$ymax
+      dem,
+      line_crs,
+      bb
     )
   )
 }

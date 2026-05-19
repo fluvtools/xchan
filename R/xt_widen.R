@@ -100,13 +100,21 @@ xt_widen.xchan <- function(
 
   if (!is.null(profile)) {
     profile <- lapply(seq_along(profile), function(i) {
-      do.call(
+      prof_i <- profile[[i]]
+      left0 <- get_left_bank_coords(prof_i)[1]
+      right0 <- get_right_bank_coords(prof_i)[1]
+      widened <- do.call(
         widen_profile,
         list(
-          profile[[i]],
+          prof_i,
           dw[i],
           prop_left[i]
         )
+      )
+      snap_profile_bank_positions(
+        widened,
+        left_x = left0 - dw[i] * prop_left[i],
+        right_x = right0 + dw[i] * (1 - prop_left[i])
       )
     })
   }

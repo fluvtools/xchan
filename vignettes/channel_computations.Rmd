@@ -122,7 +122,7 @@ grad <- xt_gradient(
   squamish,
   before = 3,
   after = 3,
-  reference = elevation_thalweg()
+  elevation = elevation_thalweg()
 )
 grad
 ```

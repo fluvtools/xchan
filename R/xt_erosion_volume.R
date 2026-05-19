@@ -117,7 +117,7 @@ erosion_volume_left <- function(xs, dw) {
     )
   }
 
-  y_thalweg <- get_min_thalweg_coords(xs)[2]
+  y_thalweg <- xs$thalweg_elev
   nodes <- inject_coords(nodes, x_new)
   x_in_between <- nodes[, 1] >= x_new & nodes[, 1] <= x_old
   between_nodes <- nodes[x_in_between, , drop = FALSE]

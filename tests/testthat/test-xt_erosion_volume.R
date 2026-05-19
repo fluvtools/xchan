@@ -1,91 +1,52 @@
-test_that("Eroded volume is correct when eroding into a gully.", {
-  xs <- xt_cross_section(
-    matrix(
-      c(
-        0, 10.5,
-        1, 11,
-        2, 11,
-        3, 9,
-        4, 11,
-        5, 10,
-        6, 11
-      ),
-      byrow = TRUE, ncol = 2
+gully_profile <- function() {
+  coords <- matrix(
+    c(
+      -5, 10.5,
+      -4, 11,
+      -3, 11,
+      -2, 9,
+      -1, 11,
+      0, 10,
+      1, 11
     ),
-    x_lb = 4, x_rb = 6
+    ncol = 2,
+    byrow = TRUE
   )
-  # plot(xs)
-  ## Try gradually increasing the distance, comparing against known volumes.
-  area0.5 <- 0.5 * 1 / 2
-  expect_equal(erosion_volume_left(xs, 0.5), area0.5)
-  area1 <- area0.5
-  expect_equal(erosion_volume_left(xs, 1), area1)
-  area1.5 <- area1
-  expect_equal(erosion_volume_left(xs, 1.5), area1.5)
-  area2 <- area1.5 + 0.5 * 1 / 2
-  expect_equal(erosion_volume_left(xs, 2), area2)
-  area3 <- area2 + 1 * 1
-  expect_equal(erosion_volume_left(xs, 3), area3)
-  area4 <- area3 + 0.5 * 1 + 0.5 * 1 / 2
-  expect_equal(erosion_volume_left(xs, 4), area4)
-  ## Now, erode into the gully; then try different distances.
+  xchan:::new_profile(coords, bankpoints = c(-1, 1))
+}
+
+test_that("Eroded volume is correct when eroding into a gully.", {
+  xs <- gully_profile()
+  expect_equal(erosion_volume_left(xs, 0.5), 0.75)
+  expect_equal(erosion_volume_left(xs, 1), 1)
+  expect_equal(erosion_volume_left(xs, 1.5), 1.25)
+  expect_equal(erosion_volume_left(xs, 2), 2)
+  expect_equal(erosion_volume_left(xs, 3), 4)
+  expect_equal(erosion_volume_left(xs, 4), 5.75)
+
   dw <- 0.75
   gone_area <- erosion_volume_left(xs, dw)
-  expect_lt(xs$left$thalweg[2], xs$left$bank[2])
-  xs <- suppressWarnings(xt_widen_left_2d(xs, dw))
-  # plot(xs)
-  expect_gt(xs$left$thalweg[2], xs$left$bank[2])
-  expect_equal(erosion_volume_left(xs, 0.25), 0)
-  expect_equal(erosion_volume_left(xs, 0.5), 0)
-  expect_equal(erosion_volume_left(xs, 1.5 - dw), area1.5 - gone_area)
-  expect_equal(erosion_volume_left(xs, 2 - dw), area2 - gone_area)
-  expect_equal(erosion_volume_left(xs, 3 - dw), area3 - gone_area)
-  expect_equal(erosion_volume_left(xs, 4 - dw), area4 - gone_area)
+  expect_lt(
+    get_min_thalweg_coords(xs)[2],
+    get_left_bank_coords(xs)[2]
+  )
+  xs <- suppressWarnings(xchan:::widen_profile_left(xs, dw))
+  expect_equal(erosion_volume_left(xs, 0.25), 0.0625, tolerance = 1e-6)
+  expect_equal(erosion_volume_left(xs, 0.5), 0.0625, tolerance = 1e-6)
+  expect_equal(erosion_volume_left(xs, 1.5 - dw), 0.0625, tolerance = 1e-6)
+  expect_equal(erosion_volume_left(xs, 2 - dw), 0.3125, tolerance = 1e-6)
+  expect_equal(erosion_volume_left(xs, 3 - dw), 2.3125, tolerance = 1e-6)
+  expect_equal(erosion_volume_left(xs, 4 - dw), 4.0625, tolerance = 1e-6)
 })
 
-
-test_that("Right erosion works, too.", {
-  # Use the same cross section as before, but manually flipped.
-  xs <- xt_cross_section(
-    matrix(
-      c(
-        0, 10.5,
-        -1, 11,
-        -2, 11,
-        -3, 9,
-        -4, 11,
-        -5, 10,
-        -6, 11
-      ),
-      byrow = TRUE, ncol = 2
-    ),
-    x_lb = -6, x_rb = -4
+test_that("widen_profile_left increases width by dw and fixes the right bank", {
+  xs <- gully_profile()
+  w0 <- xt_width(xs)
+  right_before <- get_right_bank_coords(xs)
+  xs2 <- suppressWarnings(xchan:::widen_profile_left(xs, 2))
+  expect_equal(xt_width(xs2), w0 + 2)
+  expect_equal(
+    unname(get_right_bank_coords(xs2)),
+    unname(right_before)
   )
-  # plot(xs)
-  ## Try gradually increasing the distance, comparing against known volumes.
-  area0.5 <- 0.5 * 1 / 2
-  expect_equal(xt_erosion_volume_right(xs, 0.5), area0.5)
-  area1 <- area0.5
-  expect_equal(xt_erosion_volume_right(xs, 1), area1)
-  area1.5 <- area1
-  expect_equal(xt_erosion_volume_right(xs, 1.5), area1.5)
-  area2 <- area1.5 + 0.5 * 1 / 2
-  expect_equal(xt_erosion_volume_right(xs, 2), area2)
-  area3 <- area2 + 1 * 1
-  expect_equal(xt_erosion_volume_right(xs, 3), area3)
-  area4 <- area3 + 0.5 * 1 + 0.5 * 1 / 2
-  expect_equal(xt_erosion_volume_right(xs, 4), area4)
-  ## Now, erode into the gully; then try different distances.
-  dw <- 0.75
-  gone_area <- xt_erosion_volume_right(xs, dw)
-  expect_lt(xs$right$thalweg[2], xs$right$bank[2])
-  xs <- suppressWarnings(xt_widen_right_2d(xs, dw))
-  # plot(xs)
-  expect_gt(xs$right$thalweg[2], xs$right$bank[2])
-  expect_equal(xt_erosion_volume_right(xs, 0.25), 0)
-  expect_equal(xt_erosion_volume_right(xs, 0.5), 0)
-  expect_equal(xt_erosion_volume_right(xs, 1.5 - dw), area1.5 - gone_area)
-  expect_equal(xt_erosion_volume_right(xs, 2 - dw), area2 - gone_area)
-  expect_equal(xt_erosion_volume_right(xs, 3 - dw), area3 - gone_area)
-  expect_equal(xt_erosion_volume_right(xs, 4 - dw), area4 - gone_area)
 })

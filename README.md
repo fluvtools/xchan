@@ -1,33 +1,34 @@
----
-output: github_document
----
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-
-
-# xchan: simple channel cross sections
+# xchan <a href="https://stochagbem.github.io/xchan/"><img src="man/figures/logo.png" align="right" height="139" alt="xchan website" /></a>
 
 <!-- badges: start -->
-[![R-CMD-check](https://github.com/stochaGBEM/xchan/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/stochaGBEM/xchan/actions/workflows/R-CMD-check.yaml)
-[![Codecov test coverage](https://codecov.io/gh/stochaGBEM/xchan/branch/main/graph/badge.svg)](https://app.codecov.io/gh/stochaGBEM/xchan?branch=main)
+
 <!-- badges: end -->
 
-The purpose of xchan is to create and manipulate watercourse geometries, with a focus on cross sections. Because this package sits on top of the sf package, geometries can also be manipulated in the same way as in the sf package.
+The purpose of xchan is to create, widen (erode), and calculate
+attributes of watercourse geometries. It does this by encoding a channel
+by its cross sections, which can be planimetric (line segments arranged
+on a map) or profile (slices into the landscape).
 
-The name of the package is inspired by the sf package. Functions in xchan start with a common prefix, `xt`, which stands for "cross-section type"; this is intended to parallel the sf package's function prefix, `st`, which stands for "spatial type".
+The package concept is inspired by the [**sf**]() package, because xchan
+encodes both cross section objects (`xsection`) and whole channels
+(`xchan`), which are simply a list of cross sections. Most functions in
+xchan start with a common prefix, `xt`, in parallel with the sf
+package’s function prefix, `st`. The `x` stands for “cross” or “cross
+section”.
 
-**Data model.** The main reach-scale object is [`xchan`]: a list of [`xsection`]
-objects with CRS (and optionally a channel axis; see [`xt_axis()`]) stored as
-attributes on the container. Single-bracket subsetting `[` keeps those
-attributes; use `[[i]]` for one section. If you need tabular metadata (reach
-IDs, roughness, …), keep it in your own data frame and hold geometry in an
-`xchan` column or alongside it—this package does not attach a special
-data-frame class to channels.
+## Statement of Need
+
+(automation; randomization)
+
+## Target Audience
 
 ## Installation
 
-You can install the development version of xchan from [GitHub](https://github.com/) with:
+You can install the development version of xchan from
+[GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("devtools")
@@ -36,94 +37,300 @@ devtools::install_github("stochaGBEM/xchan")
 
 ## Example
 
-The package includes Fraser River demo data that can be used to build a
-typical cross-section workflow. Start by loading the package and
-unwrapping the packaged DEM:
+The package includes spatial data for the Squamish River in British
+Columbia: a bankline polygon and a DEM. It’s possible to create channels
+in other ways; see the [*Getting Started with Channels*]() and
+[*Channels with Profiles*]() vignettes for more information.
 
+Start by loading the package and unwrapping the packaged DEM, and
+plotting the bankline polygon on top.
 
 ``` r
 library(xchan)
-
-# Unwrap the packaged DEM to a `terra::SpatRaster` object for use in the package.
-dem <- terra::unwrap(demo_dem)
+library(terra)
+#> terra 1.9.27
+#> 
+#> Attaching package: 'terra'
+#> The following objects are masked from 'package:testthat':
+#> 
+#>     compare, describe
+dem <- unwrap(demo_dem)
+plot(dem)
+plot(demo_bankline, add = TRUE, col = "lightblue")
 ```
 
-Generate planimetric cross sections from the bankline polygon and plot the
-stored sampling axis (`xt_generate_plan()` saves it on the channel; use `xt_axis()` to read it):
+<img src="man/figures/README-unnamed-chunk-2-1.png" alt="" width="100%" />
 
+Generate planimetric cross sections from the bankline polygon, spaced
+apart by 100 meters.
 
 ``` r
-planimetric_cross_sections <- xt_generate_plan(demo_bankline, spacing = 200)
-axis_line <- xt_axis(planimetric_cross_sections)
-
-plot(demo_bankline, col = "grey90", border = "grey50")
-plot(planimetric_cross_sections, add = TRUE, col = "dodgerblue3")
-plot(axis_line, add = TRUE, col = "cadetblue1", lwd = 2)
+squamish <- xt_generate_plan(demo_bankline, spacing = 100)
+plot(squamish)
 ```
 
-<div class="figure">
-<img src="man/figures/README-unnamed-chunk-3-1.png" alt="plot of chunk unnamed-chunk-3" width="100%" />
-<p class="caption">plot of chunk unnamed-chunk-3</p>
-</div>
+<img src="man/figures/README-unnamed-chunk-3-1.png" alt="" width="100%" />
 
-Sample the DEM to create profile cross sections:
-
+If your workflow requires profile cross sections, you can generate them
+by sampling the DEM at each planimetric cross section.
 
 ``` r
-profile_cross_sections <- xt_generate_profile(
-  planimetric_cross_sections,
-  dem,
-  extent_distance = 200,
-  sample_n = 151
-)
-
-plot(demo_bankline, col = "grey90", border = "grey50")
-plot(profile_cross_sections, add = TRUE, col = "coral")
+squamish <- xt_generate_profile(squamish, unwrap(demo_dem), sample_freq = 2)
+print(squamish, n = 10)
+#> xchan channel with 210 cross sections.
+#> CRS: EPSG:3005 
+#> <xsection 1> 73.43041 m
+#> <xsection 2> 164.4219 m
+#> <xsection 3> 240.8035 m
+#> <xsection 4> 180.8825 m
+#> <xsection 5> 224.0966 m
+#> <xsection 6> 220.0995 m
+#> <xsection 7> 217.2965 m
+#> <xsection 8> 167.5596 m
+#> <xsection 9> 151.5943 m
+#> <xsection 10> 142.1572 m
+#> ... 200 more cross sections
+#> With profile view
 ```
 
-<div class="figure">
-<img src="man/figures/README-unnamed-chunk-4-1.png" alt="plot of chunk unnamed-chunk-4" width="100%" />
-<p class="caption">plot of chunk unnamed-chunk-4</p>
-</div>
+Under the hood, a channel is just a list, as hinted at with the
+`print()` output.
 
-Profile cross sections can also be generated as distance-elevation
-objects. Each profile cross section contains a distance-elevation geometry that
-can be inspected directly:
+Including profile cross sections also has the effect of extending the
+cross sections beyond the banks. Here is what the 10th cross section
+looks like in its full extent, with an exaggeration factor of 1.5.
 
 ``` r
-# Profile cross sections (distance-elevation):
-channel <- xt_generate_profile(
-  channel = planimetric_cross_sections,
-  dem = dem,
-  extent_distance = 200,
-  sample_n = 151
-)
-
-# Plot an example profile cross section
-plot(xt_profile_at(profile_cross_sections, 1))
+plot(squamish[[10]], extent = "full", exaggerate = 1.5)
 ```
 
-<div class="figure">
-<img src="man/figures/README-unnamed-chunk-5-1.png" alt="plot of chunk unnamed-chunk-5" width="100%" />
-<p class="caption">plot of chunk unnamed-chunk-5</p>
-</div>
+<img src="man/figures/README-unnamed-chunk-5-1.png" alt="" width="100%" />
 
-Apply a widening scenario to the generated cross sections. In this
-example, the channel is widened by 20 metres on the right bank:
-
+Widen the channel by 20 meters on the right bank.
 
 ``` r
-widened_cross_sections <- xt_widen(
-  planimetric_cross_sections,
-  dw = 200,
-  side = "right"
-)
-
-plot(demo_bankline)
-plot(widened_cross_sections, add = TRUE)
+widened_squamish <- xt_widen(squamish, dw = 20, side = "right")
+#> Warning: River has eroded into a part of the floodplain that's lower in
+#> elevation than the thalweg. The original thalweg is still being interpreted as
+#> the thalweg.
+#> Warning: River has eroded into a part of the floodplain that's lower in
+#> elevation than the thalweg. The original thalweg is still being interpreted as
+#> the thalweg.
+#> Warning: River has eroded into a part of the floodplain that's lower in
+#> elevation than the thalweg. The original thalweg is still being interpreted as
+#> the thalweg.
+#> Warning: River has eroded into a part of the floodplain that's lower in
+#> elevation than the thalweg. The original thalweg is still being interpreted as
+#> the thalweg.
+#> Warning: River has eroded into a part of the floodplain that's lower in
+#> elevation than the thalweg. The original thalweg is still being interpreted as
+#> the thalweg.
+#> Warning: River has eroded into a part of the floodplain that's lower in
+#> elevation than the thalweg. The original thalweg is still being interpreted as
+#> the thalweg.
+#> Warning: River has eroded into a part of the floodplain that's lower in
+#> elevation than the thalweg. The original thalweg is still being interpreted as
+#> the thalweg.
+#> Warning: River has eroded into a part of the floodplain that's lower in
+#> elevation than the thalweg. The original thalweg is still being interpreted as
+#> the thalweg.
+#> Warning: River has eroded into a part of the floodplain that's lower in
+#> elevation than the thalweg. The original thalweg is still being interpreted as
+#> the thalweg.
+#> Warning: River has eroded into a part of the floodplain that's lower in
+#> elevation than the thalweg. The original thalweg is still being interpreted as
+#> the thalweg.
+#> Warning: River has eroded into a part of the floodplain that's lower in
+#> elevation than the thalweg. The original thalweg is still being interpreted as
+#> the thalweg.
+#> Warning: River has eroded into a part of the floodplain that's lower in
+#> elevation than the thalweg. The original thalweg is still being interpreted as
+#> the thalweg.
+#> Warning: River has eroded into a part of the floodplain that's lower in
+#> elevation than the thalweg. The original thalweg is still being interpreted as
+#> the thalweg.
+#> Warning: River has eroded into a part of the floodplain that's lower in
+#> elevation than the thalweg. The original thalweg is still being interpreted as
+#> the thalweg.
+#> Warning: River has eroded into a part of the floodplain that's lower in
+#> elevation than the thalweg. The original thalweg is still being interpreted as
+#> the thalweg.
+#> Warning: River has eroded into a part of the floodplain that's lower in
+#> elevation than the thalweg. The original thalweg is still being interpreted as
+#> the thalweg.
+#> Warning: River has eroded into a part of the floodplain that's lower in
+#> elevation than the thalweg. The original thalweg is still being interpreted as
+#> the thalweg.
+#> Warning: River has eroded into a part of the floodplain that's lower in
+#> elevation than the thalweg. The original thalweg is still being interpreted as
+#> the thalweg.
+#> Warning: River has eroded into a part of the floodplain that's lower in
+#> elevation than the thalweg. The original thalweg is still being interpreted as
+#> the thalweg.
+#> Warning: River has eroded into a part of the floodplain that's lower in
+#> elevation than the thalweg. The original thalweg is still being interpreted as
+#> the thalweg.
+#> Warning: River has eroded into a part of the floodplain that's lower in
+#> elevation than the thalweg. The original thalweg is still being interpreted as
+#> the thalweg.
+#> Warning: River has eroded into a part of the floodplain that's lower in
+#> elevation than the thalweg. The original thalweg is still being interpreted as
+#> the thalweg.
+#> Warning: River has eroded into a part of the floodplain that's lower in
+#> elevation than the thalweg. The original thalweg is still being interpreted as
+#> the thalweg.
+#> Warning: River has eroded into a part of the floodplain that's lower in
+#> elevation than the thalweg. The original thalweg is still being interpreted as
+#> the thalweg.
+#> Warning: River has eroded into a part of the floodplain that's lower in
+#> elevation than the thalweg. The original thalweg is still being interpreted as
+#> the thalweg.
+#> Warning: River has eroded into a part of the floodplain that's lower in
+#> elevation than the thalweg. The original thalweg is still being interpreted as
+#> the thalweg.
+#> Warning: River has eroded into a part of the floodplain that's lower in
+#> elevation than the thalweg. The original thalweg is still being interpreted as
+#> the thalweg.
+#> Warning: River has eroded into a part of the floodplain that's lower in
+#> elevation than the thalweg. The original thalweg is still being interpreted as
+#> the thalweg.
+#> Warning: River has eroded into a part of the floodplain that's lower in
+#> elevation than the thalweg. The original thalweg is still being interpreted as
+#> the thalweg.
+#> Warning: River has eroded into a part of the floodplain that's lower in
+#> elevation than the thalweg. The original thalweg is still being interpreted as
+#> the thalweg.
+#> Warning: River has eroded into a part of the floodplain that's lower in
+#> elevation than the thalweg. The original thalweg is still being interpreted as
+#> the thalweg.
+#> Warning: River has eroded into a part of the floodplain that's lower in
+#> elevation than the thalweg. The original thalweg is still being interpreted as
+#> the thalweg.
+plot(widened_squamish)
 ```
 
-<div class="figure">
-<img src="man/figures/README-unnamed-chunk-6-1.png" alt="plot of chunk unnamed-chunk-6" width="100%" />
-<p class="caption">plot of chunk unnamed-chunk-6</p>
-</div>
+<img src="man/figures/README-unnamed-chunk-6-1.png" alt="" width="100%" />
+
+Take a look at the 10th profile cross section now:
+
+``` r
+plot(widened_squamish[[10]], extent = "full", exaggerate = 1.5)
+```
+
+<img src="man/figures/README-unnamed-chunk-7-1.png" alt="" width="100%" />
+
+Calculate the new channel widths.
+
+``` r
+xt_width(widened_squamish)
+#> Units: [m]
+#>   [1]  93.43041 184.42194 260.80346 200.88251 244.09664 240.09946 237.29650
+#>   [8] 187.55961 171.59433 162.15724 147.89787 179.45508 158.77414 144.13340
+#>  [15] 135.32378 130.99366 135.52576 148.26494 168.18838 181.97554 185.35597
+#>  [22] 190.61774 183.82381 127.95672 160.75844 202.15311 223.35955 231.41809
+#>  [29] 225.60719 218.86675 211.38615 164.35550 160.16899 246.16583 280.07985
+#>  [36] 292.27021 281.47831 241.81818 269.96797 357.25418 338.80057 294.77830
+#>  [43] 312.85012 161.28379 126.20875 186.23011 265.24047 299.88738 316.61599
+#>  [50] 493.60492 636.62471 664.90342 678.18940 511.32593 371.47288 259.35425
+#>  [57] 167.20780 109.21310  90.88817 113.96811 155.57837 158.69633 154.04836
+#>  [64] 164.46052 181.93777 169.02330 145.65448 117.65526 125.83240 140.59145
+#>  [71] 125.09071 118.59876 122.37944 116.20063 118.27877 115.89263 113.42236
+#>  [78] 106.41516 122.84634 127.11586 122.77688 131.67889 132.53521 130.67450
+#>  [85] 139.54645 150.97335 138.27839 131.57561 101.33454 114.93370 143.07453
+#>  [92] 138.00485 145.22423 127.82636 124.21868 121.99292 123.55714 121.71536
+#>  [99] 110.13979 113.13592 116.66653 115.63450 122.67569 109.39985  97.85220
+#> [106] 111.28276 133.39558 146.22842 165.55522 185.06969 173.92347 172.46251
+#> [113] 174.00215 156.51811 143.20814 177.90269 174.09572 138.69932 103.74528
+#> [120] 140.30094 191.19901 175.65901 158.23670 155.49507 147.61084 157.94692
+#> [127] 178.33698 203.50118 282.89694 420.08806 315.57872 212.56633 165.57442
+#> [134] 216.74543 265.35935 290.26633 268.15941 224.58420 189.01989 157.36231
+#> [141] 133.63265 125.42039  99.16436 112.02728 101.00135 106.58626 102.27426
+#> [148]  95.65286 102.13425 120.97199 135.99564 128.13698 123.49023 141.92174
+#> [155] 138.50884 128.80946 123.28342 122.98957 119.99637 120.59551  87.69669
+#> [162]  94.39083 118.23196 123.26313 132.59700 122.42059 118.91290 113.15352
+#> [169] 119.33348 124.67002 122.82426  86.43318 120.69153 129.29290 111.77318
+#> [176] 112.54435 118.51195 127.95338 146.05418 151.20904 140.16432 126.18718
+#> [183] 126.83247 130.43882 134.20975 133.43615 140.12173 145.27918 152.67612
+#> [190] 145.47517 129.38132  87.85922  83.04029  96.54220 133.72482 105.93595
+#> [197] 100.88120 118.19061 102.34260 127.79007 154.63390 120.70921 139.31768
+#> [204] 140.82716 160.35828 196.17869 144.13621 159.35557 139.90625 134.56748
+```
+
+Calculate the channel gradient, using the lower bank as the reference
+elevation.
+
+``` r
+grad <- xt_gradient(widened_squamish, elevation = elevation_bank(min))
+grad
+#>   [1]            NA  3.343378e-03  5.047202e-03  2.018437e-03  7.469054e-03
+#>   [6] -6.375794e-03 -2.333659e-02 -2.365805e-03  1.820774e-02  9.844091e-03
+#>  [11] -3.717067e-03  2.866300e-03  7.294749e-03 -4.190876e-03 -5.724011e-03
+#>  [16] -1.873562e-03  3.584672e-04 -2.586446e-03 -7.039992e-03 -5.694825e-03
+#>  [21] -1.222186e-03  8.535865e-03  2.929605e-03 -1.447112e-02  1.837511e-03
+#>  [26]  1.042104e-02 -1.480178e-03 -1.744544e-03 -6.525653e-04 -3.531019e-03
+#>  [31] -5.187213e-03 -2.522835e-03 -2.265883e-02  1.545207e-03  5.165937e-03
+#>  [36] -7.795365e-03  1.128120e-02 -1.479315e-02 -1.493079e-02  3.700181e-03
+#>  [41]  4.615395e-03  3.189877e-03 -6.428362e-03 -5.946594e-04  1.825201e-02
+#>  [46]  3.283490e-03 -1.831879e-02  2.557567e-04  9.131934e-03 -1.277741e-02
+#>  [51] -1.217535e-02 -2.028112e-02  3.864339e-03  2.645854e-02  8.752810e-03
+#>  [56] -2.750981e-04  1.417556e-03  1.196970e-02  3.166648e-03 -3.738645e-03
+#>  [61]  3.229279e-03  2.107011e-03 -7.854681e-03 -1.366314e-03  4.951226e-03
+#>  [66] -1.326800e-02 -1.424626e-02 -4.615457e-03 -2.440003e-02  1.495485e-02
+#>  [71]  1.299592e-02 -4.373891e-03  2.362343e-02 -1.422331e-02 -1.997292e-02
+#>  [76] -3.726356e-04  1.868538e-02  1.919761e-02 -2.201651e-02 -1.248190e-02
+#>  [81]  6.139079e-03  1.299810e-02  6.898152e-03 -1.540897e-03 -7.650697e-03
+#>  [86] -2.615487e-02  1.647857e-02  2.327266e-02  1.429889e-03  5.989410e-03
+#>  [91] -8.847133e-04 -4.826104e-03 -5.942713e-03 -1.339013e-03  2.242584e-04
+#>  [96] -1.477283e-03  5.779884e-04 -2.449297e-03 -1.348006e-03  8.417438e-04
+#> [101]  1.559292e-04  2.493554e-03  2.673321e-03 -6.716837e-05 -1.057124e-04
+#> [106] -7.274402e-03 -4.912956e-03 -1.673698e-02 -2.250308e-03  1.716891e-02
+#> [111] -2.378457e-03 -1.371636e-03  6.452010e-04  4.166896e-04 -2.258977e-04
+#> [116] -8.764974e-04 -6.385379e-03  3.154105e-03  5.897839e-03 -3.967785e-04
+#> [121] -3.568745e-03 -8.401210e-03 -3.206543e-03  6.476167e-03 -3.904799e-03
+#> [126] -2.213329e-02  7.345396e-03  2.523882e-03  7.783780e-03  6.972421e-03
+#> [131] -5.506932e-03  9.517916e-03 -6.604032e-03 -1.088726e-02  4.830668e-03
+#> [136]  6.207030e-03 -5.821969e-03  1.012298e-02 -1.275903e-02 -1.652513e-02
+#> [141]  1.605392e-02  5.186026e-03 -3.254693e-03  3.349692e-03  8.594727e-03
+#> [146]  4.496376e-03 -3.563047e-04 -6.329520e-03 -2.069294e-03 -2.193178e-03
+#> [151] -4.298502e-03 -1.598858e-03 -7.260037e-03 -6.022346e-03  1.545553e-03
+#> [156]  5.439126e-03  1.891023e-03 -3.228843e-03 -4.492867e-03 -6.764459e-03
+#> [161]  3.356399e-03  5.631616e-03 -7.070078e-03 -5.992772e-03 -3.230371e-04
+#> [166]  2.846555e-03  5.552034e-03  4.276794e-04 -7.367823e-03  2.790500e-03
+#> [171]  4.106845e-03 -1.250868e-03  1.015676e-03 -6.099141e-03 -4.190938e-03
+#> [176] -3.209180e-04 -6.977126e-03 -3.252441e-04  2.848133e-03 -1.912048e-03
+#> [181] -7.783570e-04  1.920482e-03  1.067502e-03  2.229131e-03 -2.450008e-04
+#> [186] -7.672863e-04 -2.596980e-04 -2.094002e-03  4.953337e-03  2.248919e-02
+#> [191]  2.157805e-02  2.954004e-03  8.815431e-02  9.382717e-02 -1.269396e-01
+#> [196] -1.184710e-01  1.289278e-02  3.338383e-03 -1.499164e-03 -3.798990e-03
+#> [201]  9.113475e-03  5.536286e-03  1.426338e-03 -7.247051e-03 -1.001970e-02
+#> [206] -5.829163e-03 -3.253149e-03  1.815633e-02  2.868210e-02            NA
+```
+
+Plot the gradient along the channel axis.
+
+``` r
+dist <- xt_distance_downstream(widened_squamish)
+plot(dist, grad)
+lines(dist, grad, type = "l")
+```
+
+<img src="man/figures/README-unnamed-chunk-10-1.png" alt="" width="100%" />
+
+To learn more about channel computations like these, see the [*Channel
+Computations*]() vignette.
+
+## xchan in the Context of Other R Packages
+
+The following packages are relevant for channel geometries in R.
+
+- The [**centerline**]() package is used to generate a centerline from a
+  bankline polygon.
+- The [**sf**]() package is used to manipulate vector-based spatial
+  objects.
+- The [**terra**]() package is used to manipulate both vector and
+  raster-based spatial objects.
+
+## Attribution
+
+The creation of this package would not have been possible without
+funding from [BGC Engineering Inc.](https://bgcengineering.ca/).

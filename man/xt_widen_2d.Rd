@@ -24,17 +24,25 @@ An eroded version of the input 2D cross section.
 Erode a 2D cross section
 }
 \details{
-Erosion Rules:
+Profile erosion follows three rules (applied on each bank via \code{\link[=flip_profile]{flip_profile()}}
+for the opposite side):
 \enumerate{
-\item Sediment between the old bank and the new bank disappears. Even the
-old bank point disappears.
-\item Topography on the channel-side of the old bankpoint shifts over
-to meet the new bank point.
+\item Ground between the old and new bank positions is removed (the old bank
+point is removed as well).
+\item The \strong{left-side channel} (topography between the left bank and the
+leftmost thalweg) slides left by \code{dw}, preserving its shape. The opposite
+bank is fixed.
+\item The span between the leftmost and rightmost thalwegs widens by \code{dw} on the
+eroded side; the new strip is filled with a flat channel bottom at the
+thalweg elevation.
 }
 
-Note that this will form a vertical "cliff" if eroding into an uphill
-floodplain, or a "spike" if eroding into a downhill floodplain (where
-the old channel bed appears above the new channel height). In all cases,
-the height of the new bank ignores this bed topography, and is determined
-by the outermost point.
+A vertical bank face is placed at the new bank: its elevation is taken from
+the pre-erosion ground surface at that distance (linear interpolation along
+the profile). Material below the thalweg elevation in the eroded strip does
+not count toward \code{\link[=xt_erosion_volume]{xt_erosion_volume()}}.
+
+Eroding into a floodplain depression below the thalweg yields a warning and
+a cliff down to the channel; eroding into higher ground yields a cliff that
+rises above the channel.
 }

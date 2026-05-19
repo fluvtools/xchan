@@ -20,13 +20,16 @@ elevation_bank_right()
 elevation_bed(.f = mean, ...)
 }
 \arguments{
-\item{.f}{Numeric summary function applied per cross section:
+\item{.f}{Numeric summary function applied per cross section. Each call uses a single
+numeric vector \code{x} as the first argument to \code{.f} (not separate left/right arguments);
+further arguments are forwarded from \code{...}:
 \itemize{
-\item \code{elevation_bank()} — passes \strong{two} values (left and right \strong{outer bank} elevations)
-through \code{.f}; default \link[base:Extremes]{base::min} is the lower of the two outer bank elevations.
-\item \code{elevation_bed()} — passes elevations at profile vertices on the \strong{wetted bed}
-(within each water interval between banks; islands excluded) through \code{.f};
-default \code{base::mean}.
+\item \code{elevation_bank()} — \code{x} has length 2: outer \strong{left} then \strong{right} bank elevations
+(\code{c(z_left, z_right)}). Default \link[base:Extremes]{base::min} returns the lower bank elevation;
+\link[base:mean]{base::mean} averages the two banks.
+\item \code{elevation_bed()} — \code{x} is the vector of elevation (\code{z}) values at \strong{encoded}
+profile vertices on the \strong{wetted bed} (within each water interval between banks;
+islands excluded). Default \link[base:mean]{base::mean} is an unweighted mean of those values.
 }}
 
 \item{...}{Further arguments forwarded to \code{.f} (for example \code{probs} for \link[stats:quantile]{stats::quantile}).}
@@ -50,16 +53,19 @@ documented as a return component of each \code{xs_profile}.
 }
 \section{Functions}{
 \itemize{
-\item \code{elevation_bank()}: Banks: apply \code{.f} to the elevations at the \strong{left and right outer
-bank} vertices (same points as \code{\link[=elevation_bank_left]{elevation_bank_left()}} / \code{\link[=elevation_bank_right]{elevation_bank_right()}}).
-Default \code{.f = min} chooses the lower of the two outer bank elevations.
+\item \code{elevation_bank()}: Banks: apply \code{.f(x, ...)} where \code{x} is \code{c(z_left, z_right)} at the
+\strong{outer left} and \strong{outer right} bank vertices (same points as \code{\link[=elevation_bank_left]{elevation_bank_left()}}
+/ \code{\link[=elevation_bank_right]{elevation_bank_right()}}). Default \code{.f = min} returns the lower bank elevation.
 
 \item \code{elevation_bank_left()}: Elevation (\code{z}) at the \strong{outer left bank} profile vertex only.
 
 \item \code{elevation_bank_right()}: Elevation (\code{z}) at the \strong{outer right bank} profile vertex only.
 
-\item \code{elevation_bed()}: Aggregate vertex elevations on the \strong{wetted bed} (within each
-water interval between banks; dry islands excluded) with \code{.f}; default \code{.f = mean}.
+\item \code{elevation_bed()}: Apply \code{.f(x, ...)} to encoded vertex elevations \code{x} on the
+\strong{wetted bed} (within each water interval between banks; dry islands excluded).
+Vertices are included or excluded by distance along the profile only; \code{.f} does not
+interpolate or integrate along the bed. Default \code{.f = mean} is an unweighted mean of
+those \code{z} values.
 
 }}
 \section{Profile geometry and naming}{
@@ -73,11 +79,14 @@ part of the traced section.
 
 In this vertical slice, \strong{left} and \strong{right} mean smaller vs larger distance along
 the profile (typically left and right banks in map view when the section is oriented
-consistently). \code{elevation_bed()} uses profile vertices that lie on the \strong{wetted bed}:
-distances inside each \strong{water} interval between consecutive banks (alternating
-water / land / water along the section; see \code{\link[=xt_add_profile]{xt_add_profile()}} and \code{xs_profile}
-structure). Dry islands and
-floodplain tails outside the outer banks are excluded.
+consistently). \code{elevation_bed()} summarizes elevations at \strong{stored profile vertices}
+whose distance lies on the \strong{wetted bed}: inside each \strong{water} interval between
+consecutive banks (alternating water / land / water along the section; see
+\code{\link[=xt_add_profile]{xt_add_profile()}} and \code{xs_profile} structure). Dry islands and floodplain tails
+outside the outer banks are excluded. The summary is applied to those vertex
+elevations only — there is no interpolation along the bed, no distance weighting,
+and no integration over width; default \link[base:mean]{base::mean} is an unweighted arithmetic mean
+of the encoded \code{z} values (sampling density along the profile therefore affects it).
 }
 
 \seealso{
