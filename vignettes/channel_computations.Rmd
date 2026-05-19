@@ -11,54 +11,15 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  warning = FALSE
 )
-# Create a custom output hook to truncate vector outputs
-knitr::knit_hooks$set(output = function(x, options) {
-  # Check if our custom option 'truncate_vector' is enabled (we will set it to TRUE by default)
-  if (isTRUE(options$truncate_vector)) {
-    # Clean up the raw string output into R lines
-    lines <- readLines(textConnection(x))
-
-    # We target standard vector outputs (usually starting with [1])
-    if (any(grepl("^\\[\\d+\\]", lines))) {
-      # Extract the actual data elements, discarding the R header/bracket notation
-      clean_elements <- unlist(strsplit(
-        gsub("^\\[\\d+\\]\\s+", "", lines),
-        "\\s+"
-      ))
-
-      total_elements <- length(clean_elements)
-
-      if (total_elements > 6) {
-        remaining <- total_elements - 6
-        # Take the first 6, format them nicely, and append the dynamic message
-        truncated_data <- paste(clean_elements[1:6], collapse = " ")
-
-        # Re-wrap it in R's classic print style
-        x <- paste0(
-          "[1] ",
-          truncated_data,
-          "\n... ",
-          remaining,
-          " more elements.\n"
-        )
-      }
-    }
-  }
-
-  # Pass the (modified or unmodified) output back to knitr's default handler
-  knitr::knit_hooks$get("output")(x, options)
-})
-
-# Set this behavior as the global default for the whole document
-knitr::opts_chunk$set(truncate_vector = TRUE)
 ```
 
-While the [Getting Started with Channels]() and [Channels with Profiles]()
+While the [Getting Started with Channels](basic_channels.html) and [Channels with Profiles](channels_with_profiles.html)
 vignettes cover creating and eroding channels, this vignette covers calculations on channels.
 
-First, make a channel for the Squamish River (same workflow as in the [Channels with Profiles]() vignette).
+First, make a channel for the Squamish River (same workflow as in the [Channels with Profiles](channels_with_profiles.html) vignette).
 
 ```{r setup}
 library(xchan)
@@ -70,13 +31,13 @@ plot(squamish)
 
 ## Distance Downstream
 
-\[Only needs planimetric cross sections.\]
+<span class="badge rounded-pill text-bg-secondary">Planiometric cross sections only</span>
 
 Downstream distances can be calculated along the channel axis, where "0" is the canonical distance for the most upstream cross section.
 
 ```{r distance}
 dist <- xt_distance_downstream(squamish)
-dist
+head(dist)
 ```
 
 As with most computational functions, `xt_distance_downstream()` has an optional `axis` argument if you wanted to use a different axis than the stored one.
@@ -84,33 +45,33 @@ As with most computational functions, `xt_distance_downstream()` has an optional
 
 ## Elevations
 
-\[Needs profile cross sections.\]
+<span class="badge rounded-pill text-bg-secondary">Profile cross sections</span>
 
 Channel elevation can be calculated using a number of different reference concepts.
 Some reference concepts select a specific point, like the thalweg elevations.
 
 ```{r}
-xt_elevation(squamish, reference = elevation_thalweg())
+head(xt_elevation(squamish, reference = elevation_thalweg()))
 ```
 
 Other reference concepts involve combining mulitple points with a function,
 like `elevation_bank()`, which applies a function to the two outer banks -- by default, the minimum.
 
 ```{r}
-xt_elevation(squamish, reference = elevation_bank())
+head(xt_elevation(squamish, reference = elevation_bank()))
 ```
 
 Another option is to combine the bed elevations with `elevation_bed()`; here, taking the median elevation.
 
 ```{r}
-xt_elevation(squamish, reference = elevation_bank(median))
+head(xt_elevation(squamish, reference = elevation_bank(median)))
 ```
 
 To learn more about the different elevation reference concepts, see the documentation at `?elevations`.
 
 ## Gradient
 
-\[Needs profile cross sections.\]
+<span class="badge rounded-pill text-bg-secondary">Profile cross sections</span>
 
 A useful way of approximating flow gradient is differencing some aspect of the topography between cross sections along the channel axis.
 The `xt_gradient()` function calculates this differential using a sliding window approach based on number of cross sections before and after each cross section.
@@ -124,7 +85,7 @@ grad <- xt_gradient(
   after = 3,
   elevation = elevation_thalweg()
 )
-grad
+head(grad)
 ```
 
 By default, truncated windows are not allowed, which is why the first three cross sections are `NA`. This behaviour can be changed with the `complete` argument.
@@ -140,4 +101,4 @@ While you can make this plot smoother by increasing the window size, it's worth 
 
 ## Other Computations
 
-If these computations don't cover your needs, you can take a manual approach by first exporting the channel with `xt_as_sfc()` and then using the [**sf**]() package to conduct the calculations. But of course, not until after [submitting an Issue]() on the xchan github repository! Your feedback is greatly appreciated.
+If these computations don't cover your needs, you can take a manual approach by first exporting the channel with `xt_as_sfc()` and then using the [**sf**](https://r-spatial.github.io/sf/) package to conduct the calculations. But of course, not until after [submitting an Issue](https://github.com/stochaGBEM/xchan/issues) on the xchan GitHub repository! Your feedback is greatly appreciated.

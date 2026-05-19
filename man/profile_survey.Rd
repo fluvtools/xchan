@@ -5,7 +5,7 @@
 \alias{profile_survey}
 \title{Toy cross-section survey data}
 \format{
-A data frame with 138 rows and 4 columns:
+A \code{\link[tibble:tibble]{tibble::tibble()}} with 138 rows and 4 columns:
 \describe{
 \item{id}{Integer cross-section key (\code{1}--\code{6}), matching the order of
 the cross sections.}

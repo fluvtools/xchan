@@ -9,7 +9,8 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   fig.path = "man/figures/README-",
-  out.width = "100%"
+  out.width = "100%",
+  warning = FALSE
 )
 devtools::load_all(quiet = TRUE)
 ```
@@ -19,12 +20,12 @@ devtools::load_all(quiet = TRUE)
 # xchan <a href="https://stochagbem.github.io/xchan/"><img src="man/figures/logo.png" align="right" height="139" alt="xchan website" /></a>
 
 <!-- badges: start -->
-[![CRAN status](https://www.r-pkg.org/badges/version/xchan)](https://CRAN.R-project.org/package=xchan)
+[![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
 <!-- badges: end -->
 
 The purpose of xchan is to create, widen (erode), and calculate attributes of watercourse geometries. It does this by encoding a channel by its cross sections, which can be planimetric (line segments arranged on a map) or profile (slices into the landscape).
 
-The package concept is inspired by the [**sf**]() package, because xchan encodes both cross section objects (`xsection`) and whole channels (`xchan`), which are simply a list of cross sections. Most functions in xchan start with a common prefix, `xt`, in parallel with the sf package's function prefix, `st`. The `x` stands for "cross" or "cross section".
+The package concept is inspired by the [**sf**](https://r-spatial.github.io/sf/) package, because xchan encodes both cross section objects (`xsection`) and whole channels (`xchan`), which are simply a list of cross sections. Most functions in xchan start with a common prefix, `xt`, in parallel with the sf package's function prefix, `st`. The `x` stands for "cross" or "cross section".
 
 ## Statement of Need
 
@@ -36,7 +37,7 @@ The package concept is inspired by the [**sf**]() package, because xchan encodes
 
 ## Installation
 
-You can install the development version of xchan from [GitHub](https://github.com/) with:
+You can install the development version of xchan from [GitHub](https://github.com/stochaGBEM/xchan) with:
 
 ``` r
 # install.packages("devtools")
@@ -45,7 +46,7 @@ devtools::install_github("stochaGBEM/xchan")
 
 ## Example
 
-The package includes spatial data for the Squamish River in British Columbia: a bankline polygon and a DEM. It's possible to create channels in other ways; see the [_Getting Started with Channels_]() and [_Channels with Profiles_]() vignettes for more information.
+The package includes spatial data for the Squamish River in British Columbia: a bankline polygon and a DEM. It's possible to create channels in other ways; see the [_Getting Started with Channels_](https://stochagbem.github.io/xchan/articles/basic_channels.html) and [_Channels with Profiles_](https://stochagbem.github.io/xchan/articles/channels_with_profiles.html) vignettes for more information.
 
 Start by loading the package and unwrapping the packaged DEM, and plotting the bankline polygon on top.
 
@@ -95,14 +96,14 @@ plot(widened_squamish[[10]], extent = "full", exaggerate = 1.5)
 Calculate the new channel widths.
 
 ```{r}
-xt_width(widened_squamish)
+head(xt_width(widened_squamish))
 ```
 
 Calculate the channel gradient, using the lower bank as the reference elevation.
 
 ```{r}
 grad <- xt_gradient(widened_squamish, elevation = elevation_bank(min))
-grad
+head(grad)
 ```
 
 Plot the gradient along the channel axis.
@@ -113,15 +114,15 @@ plot(dist, grad)
 lines(dist, grad, type = "l")
 ```
 
-To learn more about channel computations like these, see the [_Channel Computations_]() vignette.
+To learn more about channel computations like these, see the [_Channel Computations_](https://stochagbem.github.io/xchan/articles/channel_computations.html) vignette.
 
 ## xchan in the Context of Other R Packages
 
 The following packages are relevant for channel geometries in R.
 
-- The [**centerline**]() package is used to generate a centerline from a bankline polygon.
-- The [**sf**]() package is used to manipulate vector-based spatial objects.
-- The [**terra**]() package is used to manipulate both vector and raster-based spatial objects.
+- The [**centerline**](https://cran.r-project.org/package=centerline) package is used to generate a centerline from a bankline polygon.
+- The [**sf**](https://r-spatial.github.io/sf/) package is used to manipulate vector-based spatial objects.
+- The [**terra**](https://rspatial.org/terra/) package is used to manipulate both vector and raster-based spatial objects.
 
 ## Attribution
 

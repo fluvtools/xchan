@@ -11,12 +11,13 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  warning = FALSE
 )
 ```
 
 
-If your workflow requires profile cross sections, `xchan` allows this in addition to planimetric encoding. This vignette shows how to create and work with profile-enabled channels. Since making a channel with profiles first involves making a channel with planimetric geometries, we recommend first reading the [_Getting Started with Channels_]() vignette.
+If your workflow requires profile cross sections, `xchan` allows this in addition to planimetric encoding. This vignette shows how to create and work with profile-enabled channels. Since making a channel with profiles first involves making a channel with planimetric geometries, we recommend first reading the [_Getting Started with Channels_](basic_channels.html) vignette.
 
 ```{r setup}
 library(xchan)
@@ -85,14 +86,14 @@ When plotting cross sections, you can also choose to plot the planimetric view w
 
 Sometimes LiDAR data is available in the form of a digital elevation model (DEM). This can be used to create profile cross sections.
 
-LiDAR for the Squamish River comes shipped with the package as a DEM from the [**terra**]() package. It needs to be unpacked first.
+LiDAR for the Squamish River comes shipped with the package as a DEM from the [**terra**](https://rspatial.org/terra/) package. It needs to be unpacked first.
 
 ```{r}
 library(terra)
 demo_dem <- unwrap(demo_dem)
 ```
 
-This can be used together with the river's bankline polygon to first generate planimetric cross sections (as we did in the [_Getting Started with Channels_]() vignette).
+This can be used together with the river's bankline polygon to first generate planimetric cross sections (as we did in the [_Getting Started with Channels_](basic_channels.html) vignette).
 
 ```{r}
 squamish <- xt_generate_plan(demo_bankline, spacing = 100)
@@ -138,13 +139,13 @@ Since a profile view is available, there is not only erosion width but also eros
 We can calculate the erosion volume resulting from the above width change:
 
 ```{r}
-xt_erosion_volume(channel, dw = c(5, 3, 5, 0, 0, 4))
+head(xt_erosion_volume(channel, dw = c(5, 3, 5, 0, 0, 4)))
 ```
 
 But we can also erode by volume; here is the resulting width change for the given cross-section-specific volume change (in squared units), this time allocating all volume erosion on the left side bank.
 
 ```{r}
-xt_erosion_width(channel, dv = c(5, 3, 10, 0, 0, 12), side = "left")
+head(xt_erosion_width(channel, dv = c(5, 3, 10, 0, 0, 12), side = "left"))
 ```
 
 If there is not enough volume to erode, an error is thrown.
@@ -160,7 +161,7 @@ plot(channel, add = TRUE)
 Get the new cross section widths.
 
 ```{r}
-xt_width(channel_widened2)
+head(xt_width(channel_widened2))
 ```
 
 ## Exporting Channels
@@ -174,7 +175,7 @@ profiles <- xt_as_sfc(channel, what = "profile")
 plot(profiles)
 ```
 
-The 3D encoding combines the profile and planimetric views to create a 3D arrangement. Use 3D plotting software like the [**rgl**]() or [**plotly**]() packages to view the 3D channel (not done here because these are not dependencies of the package).
+The 3D encoding combines the profile and planimetric views to create a 3D arrangement. Use 3D plotting software like the [**rgl**](https://rgl.neoscenes.org/) or [**plotly**](https://plotly.com/r/) packages to view the 3D channel (not done here because these are not dependencies of the package).
 
 ```{r}
 xt_as_sfc(channel, what = "3d")

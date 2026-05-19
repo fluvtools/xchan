@@ -40,7 +40,25 @@ widen_profile <- function(
   profile <- widen_profile_left(profile, dw_left)
   profile <- flip_profile(profile)
   profile <- widen_profile_left(profile, dw_right)
-  flip_profile(profile)
+  profile <- flip_profile(profile)
+  reconcile_profile_banks(profile)
+}
+
+#' Ensure bank indices reference the toe (lowest elevation) at each bank distance
+#' @noRd
+reconcile_profile_banks <- function(profile) {
+  coords <- profile$coordinates
+  bank_toe_index <- function(x_bank) {
+    at <- abs(coords[, 1] - x_bank) < 1e-10
+    if (!any(at)) {
+      return(NA_integer_)
+    }
+    which(at)[which.min(coords[at, 2])]
+  }
+  lb_idx <- bank_toe_index(coords[get_left_bank_index(profile), 1])
+  rb_idx <- bank_toe_index(coords[get_right_bank_index(profile), 1])
+  profile$banks <- c(lb_idx, rb_idx)
+  profile
 }
 
 #' @noRd
@@ -87,6 +105,7 @@ widen_profile_left <- function(profile, dw) {
   x_left_thal <- min(thal_d_old)
   y_bed <- profile$thalweg_elev
   y_cliff <- coords_interpolate(nodes_orig, x_new)[2]
+  y_top <- coords_interpolate_left(nodes_orig, x_new)[2]
 
   if (y_cliff < y_bed) {
     warning(
@@ -109,11 +128,24 @@ widen_profile_left <- function(profile, dw) {
   nodes[left_channel, 1] <- nodes[left_channel, 1] - dw
 
   nodes <- set_node_at_x(nodes, x_left_thal, y_bed)$nodes
-  nodes <- set_node_at_x(nodes, x_new, y_cliff)$nodes
   nodes <- set_node_at_x(nodes, right_bank[1], right_bank[2])$nodes
-  nodes <- nodes[order(nodes[, 1]), , drop = FALSE]
 
-  lb_idx <- profile_indices_at_distances(nodes, x_new)
+  nodes <- nodes[abs(nodes[, 1] - x_new) > 1e-12, , drop = FALSE]
+  insert_i <- sum(nodes[, 1] < x_new - 1e-12) + 1L
+  cliff_nodes <- if (y_top > y_cliff + 1e-10) {
+    matrix(c(x_new, y_top, x_new, y_cliff), ncol = 2, byrow = TRUE)
+  } else {
+    matrix(c(x_new, y_cliff), ncol = 2)
+  }
+  nodes <- rbind(
+    nodes[seq_len(insert_i - 1L), , drop = FALSE],
+    cliff_nodes,
+    nodes[seq(insert_i, nrow(nodes)), , drop = FALSE]
+  )
+  nodes <- nodes[order(nodes[, 1], -nodes[, 2]), , drop = FALSE]
+
+  at_cliff <- abs(nodes[, 1] - x_new) < 1e-10
+  lb_idx <- which(at_cliff)[which.min(nodes[at_cliff, 2])]
   rb_idx <- profile_indices_at_distances(nodes, right_bank[1])
   nodes[lb_idx, 2] <- y_cliff
   nodes[rb_idx, ] <- right_bank
@@ -124,5 +156,5 @@ widen_profile_left <- function(profile, dw) {
   profile$banks <- c(lb_idx, rb_idx)
   profile$thalwegs <- profile_indices_at_distances(nodes, thal_d_new)
   profile$thalweg_elev <- min(nodes[profile$thalwegs, 2])
-  profile
+  reconcile_profile_banks(profile)
 }

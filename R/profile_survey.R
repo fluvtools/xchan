@@ -4,7 +4,7 @@
 #' example survey input for [xt_add_profile()]. This is **not** data from a real
 #' channel.
 #'
-#' @format A data frame with 138 rows and 4 columns:
+#' @format A [tibble::tibble()] with 138 rows and 4 columns:
 #' \describe{
 #'   \item{id}{Integer cross-section key (`1`--`6`), matching the order of
 #'     the cross sections.}

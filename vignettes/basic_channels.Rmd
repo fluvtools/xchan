@@ -11,11 +11,12 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  warning = FALSE
 )
 ```
 
-Channel objects are encoded as a list of cross sections. This vignette covers the simple case where cross sections are only planimetric -- that is, they are line segments arranged on a map. Profile geometries are also allowed; see the [_Channels with Profiles_]() vignette to see how.
+Channel objects are encoded as a list of cross sections. This vignette covers the simple case where cross sections are only planimetric -- that is, they are line segments arranged on a map. Profile geometries are also allowed; see the [_Channels with Profiles_](channels_with_profiles.html) vignette to see how.
 
 ```{r setup}
 library(xchan)
@@ -48,7 +49,7 @@ a channel _axis_ like a centerline.
 channel1
 ```
 
-You could also string those cross sections along a channel axis for a bit more spatial realism. This axis should be encoded as an `sfc` or `sfg` object from the [**sf**]() package.
+You could also string those cross sections along a channel axis for a bit more spatial realism. This axis should be encoded as an `sfc` or `sfg` object from the [**sf**](https://r-spatial.github.io/sf/) package.
 
 ```{r}
 axis <- sf::st_linestring(
@@ -65,7 +66,7 @@ channel2 <- xt_as_channel(widths, axis = axis)
 plot(channel2, axis = "arrows")
 ```
 
-For more control, you could specify your own cross sections as bespoke line segments. As usual, make sure these are encoded up as objects with the [**sf**]() package, this time as `sfc` objects.
+For more control, you could specify your own cross sections as bespoke line segments. As usual, make sure these are encoded up as objects with the [**sf**](https://r-spatial.github.io/sf/) package, this time as `sfc` objects.
 
 ```{r sfc-input}
 library(sf)
@@ -99,7 +100,7 @@ squamish <- xt_generate_plan(demo_bankline, spacing = 100)
 plot(squamish)
 ```
 
-The algorithm for creating cross sections works by sampling points along a channel axis, and connecting the two banks according to the shortest distance. If no axis is supplied, a centerline is delineated using the [**centerline**]() package. If islands are present, they are ignored when calculating bank-to-bank span; however, the island banks are encoded in the cross sections so that wetted width can be determined (see the Channel Computations vignette for more).
+The algorithm for creating cross sections works by sampling points along a channel axis, and connecting the two banks according to the shortest distance. If no axis is supplied, a centerline is delineated using the [**centerline**](https://cran.r-project.org/package=centerline) package. If islands are present, they are ignored when calculating bank-to-bank span; however, the island banks are encoded in the cross sections so that wetted width can be determined (see the [Channel Computations](channel_computations.html) vignette for more).
 
 It's worth noting that the algorithm method may produce crossing cross sections. If that's a problem, consider hand picking the cross section locations along the channel axis, or remove the problematic cross sections. For example, remove the first two cross sections, which appear to be artifacts of the sampling procedure.
 
@@ -114,7 +115,7 @@ All channels must have an _axis_. This provides two main structural components t
 - It controls flow direction, so that a left and right bank can be identified.
 - It determines cross section ordering.
 
-In addition, many channel computations rely heavily on the channel axis -- see the _Channel Computations_ vignette for more.
+In addition, many channel computations rely heavily on the channel axis -- see the [Channel Computations](channel_computations.html) vignette for more.
 
 Running a new axis along the cross sections updates the direction of flow. This is demonstrated below with a new axis directing `channel2`.
 
@@ -188,7 +189,7 @@ Currently only a single proportion is allowed; a future version of xchan aspires
 
 ## Exporting Channels
 
-You can export the channel as an object understood by the [**sf**]() package; the channel will be a series of line segments. If there are islands, you have the option of excluding them, resulting in multi-line segments spanning the wet part of the channel.
+You can export the channel as an object understood by the [**sf**](https://r-spatial.github.io/sf/) package; the channel will be a series of line segments. If there are islands, you have the option of excluding them, resulting in multi-line segments spanning the wet part of the channel.
 
 ```{r}
 squamish_sf <- xt_as_sfc(squamish, extent = "wetted")

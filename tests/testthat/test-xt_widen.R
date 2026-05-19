@@ -48,6 +48,26 @@ test_that("widen_plan increases path length by dw for bent plan lines", {
   expect_equal(w1, w0 + 10)
 })
 
+test_that("widen_profile_left places a vertical cliff above the left bank", {
+  channel <- xt_as_channel(rep(1, 6))
+  channel <- xt_add_profile(
+    channel,
+    distance = distance,
+    elevation = elevation,
+    section = id,
+    banks = is_bank,
+    data = profile_survey
+  )
+  widened <- xt_widen(channel, dw = c(5, 3, 5, 0, 0, 4))
+  coords <- widened[[3]]$profile$coordinates
+  lb <- get_left_bank_coords(widened[[3]]$profile)
+  at_bank <- coords[abs(coords[, 1] - lb[1]) < 1e-10, , drop = FALSE]
+  expect_gte(nrow(at_bank), 2L)
+  expect_equal(at_bank[, 1], rep(lb[1], nrow(at_bank)))
+  expect_equal(at_bank[1, 2], max(at_bank[, 2]))
+  expect_equal(min(at_bank[, 2]), lb[2])
+})
+
 test_that("xt_widen errors by default when widening exceeds profile extent", {
   profile <- xchan:::new_profile(
     coords = matrix(
