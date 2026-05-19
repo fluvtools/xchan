@@ -129,7 +129,7 @@ This channel now flow towards the left, the opposite of its previous flow.
 plot(channel2, axis = "arrows")
 ```
 
-You can also reverse the flow direction directly:
+You can also reverse the flow direction directly. This is especially useful when generating cross sectios with `xt_generate_plan()`, in case the algorithm gets the direction wrong.
 
 ```{r}
 channel2 <- xt_reverse_flow(channel2)

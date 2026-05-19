@@ -19,11 +19,14 @@
 #'
 #' In this vertical slice, **left** and **right** mean smaller vs larger distance along
 #' the profile (typically left and right banks in map view when the section is oriented
-#' consistently). `elevation_bed()` uses profile vertices that lie on the **wetted bed**:
-#' distances inside each **water** interval between consecutive banks (alternating
-#' water / land / water along the section; see [xt_add_profile()] and `xs_profile`
-#' structure). Dry islands and
-#' floodplain tails outside the outer banks are excluded.
+#' consistently). `elevation_bed()` summarizes elevations at **stored profile vertices**
+#' whose distance lies on the **wetted bed**: inside each **water** interval between
+#' consecutive banks (alternating water / land / water along the section; see
+#' [xt_add_profile()] and `xs_profile` structure). Dry islands and floodplain tails
+#' outside the outer banks are excluded. The summary is applied to those vertex
+#' elevations only — there is no interpolation along the bed, no distance weighting,
+#' and no integration over width; default [base::mean] is an unweighted arithmetic mean
+#' of the encoded `z` values (sampling density along the profile therefore affects it).
 #'
 #' @param .f Numeric summary function applied per cross section. Each call uses a single
 #'   numeric vector `x` as the first argument to `.f` (not separate left/right arguments);
@@ -31,8 +34,9 @@
 #'   * `elevation_bank()` — `x` has length 2: outer **left** then **right** bank elevations
 #'     (`c(z_left, z_right)`). Default [base::min] returns the lower bank elevation;
 #'     [base::mean] averages the two banks.
-#'   * `elevation_bed()` — `x` contains elevations at profile vertices on the **wetted bed**
-#'     (within each water interval between banks; islands excluded). Default [base::mean].
+#'   * `elevation_bed()` — `x` is the vector of elevation (`z`) values at **encoded**
+#'     profile vertices on the **wetted bed** (within each water interval between banks;
+#'     islands excluded). Default [base::mean] is an unweighted mean of those values.
 #' @param ... Further arguments forwarded to `.f` (for example `probs` for [stats::quantile]).
 #'
 #' @returns An object inheriting `"xchan_elevation"`: a function `(channel)` that returns
@@ -133,8 +137,11 @@ elevation_bank_right <- function() {
   structure(fun, name = "bank_right", class = "xchan_elevation")
 }
 
-#' @describeIn elevations Aggregate vertex elevations on the **wetted bed** (within each
-#'   water interval between banks; dry islands excluded) with `.f`; default `.f = mean`.
+#' @describeIn elevations Apply `.f(x, ...)` to encoded vertex elevations `x` on the
+#'   **wetted bed** (within each water interval between banks; dry islands excluded).
+#'   Vertices are included or excluded by distance along the profile only; `.f` does not
+#'   interpolate or integrate along the bed. Default `.f = mean` is an unweighted mean of
+#'   those `z` values.
 #' @export
 elevation_bed <- function(.f = mean, ...) {
   fun <- function(channel) {

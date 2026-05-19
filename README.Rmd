@@ -15,6 +15,7 @@ devtools::load_all(quiet = TRUE)
 ```
 
 
+
 # xchan: Cross-Section Based Channels
 
 <!-- badges: start -->
@@ -43,78 +44,75 @@ devtools::install_github("stochaGBEM/xchan")
 
 ## Example
 
-The package includes Fraser River demo data that can be used to build a
-typical cross-section workflow. Start by loading the package and
-unwrapping the packaged DEM:
+The package includes spatial data for the Squamish River in British Columbia: a bankline polygon and a DEM. It's possible to create channels in other ways; see the [_Getting Started with Channels_]() and [_Channels with Profiles_]() vignettes for more information.
+
+Start by loading the package and unwrapping the packaged DEM, and plotting the bankline polygon on top.
 
 ```{r}
 library(xchan)
 
-# Unwrap the packaged DEM to a `terra::SpatRaster` object for use in the package.
 dem <- terra::unwrap(demo_dem)
+plot(dem)
+plot(demo_bankline, add = TRUE)
 ```
 
-
-Generate planimetric cross sections from the bankline polygon and plot the
-stored sampling axis (`xt_generate_plan()` saves it on the channel; use `xt_axis()` to read it):
+Generate planimetric cross sections from the bankline polygon, spaced apart by 100 meters.
 
 ```{r}
-planimetric_cross_sections <- xt_generate_plan(demo_bankline, spacing = 200)
-axis_line <- xt_axis(planimetric_cross_sections)
-
-plot(demo_bankline, col = "grey90", border = "grey50")
-plot(planimetric_cross_sections, add = TRUE, col = "dodgerblue3")
-plot(axis_line, add = TRUE, col = "cadetblue1", lwd = 2)
+squamish <- xt_generate_plan(demo_bankline, spacing = 100)
+plot(squamish)
 ```
 
-
-Sample the DEM to create profile cross sections:
+If your workflow requires profile cross sections, you can generate them by sampling the DEM at each planimetric cross section.
 
 ```{r}
-profile_cross_sections <- xt_generate_profile(
-  planimetric_cross_sections,
-  dem,
-  extent_distance = 200,
-  sample_n = 151
-)
-
-plot(demo_bankline, col = "grey90", border = "grey50")
-plot(profile_cross_sections, add = TRUE, col = "coral")
+squamish <- xt_generate_profile(squamish, unwrap(demo_dem), sample_freq = 2)
+print(squamish, n = 10)
 ```
 
+Under the hood, a channel is just a list, as hinted at with the `print()` output.
 
-Profile cross sections can also be generated as distance-elevation
-objects. Each profile cross section contains a distance-elevation geometry that
-can be inspected directly:
+Including profile cross sections also has the effect of extending the cross sections beyond the banks. Here is what the 10th cross section looks like in its full extent, with an exaggeration factor of 1.5.
 
 ```{r}
-# Profile cross sections (distance-elevation):
-channel <- xt_generate_profile(
-  channel = planimetric_cross_sections,
-  dem = dem,
-  extent_distance = 200,
-  sample_n = 151
-)
-
-# Plot an example profile cross section
-plot(xt_profile_at(profile_cross_sections, 1))
+plot(squamish[[10]], extent = "full", exaggerate = 1.5)
 ```
 
-
-Apply a widening scenario to the generated cross sections. In this
-example, the channel is widened by 20 metres on the right bank:
+Widen the channel by 20 meters on the right bank.
 
 ```{r}
-widened_cross_sections <- xt_widen(
-  planimetric_cross_sections,
-  dw = 200,
-  side = "right"
-)
-
-plot(demo_bankline)
-plot(widened_cross_sections, add = TRUE)
+widened_squamish <- xt_widen(squamish, dw = 20, side = "right")
+plot(widened_squamish)
 ```
 
+Take a look at the 10th profile cross section now:
+
+```{r}
+plot(widened_squamish[[10]], extent = "full", exaggerate = 1.5)
+```
+
+Calculate the new channel widths.
+
+```{r}
+xt_width(widened_squamish)
+```
+
+Calculate the channel gradient, using the lower bank as the reference elevation.
+
+```{r}
+grad <- xt_gradient(widened_squamish, reference = elevation_bank(min))
+grad
+```
+
+Plot the gradient along the channel axis.
+
+```{r}
+dist <- xt_distance_downstream(widened_squamish)
+plot(dist, grad)
+lines(dist, grad, type = "l")
+```
+
+To learn more about channel computations like these, see the [_Channel Computations_]() vignette.
 
 ## xchan in the Context of Other R Packages
 
@@ -123,3 +121,7 @@ The following packages are relevant for channel geometries in R.
 - The [**centerline**]() package is used to generate a centerline from a bankline polygon.
 - The [**sf**]() package is used to manipulate vector-based spatial objects.
 - The [**terra**]() package is used to manipulate both vector and raster-based spatial objects.
+
+## Attribution
+
+The creation of this package would not have been possible without funding from [BGC Engineering Inc.](https://bgcengineering.ca/).
