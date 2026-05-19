@@ -1,4 +1,4 @@
-test_that("xt_profile_at returns one xs_profile by row index", {
+test_that("xt_profile_at returns one xs_profile by flow order", {
   coords <- matrix(c(-2, 10, 0, 8, 2, 12), ncol = 2, byrow = TRUE)
   xs1 <- xchan:::new_profile(coords, bankpoints = c(-2, 2))
   xs2 <- xchan:::new_profile(coords + matrix(c(0, 1, 0, 1, 0, 1), ncol = 2, byrow = TRUE), bankpoints = c(-2, 2))

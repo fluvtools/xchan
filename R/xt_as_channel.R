@@ -13,7 +13,7 @@
 #' cross sections at this stage of package development: geometries are cast to
 #' **LINESTRING** bank-to-bank segments. Users should supply line geometries
 #' (not polygons or points). Profile views must be attached separately (for
-#' example with [xt_profile_at()] or [xchan()] / [xsection()]).
+#' example with [xchan()] / [xsection()]).
 #'
 #' When coercing **`numeric`** widths without an explicit `axis`, cross sections
 #' are placed on **vertical** transects (constant \eqn{x}, width in \eqn{y}) so
@@ -50,13 +50,16 @@ xt_as_channel <- function(x, ...) {
 
 #' @rdname xt_as_channel
 #' @param axis Optional channel axis (`sfc`/`sfg` LINESTRING, length 1); see [xt_axis()].
-#'   Used when coercing from `numeric`, `sfc`, or `sfg`, or when assembling a
-#'   channel from a `list` of [`xsection`].
+#'   When `NULL`, a default axis is built (synthetic spacing for `numeric` widths;
+#'   midpoints connected in section order for `sfc`, `sfg`, and `list`). For an
+#'   existing [`xchan`], `NULL` leaves the stored axis unchanged.
+#' @param bankline Optional bankline polygon (`sfc`/`sfg`); stored on the [`xchan`]
+#'   via [xt_bankline()]. `NULL` leaves any existing footprint unchanged.
 #' @param crs For `numeric`, `sfc`, and `list` methods:
 #'   CRS applied to plan geometries via [sf::st_set_crs()]. `NULL` leaves
 #'   existing CRS unchanged (for `list`, sets the container CRS on the [`xchan`]).
 #' @export
-xt_as_channel.numeric <- function(x, ..., crs = NULL, axis = NULL) {
+xt_as_channel.numeric <- function(x, ..., crs = NULL, axis = NULL, bankline = NULL) {
   rlang::check_dots_empty()
   checkmate::assert_numeric(x, lower = 0, any.missing = FALSE)
   spacing_default <- default_numeric_channel_spacing(x)
@@ -96,33 +99,32 @@ xt_as_channel.numeric <- function(x, ..., crs = NULL, axis = NULL) {
   }
 
   xsec <- xchan_from_plan_profile(plan, NULL)
-  xsec <- `xchan_crs<-`(xsec, sf::st_crs(plan))
-  attr(xsec, "axis") <- axis_obj
+  xsec <- finalize_xt_as_channel(xsec, crs = sf::st_crs(plan), axis = axis_obj, bankline = bankline)
   validate_plan_profile_widths(xsec)
   xsec
 }
 
 #' @rdname xt_as_channel
 #' @export
-xt_as_channel.units <- function(x, ..., crs = NULL, axis = NULL) {
+xt_as_channel.units <- function(x, ..., crs = NULL, axis = NULL, bankline = NULL) {
   rlang::check_dots_empty()
   manual_unit <- if (is.null(crs)) units_deparse(x) else NULL
   unit <- if (!is.null(crs)) crs_length_unit(crs) else manual_unit
   x <- to_numeric_length(x, unit, arg = "x")
-  out <- xt_as_channel(x, ..., crs = crs, axis = axis)
+  out <- xt_as_channel(x, ..., crs = crs, axis = axis, bankline = bankline)
   set_xchan_length_unit(out, manual_unit)
 }
 
 #' @rdname xt_as_channel
 #' @export
-xt_as_channel.sfg <- function(x, ..., crs = NULL, axis = NULL) {
+xt_as_channel.sfg <- function(x, ..., crs = NULL, axis = NULL, bankline = NULL) {
   rlang::check_dots_empty()
-  xt_as_channel(sf::st_sfc(x), ..., crs = crs, axis = axis)
+  xt_as_channel(sf::st_sfc(x), ..., crs = crs, axis = axis, bankline = bankline)
 }
 
 #' @rdname xt_as_channel
 #' @export
-xt_as_channel.sfc <- function(x, ..., crs = NULL, axis = NULL) {
+xt_as_channel.sfc <- function(x, ..., crs = NULL, axis = NULL, bankline = NULL) {
   rlang::check_dots_empty()
   if (!is.null(crs)) {
     x <- sf::st_set_crs(x, crs)
@@ -132,18 +134,19 @@ xt_as_channel.sfc <- function(x, ..., crs = NULL, axis = NULL) {
   }
 
   xsec <- xchan_from_plan_profile(x, NULL)
-  xsec <- `xchan_crs<-`(xsec, sf::st_crs(x))
-  axis_obj <- if (!is.null(axis)) validate_axis_sf(axis, sf::st_crs(x)) else NULL
-  if (!is.null(axis_obj)) {
-    attr(xsec, "axis") <- axis_obj
+  axis_obj <- if (!is.null(axis)) {
+    validate_axis_sf(axis, sf::st_crs(x))
+  } else {
+    axis_from_plan_midpoints(x)
   }
+  xsec <- finalize_xt_as_channel(xsec, crs = sf::st_crs(x), axis = axis_obj, bankline = bankline)
   validate_plan_profile_widths(xsec)
   xsec
 }
 
 #' @rdname xt_as_channel
 #' @export
-xt_as_channel.list <- function(x, ..., crs = NULL, axis = NULL) {
+xt_as_channel.list <- function(x, ..., crs = NULL, axis = NULL, bankline = NULL) {
   rlang::check_dots_empty()
   if (length(x) == 0L) {
     out <- xchan(list(), crs = crs, axis = NULL)
@@ -166,21 +169,34 @@ xt_as_channel.list <- function(x, ..., crs = NULL, axis = NULL) {
   }
   assert_section_profiles_homogeneous(x)
   out <- xchan(x, crs = crs, axis = NULL)
-  if (!is.null(axis)) {
-    plan <- channel_plan(out)
-    crs_hint <- if (!is.null(plan)) sf::st_crs(plan) else if (!is.null(crs)) sf::st_crs(crs) else NULL
-    attr(out, "axis") <- validate_axis_sf(axis, crs_hint)
+  plan <- channel_plan(out)
+  crs_hint <- if (!is.null(plan)) sf::st_crs(plan) else if (!is.null(crs)) sf::st_crs(crs) else NULL
+  axis_obj <- if (!is.null(axis)) {
+    validate_axis_sf(axis, crs_hint)
+  } else if (!is.null(plan) && length(plan) > 0L) {
+    axis_from_plan_midpoints(plan)
+  } else {
+    NULL
   }
+  out <- finalize_xt_as_channel(out, crs = NULL, axis = axis_obj, bankline = bankline)
   validate_plan_profile_widths(out)
   out
 }
 
 #' @rdname xt_as_channel
 #' @export
-xt_as_channel.xchan <- function(x, ..., crs = NULL) {
+xt_as_channel.xchan <- function(x, ..., crs = NULL, axis = NULL, bankline = NULL) {
   rlang::check_dots_empty()
   if (!is.null(crs)) {
     x <- `xchan_crs<-`(x, crs)
+  }
+  if (!is.null(axis)) {
+    plan <- channel_plan(x)
+    crs_hint <- if (!is.null(plan)) sf::st_crs(plan) else attr(x, "crs")
+    attr(x, "axis") <- validate_axis_sf(axis, crs_hint)
+  }
+  if (!is.null(bankline)) {
+    x <- `xt_bankline<-`(x, bankline)
   }
   validate_plan_profile_widths(x)
   x
@@ -196,6 +212,20 @@ xt_as_channel.default <- function(x, ...) {
     " to a channel; use `xt_as_channel()` or define an S3 method.",
     call. = FALSE
   )
+}
+
+#' @noRd
+finalize_xt_as_channel <- function(xsec, crs = NULL, axis = NULL, bankline = NULL) {
+  if (!is.null(crs)) {
+    xsec <- `xchan_crs<-`(xsec, crs)
+  }
+  if (!is.null(axis)) {
+    attr(xsec, "axis") <- axis
+  }
+  if (!is.null(bankline)) {
+    xsec <- `xt_bankline<-`(xsec, bankline)
+  }
+  xsec
 }
 
 #' @noRd

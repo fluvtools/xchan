@@ -42,6 +42,7 @@ test_that("xt_as_channel.list builds a channel from xsection objects", {
   ch <- xt_as_channel(list(xs1, xs2))
   expect_true(xt_is_channel(ch))
   expect_identical(xt_n_sections(ch), 2L)
+  expect_s3_class(xt_axis(ch), "sfc_LINESTRING")
   expect_equal(as.numeric(xt_width(ch)), c(2, 4))
 })
 
@@ -57,11 +58,39 @@ test_that("xt_as_channel.list errors on mixed profile presence", {
   expect_error(xt_as_channel(list(xs1, xs2)), "either all include profile")
 })
 
+test_that("xt_as_channel.sfc builds axis from midpoints when axis is NULL", {
+  sfc <- sf::st_sfc(
+    sf::st_linestring(matrix(c(0, -1, 0, 1), ncol = 2, byrow = TRUE)),
+    sf::st_linestring(matrix(c(10, -2, 10, 2), ncol = 2, byrow = TRUE)),
+    crs = 3005
+  )
+  ch <- xt_as_channel(sfc)
+  ax <- sf::st_coordinates(xt_axis(ch))[, 1:2]
+  mid <- sf::st_coordinates(xchan:::plan_midpoints_sfc(channel_plan(ch)))
+  expect_equal(ax, mid)
+})
+
+test_that("xt_as_channel stores optional bankline", {
+  bl <- sf::st_geometry(demo_bankline)
+  ch <- xt_as_channel(c(2, 2), crs = 3005, bankline = bl)
+  expect_true(sf::st_equals(xt_bankline(ch), bl, sparse = FALSE)[1L, 1L])
+})
+
+test_that("xt_as_channel.xchan can update axis and bankline", {
+  ch <- xt_as_channel(c(2, 2), crs = 3005)
+  ax <- sf::st_sfc(sf::st_linestring(rbind(c(0, 0), c(20, 0))), crs = 3005)
+  bl <- sf::st_geometry(demo_bankline)
+  ch2 <- xt_as_channel(ch, axis = ax, bankline = bl)
+  expect_true(sf::st_equals(xt_axis(ch2), ax, sparse = FALSE)[1L, 1L])
+  expect_true(sf::st_equals(xt_bankline(ch2), bl, sparse = FALSE)[1L, 1L])
+})
+
 test_that("xt_as_channel normalizes sfc to LINESTRING and respects crs", {
   l <- sf::st_linestring(matrix(c(0, 1, 0, 1), ncol = 2))
   x <- xt_as_channel(l, crs = 3005)
   expect_true(xt_is_channel(x))
   expect_identical(xt_n_sections(x), 1L)
+  expect_s3_class(xt_axis(x), "sfc_LINESTRING")
   expect_identical(sf::st_crs(channel_plan(x)), sf::st_crs(3005))
 
   x <- xt_as_channel(sf::st_sfc(l, crs = 3005))

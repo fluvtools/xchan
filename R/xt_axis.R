@@ -135,9 +135,51 @@ plan_midpoints_sfc <- function(plan) {
   n <- length(plan)
   pts <- vector("list", n)
   for (i in seq_len(n)) {
-    pts[[i]] <- transect_bank_midpoint_sfc(plan[[i]])
+    pts[[i]] <- sf::st_geometry(transect_bank_midpoint_sfc(plan[[i]]))[[1L]]
   }
   sf::st_sfc(pts, crs = sf::st_crs(plan))
+}
+
+#' Axis through planimetric cross-section midpoints (vertex order as given).
+#'
+#' @noRd
+axis_from_plan_midpoints <- function(plan) {
+  n <- length(plan)
+  if (n < 1L) {
+    stop("`plan` must contain at least one transect.", call. = FALSE)
+  }
+  if (n == 1L) {
+    seg <- plan[[1L]]
+    m <- sf::st_coordinates(seg)[, 1L:2L, drop = FALSE]
+    p1 <- m[1L, , drop = TRUE]
+    pn <- m[nrow(m), , drop = TRUE]
+    mid <- 0.5 * (p1 + pn)
+    v <- pn - p1
+    lv <- sqrt(sum(v^2))
+    if (!is.finite(lv) || lv < 1e-15) {
+      v <- c(1, 0)
+    } else {
+      v <- v / lv
+    }
+    eps <- if (is.finite(lv) && lv > 0) lv * 0.5 else 1
+    xy <- rbind(mid - v * eps, mid + v * eps)
+    return(sf::st_sfc(sf::st_linestring(xy), crs = sf::st_crs(plan)))
+  }
+  mid_pts <- plan_midpoints_sfc(plan)
+  xy <- sf::st_coordinates(mid_pts)
+  sf::st_sfc(sf::st_linestring(xy), crs = sf::st_crs(plan))
+}
+
+#' List positions of sections in downstream (flow) order along the axis.
+#'
+#' @noRd
+channel_flow_order <- function(channel, axis = NULL) {
+  plan <- channel_plan(channel)
+  if (is.null(plan)) {
+    stop("Channel object must have planimetric cross sections.", call. = FALSE)
+  }
+  axis_line <- resolve_channel_axis(channel, axis)
+  order(plan_chainage_on_axis(plan, axis_line))
 }
 
 #' Bank-to-bank midpoint of one plan transect (`sfg` / length-one `sfc`).
@@ -182,11 +224,18 @@ extended_transect_chord_sfc <- function(seg, axis_line) {
 
 #' @noRd
 intersection_xy_matrix <- function(g) {
-  if (is.null(g) || sf::st_is_empty(g)) {
+  if (is.null(g)) {
     return(matrix(0, 0, 2))
   }
   if (!inherits(g, "sfc")) {
     g <- sf::st_sfc(g, crs = NA)
+  }
+  if (length(g) < 1L) {
+    return(matrix(0, 0, 2))
+  }
+  empty <- sf::st_is_empty(g)
+  if (length(empty) < 1L || isTRUE(all(empty))) {
+    return(matrix(0, 0, 2))
   }
   pts <- tryCatch(
     sf::st_cast(g, "POINT"),
@@ -197,7 +246,11 @@ intersection_xy_matrix <- function(g) {
       )
     }
   )
-  if (length(pts) < 1L || all(sf::st_is_empty(pts))) {
+  if (length(pts) < 1L) {
+    return(matrix(0, 0, 2))
+  }
+  pts_empty <- sf::st_is_empty(pts)
+  if (length(pts_empty) < 1L || isTRUE(all(pts_empty))) {
     return(matrix(0, 0, 2))
   }
   sf::st_coordinates(pts)[, 1L:2L, drop = FALSE]
@@ -206,8 +259,14 @@ intersection_xy_matrix <- function(g) {
 #' Point on the axis used for chainage and orientation: extended chord ∩ axis,
 #' else nearest point on axis to the bank midpoint.
 #'
+#' @param require_intersection If `TRUE`, error when the extended chord does not
+#'   meet the axis (used by `xt_axis<-` alignment).
 #' @noRd
-transect_axis_station_sfc <- function(seg, axis_line) {
+transect_axis_station_sfc <- function(
+  seg,
+  axis_line,
+  require_intersection = FALSE
+) {
   seg_sfc <- if (inherits(seg, "sfc")) seg else sf::st_sfc(seg)
   crs_ax <- sf::st_crs(axis_line)
   if (!is.na(crs_ax)) {
@@ -234,6 +293,14 @@ transect_axis_station_sfc <- function(seg, axis_line) {
     d2 <- (xy[, 1L] - mid[1L])^2 + (xy[, 2L] - mid[2L])^2
     j <- which.min(d2)
     return(sf::st_sfc(sf::st_point(xy[j, , drop = TRUE]), crs = crs))
+  }
+  if (isTRUE(require_intersection)) {
+    stop(
+      "The axis does not intersect at least one plan cross section ",
+      "(extended bank-to-bank line). Extend or reposition the axis so it ",
+      "crosses every transect along the reach.",
+      call. = FALSE
+    )
   }
   nearest_point_on_axis_from_mid(axis_line, mid_pt)
 }
@@ -311,7 +378,7 @@ align_xchan_to_stored_axis <- function(channel) {
   flip_prof <- logical(length(plan))
   for (i in seq_along(plan)) {
     seg <- plan[[i]]
-    stn <- transect_axis_station_sfc(seg, ax)
+    stn <- transect_axis_station_sfc(seg, ax, require_intersection = TRUE)
     t_down <- axis_unit_tangent_downstream(ax, stn, line_length)
     ori <- orient_plan_xs_left_first(seg, stn, t_down)
     new_lines[[i]] <- ori

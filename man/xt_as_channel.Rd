@@ -13,17 +13,17 @@
 \usage{
 xt_as_channel(x, ...)
 
-\method{xt_as_channel}{numeric}(x, ..., crs = NULL, axis = NULL)
+\method{xt_as_channel}{numeric}(x, ..., crs = NULL, axis = NULL, bankline = NULL)
 
-\method{xt_as_channel}{units}(x, ..., crs = NULL, axis = NULL)
+\method{xt_as_channel}{units}(x, ..., crs = NULL, axis = NULL, bankline = NULL)
 
-\method{xt_as_channel}{sfg}(x, ..., crs = NULL, axis = NULL)
+\method{xt_as_channel}{sfg}(x, ..., crs = NULL, axis = NULL, bankline = NULL)
 
-\method{xt_as_channel}{sfc}(x, ..., crs = NULL, axis = NULL)
+\method{xt_as_channel}{sfc}(x, ..., crs = NULL, axis = NULL, bankline = NULL)
 
-\method{xt_as_channel}{list}(x, ..., crs = NULL, axis = NULL)
+\method{xt_as_channel}{list}(x, ..., crs = NULL, axis = NULL, bankline = NULL)
 
-\method{xt_as_channel}{xchan}(x, ..., crs = NULL)
+\method{xt_as_channel}{xchan}(x, ..., crs = NULL, axis = NULL, bankline = NULL)
 
 \method{xt_as_channel}{default}(x, ...)
 }
@@ -38,8 +38,12 @@ CRS applied to plan geometries via \code{\link[sf:st_crs]{sf::st_set_crs()}}. \c
 existing CRS unchanged (for \code{list}, sets the container CRS on the \code{\link{xchan}}).}
 
 \item{axis}{Optional channel axis (\code{sfc}/\code{sfg} LINESTRING, length 1); see \code{\link[=xt_axis]{xt_axis()}}.
-Used when coercing from \code{numeric}, \code{sfc}, or \code{sfg}, or when assembling a
-channel from a \code{list} of \code{\link{xsection}}.}
+When \code{NULL}, a default axis is built (synthetic spacing for \code{numeric} widths;
+midpoints connected in section order for \code{sfc}, \code{sfg}, and \code{list}). For an
+existing \code{\link{xchan}}, \code{NULL} leaves the stored axis unchanged.}
+
+\item{bankline}{Optional bankline polygon (\code{sfc}/\code{sfg}); stored on the \code{\link{xchan}}
+via \code{\link[=xt_bankline]{xt_bankline()}}. \code{NULL} leaves any existing footprint unchanged.}
 }
 \value{
 An \code{\link{xchan}} for \code{numeric}, \code{units}, \code{sfc}, \code{sfg}, \code{list}, and
@@ -55,7 +59,7 @@ For \strong{\code{sfg}} / \strong{\code{sfc}} inputs, coercion targets \strong{p
 cross sections at this stage of package development: geometries are cast to
 \strong{LINESTRING} bank-to-bank segments. Users should supply line geometries
 (not polygons or points). Profile views must be attached separately (for
-example with \code{\link[=xt_profile_at]{xt_profile_at()}} or \code{\link[=xchan]{xchan()}} / \code{\link[=xsection]{xsection()}}).
+example with \code{\link[=xchan]{xchan()}} / \code{\link[=xsection]{xsection()}}).
 
 When coercing \strong{\code{numeric}} widths without an explicit \code{axis}, cross sections
 are placed on \strong{vertical} transects (constant \eqn{x}, width in \eqn{y}) so
