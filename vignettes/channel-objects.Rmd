@@ -44,7 +44,7 @@ with that, generating them from a bankline polygon. Here is a segment of the
 Fraser River in British Columbia, Canada.
 
 ```{r}
-plot(fraser_bankline)
+plot(Squamish_bankline)
 ```
 
 Cross sections can be auto-generated using the following algorithm. You can
@@ -52,7 +52,7 @@ specify the cross section spacing directly (`spacing`), or by the desired
 number of cross sections (`n`).
 
 ```{r}
-xt_generate_plan(fraser_bankline, n = 100)
+xt_generate_plan(Squamish_bankline, n = 100)
 ```
 
 Channels are units-aware via the [**units**]() package if supplied (in this
@@ -61,10 +61,10 @@ Raw numerics are interepreted in the base unit of the CRS. Here are cross
 sections spaced 100 m apart.
 
 ```{r}
-chan <- xt_generate_plan(fraser_bankline, spacing = units::set_units(100, "m"))
+chan <- xt_generate_plan(Squamish_bankline, spacing = units::set_units(100, "m"))
 
 # Plot
-plot(fraser_bankline, fill = "#7cb2fe")
+plot(Squamish_bankline, fill = "#7cb2fe")
 plot(chan, add = TRUE)
 ```
 
@@ -78,10 +78,10 @@ xt_axis(chan)
 So far, this channel is only planimetric, with no profile view. If a profile view is important to you, you can get that from a DEM, piggybacking off the [**terra**]() package. The `xt_generate_profile()` adds a profile view to a pre-existing channel using a DEM, allowing you to sample the DEM by set spacing (`sample_freq`) or desired number of points (`sample_n`).
 
 ```{r}
-fraser_elev <- terra::unwrap(fraser_dem)
+Squamish_elev <- terra::unwrap(Squamish_dem)
 chan <- xt_generate_profile(
   chan,
-  dem = fraser_elev,
+  dem = Squamish_elev,
   sample_freq = units::set_units(2, m)
 )
 ```

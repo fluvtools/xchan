@@ -40,7 +40,7 @@ so \code{xt_arrange_downstream()} orders sections for the new downstream directi
 }
 \examples{
 \donttest{
-ch <- xt_generate_plan(fraser_bankline, n = 15)
+ch <- xt_generate_plan(Squamish_bankline, n = 15)
 ch_down <- xt_arrange_downstream(ch)
 ch_up <- xt_arrange_upstream(ch)
 }

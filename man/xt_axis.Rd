@@ -44,7 +44,7 @@ stored as attribute \code{"axis"} on the \code{\link{xchan}} object.
 \examples{
 \donttest{
 library(sf)
-ch <- xt_generate_plan(fraser_bankline, n = 20)
+ch <- xt_generate_plan(Squamish_bankline, n = 20)
 ax <- xt_axis(ch)
 plot(ax)
 }

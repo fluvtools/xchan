@@ -32,7 +32,7 @@ test_that("Cross section widening dispatches for xsection", {
 })
 
 test_that("Width doesn't work when sf object doesn't have channel geom", {
-  x <- sf::st_sf(geom = fraser_bankline)
+  x <- sf::st_sf(geom = Squamish_bankline)
   expect_error(xt_width(x))
 })
 
