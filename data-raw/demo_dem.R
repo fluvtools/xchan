@@ -4,10 +4,10 @@
 target_crs <- 3005
 
 # Work in projected CRS so spacing/extent are in metres.
-dem <- terra::rast(here::here("data-raw", "canada_hrdem_1m_cropped.tif"))
-dem <- terra::project(dem, paste0("EPSG:", target_crs))
+Squamish_dem <- terra::rast(here::here("data-raw", "Squamish_DEM-1m.tif"))
+Squamish_dem <- terra::project(Squamish_dem, paste0("EPSG:", target_crs))
 
 # SpatRaster objects do not serialize safely in package data; wrap before saving.
-dem <- terra::wrap(dem, proxy = FALSE)
+Squamish_dem <- terra::wrap(Squamish_dem, proxy = FALSE)
 
-usethis::use_data(dem, overwrite = TRUE)
+usethis::use_data(Squamish_dem, overwrite = TRUE)
