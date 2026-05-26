@@ -48,6 +48,9 @@ for cross-section ordering and downstream metrics (\code{\link[=xt_arrange_downs
 \code{\link[=xt_distance_downstream]{xt_distance_downstream()}}, etc.) rather than as a moving geometric center of
 each transect. To install a different axis, use the replacement form
 \code{xt_axis(channel) <- value} (see \code{\link[=xt_axis]{xt_axis()}}).
+
+Profile distances are re-centered after widening so that \code{distance = 0}
+remains the midpoint of the outer-bank pair.
 }
 \note{
 The ellipsis \code{...} must be empty; named \code{dw} and \code{dv} keep widening deliberate.

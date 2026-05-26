@@ -61,6 +61,19 @@ get_bank_distances <- function(profile) {
   profile$coordinates[profile$banks, 1]
 }
 
+#' Recenter profile distances on the outer-bank midpoint
+#'
+#' @noRd
+recenter_profile_distances <- function(profile) {
+  checkmate::assert_class(profile, "xs_profile")
+  shift <- mean(range(get_bank_distances(profile)))
+  if (abs(shift) < 1e-10) {
+    return(profile)
+  }
+  profile$coordinates[, 1] <- profile$coordinates[, 1] - shift
+  profile
+}
+
 #' Water-interval distance pairs from bank contacts along a transect
 #'
 #' @param bank_d Numeric bank distances (even length).

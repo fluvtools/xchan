@@ -27,6 +27,9 @@
 #' [xt_distance_downstream()], etc.) rather than as a moving geometric center of
 #' each transect. To install a different axis, use the replacement form
 #' `xt_axis(channel) <- value` (see [xt_axis()]).
+#'
+#' Profile distances are re-centered after widening so that `distance = 0`
+#' remains the midpoint of the outer-bank pair.
 #' @returns Object of the same class as `channel`, with widened sections.
 #' @examples
 #' xt_widen(channel, dw = 10)
@@ -111,11 +114,12 @@ xt_widen.xchan <- function(
           prop_left[i]
         )
       )
-      snap_profile_bank_positions(
+      widened <- snap_profile_bank_positions(
         widened,
         left_x = left0 - dw[i] * prop_left[i],
         right_x = right0 + dw[i] * (1 - prop_left[i])
       )
+      recenter_profile_distances(widened)
     })
   }
 

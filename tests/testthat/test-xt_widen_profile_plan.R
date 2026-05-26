@@ -25,6 +25,7 @@ test_that("xt_widen keeps plan and profile widths aligned on demo channel", {
   right_before <- get_right_bank_coords(squamish[[i]]$profile)[1]
   left_after <- get_left_bank_coords(widened[[i]]$profile)[1]
   right_after <- get_right_bank_coords(widened[[i]]$profile)[1]
-  expect_equal(left_after, left_before)
-  expect_equal(right_after, right_before + 20)
+  expect_equal(mean(c(left_after, right_after)), 0)
+  expect_equal(left_after, left_before - 10)
+  expect_equal(right_after, right_before + 10)
 })
