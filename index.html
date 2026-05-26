@@ -109,7 +109,7 @@
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">squamish</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/xt_generate_plan.html">xt_generate_plan</a></span><span class="op">(</span><span class="va">Squamish_bankline</span>, spacing <span class="op">=</span> <span class="fl">100</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">squamish</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-3-1.png" alt="" width="100%"></p>
+<p><img src="reference/figures/README-squamish_plan-1.png" alt="" width="100%"></p>
 <p>If your workflow requires profile cross sections, you can generate them by sampling the DEM at each planimetric cross section.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">squamish</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/xt_generate_profile.html">xt_generate_profile</a></span><span class="op">(</span><span class="va">squamish</span>, <span class="fu"><a href="https://rspatial.github.io/terra/reference/wrap.html" class="external-link">unwrap</a></span><span class="op">(</span><span class="va">Squamish_dem</span><span class="op">)</span>, sample_freq <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
@@ -132,16 +132,16 @@
 <p>Including profile cross sections also has the effect of extending the cross sections beyond the banks. Here is what the 10th cross section looks like in its full extent, with an exaggeration factor of 1.5.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">squamish</span><span class="op">[[</span><span class="fl">10</span><span class="op">]</span><span class="op">]</span>, extent <span class="op">=</span> <span class="st">"full"</span>, exaggerate <span class="op">=</span> <span class="fl">1.5</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-5-1.png" alt="" width="100%"></p>
+<p><img src="reference/figures/README-unnamed-chunk-4-1.png" alt="" width="100%"></p>
 <p>Widen the channel by 20 meters on the right bank.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">widened_squamish</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/xt_widen.html">xt_widen</a></span><span class="op">(</span><span class="va">squamish</span>, dw <span class="op">=</span> <span class="fl">20</span>, side <span class="op">=</span> <span class="st">"right"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">widened_squamish</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-6-1.png" alt="" width="100%"></p>
+<p><img src="reference/figures/README-unnamed-chunk-5-1.png" alt="" width="100%"></p>
 <p>Take a look at the 10th profile cross section now:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">widened_squamish</span><span class="op">[[</span><span class="fl">10</span><span class="op">]</span><span class="op">]</span>, extent <span class="op">=</span> <span class="st">"full"</span>, exaggerate <span class="op">=</span> <span class="fl">1.5</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-7-1.png" alt="" width="100%"></p>
+<p><img src="reference/figures/README-unnamed-chunk-6-1.png" alt="" width="100%"></p>
 <p>Calculate the new channel widths.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rspatial.github.io/terra/reference/headtail.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="reference/widths.html">xt_width</a></span><span class="op">(</span><span class="va">widened_squamish</span><span class="op">)</span><span class="op">)</span></span>
@@ -158,7 +158,7 @@
 <code class="sourceCode R"><span><span class="va">dist</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/xt_distance_downstream.html">xt_distance_downstream</a></span><span class="op">(</span><span class="va">widened_squamish</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">dist</span>, <span class="va">grad</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rspatial.github.io/terra/reference/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">dist</span>, <span class="va">grad</span>, type <span class="op">=</span> <span class="st">"l"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-10-1.png" alt="" width="100%"></p>
+<p><img src="reference/figures/README-unnamed-chunk-9-1.png" alt="" width="100%"></p>
 <p>To learn more about channel computations like these, see the <a href="https://fluvtools.github.io/xchan/articles/channel_computations.html"><em>Channel Computations</em></a> vignette.</p>
 </div>
 <div class="section level2">

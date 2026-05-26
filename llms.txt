@@ -81,7 +81,7 @@ squamish <- xt_generate_plan(Squamish_bankline, spacing = 100)
 plot(squamish)
 ```
 
-![](reference/figures/README-unnamed-chunk-3-1.png)
+![](reference/figures/README-squamish_plan-1.png)
 
 If your workflow requires profile cross sections, you can generate them
 by sampling the DEM at each planimetric cross section.
@@ -118,7 +118,7 @@ looks like in its full extent, with an exaggeration factor of 1.5.
 plot(squamish[[10]], extent = "full", exaggerate = 1.5)
 ```
 
-![](reference/figures/README-unnamed-chunk-5-1.png)
+![](reference/figures/README-unnamed-chunk-4-1.png)
 
 Widen the channel by 20 meters on the right bank.
 
@@ -128,7 +128,7 @@ widened_squamish <- xt_widen(squamish, dw = 20, side = "right")
 plot(widened_squamish)
 ```
 
-![](reference/figures/README-unnamed-chunk-6-1.png)
+![](reference/figures/README-unnamed-chunk-5-1.png)
 
 Take a look at the 10th profile cross section now:
 
@@ -137,7 +137,7 @@ Take a look at the 10th profile cross section now:
 plot(widened_squamish[[10]], extent = "full", exaggerate = 1.5)
 ```
 
-![](reference/figures/README-unnamed-chunk-7-1.png)
+![](reference/figures/README-unnamed-chunk-6-1.png)
 
 Calculate the new channel widths.
 
@@ -168,7 +168,7 @@ plot(dist, grad)
 lines(dist, grad, type = "l")
 ```
 
-![](reference/figures/README-unnamed-chunk-10-1.png)
+![](reference/figures/README-unnamed-chunk-9-1.png)
 
 To learn more about channel computations like these, see the [*Channel
 Computations*](https://fluvtools.github.io/xchan/articles/channel_computations.html)
