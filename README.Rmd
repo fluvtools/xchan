@@ -63,7 +63,7 @@ plot(Squamish_bankline, add = TRUE, col = "lightblue")
 
 Generate planimetric cross sections from the bankline polygon, spaced apart by 100 meters.
 
-```{r}
+```{r squamish_plan}
 squamish <- xt_generate_plan(Squamish_bankline, spacing = 100)
 plot(squamish)
 ```
