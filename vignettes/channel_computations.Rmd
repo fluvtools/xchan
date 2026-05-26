@@ -16,8 +16,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-While the [Getting Started with Channels](basic_channels.html) and [Channels with Profiles](channels_with_profiles.html)
-vignettes cover creating and eroding channels, this vignette covers calculations on channels.
+While the [Getting Started with Channels](basic_channels.html) and [Channels with Profiles](channels_with_profiles.html) vignettes cover creating and eroding channels, this vignette covers calculations on channels.
 
 First, make a channel for the Squamish River (same workflow as in the [Channels with Profiles](channels_with_profiles.html) vignette).
 
@@ -31,7 +30,7 @@ plot(squamish)
 
 ## Distance Downstream
 
-<span class="badge rounded-pill text-bg-secondary">Planiometric cross sections only</span>
+<span class="badge rounded-pill text-bg-secondary">Planimetric cross sections only</span>
 
 Downstream distances can be calculated along the channel axis, where "0" is the canonical distance for the most upstream cross section.
 
@@ -47,36 +46,33 @@ As with most computational functions, `xt_distance_downstream()` has an optional
 
 <span class="badge rounded-pill text-bg-secondary">Profile cross sections</span>
 
-Channel elevation can be calculated using a number of different reference concepts.
-Some reference concepts select a specific point, like the thalweg elevations.
+Channel elevation can be defined in a few different ways. Some references use a single point, such as the thalweg elevation.
 
 ```{r}
 head(xt_elevation(squamish, reference = elevation_thalweg()))
 ```
 
-Other reference concepts involve combining mulitple points with a function,
-like `elevation_bank()`, which applies a function to the two outer banks -- by default, the minimum.
+Other references summarize multiple points with a function. For example, `elevation_bank()` applies a function to the two outer banks; by default, it returns the lower of the two.
 
 ```{r}
 head(xt_elevation(squamish, reference = elevation_bank()))
 ```
 
-Another option is to combine the bed elevations with `elevation_bed()`; here, taking the median elevation.
+Another option is to summarize elevations along the wetted bed with `elevation_bed()`. Here we take the median.
 
 ```{r}
-head(xt_elevation(squamish, reference = elevation_bank(median)))
+head(xt_elevation(squamish, reference = elevation_bed(median)))
 ```
 
-To learn more about the different elevation reference concepts, see the documentation at `?elevations`.
+To learn more about the different elevation references, see the documentation at `?elevations`.
 
 ## Gradient
 
 <span class="badge rounded-pill text-bg-secondary">Profile cross sections</span>
 
-A useful way of approximating flow gradient is differencing some aspect of the topography between cross sections along the channel axis.
-The `xt_gradient()` function calculates this differential using a sliding window approach based on number of cross sections before and after each cross section.
+A useful way of approximating flow gradient is differencing some aspect of the topography between cross sections along the channel axis. The `xt_gradient()` function calculates this differential using a sliding window approach based on number of cross sections before and after each cross section.
 
-For example, we can calculate the gradient as the slope of the banks three cross sections upstream and downstream of each cross section. Use the [Elevation](#elevations) concept to specify the elevation reference.
+For example, we can calculate the gradient as the slope of the banks three cross sections upstream and downstream of each cross section. Use the [Elevation](#elevations) section to specify the elevation reference.
 
 ```{r}
 grad <- xt_gradient(

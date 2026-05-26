@@ -124,13 +124,13 @@ new_axis <- st_linestring(matrix(c(58, 2, 0, 5), ncol = 2))
 xt_axis(channel2) <- new_axis
 ```
 
-This channel now flow towards the left, the opposite of its previous flow.
+This channel now flows towards the left, the opposite of its previous flow.
 
 ```{r}
 plot(channel2, axis = "arrows")
 ```
 
-You can also reverse the flow direction directly. This is especially useful when generating cross sectios with `xt_generate_plan()`, in case the algorithm gets the direction wrong.
+You can also reverse the flow direction directly. This is especially useful when generating cross sections with `xt_generate_plan()`, in case the algorithm gets the direction wrong.
 
 ```{r}
 channel2 <- xt_reverse_flow(channel2)
@@ -157,7 +157,7 @@ While early development of xchan defined channels as tabular, the mature version
 
 ## Channel Bankline
 
-Like the [channel axis](#channel-axes), a channel bankline is also stored with a channel object, as an attribute. However, this is attribute is optional, and is only included for convenience. For example, when present, they can be included in a plot. 
+Like the [channel axis](#channel-axes), a channel bankline is also stored with a channel object, as an attribute. However, this attribute is optional, and is only included for convenience. For example, when present, it can be included in a plot.
 
 You can get and set a bankline polygon with `xt_bankline()`. Here is the polygon that was used to create the spatially-derived channel in the [previous example](#creating-channels-from-spatial-data).
 
@@ -176,7 +176,7 @@ squamish2 <- xt_widen(squamish, dw = 200)
 plot(squamish2)
 ```
 
-By default, erosion occurs evenly on both sides. While you can erode the left bank with `side = "left"` and the right bank with `side = "right"`, you can also control the distribution between left and right banks by a `side_` specifier: `side_both()`, `side_left()`, and `side_right()`. All three functions do the same thing (specify allocation between left and right banks), but provide a different approach to this specification. 
+By default, erosion occurs evenly on both sides. While you can erode the left bank with `side = "left"` and the right bank with `side = "right"`, you can also control the distribution between left and right banks by a `side_` specifier: `side_both()`, `side_left()`, and `side_right()`. All three functions do the same thing (specify allocation between left and right banks), but provide a different approach to this specification.
 
 For example, here is a 70-30 left-right split of erosion.
 

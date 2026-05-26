@@ -30,11 +30,13 @@ The package concept is inspired by the [**sf**](https://r-spatial.github.io/sf/)
 
 ## Statement of Need
 
-(automation; randomization)
+Many geomorphic workflows rely on cross sections, but the surrounding tasks are often pieced together from ad hoc scripts: building channels from banklines, attaching surveyed or DEM-derived profiles, widening channels, and calculating attributes such as width, elevation, and gradient.
+
+`xchan` provides a consistent cross-section-first workflow for those tasks in R. It is designed to make channel geometry easier to build, modify, and analyze in a reproducible way.
 
 ## Target Audience
 
-
+`xchan` is aimed at river scientists, geomorphologists, and other analysts working with banklines, cross sections, channel surveys, and DEMs. It is most useful when channel geometry needs to be created, modified, or compared across many sections.
 
 ## Installation
 

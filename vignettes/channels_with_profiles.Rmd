@@ -31,7 +31,7 @@ There are two main ways of creating profile cross sections: by hand, and from a 
 Creating profiles by hand is useful when a channel has been surveyed and the profile data is available in a tabular format. The `profile_survey` dataset is a toy example of such data.
 
 ```{r}
-profile_survey
+head(profile_survey)
 ```
 
 Note the key features of this survey:
