@@ -1,4 +1,28 @@
-url: https://stochagbem.github.io/sxchan/
+url: https://fluvtools.github.io/xchan/
 template:
   bootstrap: 5
 
+navbar:
+  structure:
+    left: [reference, articles]
+  components:
+    articles:
+      text: Articles
+      menu:
+      - text: Simple Channels (Plan Only)
+        href: articles/basic_channels.html
+      - text: Channels with Profiles
+        href: articles/channels_with_profiles.html
+      - text: Channel Calculations
+        href: articles/channel_computations.html
+
+articles:
+- title: Simple Channels (Plan Only)
+  contents:
+  - basic_channels
+- title: Channels with Profiles
+  contents:
+  - channels_with_profiles
+- title: Channel Calculations
+  contents:
+  - channel_computations

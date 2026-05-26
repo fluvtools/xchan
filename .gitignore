@@ -3,4 +3,14 @@
 .RData
 .Ruserdata
 docs
-.DS_Store
+*.DS_Store
+.vscode/
+air.toml
+**.tif.aux.xml
+.positai
+joss-paper.html
+joss-paper.pdf
+Rplots.pdf
+..Rcheck
+*.tif
+__pycache__

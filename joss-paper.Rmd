@@ -1,0 +1,141 @@
+---
+title: "xchan: An R Package for Channel Cross-Section Analysis"
+tags:
+- R
+- hydrology
+- fluvial geomorphology
+- spatial analysis
+- "cross-sections"
+date: "2025-08-19"
+output: pdf_document
+bibliography: paper.bib
+authors:
+- name: Vincenzo Coia
+  affiliation: Politecnico di Milano
+- name: Jane Wang
+  affiliation: BGC Engineering Vancouver
+- name: Lucy Mackenzie
+  affiliation: BGC Engineering Vancouver
+- name: Kathleen Horita
+  affiliation: BGC Engineering Vancouver
+---
+
+# Summary
+
+`xchan` is an R package that helps researchers analyze river channels by creating and manipulating cross-sectional data. River channels can be described in two ways: as horizontal lines across the channel (planimetric cross-sections) and as elevation profiles along those lines (profile cross-sections). The package allows users to generate these cross-sections from various data sources including river bank outlines, digital elevation models, or simple width specifications. Once created, users can model bank widening and erosion and summarize channel geometry (for example width, gradient, and elevations). A channel axis can be traced along the cross sections, and other derived geometries (such as a thalweg line when profiles are available) support visualization and analysis. The package integrates with existing R spatial analysis tools, making it easy to incorporate into larger research workflows for studying river processes, erosion, and channel evolution in a programmatic way.
+
+# Statement of Need
+
+River channel analysis requires handling both planimetric cross-sections (horizontal line segments extending bank-to-bank) and profile cross-sections (elevation data along those segments). Current approaches often require manual GIS workflows or separate tools that don't integrate well with the R ecosystem or automation. Existing R packages for spatial analysis (e.g., `sf` [@pebesma2018simple], `terra` [@hijmans2023terra]) provide excellent tools for individual operations but lack specialized functionality for channel cross-section analysis.
+
+The advent of remote sensing technologies, particularly airborne LiDAR and photogrammetry, has provided the ability to capture high-resolution topographic data over large spatial extents [@milan2011terrestrial; @westaway2003remote]. These technologies enable the generation of digital elevation models (DEMs) that can be used to extract detailed channel and floodplain geometry information. However, the challenge lies in efficiently processing these data to extract meaningful cross-sectional information and integrate it with other spatial datasets.
+
+Current approaches to channel analysis rely on manual GIS workflows using software such as ArcGIS or QGIS, where users must manually digitize cross-sections, extract elevation profiles, and perform geometric calculations through point-and-click interfaces. These workflows are time-consuming, error-prone, and difficult to reproduce. While R packages like `sf` and `terra` provide excellent tools for spatial data manipulation and raster processing, they lack specialized functionality for channel cross-section analysis. Researchers must cobble together multiple packages and custom scripts to achieve what should be a unified workflow: generating cross-sections from banklines, sampling DEMs for elevation data, and analyzing channel geometry properties.
+
+This gap is particularly evident in the context of fluvial geomorphology research, where researchers need to analyze channel geometry changes over time, assess erosion and deposition patterns, and model channel evolution processes [@church2006bed; @eaton2010predicting]. The `xchan` package addresses this gap by providing a unified framework for channel cross-section analysis that integrates seamlessly with the existing R spatial analysis ecosystem.
+
+# Key Features
+
+The package provides a unified data structure for channel objects that integrates planimetric and profile cross-sections. Plan-view cross-sections extend from bank to bank, while profile cross-sections are elevation profiles along those lines. To enable informed erosion modeling into the floodplain, profile cross-sections can extend beyond the banks into the surrounding topography.
+
+## Data Structures
+
+The package uses a three-level object model analogous to the `sf` / `sfc` / `sfg`
+pattern:
+
+- **`xsection`**: one cross section (singular object), containing one planimetric
+  transect and optional profile geometry.
+- **`xchan`**: a list-like geometry container of `xsection` objects, analogous to
+  `sfc`. CRS and an optional channel axis are stored as attributes on the container;
+  single-bracket subsetting preserves them.
+- **User tables**: attribute data (reach identifiers, roughness, etc.) live in
+  ordinary data frames or tibbles that you own; combine them with an `xchan`
+  column or parallel vectors as in any tidy workflow.
+
+This separation keeps cross-section geometry coherent without a bespoke
+data-frame subclass for channels.
+
+### CRS Handling
+
+Coordinate reference system (CRS) metadata is stored at the `xchan` geometry
+container level, not duplicated inside each `xsection`. This follows `sf` design
+principles and avoids redundant per-feature CRS state while keeping geometric
+operations unit-aware.
+
+### Profile Representation
+
+Profile cross-sections are represented as distance-elevation matrices with
+associated bank and thalweg indices. This representation supports both simple
+single-thread channels and multi-thread sections with internal bars or islands.
+
+## Design Philosophy
+
+The package prioritizes human readability and consistency. Functions are prefixed with `xt_` (for "cross-section type") to avoid conflicts and improve code clarity, following the pattern established by the `sf` package. The `units` package ensures consistent dimensional analysis throughout. The gradient calculation function draws inspiration from the `slider` package's sliding window approach for time series analysis [@vaughan2024slider].
+
+### Function Factory Architecture
+
+A core architectural decision is the consistent use of function factories for configurable operations. This pattern elegantly solves the tension between API simplicity and extensibility that plagues many scientific software packages. Rather than creating separate functions for each algorithm variant (e.g., `xt_widen_linear()`, `xt_widen_spline()`, `xt_widen_custom()`), the package uses factory functions that return specialized algorithms while maintaining a unified interface.
+
+This design provides several key advantages:
+
+**Consistent User Experience**: Configurable behaviours such as erosion allocation and elevation references follow the same factory-based pattern, so users can reuse ideas across widening, erosion metrics, and related workflows.
+
+**Parameter Capture**: Factory functions elegantly capture configuration parameters in closures, avoiding the need for complex parameter passing or global state.
+
+**Extensibility Without API Bloat**: New algorithms can be added without changing the core function signatures. Users can create custom implementations that integrate seamlessly with the existing API.
+
+**R Ecosystem Integration**: This pattern is widely used in the R ecosystem (e.g., `ggplot2` geoms, `dplyr` verbs, `scales` transforms), making the package feel familiar to R users.
+
+The package implements **specification factories** for operations that need flexible, composable parameters:
+
+- **Side Factories** create functions that specify erosion allocation during channel widening, allowing users to define how widening or erosion is distributed between left and right banks. Built-in factories handle common cases (e.g., `"left"`, `"right"`, `"both"`), and custom functions can vary allocation along the channel.
+
+- **Elevation Factories** create functions for flexible elevation specification (thalweg, banks, bed), so analyses can reference consistent vertical datums across cross sections.
+
+These factories return objects that can be passed as arguments and composed with core geometry functions, avoiding a proliferation of similarly named top-level functions while keeping call sites readable.
+
+This architectural approach transforms what could be a collection of disparate functions into a cohesive, extensible system that grows with user needs rather than requiring API changes.
+
+## Channel Operations
+
+### Channel Widening
+
+Channel widening simulates bank erosion processes. For plan-view cross-sections, widening simply extends the line segments. For profile cross-sections, the approach preserves the existing profile while widening the channel from the thalweg outward. This means the channel bottom (thalweg) becomes wider, with the river section between the bank and thalweg shifting laterally, and corresponding beyond-bank topography being removed.
+
+## Derived Geometries
+
+The package provides functions to generate derived geometries from channel objects (for example plan-view `sfc` outputs via `xt_as_sfc()`).
+
+# Example Usage
+
+```
+library(xchan)
+library(sf)
+
+# Channel from nominal widths at each cross section (plan geometry only)
+channel <- xt_as_channel(c(10, 12, 8, 15, 11, 9))
+
+# After attaching a DEM raster `dem`, build profiles along existing plan sections:
+# channel <- xt_generate_profile(
+#   channel,
+#   dem,
+#   extent_multiplier = 2,
+#   sample_n = 100
+# )
+
+# Widen with asymmetric erosion allocation (must pass dw or dv by name)
+channel_widened <- xt_widen(channel, dw = 10, side = side_left(0.75))
+
+# Stored sampling axis in plan view (from xt_generate_plan)
+axis_line <- xt_axis(channel)
+
+# Summaries
+widths <- xt_width(channel_widened)
+gradients <- xt_gradient(channel_widened)
+```
+
+# Acknowledgments
+
+The authors thank BGC Engineering Inc. for funding this work. We also thank Brett Eaton and Sarah Davidson for guiding the package utility, and Heba Abdelmoaty for contributing to algorithm design and the developers of the `sf`, `terra`, `units`, and `scales` packages for providing the foundational tools and design inspiration that make `xchan` possible.
+
+# References

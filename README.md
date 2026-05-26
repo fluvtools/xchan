@@ -1,139 +1,191 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# sxchan: simple channel cross sections
+# xchan <a href="https://fluvtools.github.io/xchan/"><img src="man/figures/logo.png" align="right" height="139" alt="xchan website" /></a>
 
 <!-- badges: start -->
 
-[![R-CMD-check](https://github.com/stochaGBEM/sxchan/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/stochaGBEM/sxchan/actions/workflows/R-CMD-check.yaml)
-[![Codecov test
-coverage](https://codecov.io/gh/stochaGBEM/sxchan/branch/main/graph/badge.svg)](https://app.codecov.io/gh/stochaGBEM/sxchan?branch=main)
+[![Lifecycle:
+stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
+[![R-CMD-check](https://github.com/fluvtools/xchan/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/fluvtools/xchan/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
-The purpose of sxchan is to create and manipulate watercourse
-geometries, with a focus on cross sections. Because this package sits on
-top of the sf package, geometries can also be manipulated in the same
-way as in the sf package.
+The purpose of xchan is to create, widen (erode), and calculate
+attributes of watercourse geometries. It does this by encoding a channel
+by its cross sections, which can be planimetric (line segments arranged
+on a map) or profile (slices into the landscape).
 
-The name of the package is inspired by the sf package. Functions in
-sxchan start with a common prefix, `xt`, which stands for “cross-section
-type”; this is intended to parallel the sf package’s function prefix,
-`st`, which stands for “spatial type”.
+The package concept is inspired by the
+[**sf**](https://r-spatial.github.io/sf/) package, because xchan encodes
+both cross section objects (`xsection`) and whole channels (`xchan`),
+which are simply a list of cross sections. Most functions in xchan start
+with a common prefix, `xt`, in parallel with the sf package’s function
+prefix, `st`. The `x` stands for “cross” or “cross section”.
+
+## Statement of Need
+
+Many geomorphic workflows rely on cross sections, but the surrounding
+tasks are often pieced together from ad hoc scripts: building channels
+from banklines, attaching surveyed or DEM-derived profiles, widening
+channels, and calculating attributes such as width, elevation, and
+gradient.
+
+`xchan` provides a consistent cross-section-first workflow for those
+tasks in R. It is designed to make channel geometry easier to build,
+modify, and analyze in a reproducible way.
+
+## Target Audience
+
+`xchan` is aimed at river scientists, geomorphologists, and other
+analysts working with banklines, cross sections, channel surveys, and
+DEMs. It is most useful when channel geometry needs to be created,
+modified, or compared across many sections.
 
 ## Installation
 
-You can install the development version of sxchan from
-[GitHub](https://github.com/) with:
+You can install the development version of xchan from
+[GitHub](https://github.com/fluvtools/xchan) with:
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("stochaGBEM/sxchan")
+devtools::install_github("fluvtools/xchan")
 ```
 
 ## Example
 
-``` r
-library(sxchan)
-library(sf)
-#> Linking to GEOS 3.11.0, GDAL 3.5.3, PROJ 9.1.0; sf_use_s2() is TRUE
-```
+The package includes spatial data for the Squamish River in British
+Columbia: a bankline polygon and a DEM. It’s possible to create channels
+in other ways; see the [*Getting Started with
+Channels*](https://fluvtools.github.io/xchan/articles/basic_channels.html)
+and [*Channels with
+Profiles*](https://fluvtools.github.io/xchan/articles/channels_with_profiles.html)
+vignettes for more information.
 
-### Constructing cross section objects
-
-Cross section objects can be made using the function `xt_sxc()`, where
-“sxc” stands for “spatial cross-section column”.
-
-1.  Simply specify cross section width if you’re not interested in the
-    spatial arrangement of the cross sections:
+Start by loading the package and unwrapping the packaged DEM, and
+plotting the bankline polygon on top.
 
 ``` r
-cross1 <- xt_sxc(c(8, 7, 5, 6, 5, 8))
-plot(cross1)
+library(xchan)
+library(terra)
+#> terra 1.9.27
+#> 
+#> Attaching package: 'terra'
+#> The following objects are masked from 'package:testthat':
+#> 
+#>     compare, describe
+dem <- unwrap(Squamish_dem)
+plot(dem)
+plot(Squamish_bankline, add = TRUE, col = "lightblue")
 ```
 
-<img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-2-1.png" alt="" width="100%" />
 
-2.  Or, you can turn a series of line segments into a cross section
-    object. This time, set a coordinate reference system, too:
+Generate planimetric cross sections from the bankline polygon, spaced
+apart by 100 meters.
 
 ``` r
-seg <- st_linestring(matrix(c(0, 1, 0, 1), ncol = 2))
-cross2 <- xt_sxc(seg, crs = 3005)
-plot(cross2)
+squamish <- xt_generate_plan(Squamish_bankline, spacing = 100)
+plot(squamish)
 ```
 
-<img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-3-1.png" alt="" width="100%" />
 
-Retrieve widths:
+If your workflow requires profile cross sections, you can generate them
+by sampling the DEM at each planimetric cross section.
 
 ``` r
-xt_width(cross1)
-#> [1] 8 7 5 6 5 8
+squamish <- xt_generate_profile(squamish, unwrap(Squamish_dem), sample_freq = 2)
+print(squamish, n = 10)
+#> xchan channel with 112 cross sections.
+#> CRS: EPSG:3005 
+#> <xsection 1> 73.62634 m
+#> <xsection 2> 164.7955 m
+#> <xsection 3> 240.1455 m
+#> <xsection 4> 180.8922 m
+#> <xsection 5> 224.1492 m
+#> <xsection 6> 219.8685 m
+#> <xsection 7> 215.3935 m
+#> <xsection 8> 166.9173 m
+#> <xsection 9> 151.5558 m
+#> <xsection 10> 141.68 m
+#> ... 102 more cross sections
+#> With profile view
 ```
+
+Under the hood, a channel is just a list, as hinted at with the
+`print()` output.
+
+Including profile cross sections also has the effect of extending the
+cross sections beyond the banks. Here is what the 10th cross section
+looks like in its full extent, with an exaggeration factor of 1.5.
 
 ``` r
-xt_width(cross2)
-#> 1.414214 [m]
+plot(squamish[[10]], extent = "full", exaggerate = 1.5)
 ```
 
-Because these cross sections are just `sfc` objects from the sf package,
-you can add features by making it an `sf` object:
+<img src="man/figures/README-unnamed-chunk-5-1.png" alt="" width="100%" />
+
+Widen the channel by 20 meters on the right bank.
 
 ``` r
-st_sf(cross1, swimmability = c(5, 4, 3, 2, 1, 0), roughness = 0.01)
-#> Simple cross section collection with 6 cross sections
-#> Simple feature collection with 6 features and 2 fields
-#> Geometry type: 
-#> Dimension:     XY
-#> Bounding box:  xmin: 0 ymin: 1 xmax: 8 ymax: 6
-#> CRS:           NA
-#>   swimmability roughness                cross1
-#> 1            5      0.01 LINESTRING (0 1, 8 1)
-#> 2            4      0.01 LINESTRING (0 2, 7 2)
-#> 3            3      0.01 LINESTRING (0 3, 5 3)
-#> 4            2      0.01 LINESTRING (0 4, 6 4)
-#> 5            1      0.01 LINESTRING (0 5, 5 5)
-#> 6            0      0.01 LINESTRING (0 6, 8 6)
+widened_squamish <- xt_widen(squamish, dw = 20, side = "right")
+plot(widened_squamish)
 ```
 
-### Generating geometries from bankline polygon
+<img src="man/figures/README-unnamed-chunk-6-1.png" alt="" width="100%" />
 
-sxchan has a built-in demo bankline polygon:
+Take a look at the 10th profile cross section now:
 
 ``` r
-plot(demo_bankline)
+plot(widened_squamish[[10]], extent = "full", exaggerate = 1.5)
 ```
 
-<img src="man/figures/README-unnamed-chunk-7-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-7-1.png" alt="" width="100%" />
 
-You can generate cross sections and a centerline:
+Calculate the new channel widths.
 
 ``` r
-demo_cross <- xt_generate_sxc(demo_bankline, n = 50)
-demo_center <- xt_generate_centerline(demo_bankline)
-plot(demo_bankline)
-plot(demo_cross, add = TRUE, col = "blue")
-plot(demo_center, add = TRUE)
+head(xt_width(widened_squamish))
+#> Units: [m]
+#> [1]  93.62634 184.79546 260.14547 200.89217 244.14918 239.86845
 ```
 
-<img src="man/figures/README-unnamed-chunk-8-1.png" width="100%" />
-
-You can widen the cross sections, either by a constant amount or one per
-cross section:
+Calculate the channel gradient, using the lower bank as the reference
+elevation.
 
 ``` r
-plot(demo_bankline)
-xt_widen_times(demo_cross, times = 0.7) |> 
-  plot(add = TRUE, col = "blue")
+grad <- xt_gradient(widened_squamish, elevation = elevation_bank(min))
+head(grad)
+#> [1]           NA -0.004667642  0.003988773  0.006854403 -0.002018570
+#> [6] -0.002408227
 ```
 
-<img src="man/figures/README-unnamed-chunk-9-1.png" width="100%" />
+Plot the gradient along the channel axis.
 
 ``` r
-set.seed(1)
-plot(demo_bankline)
-xt_widen_times(demo_cross, times = exp(rnorm(50) / 2)) |> 
-  plot(add = TRUE, col = "blue")
+dist <- xt_distance_downstream(widened_squamish)
+plot(dist, grad)
+lines(dist, grad, type = "l")
 ```
 
-<img src="man/figures/README-unnamed-chunk-9-2.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-10-1.png" alt="" width="100%" />
+
+To learn more about channel computations like these, see the [*Channel
+Computations*](https://fluvtools.github.io/xchan/articles/channel_computations.html)
+vignette.
+
+## xchan in the Context of Other R Packages
+
+The following packages are relevant for channel geometries in R.
+
+- The [**centerline**](https://cran.r-project.org/package=centerline)
+  package is used to generate a centerline from a bankline polygon.
+- The [**sf**](https://r-spatial.github.io/sf/) package is used to
+  manipulate vector-based spatial objects.
+- The [**terra**](https://rspatial.org/terra/) package is used to
+  manipulate both vector and raster-based spatial objects.
+
+## Attribution
+
+The creation of this package would not have been possible without
+funding from [BGC Engineering Inc.](https://bgcengineering.ca/).

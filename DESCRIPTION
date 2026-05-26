@@ -1,18 +1,22 @@
-Package: sxchan
-Title: Simple Channel Cross Sections
-Version: 0.1.0
+Package: xchan
+Title: Cross-Section Based Channels
+Version: 0.1.0.9000
 Authors@R: 
     c(
     person("Vincenzo", "Coia", email = "vcoia@bgcengineering.ca", 
            role = c("aut", "cre")),
-    person("Jane", "Wang", email = "jwang@bgcengineering.ca",
-           role = "aut"),
     person("Lucy", "MacKenzie", email = "lmackenzie@bgcengineering.ca",
            role = "aut"),
-    person("Brett", "Eaton", email = "beaton@bgcengineering.ca",
-           role = c("aut")),
+    person("Jane", "Wang", email = "jwang@bgcengineering.ca",
+           role = "aut"),
+    person("Kathleen", "Horita", email = "khorita@bgcengineering.ca",
+           role = "ctb"),
     person("Sarah", "Davidson", email = "sdavidson@bgcengineering.ca",
-           role = "aut")
+           role = "ctb"),
+    person("Brett", "Eaton", email = "beaton@bgcengineering.ca",
+           role = "ctb"),
+    person("Heba", "Abdelmoaty", email = "heba.abdelmoaty@ucalgary.ca",
+           role = "ctb")
     )
 Description: Create and manipulate watercourse geometries for 
     geomorphology applications, with a        
@@ -21,18 +25,26 @@ Description: Create and manipulate watercourse geometries for
 License: CC BY-NC 4.0 + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2
-URL: https://stochagbem.github.io/sxchan/
+RoxygenNote: 7.3.3
+URL: https://fluvtools.github.io/xchan/
 Imports:
-    sf,
     centerline,
+    checkmate,
+    graphics,
+    rlang,
+    sf,
+    stats,
+    terra,
+    units,
+    utils,
     vctrs
 Suggests: 
+    knitr,
+    rmarkdown,
     testthat (>= 3.0.0),
-    units
-Remotes: 
-    atsyplenkov/centerline
+    tibble
+VignetteBuilder: knitr
 Config/testthat/edition: 3
 Depends: 
-    R (>= 2.10)
+    R (>= 3.5)
 LazyData: true

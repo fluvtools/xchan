@@ -1,0 +1,58 @@
+---
+title: "Excluded prototypes"
+subtitle: "Draft code and examples — not part of the installed package"
+output: html_document
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(eval = FALSE)
+```
+
+This document is **not** a package vignette: it is only stored in the source tree next to R prototypes under `excluded/`. Nothing here is exported or guaranteed to work with the current API.
+
+# Dredging
+
+Rectangular dredging and related entry points were moved out of the main package. See `dredgers.R`, `xt_dredge.R`, and `print.xchan_dredger.R` in this folder.
+
+```{r dredging}
+library(xchan)
+
+# Requires profile cross-sections on the channel
+# channel_dredged <- xt_dredge(channel, dredger = dredger_rectangle(depth = 2))
+
+# rect_dredger <- dredger_rectangle(depth = 2, wse = elevation_bank())
+# channel_rect <- xt_dredge(channel, dredger = rect_dredger)
+
+# custom_dredger <- function(channel) { channel }
+# channel_custom <- xt_dredge(channel, dredger = custom_dredger)
+```
+
+# Topographic frame extension
+
+Extenders add synthetic topography beyond the banks for widening experiments. See `extenders.R`, `xt_extend_frame.R`, `xt_extend_frame_left.R`, `xt_extend_frame_right.R`, and `print.xchan_extender.R`.
+
+```{r extenders}
+# channel_extended <- xt_extend_frame(channel, extender = extender_flat(extent = 20))
+# channel_sloped <- xt_extend_frame(channel, extender = extender_slope(extent = 30, slope = 0.02))
+# channel_asymmetric <- xt_extend_frame_left(channel, extender = extender_slope(extent = 30, slope = 0.05))
+# channel_asymmetric <- xt_extend_frame_right(channel_asymmetric, extender = extender_flat(extent = 20))
+```
+
+# Bankline tracers
+
+Tracer factories and `xt_trace_banks()` connect bank points into continuous banklines. See `tracers.R`, `tracer_spline.R`, `tracer_concaveman.R`, and `xt_trace_banks.R`.
+
+```{r tracers}
+linear_tracer <- tracer_linear()
+spline_tracer <- tracer_spline(degree = 3, smoothing = 0.5)
+
+# linear_banks <- xt_trace_banks(channel, tracer = linear_tracer)
+# spline_banks <- xt_trace_banks(channel, tracer = spline_tracer)
+# linear_banks <- xt_trace_banks(channel, tracer = "linear")
+
+custom_tracer <- function(channel) {
+  NULL
+}
+
+# custom_banks <- xt_trace_banks(channel, tracer = custom_tracer)
+```

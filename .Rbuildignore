@@ -1,4 +1,4 @@
-^sxchan\.Rproj$
+^xchan\.Rproj$
 ^\.Rproj\.user$
 ^README\.Rmd$
 ^\.github$
@@ -6,3 +6,12 @@
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
+^data-raw$
+^joss-paper\.(Rmd|html|pdf)$
+^paper\.bib$
+^[.]?air[.]toml$
+^\.vscode$
+^excluded$
+^Rplots\.pdf$
+^\.positai$
+^\.claude$
