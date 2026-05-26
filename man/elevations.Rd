@@ -48,7 +48,7 @@ An elevation specification is a small callable wrapper: passing it as \code{refe
 }
 \details{
 \code{\link[=elevation_thalweg]{elevation_thalweg()}} takes no arguments: each section contributes its stored
-\code{thalweg_elev} value — the minimum elevation among sampled profile vertices —
+\code{thalweg_elev} value — the minimum elevation among wetted profile vertices —
 documented as a return component of each \code{xs_profile}.
 }
 \section{Functions}{

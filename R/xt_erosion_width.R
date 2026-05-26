@@ -86,7 +86,6 @@ erosion_width_left <- function(xs, dv) {
   # Get left bank information
   left_bank_coords <- get_left_bank_coords(xs)
   x_old <- left_bank_coords[1]
-  y_bank <- left_bank_coords[2]
 
   # Get left side coordinates (negative distances)
   left_nodes <- xs$coordinates[
@@ -97,26 +96,27 @@ erosion_width_left <- function(xs, dv) {
   x_extent <- min(left_nodes[, 1])
   # Maximum width available for leftward erosion (positive number).
   dw_max_available <- x_old - x_extent
-
-  # find_dx_for_volume_right() only searches in the +x direction, so mirror
-  # the left-side topo across x = 0 (including x_old) to turn leftward
-  # erosion into a rightward search. The function returns a delta in the
-  # flipped frame, which is the erosion width directly.
-  left_nodes_flipped <- left_nodes
-  left_nodes_flipped[, 1] <- -left_nodes_flipped[, 1]
-  dw <- find_dx_for_volume_right(
-    v = dv,
-    x0 = -x_old,
-    topo = left_nodes_flipped,
-    thalweg_height = y_bank,
-    valley = "left"
-  )
-
-  if (dw > dw_max_available) {
+  v_max <- erosion_volume_left(xs, dw_max_available)
+  if (dv > v_max) {
     stop(
       "Cannot calculate erosion width for given change in volume, as ",
       "the cross section extent is surpassed."
     )
   }
-  dw
+  # Erosion volume is monotone in width, but widened sections can introduce
+  # vertical cliffs and flat-bottom plateaus where a closed-form inverse based
+  # on the left-bank topo is no longer reliable. Use bisection against the
+  # actual volume helper so `xt_erosion_width()` stays consistent with the
+  # geometry produced by `widen_profile_left()`.
+  lo <- 0
+  hi <- dw_max_available
+  for (i in seq_len(60L)) {
+    mid <- (lo + hi) / 2
+    if (erosion_volume_left(xs, mid) >= dv) {
+      hi <- mid
+    } else {
+      lo <- mid
+    }
+  }
+  hi
 }

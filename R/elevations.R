@@ -6,7 +6,7 @@
 #' (aligned with `[[i]]` storage order of the [`xchan`]).
 #'
 #' [elevation_thalweg()] takes no arguments: each section contributes its stored
-#' `thalweg_elev` value — the minimum elevation among sampled profile vertices —
+#' `thalweg_elev` value — the minimum elevation among wetted profile vertices —
 #' documented as a return component of each `xs_profile`.
 #'
 #' @section Profile geometry and naming:

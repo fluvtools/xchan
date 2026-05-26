@@ -321,8 +321,8 @@ snap_profile_outer_banks_to_plan_width <- function(profile, plan_width, tol = 1e
       )
     }
   }
-  tw <- which.min(profile$coordinates[, 2L])
+  tw <- thalweg_indices_from_banks(profile$coordinates, get_bank_distances(profile))
   profile$thalwegs <- tw
-  profile$thalweg_elev <- profile$coordinates[tw, 2L]
+  profile$thalweg_elev <- min(profile$coordinates[tw, 2L])
   profile
 }

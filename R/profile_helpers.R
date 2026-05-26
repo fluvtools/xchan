@@ -22,6 +22,33 @@ get_thalweg_coords <- function(profile) {
   profile$coordinates[profile$thalwegs, , drop = FALSE]
 }
 
+#' Row index of a bank vertex at a distance (cliff-aware)
+#'
+#' When several vertices share a bank distance, pick the channel bank rather
+#' than the opposite end of a vertical cliff face.
+#'
+#' @noRd
+profile_bank_index_at_distance <- function(
+  nodes,
+  xd,
+  y_bank,
+  tol = 1e-10
+) {
+  at <- abs(nodes[, 1] - xd) < tol
+  if (!any(at)) {
+    return(which.min(abs(nodes[, 1] - xd)))
+  }
+  at_idx <- which(at)
+  if (length(at_idx) == 1L) {
+    return(at_idx)
+  }
+  ys <- nodes[at_idx, 2]
+  if (min(ys) < y_bank - tol) {
+    return(at_idx[which.max(ys)])
+  }
+  at_idx[which.min(abs(ys - y_bank))]
+}
+
 #' Get bank distances from profile
 #'
 #' Extract the distance values of bank points from a profile cross section.
@@ -52,6 +79,84 @@ water_interval_ranges <- function(bank_d) {
   matrix(bank_d, ncol = 2L, byrow = TRUE)
 }
 
+#' Row indices of bank contacts along the profile polyline
+#'
+#' For duplicate `x` values at a vertical cliff, the wetted side is the last row
+#' at a left-bank distance and the first row at a right-bank distance.
+#'
+#' @noRd
+bank_contact_row_indices <- function(coords, bank_d, tol = 1e-10) {
+  checkmate::assert_matrix(coords, mode = "numeric", ncols = 2L)
+  checkmate::assert_numeric(bank_d, any.missing = FALSE, min.len = 2L)
+  vapply(
+    seq_along(bank_d),
+    function(i) {
+      at <- which(abs(coords[, 1] - bank_d[i]) < tol)
+      if (!length(at)) {
+        return(which.min(abs(coords[, 1] - bank_d[i])))
+      }
+      if (i %% 2L == 1L) {
+        max(at)
+      } else {
+        min(at)
+      }
+    },
+    integer(1L)
+  )
+}
+
+#' Row mask for wetted profile vertices
+#'
+#' @noRd
+wetted_vertex_mask <- function(coords, bank_d, tol = 1e-10) {
+  checkmate::assert_matrix(coords, mode = "numeric", ncols = 2L)
+  mask <- rep(FALSE, nrow(coords))
+  bank_rows <- bank_contact_row_indices(coords, bank_d, tol = tol)
+  intervals <- matrix(bank_rows, ncol = 2L, byrow = TRUE)
+  for (k in seq_len(nrow(intervals))) {
+    lo <- intervals[k, 1]
+    hi <- intervals[k, 2]
+    mask[seq.int(lo, hi)] <- TRUE
+  }
+  mask
+}
+
+#' Thalweg row indices from wetted intervals only
+#'
+#' @noRd
+thalweg_indices_from_banks <- function(coords, bank_d, tol = 1e-10) {
+  if (length(bank_d) <= 2L) {
+    return(thalweg_end_indices(coords, min(coords[, 2]), tol = tol))
+  }
+  wetted <- wetted_vertex_mask(coords, bank_d, tol = tol)
+  if (!any(wetted)) {
+    stop("No wetted profile vertices found between bank pairs.", call. = FALSE)
+  }
+  y_min <- min(coords[wetted, 2])
+  at_thalweg <- wetted & abs(coords[, 2] - y_min) < tol
+  runs <- rle(at_thalweg)
+  ends <- cumsum(runs$lengths)
+  starts <- ends - runs$lengths + 1L
+  keep <- which(runs$values)
+  unique(sort(c(starts[keep], ends[keep])))
+}
+
+#' Thalweg endpoints along flat bed within wetted intervals
+#'
+#' @noRd
+wetted_bed_thalweg_indices <- function(coords, bank_d, y_bed, tol = 1e-10) {
+  wetted <- wetted_vertex_mask(coords, bank_d, tol = tol)
+  at_bed <- wetted & abs(coords[, 2] - y_bed) < tol
+  if (!any(at_bed)) {
+    return(thalweg_indices_from_banks(coords, bank_d, tol = tol))
+  }
+  runs <- rle(at_bed)
+  ends <- cumsum(runs$lengths)
+  starts <- ends - runs$lengths + 1L
+  keep <- which(runs$values)
+  unique(sort(c(starts[keep], ends[keep])))
+}
+
 #' Profile coordinate matrices for sf export (one list element per water interval)
 #'
 #' @noRd
@@ -76,11 +181,15 @@ profile_coord_parts_for_extent <- function(
     return(list(coords))
   }
 
-  intervals <- water_interval_ranges(get_bank_distances(profile))
+  intervals <- matrix(
+    bank_contact_row_indices(coords, get_bank_distances(profile)),
+    ncol = 2L,
+    byrow = TRUE
+  )
   lapply(seq_len(nrow(intervals)), function(k) {
     lo <- intervals[k, 1]
     hi <- intervals[k, 2]
-    coords[coords[, 1] >= lo & coords[, 1] <= hi, , drop = FALSE]
+    coords[seq.int(lo, hi), , drop = FALSE]
   })
 }
 
@@ -196,11 +305,29 @@ snap_profile_bank_positions <- function(profile, left_x, right_x) {
     stop("Left bank distance must be less than right bank distance.", call. = FALSE)
   }
   coords <- profile$coordinates
-  lb <- get_left_bank_index(profile)
-  rb <- get_right_bank_index(profile)
-  coords[lb, 1] <- left_x
-  coords[rb, 1] <- right_x
+  bank_d <- get_bank_distances(profile)
+  bank_elev <- get_bank_elevations(profile)
+  left_i <- which.min(bank_d)
+  right_i <- which.max(bank_d)
+  lb <- profile$banks[left_i]
+  rb <- profile$banks[right_i]
+  left_at <- abs(coords[, 1] - coords[lb, 1]) < 1e-10
+  right_at <- abs(coords[, 1] - coords[rb, 1]) < 1e-10
+  coords[left_at, 1] <- left_x
+  coords[right_at, 1] <- right_x
+  coords <- coords[order(coords[, 1]), , drop = FALSE]
   profile$coordinates <- coords
+  bank_d[left_i] <- left_x
+  bank_d[right_i] <- right_x
+  profile$banks <- vapply(
+    seq_along(bank_d),
+    function(i) {
+      profile_bank_index_at_distance(coords, bank_d[i], bank_elev[i])
+    },
+    integer(1L)
+  )
+  profile$thalwegs <- wetted_bed_thalweg_indices(coords, bank_d, profile$thalweg_elev)
+  profile$thalweg_elev <- min(coords[profile$thalwegs, 2])
   profile
 }
 

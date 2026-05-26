@@ -275,6 +275,60 @@ polygon_sans_holes_one <- function(sfg) {
   }
 }
 
+#' Tolerance for collapsing along-transect breakpoint duplicates.
+#'
+#' @noRd
+transect_breakpoint_tolerance <- function(chord_len) {
+  max(1e-8, chord_len * 1e-8)
+}
+
+#' Collapse sorted along-transect distances within a tolerance.
+#'
+#' @noRd
+collapse_sorted_tvals <- function(tvals, tol) {
+  n <- length(tvals)
+  if (n <= 1L) {
+    return(tvals)
+  }
+  out <- numeric(0)
+  i <- 1L
+  while (i <= n) {
+    j <- i
+    while (j < n && (tvals[j + 1L] - tvals[j]) <= tol) {
+      j <- j + 1L
+    }
+    out <- c(out, mean(tvals[i:j]))
+    i <- j + 1L
+  }
+  out
+}
+
+#' Keep only breakpoints where wet/dry state changes along the transect.
+#'
+#' @noRd
+transect_transition_tvals <- function(tvals, start, u, banks_geom, crs) {
+  if (length(tvals) < 2L) {
+    return(tvals)
+  }
+  mid_t <- (tvals[-1L] + tvals[-length(tvals)]) / 2
+  mid_xy <- cbind(
+    start[1L] + mid_t * u[1L],
+    start[2L] + mid_t * u[2L]
+  )
+  mid_pts <- sf::st_sfc(
+    lapply(seq_len(nrow(mid_xy)), function(i) sf::st_point(mid_xy[i, ])),
+    crs = crs
+  )
+  wet <- lengths(sf::st_intersects(mid_pts, banks_geom)) > 0L
+  keep <- rep(FALSE, length(tvals))
+  keep[1L] <- wet[1L]
+  if (length(wet) > 1L) {
+    keep[2L:(length(tvals) - 1L)] <- wet[-length(wet)] != wet[-1L]
+  }
+  keep[length(tvals)] <- wet[length(wet)]
+  tvals[keep]
+}
+
 #' Refine filled chord with holed footprint: add vertices where transect meets
 #' island (hole) boundaries.
 #'
@@ -324,16 +378,21 @@ transect_refine_with_island_boundaries <- function(chord_filled, banks_holed) {
   mat <- rbind(co, xy_bd)
   tvals <- apply(mat, 1L, function(r) proj_along(r))
   keep <- tvals >= -1e-5 & tvals <= chord_len + 1e-5
-  mat <- mat[keep, , drop = FALSE]
   tvals <- tvals[keep]
+  tvals <- pmin(pmax(tvals, 0), chord_len)
+  tvals <- sort(tvals)
 
-  ord <- order(tvals)
-  mat <- mat[ord, , drop = FALSE]
-  tvals <- tvals[ord]
+  tol_t <- transect_breakpoint_tolerance(chord_len)
+  tvals <- collapse_sorted_tvals(tvals, tol_t)
+  tvals[abs(tvals) <= tol_t] <- 0
+  tvals[abs(tvals - chord_len) <= tol_t] <- chord_len
+  tvals <- collapse_sorted_tvals(sort(tvals), tol_t)
+  tvals <- transect_transition_tvals(tvals, start, u, banks_geom, crs)
 
-  tq <- round(tvals, 8)
-  keep_u <- !duplicated(tq)
-  mat <- mat[keep_u, , drop = FALSE]
+  mat <- cbind(
+    start[1L] + tvals * u[1L],
+    start[2L] + tvals * u[2L]
+  )
 
   if (nrow(mat) < 2L) {
     chord_filled
@@ -503,7 +562,8 @@ plan_bank_boundary_chains <- function(banks_filled, cl) {
     1:2,
     drop = TRUE
   ]
-  cross_mid <- tangent[1L] * (mid_xy[2L] - axis_pt[2L]) -
+  cross_mid <- tangent[1L] *
+    (mid_xy[2L] - axis_pt[2L]) -
     tangent[2L] * (mid_xy[1L] - axis_pt[1L])
   if (cross_mid > 0) {
     list(

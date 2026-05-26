@@ -36,9 +36,10 @@ new_profile <- function(coords, bankpoints) {
     integer(1)
   )
 
-  # 4. Thalwegs are re-computed as coordinate row indices.
-  thalweg_idx <- which(coords[, 2] == min(coords[, 2]))
-  thalweg_elev <- min(coords[, 2])
+  # 4. Thalwegs are the lowest wetted vertices only; dry floodplain
+  # depressions outside bank-paired water intervals do not qualify.
+  thalweg_idx <- thalweg_indices_from_banks(coords, bankpoints)
+  thalweg_elev <- min(coords[thalweg_idx, 2])
 
   profile <- list(
     coordinates = coords,

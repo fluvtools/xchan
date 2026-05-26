@@ -39,6 +39,20 @@ test_that("Eroded volume is correct when eroding into a gully.", {
   expect_equal(erosion_volume_left(xs, 4 - dw), 4.0625, tolerance = 1e-6)
 })
 
+test_that("erosion_width_left inverts erosion_volume_left on widened gully", {
+  xs <- suppressWarnings(xchan:::widen_profile_left(gully_profile(), 0.75))
+  target_dw <- c(0.25, 0.5, 1.25, 2.25, 3.25)
+  target_v <- vapply(target_dw, erosion_volume_left, numeric(1), xs = xs)
+  recovered_dw <- vapply(target_v, erosion_width_left, numeric(1), xs = xs)
+  expect_equal(
+    vapply(recovered_dw, erosion_volume_left, numeric(1), xs = xs),
+    target_v,
+    tolerance = 1e-6
+  )
+  expect_equal(recovered_dw[1:2], c(0.25, 0.25), tolerance = 1e-6)
+  expect_equal(recovered_dw[3:5], target_dw[3:5], tolerance = 1e-6)
+})
+
 test_that("widen_profile_left increases width by dw and fixes the right bank", {
   xs <- gully_profile()
   w0 <- xt_width(xs)

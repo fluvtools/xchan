@@ -10,16 +10,24 @@
 flip_profile <- function(profile) {
   checkmate::assert_class(profile, "xs_profile")
   te_orig <- profile$thalweg_elev
-  # Flip all distance coordinates
-  nodes <- coords_all(profile)
-  nodes[, 1] <- -nodes[, 1]
-  # Flip bank distances
   bank_distances <- get_bank_distances(profile)
-  banks <- sort(-bank_distances)
-  out <- new_profile(nodes, bankpoints = banks)
-  # Mirror does not change elevations; rebuilding standardizes banks/thalweg.
-  # can shift min(z) (interpolation, float equality on thalweg rows).
+  bank_elev <- get_bank_elevations(profile)
+  nodes <- coords_all(profile)
+  nodes <- nodes[rev(seq_len(nrow(nodes))), , drop = FALSE]
+  nodes[, 1] <- -nodes[, 1]
+
+  out <- profile
+  out$coordinates <- nodes
+  flipped_bank_d <- sort(-bank_distances)
+  flipped_bank_elev <- rev(bank_elev)
+  out$banks <- vapply(
+    seq_along(flipped_bank_d),
+    function(i) {
+      profile_bank_index_at_distance(nodes, flipped_bank_d[i], flipped_bank_elev[i])
+    },
+    integer(1L)
+  )
   out$thalweg_elev <- te_orig
-  out$thalwegs <- which.min(abs(out$coordinates[, 2] - te_orig))
+  out$thalwegs <- thalweg_indices_from_banks(out$coordinates, flipped_bank_d)
   out
 }

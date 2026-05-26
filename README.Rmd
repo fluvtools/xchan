@@ -21,6 +21,7 @@ devtools::load_all(quiet = TRUE)
 
 <!-- badges: start -->
 [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
+[![R-CMD-check](https://github.com/fluvtools/xchan/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/fluvtools/xchan/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 The purpose of xchan is to create, widen (erode), and calculate attributes of watercourse geometries. It does this by encoding a channel by its cross sections, which can be planimetric (line segments arranged on a map) or profile (slices into the landscape).
