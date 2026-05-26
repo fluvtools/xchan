@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# xchan <a href="https://stochagbem.github.io/xchan/"><img src="man/figures/logo.png" align="right" height="139" alt="xchan website" /></a>
+# xchan <a href="https://fluvtools.github.io/xchan/"><img src="man/figures/logo.png" align="right" height="139" alt="xchan website" /></a>
 
 <!-- badges: start -->
 
@@ -44,11 +44,11 @@ modified, or compared across many sections.
 ## Installation
 
 You can install the development version of xchan from
-[GitHub](https://github.com/stochaGBEM/xchan) with:
+[GitHub](https://github.com/fluvtools/xchan) with:
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("stochaGBEM/xchan")
+devtools::install_github("fluvtools/xchan")
 ```
 
 ## Example
@@ -56,9 +56,9 @@ devtools::install_github("stochaGBEM/xchan")
 The package includes spatial data for the Squamish River in British
 Columbia: a bankline polygon and a DEM. It’s possible to create channels
 in other ways; see the [*Getting Started with
-Channels*](https://stochagbem.github.io/xchan/articles/basic_channels.html)
+Channels*](https://fluvtools.github.io/xchan/articles/basic_channels.html)
 and [*Channels with
-Profiles*](https://stochagbem.github.io/xchan/articles/channels_with_profiles.html)
+Profiles*](https://fluvtools.github.io/xchan/articles/channels_with_profiles.html)
 vignettes for more information.
 
 Start by loading the package and unwrapping the packaged DEM, and
@@ -171,7 +171,7 @@ lines(dist, grad, type = "l")
 <img src="man/figures/README-unnamed-chunk-10-1.png" alt="" width="100%" />
 
 To learn more about channel computations like these, see the [*Channel
-Computations*](https://stochagbem.github.io/xchan/articles/channel_computations.html)
+Computations*](https://fluvtools.github.io/xchan/articles/channel_computations.html)
 vignette.
 
 ## xchan in the Context of Other R Packages

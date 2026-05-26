@@ -17,7 +17,7 @@ devtools::load_all(quiet = TRUE)
 
 
 
-# xchan <a href="https://stochagbem.github.io/xchan/"><img src="man/figures/logo.png" align="right" height="139" alt="xchan website" /></a>
+# xchan <a href="https://fluvtools.github.io/xchan/"><img src="man/figures/logo.png" align="right" height="139" alt="xchan website" /></a>
 
 <!-- badges: start -->
 [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
@@ -40,16 +40,16 @@ Many geomorphic workflows rely on cross sections, but the surrounding tasks are 
 
 ## Installation
 
-You can install the development version of xchan from [GitHub](https://github.com/stochaGBEM/xchan) with:
+You can install the development version of xchan from [GitHub](https://github.com/fluvtools/xchan) with:
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("stochaGBEM/xchan")
+devtools::install_github("fluvtools/xchan")
 ```
 
 ## Example
 
-The package includes spatial data for the Squamish River in British Columbia: a bankline polygon and a DEM. It's possible to create channels in other ways; see the [_Getting Started with Channels_](https://stochagbem.github.io/xchan/articles/basic_channels.html) and [_Channels with Profiles_](https://stochagbem.github.io/xchan/articles/channels_with_profiles.html) vignettes for more information.
+The package includes spatial data for the Squamish River in British Columbia: a bankline polygon and a DEM. It's possible to create channels in other ways; see the [_Getting Started with Channels_](https://fluvtools.github.io/xchan/articles/basic_channels.html) and [_Channels with Profiles_](https://fluvtools.github.io/xchan/articles/channels_with_profiles.html) vignettes for more information.
 
 Start by loading the package and unwrapping the packaged DEM, and plotting the bankline polygon on top.
 
@@ -117,7 +117,7 @@ plot(dist, grad)
 lines(dist, grad, type = "l")
 ```
 
-To learn more about channel computations like these, see the [_Channel Computations_](https://stochagbem.github.io/xchan/articles/channel_computations.html) vignette.
+To learn more about channel computations like these, see the [_Channel Computations_](https://fluvtools.github.io/xchan/articles/channel_computations.html) vignette.
 
 ## xchan in the Context of Other R Packages
 

@@ -97,4 +97,4 @@ While you can make this plot smoother by increasing the window size, it's worth 
 
 ## Other Computations
 
-If these computations don't cover your needs, you can take a manual approach by first exporting the channel with `xt_as_sfc()` and then using the [**sf**](https://r-spatial.github.io/sf/) package to conduct the calculations. But of course, not until after [submitting an Issue](https://github.com/stochaGBEM/xchan/issues) on the xchan GitHub repository! Your feedback is greatly appreciated.
+If these computations don't cover your needs, you can take a manual approach by first exporting the channel with `xt_as_sfc()` and then using the [**sf**](https://r-spatial.github.io/sf/) package to conduct the calculations. But of course, not until after [submitting an Issue](https://github.com/fluvtools/xchan/issues) on the xchan GitHub repository! Your feedback is greatly appreciated.
