@@ -34,7 +34,7 @@
 #' xs <- xchan:::new_profile(coords, bankpoints = c(-1, 1))
 #' xt_width(xs)
 #'
-#' # xt_width(demo_channel)
+#' # xt_width(Squamish_channel)
 #' @export
 #' @rdname widths
 xt_width <- function(x, ...) {

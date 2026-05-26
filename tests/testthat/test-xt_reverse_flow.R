@@ -1,6 +1,6 @@
 test_that("xt_reverse_flow preserves thalweg elevations from elevation_thalweg()", {
   skip_if_not_installed("sf")
-  ch <- xt_generate_plan(demo_bankline, n = 6)
+  ch <- xt_generate_plan(Squamish_bankline, n = 6)
   w <- as.numeric(xt_width(ch))
   prof <- lapply(seq_along(w), function(i) {
     half <- w[i] / 2
@@ -16,7 +16,7 @@ test_that("xt_reverse_flow preserves thalweg elevations from elevation_thalweg()
 
 test_that("xt_reverse_flow works when channel has plan only (no profile)", {
   skip_if_not_installed("sf")
-  ch <- xt_generate_plan(demo_bankline, n = 6)
+  ch <- xt_generate_plan(Squamish_bankline, n = 6)
   expect_no_error(r <- xt_reverse_flow(ch))
   p0 <- channel_plan(ch)
   p1 <- channel_plan(r)
@@ -31,7 +31,7 @@ test_that("xt_reverse_flow works when channel has plan only (no profile)", {
 
 test_that("xt_reverse_flow is self-inverse on plan (double reverse restores coordinates)", {
   skip_if_not_installed("sf")
-  ch <- xt_generate_plan(demo_bankline, n = 4)
+  ch <- xt_generate_plan(Squamish_bankline, n = 4)
   ch2 <- xt_reverse_flow(xt_reverse_flow(ch))
   expect_identical(
     sf::st_coordinates(channel_plan(ch)),

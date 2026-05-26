@@ -97,7 +97,7 @@
 #' (`orient_plan_xs_left_first()`). This does not require splitting the bank
 #' polygon by the axis.
 #' @examples
-#' bl <- sf::st_sfc(demo_bankline, crs = 3005)
+#' bl <- sf::st_sfc(Squamish_bankline, crs = 3005)
 #' channel <- xt_generate_plan(bl, n = 100)
 #'
 #' # With a custom axis (e.g. user-defined line along the channel)

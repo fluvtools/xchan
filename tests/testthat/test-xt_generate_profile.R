@@ -132,8 +132,8 @@ test_that("xt_generate_profile clips infinite extent to valid DEM cells", {
 test_that("xt_generate_profile works on package demo DEM", {
   skip_if_not_installed("terra")
 
-  channel <- xt_generate_plan(demo_bankline, spacing = 200)
-  dem <- terra::unwrap(demo_dem)
+  channel <- xt_generate_plan(Squamish_bankline, spacing = 200)
+  dem <- terra::unwrap(Squamish_dem)
 
   expect_no_error(
     xt_generate_profile(channel, dem, sample_freq = 2)

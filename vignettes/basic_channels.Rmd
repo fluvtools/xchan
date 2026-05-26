@@ -90,13 +90,13 @@ Note that an axis is automatically generated in the direction based on the order
 ## Creating Channels from Spatial Data
 
 ```{r}
-plot(demo_bankline)
+plot(Squamish_bankline)
 ```
 
 Cross sections can be auto-generated from the bankline polygon. You can specify the cross section spacing directly (`spacing`), or by the desired number of cross sections (`n`). Unlike `xt_as_channel()`, which converts cross-section-like objects into cross sections, `xt_generate_plan()` uses an unrelated object -- the bankline polygon -- to generate cross sections.
 
 ```{r}
-squamish <- xt_generate_plan(demo_bankline, spacing = 100)
+squamish <- xt_generate_plan(Squamish_bankline, spacing = 100)
 plot(squamish)
 ```
 

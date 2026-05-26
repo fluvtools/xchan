@@ -52,5 +52,5 @@ coords <- matrix(c(-1, 0, 0, -1, 1, 0), ncol = 2, byrow = TRUE)
 xs <- xchan:::new_profile(coords, bankpoints = c(-1, 1))
 xt_width(xs)
 
-# xt_width(demo_channel)
+# xt_width(Squamish_channel)
 }

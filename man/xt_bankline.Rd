@@ -43,7 +43,7 @@ The footprint is stored as attribute \code{"bankline"} on the \code{\link{xchan}
 \examples{
 \donttest{
 library(sf)
-ch <- xt_generate_plan(demo_bankline, n = 12)
+ch <- xt_generate_plan(Squamish_bankline, n = 12)
 bl <- xt_bankline(ch)
 plot(bl)
 }

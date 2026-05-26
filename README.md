@@ -59,9 +59,9 @@ library(terra)
 #> The following objects are masked from 'package:testthat':
 #> 
 #>     compare, describe
-dem <- unwrap(demo_dem)
+dem <- unwrap(Squamish_dem)
 plot(dem)
-plot(demo_bankline, add = TRUE, col = "lightblue")
+plot(Squamish_bankline, add = TRUE, col = "lightblue")
 ```
 
 <img src="man/figures/README-unnamed-chunk-2-1.png" alt="" width="100%" />
@@ -70,7 +70,7 @@ Generate planimetric cross sections from the bankline polygon, spaced
 apart by 100 meters.
 
 ``` r
-squamish <- xt_generate_plan(demo_bankline, spacing = 100)
+squamish <- xt_generate_plan(Squamish_bankline, spacing = 100)
 plot(squamish)
 ```
 
@@ -80,7 +80,7 @@ If your workflow requires profile cross sections, you can generate them
 by sampling the DEM at each planimetric cross section.
 
 ``` r
-squamish <- xt_generate_profile(squamish, unwrap(demo_dem), sample_freq = 2)
+squamish <- xt_generate_profile(squamish, unwrap(Squamish_dem), sample_freq = 2)
 print(squamish, n = 10)
 #> xchan channel with 210 cross sections.
 #> CRS: EPSG:3005 

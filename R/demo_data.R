@@ -8,7 +8,7 @@
 #'
 #' @source Natural Resources Canada CanVec Hydro (`BC_Hydro_shp`). The source
 #' data were extracted to the Squamish River demo area and transformed to
-#' EPSG:3005 for package use. See `data-raw/demo_bankline.R` for the local
+#' EPSG:3005 for package use. See `data-raw/Squamish_bankline.R` for the local
 #' processing script.
 #'
 #' @name Squamish_bankline
@@ -26,7 +26,7 @@
 #' @source CanElevation - Canada Digital Elevation Models (HRDEM 1 m DTM).
 #' The source GeoTIFF is intentionally not tracked in git because it is large;
 #' recreate it with `data-raw/download_dem.py`, then process it with
-#' `data-raw/demo_dem.R`.
+#' `data-raw/Squamish_dem.R`.
 #'
 #' @name Squamish_dem
 "Squamish_dem"

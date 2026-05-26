@@ -47,7 +47,7 @@
   )
 }
 
-inject_demo_islands <- function(
+inject_Squamish_islands <- function(
   bankline = NULL,
   fractions = c(0.56, 0.56),
   width_fractions = c(0.14, 0.14),
@@ -63,7 +63,7 @@ inject_demo_islands <- function(
     stop("Package 'xchan' is required.")
   }
   if (is.null(bankline)) {
-    bankline <- xchan::demo_bankline
+    bankline <- xchan::Squamish_bankline
   }
   if (!inherits(bankline, "sfc")) {
     stop("`bankline` must be an sfc polygon geometry.")
@@ -149,7 +149,7 @@ inject_demo_islands <- function(
   )
 }
 
-inject_demo_island <- function(
+inject_Squamish_island <- function(
   bankline = NULL,
   fraction = 0.56,
   width_fraction = 0.16,
@@ -158,7 +158,7 @@ inject_demo_island <- function(
   n_sections = 121,
   n_quad_segs = 12
 ) {
-  out <- inject_demo_islands(
+  out <- inject_Squamish_islands(
     bankline = bankline,
     fractions = fraction,
     width_fractions = width_fraction,
@@ -174,10 +174,10 @@ inject_demo_island <- function(
 
 # ---- quick play examples ----
 # library(xchan)
-# source("excluded/fraser_island_sandbox.R")
+# source("excluded/Squamish_island_sandbox.R")
 #
 # Single long/narrow island:
-one <- inject_demo_island(
+one <- inject_Squamish_island(
   fraction = 0.57,
   width_fraction = 0.12,
   length_fraction = 1.1,
@@ -185,7 +185,7 @@ one <- inject_demo_island(
 )
 
 # Two islands configured to overlap the same cross sections:
-two <- inject_demo_islands(
+two <- inject_Squamish_islands(
   fractions = c(0.57, 0.57),
   width_fractions = c(0.12, 0.12),
   length_fractions = c(1.0, 1.0),
@@ -193,7 +193,7 @@ two <- inject_demo_islands(
 )
 length(two$overlap_sections) # should usually be > 0
 
-plot(demo_bankline, col = "grey90", border = "grey50")
+plot(Squamish_bankline, col = "grey90", border = "grey50")
 plot(two$bankline_with_islands, add = TRUE, col = "#9ecae1", border = "#3182bd")
 plot(two$islands, add = TRUE, col = "#fdd0a2", border = "#e6550d")
 plot(
