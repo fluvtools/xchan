@@ -1,10 +1,10 @@
 target_crs <- 3005
-bankline <- sf::read_sf(
-  here::here("data-raw", "Squamish_river.gpkg")
+Squamish_bankline <- sf::read_sf(
+  here::here("data-raw", "Squamish_River.gpkg")
 )
 
-bankline <- sf::st_transform(bankline, target_crs)
+Squamish_bankline <- sf::st_transform(Squamish_bankline, target_crs)
 
-bankline <- bankline |> sf::st_union()
+Squamish_bankline <- Squamish_bankline |> sf::st_union()
 
-usethis::use_data(bankline, overwrite = TRUE)
+usethis::use_data(Squamish_bankline, overwrite = TRUE)
