@@ -7,6 +7,7 @@
 
 [![Lifecycle:
 stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
+[![R-CMD-check](https://github.com/fluvtools/xchan/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/fluvtools/xchan/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 The purpose of xchan is to create, widen (erode), and calculate
@@ -82,19 +83,19 @@ by sampling the DEM at each planimetric cross section.
 ``` r
 squamish <- xt_generate_profile(squamish, unwrap(Squamish_dem), sample_freq = 2)
 print(squamish, n = 10)
-#> xchan channel with 210 cross sections.
+#> xchan channel with 112 cross sections.
 #> CRS: EPSG:3005 
-#> <xsection 1> 73.43041 m
-#> <xsection 2> 164.4219 m
-#> <xsection 3> 240.8035 m
-#> <xsection 4> 180.8825 m
-#> <xsection 5> 224.0966 m
-#> <xsection 6> 220.0995 m
-#> <xsection 7> 217.2965 m
-#> <xsection 8> 167.5596 m
-#> <xsection 9> 151.5943 m
-#> <xsection 10> 142.1572 m
-#> ... 200 more cross sections
+#> <xsection 1> 73.62634 m
+#> <xsection 2> 164.7955 m
+#> <xsection 3> 240.1455 m
+#> <xsection 4> 180.8922 m
+#> <xsection 5> 224.1492 m
+#> <xsection 6> 219.8685 m
+#> <xsection 7> 215.3935 m
+#> <xsection 8> 166.9173 m
+#> <xsection 9> 151.5558 m
+#> <xsection 10> 141.68 m
+#> ... 102 more cross sections
 #> With profile view
 ```
 
@@ -133,7 +134,7 @@ Calculate the new channel widths.
 ``` r
 head(xt_width(widened_squamish))
 #> Units: [m]
-#> [1]  93.43041 184.42194 260.80346 200.88251 244.09664 240.09946
+#> [1]  93.62634 184.79546 260.14547 200.89217 244.14918 239.86845
 ```
 
 Calculate the channel gradient, using the lower bank as the reference
@@ -142,8 +143,8 @@ elevation.
 ``` r
 grad <- xt_gradient(widened_squamish, elevation = elevation_bank(min))
 head(grad)
-#> [1]           NA  0.003343378  0.005047202  0.002018437  0.007469054
-#> [6] -0.006375794
+#> [1]           NA -0.004667642  0.003988773  0.006854403 -0.002018570
+#> [6] -0.002408227
 ```
 
 Plot the gradient along the channel axis.
