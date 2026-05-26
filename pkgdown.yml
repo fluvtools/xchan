@@ -1,8 +1,11 @@
-pandoc: 3.1.11
-pkgdown: 2.1.1
+pandoc: 3.8.3
+pkgdown: 2.2.0
 pkgdown_sha: ~
-articles: {}
-last_built: 2024-10-02T17:32Z
+articles:
+  basic_channels: basic_channels.html
+  channel_computations: channel_computations.html
+  channels_with_profiles: channels_with_profiles.html
+last_built: 2026-05-26T21:42Z
 urls:
-  reference: https://stochagbem.github.io/sxchan/reference
-  article: https://stochagbem.github.io/sxchan/articles
+  reference: https://fluvtools.github.io/xchan/reference
+  article: https://fluvtools.github.io/xchan/articles
