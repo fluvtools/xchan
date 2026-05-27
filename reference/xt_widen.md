@@ -84,10 +84,40 @@ deliberate.
 ## Examples
 
 ``` r
+channel <- xt_as_channel(rep(1, 6))
+channel <- xt_add_profile(
+  channel,
+  distance = distance,
+  elevation = elevation,
+  section = id,
+  banks = is_bank,
+  data = profile_survey
+)
 xt_widen(channel, dw = 10)
-#> Error: object 'channel' not found
+#> xchan channel with 6 cross sections.
+#> <xsection 1> 20 m
+#> <xsection 2> 22 m
+#> <xsection 3> 18 m
+#> <xsection 4> 25 m
+#> <xsection 5> 21 m
+#> <xsection 6> 19 m
+#> With profile view
 xt_widen(channel, dw = 10, side = side_left(0.75))
-#> Error: object 'channel' not found
+#> xchan channel with 6 cross sections.
+#> <xsection 1> 20 m
+#> <xsection 2> 22 m
+#> <xsection 3> 18 m
+#> <xsection 4> 25 m
+#> <xsection 5> 21 m
+#> <xsection 6> 19 m
+#> With profile view
 xt_widen(channel, dv = 5, side = "right")
-#> Error: object 'channel' not found
+#> xchan channel with 6 cross sections.
+#> <xsection 1> 15 m
+#> <xsection 2> 17 m
+#> <xsection 3> 9.666667 m
+#> <xsection 4> 17.5 m
+#> <xsection 5> 13.5 m
+#> <xsection 6> 10.66667 m
+#> With profile view
 ```

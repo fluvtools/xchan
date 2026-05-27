@@ -147,7 +147,7 @@ vignette).
 
 ``` r
 
-squamish <- xt_generate_plan(Squamish_bankline, spacing = 100)
+squamish <- xt_generate_plan(Squamish_bankline, spacing = 500)
 plot(Squamish_dem)
 plot(squamish, add = TRUE)
 ```
@@ -156,11 +156,11 @@ plot(squamish, add = TRUE)
 
 Now generate the profile cross sections with
 [`xt_generate_profile()`](https://fluvtools.github.io/xchan/reference/xt_generate_profile.md),
-using a 2 meter sample spacing.
+using 10 m sample spacing.
 
 ``` r
 
-squamish <- xt_generate_profile(squamish, Squamish_dem, sample_freq = 2)
+squamish <- xt_generate_profile(squamish, Squamish_dem, sample_freq = 10)
 plot(squamish)
 ```
 

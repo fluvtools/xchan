@@ -17,8 +17,8 @@ vignette).
 library(xchan)
 library(terra)
 #> terra 1.9.27
-squamish <- xt_generate_plan(Squamish_bankline, spacing = 100)
-squamish <- xt_generate_profile(squamish, unwrap(Squamish_dem), sample_freq = 2)
+squamish <- xt_generate_plan(Squamish_bankline, spacing = 500)
+squamish <- xt_generate_profile(squamish, unwrap(Squamish_dem), sample_freq = 10)
 plot(squamish)
 ```
 
@@ -36,7 +36,7 @@ is the canonical distance for the most upstream cross section.
 dist <- xt_distance_downstream(squamish)
 head(dist)
 #> Units: [m]
-#> [1]  50.18844 150.56531 250.94219 351.31906 451.69594 552.07281
+#> [1]  255.5048  766.5143 1277.5239 1788.5334 2299.5430 2810.5525
 ```
 
 As with most computational functions,
@@ -54,7 +54,7 @@ references use a single point, such as the thalweg elevation.
 ``` r
 
 head(xt_elevation(squamish, reference = elevation_thalweg()))
-#> [1] 29.87004 29.67835 28.96646 30.47129 29.35496 28.99189
+#> [1] 28.96575 29.03833 27.89004 27.28948 26.52531 26.08511
 ```
 
 Other references summarize multiple points with a function. For example,
@@ -65,7 +65,7 @@ lower of the two.
 ``` r
 
 head(xt_elevation(squamish, reference = elevation_bank()))
-#> [1] 29.92008 29.67835 28.98304 30.47911 30.35909 30.07387
+#> [1] 28.96575 29.03833 27.89004 27.30238 26.57464 26.61994
 ```
 
 Another option is to summarize elevations along the wetted bed with
@@ -75,7 +75,7 @@ Here we take the median.
 ``` r
 
 head(xt_elevation(squamish, reference = elevation_bed(median)))
-#> [1] 30.61064 30.83188 29.09699 30.87355 30.18919 30.03429
+#> [1] 29.09387 30.84412 27.99080 27.51826 27.27586 28.36863
 ```
 
 To learn more about the different elevation references, see the
@@ -105,8 +105,8 @@ grad <- xt_gradient(
   elevation = elevation_thalweg()
 )
 head(grad)
-#> [1]           NA           NA           NA -0.001999857 -0.001731839
-#> [6]  0.001099172
+#> [1]           NA           NA           NA -0.001326036 -0.000896632
+#> [6] -0.001059816
 ```
 
 By default, truncated windows are not allowed, which is why the first

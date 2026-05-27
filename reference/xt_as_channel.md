@@ -117,6 +117,7 @@ xt_as_channel(c(10, 15, 12, 8))
 #> <xsection 4> 8 (-)
 
 library(sf)
+#> Linking to GEOS 3.12.1, GDAL 3.8.4, PROJ 9.4.0; sf_use_s2() is TRUE
 seg <- st_sfc(
   st_linestring(matrix(c(-0.2, 0.3, 0.2, 1), nrow = 2, byrow = TRUE)),
   st_linestring(matrix(c(0.1, 0.1, 1, 1), nrow = 2, byrow = TRUE)),

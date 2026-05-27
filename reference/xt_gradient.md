@@ -91,14 +91,20 @@ stored as plain numeric for the ratio).
 ## Examples
 
 ``` r
+channel <- xt_as_channel(rep(1, 6))
+channel <- xt_add_profile(
+  channel,
+  distance = distance,
+  elevation = elevation,
+  section = id,
+  banks = is_bank,
+  data = profile_survey
+)
 gradient <- xt_gradient(channel, elevation = elevation_thalweg())
-#> Error: object 'channel' not found
 
 # Interior stations only (one NA first and last when before = after = 1)
 gradient <- xt_gradient(channel, before = 1L, after = 1L, complete = FALSE)
-#> Error: object 'channel' not found
 
 # Smoothed using a wider full window
 gradient <- xt_gradient(channel, before = 2L, after = 2L, elevation = elevation_bank(.f = mean))
-#> Error: object 'channel' not found
 ```

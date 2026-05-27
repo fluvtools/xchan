@@ -34,6 +34,21 @@ Object of the same class as `x`, with exaggerated profile elevations.
 ## Examples
 
 ``` r
-# xs <- xchan:::new_profile(matrix(c(-2, 10, 0, 8, 2, 10), ncol = 2, byrow = TRUE), c(-1, 1))
-# xt_exaggerate_relief(xs)
+channel <- xt_as_channel(rep(1, 6))
+channel <- xt_add_profile(
+  channel,
+  distance = distance,
+  elevation = elevation,
+  section = id,
+  banks = is_bank,
+  data = profile_survey
+)
+profile_object <- channel[[1]]$profile
+xt_exaggerate_relief(profile_object)
+#> xchan profile cross section
+#>   Coordinates: 23 points
+#>   Banks: 2 bank points
+#>   Thalwegs: 1 thalweg points
+#>   Distance range: -15 15 
+#>   Elevation range: -1 9.193686 
 ```

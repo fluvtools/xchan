@@ -62,12 +62,18 @@ reference requires it.
 ## Examples
 
 ``` r
+channel <- xt_as_channel(rep(1, 6))
+channel <- xt_add_profile(
+  channel,
+  distance = distance,
+  elevation = elevation,
+  section = id,
+  banks = is_bank,
+  data = profile_survey
+)
 elevations <- xt_elevation(channel, reference = elevation_thalweg())
-#> Error: object 'channel' not found
 
 # One section
 xs <- channel[[1]]
-#> Error: object 'channel' not found
 z <- xt_elevation(xs, reference = elevation_thalweg())
-#> Error: object 'xs' not found
 ```

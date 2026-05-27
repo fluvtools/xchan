@@ -31,16 +31,3 @@ This function performs basic validation on plan view cross sections:
 
 - **Basic geometry**: Ensures all geometries are valid LINESTRING
   objects
-
-## Examples
-
-``` r
-# Validate cross sections
-result <- validate_plan(plan_geometries)
-#> Error in validate_plan(plan_geometries): could not find function "validate_plan"
-if (!result$valid) {
-  cat("Issues found:\n")
-  cat(paste("-", result$issues, collapse = "\n"))
-}
-#> Error: object 'result' not found
-```

@@ -47,8 +47,19 @@ when the channel has a CRS with a defined linear unit.
 ## Examples
 
 ``` r
-xt_erosion_width(channel, dv = 50, side = "left")
-#> Error: object 'channel' not found
-xt_erosion_width(channel, dv = 50, side = side_left(0.75))
-#> Error: object 'channel' not found
+channel <- xt_as_channel(rep(1, 6))
+channel <- xt_add_profile(
+  channel,
+  distance = distance,
+  elevation = elevation,
+  section = id,
+  banks = is_bank,
+  data = profile_survey
+)
+xt_erosion_width(channel, dv = 0.5, side = "left")
+#> Units: [m]
+#> [1] 0.3017721 0.3017721 0.1399481 0.1923096 0.1923096 0.1399481
+xt_erosion_width(channel, dv = 0.5, side = side_left(0.75))
+#> Units: [m]
+#> [1] 0.3564365 0.3564365 0.1471566 0.2080922 0.2080922 0.1471566
 ```

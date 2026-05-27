@@ -73,36 +73,37 @@ plot(Squamish_bankline, add = TRUE, col = "lightblue")
 ![](reference/figures/README-unnamed-chunk-2-1.png)
 
 Generate planimetric cross sections from the bankline polygon, spaced
-apart by 100 meters.
+500 m apart.
 
 ``` r
 
-squamish <- xt_generate_plan(Squamish_bankline, spacing = 100)
+squamish <- xt_generate_plan(Squamish_bankline, spacing = 500)
 plot(squamish)
 ```
 
 ![](reference/figures/README-squamish_plan-1.png)
 
 If your workflow requires profile cross sections, you can generate them
-by sampling the DEM at each planimetric cross section.
+by sampling the DEM at each planimetric cross section
+(`sample_freq = 10` m).
 
 ``` r
 
-squamish <- xt_generate_profile(squamish, unwrap(Squamish_dem), sample_freq = 2)
+squamish <- xt_generate_profile(squamish, unwrap(Squamish_dem), sample_freq = 10)
 print(squamish, n = 10)
-#> xchan channel with 112 cross sections.
+#> xchan channel with 22 cross sections.
 #> CRS: EPSG:3005 
-#> <xsection 1> 73.62634 m
-#> <xsection 2> 164.7955 m
-#> <xsection 3> 240.1455 m
-#> <xsection 4> 180.8922 m
-#> <xsection 5> 224.1492 m
-#> <xsection 6> 219.8685 m
-#> <xsection 7> 215.3935 m
-#> <xsection 8> 166.9173 m
-#> <xsection 9> 151.5558 m
-#> <xsection 10> 141.68 m
-#> ... 102 more cross sections
+#> <xsection 1> 236.3148 m
+#> <xsection 2> 179.3417 m
+#> <xsection 3> 134.5391 m
+#> <xsection 4> 134.118 m
+#> <xsection 5> 128.8095 m
+#> <xsection 6> 207.5271 m
+#> <xsection 7> 208.5275 m
+#> <xsection 8> 231.71 m
+#> <xsection 9> 156.1819 m
+#> <xsection 10> 298.2928 m
+#> ... 12 more cross sections
 #> With profile view
 ```
 
@@ -115,7 +116,7 @@ looks like in its full extent, with an exaggeration factor of 1.5.
 
 ``` r
 
-plot(squamish[[10]], extent = "full", exaggerate = 1.5)
+plot(squamish[[10]], view = "profile", extent = "full", exaggerate = 1.5)
 ```
 
 ![](reference/figures/README-unnamed-chunk-4-1.png)
@@ -145,7 +146,7 @@ Calculate the new channel widths.
 
 head(xt_width(widened_squamish))
 #> Units: [m]
-#> [1]  93.62634 184.79546 260.14547 200.89217 244.14918 239.86845
+#> [1] 256.3148 199.3417 154.5391 154.1180 148.8095 227.5271
 ```
 
 Calculate the channel gradient, using the lower bank as the reference
@@ -155,8 +156,8 @@ elevation.
 
 grad <- xt_gradient(widened_squamish, elevation = elevation_bank(min))
 head(grad)
-#> [1]           NA -0.004667642  0.003988773  0.006854403 -0.002018570
-#> [6] -0.002408227
+#> [1]            NA -0.0010525391 -0.0016985503 -0.0012870551 -0.0006677397
+#> [6] -0.0016238536
 ```
 
 Plot the gradient along the channel axis.

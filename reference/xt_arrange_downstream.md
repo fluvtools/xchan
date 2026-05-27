@@ -64,6 +64,13 @@ with default `min` is unchanged until you reorder.
 ``` r
 # \donttest{
 ch <- xt_generate_plan(Squamish_bankline, n = 15)
+#> Warning: Inf replaced by maximum positive value
+#> Warning: Inf replaced by maximum positive value
+#> Warning: Inf replaced by maximum positive value
+#> Warning: Inf replaced by maximum positive value
+#> Warning: Inf replaced by maximum positive value
+#> Warning: Inf replaced by maximum positive value
+#> Warning: Inf replaced by maximum positive value
 ch_down <- xt_arrange_downstream(ch)
 ch_up <- xt_arrange_upstream(ch)
 # }

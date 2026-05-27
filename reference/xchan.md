@@ -31,6 +31,18 @@ x[i, ...]
   same CRS as the plan geometry; see
   [`xt_axis()`](https://fluvtools.github.io/xchan/reference/xt_axis.md).
 
+- x:
+
+  An `xchan` object.
+
+- i:
+
+  Indices selecting cross sections by position.
+
+- ...:
+
+  Must be empty.
+
 ## Value
 
 An object of class `"xchan"` / `"xchan_geom"`.

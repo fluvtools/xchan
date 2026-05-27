@@ -86,12 +86,21 @@ unit)^3 when a linear CRS unit is defined.</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># \donttest{</span></span></span>
-<span class="r-in"><span><span class="fu">xt_erosion_volume</span><span class="op">(</span><span class="va">channel</span>, dw <span class="op">=</span> <span class="fl">10</span>, side <span class="op">=</span> <span class="st">"left"</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'channel' not found</span>
-<span class="r-in"><span><span class="fu">xt_erosion_volume</span><span class="op">(</span><span class="va">channel</span>, dw <span class="op">=</span> <span class="fl">10</span>, side <span class="op">=</span> <span class="fu"><a href="sides.html">side_left</a></span><span class="op">(</span><span class="fl">0.75</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'channel' not found</span>
-<span class="r-in"><span><span class="co"># }</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">channel</span> <span class="op">&lt;-</span> <span class="fu"><a href="xt_as_channel.html">xt_as_channel</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">channel</span> <span class="op">&lt;-</span> <span class="fu"><a href="xt_add_profile.html">xt_add_profile</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">channel</span>,</span></span>
+<span class="r-in"><span>  distance <span class="op">=</span> <span class="va">distance</span>,</span></span>
+<span class="r-in"><span>  elevation <span class="op">=</span> <span class="va">elevation</span>,</span></span>
+<span class="r-in"><span>  section <span class="op">=</span> <span class="va">id</span>,</span></span>
+<span class="r-in"><span>  banks <span class="op">=</span> <span class="va">is_bank</span>,</span></span>
+<span class="r-in"><span>  data <span class="op">=</span> <span class="va">profile_survey</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">xt_erosion_volume</span><span class="op">(</span><span class="va">channel</span>, dw <span class="op">=</span> <span class="fl">0.5</span>, side <span class="op">=</span> <span class="st">"left"</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Units: [m^3]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.8799651 0.8799651 1.8799651 1.3799651 1.3799651 1.8799651</span>
+<span class="r-in"><span><span class="fu">xt_erosion_volume</span><span class="op">(</span><span class="va">channel</span>, dw <span class="op">=</span> <span class="fl">0.5</span>, side <span class="op">=</span> <span class="fu"><a href="sides.html">side_left</a></span><span class="op">(</span><span class="fl">0.75</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Units: [m^3]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.7606054 0.7606054 1.7606054 1.2606054 1.2606054 1.7606054</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
