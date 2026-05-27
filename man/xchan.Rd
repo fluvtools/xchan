@@ -16,6 +16,12 @@ xchan(sections, crs = NULL, axis = NULL)
 
 \item{axis}{Optional reach-scale axis as a single \code{LINESTRING} (\code{sfc} or
 \code{sfg}), same CRS as the plan geometry; see \code{\link[=xt_axis]{xt_axis()}}.}
+
+\item{x}{An \code{xchan} object.}
+
+\item{i}{Indices selecting cross sections by position.}
+
+\item{...}{Must be empty.}
 }
 \value{
 An object of class \code{"xchan"} / \code{"xchan_geom"}.

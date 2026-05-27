@@ -61,6 +61,15 @@ comes from \code{\link[=xt_elevation]{xt_elevation()}} and \code{s} from downstr
 convention as \code{\link[=xt_distance_downstream]{xt_distance_downstream()}}, stored as plain numeric for the ratio).
 }
 \examples{
+channel <- xt_as_channel(rep(1, 6))
+channel <- xt_add_profile(
+  channel,
+  distance = distance,
+  elevation = elevation,
+  section = id,
+  banks = is_bank,
+  data = profile_survey
+)
 gradient <- xt_gradient(channel, elevation = elevation_thalweg())
 
 # Interior stations only (one NA first and last when before = after = 1)

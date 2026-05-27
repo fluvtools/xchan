@@ -36,8 +36,15 @@ Estimates volume removed per cross section for a given total width increase \cod
 split between banks according to \code{side}.
 }
 \examples{
-\donttest{
-xt_erosion_volume(channel, dw = 10, side = "left")
-xt_erosion_volume(channel, dw = 10, side = side_left(0.75))
-}
+channel <- xt_as_channel(rep(1, 6))
+channel <- xt_add_profile(
+  channel,
+  distance = distance,
+  elevation = elevation,
+  section = id,
+  banks = is_bank,
+  data = profile_survey
+)
+xt_erosion_volume(channel, dw = 0.5, side = "left")
+xt_erosion_volume(channel, dw = 0.5, side = side_left(0.75))
 }

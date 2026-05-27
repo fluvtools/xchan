@@ -14,8 +14,17 @@
 #'   channel, carrying [units::units()] when the channel has a CRS with a
 #'   defined linear unit.
 #' @examples
-#' xt_erosion_width(channel, dv = 50, side = "left")
-#' xt_erosion_width(channel, dv = 50, side = side_left(0.75))
+#' channel <- xt_as_channel(rep(1, 6))
+#' channel <- xt_add_profile(
+#'   channel,
+#'   distance = distance,
+#'   elevation = elevation,
+#'   section = id,
+#'   banks = is_bank,
+#'   data = profile_survey
+#' )
+#' xt_erosion_width(channel, dv = 0.5, side = "left")
+#' xt_erosion_width(channel, dv = 0.5, side = side_left(0.75))
 #' @export
 xt_erosion_width <- function(
   channel,

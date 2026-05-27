@@ -98,10 +98,10 @@
 #' polygon by the axis.
 #' @examples
 #' bl <- sf::st_sfc(Squamish_bankline, crs = 3005)
-#' channel <- xt_generate_plan(bl, n = 100)
+#' channel <- xt_generate_plan(bl, n = 20)
 #'
 #' # With a custom axis (e.g. user-defined line along the channel)
-#' # channel <- xt_generate_plan(bl, n = 100, axis = my_axis)
+#' # channel <- xt_generate_plan(bl, n = 20, axis = my_axis)
 #' @export
 xt_generate_plan <- function(
   banks,
@@ -624,7 +624,7 @@ point_bank_chain <- function(xy, chains, tol) {
 }
 
 #' @noRd
-transect_connects_opposite_banks <- function(seg, chains, ctx) {
+transect_connects_opposite_banks <- function(seg, chains, ctx, strict = FALSE) {
   m <- sf::st_coordinates(seg)
   if (nrow(m) < 2L) {
     return(FALSE)
@@ -645,8 +645,9 @@ transect_connects_opposite_banks <- function(seg, chains, ctx) {
   toward_ctr <- abs(sum(chord * ctx$n_in)) / chord_len
   along_width <- abs(sum(chord * ctx$n_width)) / chord_len
   # Concave bulges: minimum-width chords can run along one bank (high
-  # along_width, negligible toward_ctr). Normal cross sections span the channel.
-  if (toward_ctr < 0.03 && along_width > 0.85) {
+  # along_width, weak toward_ctr) while still hitting opposite chains.
+  toward_min <- if (strict) 0.42 else 0.03
+  if (along_width > 0.85 && toward_ctr < toward_min) {
     return(FALSE)
   }
   TRUE
@@ -709,7 +710,7 @@ shortest_opposite_bank_transect <- function(
       intersect = TRUE,
       reposition = TRUE
     )[[1]]
-    if (!transect_connects_opposite_banks(seg, bank_chains, ctx)) {
+    if (!transect_connects_opposite_banks(seg, bank_chains, ctx, strict = TRUE)) {
       next
     }
     w <- as.numeric(sf::st_length(seg))
@@ -742,7 +743,7 @@ minimum_width_opposite_bank_transect <- function(
   }
 
   valid_transect <- function(seg) {
-    transect_connects_opposite_banks(seg, bank_chains, ctx)
+    transect_connects_opposite_banks(seg, bank_chains, ctx, strict = TRUE)
   }
 
   calc_width <- function(angle) {
@@ -752,8 +753,8 @@ minimum_width_opposite_bank_transect <- function(
       bankline = banks_filled,
       maxd = maxd,
       intersect = TRUE,
-      reposition = FALSE
-    )
+      reposition = TRUE
+    )[[1]]
     if (!valid_transect(seg)) {
       return(Inf)
     }

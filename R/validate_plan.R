@@ -12,14 +12,6 @@
 #' - **Basic geometry**: Ensures all geometries are valid LINESTRING objects
 #'
 #' @keywords internal
-#'
-#' @examples
-#' # Validate cross sections
-#' result <- validate_plan(plan_geometries)
-#' if (!result$valid) {
-#'   cat("Issues found:\n")
-#'   cat(paste("-", result$issues, collapse = "\n"))
-#' }
 validate_plan <- function(plan) {
   if (!inherits(plan, "sfc_LINESTRING")) {
     return(list(

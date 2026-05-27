@@ -184,6 +184,9 @@ normalize_xchan_subset_positions <- function(n, i) {
   ii
 }
 
+#' @param x An `xchan` object.
+#' @param i Indices selecting cross sections by position.
+#' @param ... Must be empty.
 #' @describeIn xchan Subset by section index; preserves \code{crs}, \code{axis},
 #' \code{bankline}, and \code{section_i} (parent list positions; see \code{\link{xt_section_id}}).
 #' @export

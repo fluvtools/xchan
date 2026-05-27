@@ -96,15 +96,15 @@ Squamish_dem <- unwrap(Squamish_dem)
 This can be used together with the river's bankline polygon to first generate planimetric cross sections (as we did in the [_Getting Started with Channels_](basic_channels.html) vignette).
 
 ```{r}
-squamish <- xt_generate_plan(Squamish_bankline, spacing = 100)
+squamish <- xt_generate_plan(Squamish_bankline, spacing = 500)
 plot(Squamish_dem)
 plot(squamish, add = TRUE)
 ```
 
-Now generate the profile cross sections with `xt_generate_profile()`, using a 2 meter sample spacing.
+Now generate the profile cross sections with `xt_generate_profile()`, using 10 m sample spacing.
 
 ```{r}
-squamish <- xt_generate_profile(squamish, Squamish_dem, sample_freq = 2)
+squamish <- xt_generate_profile(squamish, Squamish_dem, sample_freq = 10)
 plot(squamish)
 ```
 

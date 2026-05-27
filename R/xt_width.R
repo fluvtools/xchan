@@ -25,14 +25,17 @@
 #'   numeric).
 #'
 #' @examples
-#' library(sf)
-#' seg <- st_sfc(
-#'   st_linestring(matrix(c(-1, 0, 1, 0), ncol = 2, byrow = TRUE)),
-#'   crs = 3005
+#' channel <- xt_as_channel(rep(1, 6))
+#' channel <- xt_add_profile(
+#'   channel,
+#'   distance = distance,
+#'   elevation = elevation,
+#'   section = id,
+#'   banks = is_bank,
+#'   data = profile_survey
 #' )
-#' coords <- matrix(c(-1, 0, 0, -1, 1, 0), ncol = 2, byrow = TRUE)
-#' xs <- xchan:::new_profile(coords, bankpoints = c(-1, 1))
-#' xt_width(xs)
+#' profile_object <- channel[[1]]$profile
+#' xt_width(profile_object)
 #'
 #' # xt_width(Squamish_channel)
 #' @export

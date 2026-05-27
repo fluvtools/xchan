@@ -17,6 +17,7 @@ devtools::load_all(quiet = TRUE)
 
 
 
+
 # xchan <a href="https://fluvtools.github.io/xchan/"><img src="man/figures/logo.png" align="right" height="139" alt="xchan website" /></a>
 
 <!-- badges: start -->
@@ -61,27 +62,31 @@ plot(dem)
 plot(Squamish_bankline, add = TRUE, col = "lightblue")
 ```
 
-Generate planimetric cross sections from the bankline polygon, spaced apart by 100 meters.
+
+Generate planimetric cross sections from the bankline polygon, spaced 500 m apart.
 
 ```{r squamish_plan}
-squamish <- xt_generate_plan(Squamish_bankline, spacing = 100)
+squamish <- xt_generate_plan(Squamish_bankline, spacing = 500)
 plot(squamish)
 ```
 
-If your workflow requires profile cross sections, you can generate them by sampling the DEM at each planimetric cross section.
+
+If your workflow requires profile cross sections, you can generate them by sampling the DEM at each planimetric cross section (`sample_freq = 10` m).
 
 ```{r}
-squamish <- xt_generate_profile(squamish, unwrap(Squamish_dem), sample_freq = 2)
+squamish <- xt_generate_profile(squamish, unwrap(Squamish_dem), sample_freq = 10)
 print(squamish, n = 10)
 ```
+
 
 Under the hood, a channel is just a list, as hinted at with the `print()` output.
 
 Including profile cross sections also has the effect of extending the cross sections beyond the banks. Here is what the 10th cross section looks like in its full extent, with an exaggeration factor of 1.5.
 
 ```{r}
-plot(squamish[[10]], extent = "full", exaggerate = 1.5)
+plot(squamish[[10]], view = "profile", extent = "full", exaggerate = 1.5)
 ```
+
 
 Widen the channel by 20 meters on the right bank.
 
@@ -90,17 +95,20 @@ widened_squamish <- xt_widen(squamish, dw = 20, side = "right")
 plot(widened_squamish)
 ```
 
+
 Take a look at the 10th profile cross section now:
 
 ```{r}
 plot(widened_squamish[[10]], extent = "full", exaggerate = 1.5)
 ```
 
+
 Calculate the new channel widths.
 
 ```{r}
 head(xt_width(widened_squamish))
 ```
+
 
 Calculate the channel gradient, using the lower bank as the reference elevation.
 
@@ -109,6 +117,7 @@ grad <- xt_gradient(widened_squamish, elevation = elevation_bank(min))
 head(grad)
 ```
 
+
 Plot the gradient along the channel axis.
 
 ```{r}
@@ -116,6 +125,7 @@ dist <- xt_distance_downstream(widened_squamish)
 plot(dist, grad)
 lines(dist, grad, type = "l")
 ```
+
 
 To learn more about channel computations like these, see the [_Channel Computations_](https://fluvtools.github.io/xchan/articles/channel_computations.html) vignette.
 

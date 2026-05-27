@@ -26,12 +26,4 @@ This function performs basic validation on plan view cross sections:
 \item \strong{Basic geometry}: Ensures all geometries are valid LINESTRING objects
 }
 }
-\examples{
-# Validate cross sections
-result <- validate_plan(plan_geometries)
-if (!result$valid) {
-  cat("Issues found:\n")
-  cat(paste("-", result$issues, collapse = "\n"))
-}
-}
 \keyword{internal}

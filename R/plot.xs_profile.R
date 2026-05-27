@@ -37,6 +37,16 @@
 #'
 #' @examples
 #' # Plot a profile cross section (advanced use)
+#' channel <- xt_as_channel(rep(1, 6))
+#' channel <- xt_add_profile(
+#'   channel,
+#'   distance = distance,
+#'   elevation = elevation,
+#'   section = id,
+#'   banks = is_bank,
+#'   data = profile_survey
+#' )
+#' profile_object <- channel[[1]]$profile
 #' plot(profile_object)
 #'
 #' # Plot with vertical exaggeration

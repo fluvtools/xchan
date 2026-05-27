@@ -25,8 +25,14 @@ along the channel axis (see \code{axis}). Internal helper \code{xt_profile_at()}
 the embedded \code{xs_profile} for that section (requires profile geometry).
 }
 \examples{
-coords <- matrix(c(-2, 10, 0, 8, 2, 10), ncol = 2, byrow = TRUE)
-xs <- xchan:::new_profile(coords, bankpoints = c(-2, 2))
-ch <- xchan:::set_channel_profile(xt_as_channel(c(4, 4), crs = 3005), list(xs, xs))
-xt_xsection_at(ch, 1)
+channel <- xt_as_channel(rep(1, 6))
+channel <- xt_add_profile(
+  channel,
+  distance = distance,
+  elevation = elevation,
+  section = id,
+  banks = is_bank,
+  data = profile_survey
+)
+xt_xsection_at(channel, 1)
 }

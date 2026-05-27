@@ -14,10 +14,17 @@
 #'   For [`xsection`][xsection()], length-one vector. Values carry [units::units()] of (CRS length
 #'   unit)^3 when a linear CRS unit is defined.
 #' @examples
-#' \donttest{
-#' xt_erosion_volume(channel, dw = 10, side = "left")
-#' xt_erosion_volume(channel, dw = 10, side = side_left(0.75))
-#' }
+#' channel <- xt_as_channel(rep(1, 6))
+#' channel <- xt_add_profile(
+#'   channel,
+#'   distance = distance,
+#'   elevation = elevation,
+#'   section = id,
+#'   banks = is_bank,
+#'   data = profile_survey
+#' )
+#' xt_erosion_volume(channel, dw = 0.5, side = "left")
+#' xt_erosion_volume(channel, dw = 0.5, side = side_left(0.75))
 #' @export
 xt_erosion_volume <- function(channel, dw, side = "both") {
   UseMethod("xt_erosion_volume")

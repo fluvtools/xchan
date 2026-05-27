@@ -1,5 +1,5 @@
 Package: xchan
-Title: Cross-Section Based Channels
+Title: Cross Section Watercourse Geometry
 Version: 0.1.0.9000
 Authors@R: 
     c(
@@ -18,10 +18,11 @@ Authors@R:
     person("Heba", "Abdelmoaty", email = "heba.abdelmoaty@ucalgary.ca",
            role = "ctb")
     )
-Description: Create and manipulate watercourse geometries for 
-    geomorphology applications, with a        
-    focus on cross sections. This package extends the sf package, 
-    so geometries can also be manipulated using sf functionality.
+Description: Create and manipulate watercourse geometries for
+    geomorphology applications, with a focus on cross sections.
+    Channels can be encoded with planimetric and profile cross sections,
+    or both. This package extends the sf package, so geometries can also
+    be manipulated using sf functionality.
 License: CC BY-NC 4.0 + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)

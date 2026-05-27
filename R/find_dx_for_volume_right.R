@@ -42,8 +42,9 @@
 #' to the right of `x0`, the function throws an error rather than extrapolating
 #' beyond the cross-section extent.
 #'
-#' For `v = 0`, the convention is adopted where `x0` is always returned, even
-#' in the unusual case where the bank is below thalweg and `valley = "right"`.
+#' For `v = 0`, the convention is adopted where the returned width increment is
+#' always `0`, even in the unusual case where the bank is below thalweg and
+#' `valley = "right"`.
 #'
 #' @examples
 #' topo <- matrix(
@@ -76,8 +77,9 @@
 #'   4.001, x0 = 1, topo = topo, thalweg_height = 11
 #' )
 #'
-#' # No volume to the right of x0 returns x0, unless in the unusual situation
-#' # where the bank is at or below the thalweg height and valley = "right".
+#' # No volume to the right of x0 returns dx = 0, even in the unusual
+#' # situation where the bank is at or below the thalweg height and
+#' # valley = "right".
 #' find_dx_for_volume_right(
 #'   0, x0 = 1, topo = topo, thalweg_height = 11
 #' )
@@ -180,16 +182,17 @@ find_dx_for_volume_right <- function(
   h2 <- y[seg_idx + 1]
   w <- widths[seg_idx]
 
-  # Solve for delta_x in trapezoid using quadratic equation
+  # Solve for the remaining distance within this final trapezoid segment
+  # using the quadratic equation
   # ax^2 + bx - v_remain = 0.
   a <- (h2 - h1) / (2 * w)
   b <- h1
   if (abs(a) < .Machine$double.eps) {
     # Heights equal (rectangle)
-    delta_x <- v_remain / h1
+    delta_x_in_segment <- v_remain / h1
   } else {
-    delta_x <- (-b + sqrt(b^2 + 4 * a * v_remain)) / (2 * a)
+    delta_x_in_segment <- (-b + sqrt(b^2 + 4 * a * v_remain)) / (2 * a)
   }
 
-  delta_x
+  (x[seg_idx] - x0) + delta_x_in_segment
 }

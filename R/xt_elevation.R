@@ -18,6 +18,15 @@
 #' profile geometry must exist when the chosen reference requires it.
 #'
 #' @examples
+#' channel <- xt_as_channel(rep(1, 6))
+#' channel <- xt_add_profile(
+#'   channel,
+#'   distance = distance,
+#'   elevation = elevation,
+#'   section = id,
+#'   banks = is_bank,
+#'   data = profile_survey
+#' )
 #' elevations <- xt_elevation(channel, reference = elevation_thalweg())
 #'
 #' # One section

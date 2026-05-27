@@ -24,6 +24,15 @@ height above each profile's minimum elevation (thalweg baseline). Use this
 to improve visual interpretation in profile and 3D views.
 }
 \examples{
-# xs <- xchan:::new_profile(matrix(c(-2, 10, 0, 8, 2, 10), ncol = 2, byrow = TRUE), c(-1, 1))
-# xt_exaggerate_relief(xs)
+channel <- xt_as_channel(rep(1, 6))
+channel <- xt_add_profile(
+  channel,
+  distance = distance,
+  elevation = elevation,
+  section = id,
+  banks = is_bank,
+  data = profile_survey
+)
+profile_object <- channel[[1]]$profile
+xt_exaggerate_relief(profile_object)
 }
