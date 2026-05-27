@@ -5,7 +5,7 @@ articles:
   basic_channels: basic_channels.html
   channel_computations: channel_computations.html
   channels_with_profiles: channels_with_profiles.html
-last_built: 2026-05-27T09:33Z
+last_built: 2026-05-27T09:49Z
 urls:
   reference: https://fluvtools.github.io/xchan/reference
   article: https://fluvtools.github.io/xchan/articles
