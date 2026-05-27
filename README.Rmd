@@ -18,11 +18,13 @@ devtools::load_all(quiet = TRUE)
 
 
 
+
 # xchan <a href="https://fluvtools.github.io/xchan/"><img src="man/figures/logo.png" align="right" height="139" alt="xchan website" /></a>
 
 <!-- badges: start -->
 [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
 [![R-CMD-check](https://github.com/fluvtools/xchan/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/fluvtools/xchan/actions/workflows/R-CMD-check.yaml)
+[![Codecov test coverage](https://codecov.io/gh/fluvtools/xchan/graph/badge.svg)](https://app.codecov.io/gh/fluvtools/xchan)
 <!-- badges: end -->
 
 The purpose of xchan is to create, widen (erode), and calculate attributes of watercourse geometries. It does this by encoding a channel by its cross sections, which can be planimetric (line segments arranged on a map) or profile (slices into the landscape).
@@ -63,6 +65,7 @@ plot(Squamish_bankline, add = TRUE, col = "lightblue")
 ```
 
 
+
 Generate planimetric cross sections from the bankline polygon, spaced 500 m apart.
 
 ```{r squamish_plan}
@@ -71,12 +74,14 @@ plot(squamish)
 ```
 
 
+
 If your workflow requires profile cross sections, you can generate them by sampling the DEM at each planimetric cross section (`sample_freq = 10` m).
 
 ```{r}
 squamish <- xt_generate_profile(squamish, unwrap(Squamish_dem), sample_freq = 10)
 print(squamish, n = 10)
 ```
+
 
 
 Under the hood, a channel is just a list, as hinted at with the `print()` output.
@@ -88,12 +93,14 @@ plot(squamish[[10]], view = "profile", extent = "full", exaggerate = 1.5)
 ```
 
 
+
 Widen the channel by 20 meters on the right bank.
 
 ```{r}
 widened_squamish <- xt_widen(squamish, dw = 20, side = "right")
 plot(widened_squamish)
 ```
+
 
 
 Take a look at the 10th profile cross section now:
@@ -103,11 +110,13 @@ plot(widened_squamish[[10]], extent = "full", exaggerate = 1.5)
 ```
 
 
+
 Calculate the new channel widths.
 
 ```{r}
 head(xt_width(widened_squamish))
 ```
+
 
 
 Calculate the channel gradient, using the lower bank as the reference elevation.
@@ -118,6 +127,7 @@ head(grad)
 ```
 
 
+
 Plot the gradient along the channel axis.
 
 ```{r}
@@ -125,6 +135,7 @@ dist <- xt_distance_downstream(widened_squamish)
 plot(dist, grad)
 lines(dist, grad, type = "l")
 ```
+
 
 
 To learn more about channel computations like these, see the [_Channel Computations_](https://fluvtools.github.io/xchan/articles/channel_computations.html) vignette.
