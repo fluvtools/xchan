@@ -21,7 +21,6 @@ Given a point within a channel, generate a line segment that goes from
 bank to bank, for a specified angle.
 }
 \note{
-This function is the precursor to generating cross sections with
-\code{xt_generate_xsc()}.
+Used by \code{\link[=xt_generate_plan]{xt_generate_plan()}} (via \code{span_banks_engine()}).
 }
 \keyword{internal}

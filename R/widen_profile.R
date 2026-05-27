@@ -64,31 +64,6 @@ reconcile_profile_banks <- function(profile, bank_elevations = NULL) {
 }
 
 #' @noRd
-profile_indices_at_distances <- function(
-  nodes,
-  distances,
-  choose = c("lowest", "highest")
-) {
-  choose <- match.arg(choose)
-  vapply(
-    distances,
-    function(xd) {
-      at <- abs(nodes[, 1] - xd) < 1e-10
-      if (any(at)) {
-        pick <- if (choose == "lowest") {
-          which.min(nodes[at, 2])
-        } else {
-          which.max(nodes[at, 2])
-        }
-        return(which(at)[pick])
-      }
-      which.min(abs(nodes[, 1] - xd))
-    },
-    integer(1L)
-  )
-}
-
-#' @noRd
 thalweg_end_indices <- function(nodes, y_thalweg, tol = 1e-10) {
   at_thalweg <- abs(nodes[, 2] - y_thalweg) < tol
   if (!any(at_thalweg)) {

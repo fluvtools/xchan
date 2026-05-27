@@ -1,3 +1,10 @@
+#' Full coordinate matrix of a profile cross section.
+#' @noRd
+coords_all <- function(profile) {
+  checkmate::check_class(profile, "xs_profile")
+  profile$coordinates
+}
+
 #' Inject points into a profile cross section matrix
 #'
 #' Inject a point into a 2D cross section matrix,

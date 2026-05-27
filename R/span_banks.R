@@ -7,8 +7,7 @@
 #' @param angle The angle of the line segment, in radians.
 #' @return A line segment spanning from bank to bank.
 #' @keywords internal
-#' @note This function is the precursor to generating cross sections with
-#' `xt_generate_xsc()`.
+#' @note Used by [xt_generate_plan()] (via `span_banks_engine()`).
 span_banks <- function(pt, angle, bankline) {
   bb <- sf::st_bbox(bankline)
   maxd <- sqrt(
