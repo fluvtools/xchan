@@ -48,9 +48,6 @@
 - [`print(`*`<xchan_side>`*`)`](https://fluvtools.github.io/xchan/reference/print.xchan_side.md)
   : Print method for xchan_side objects
 
-- [`print(`*`<xchan_tracer>`*`)`](https://fluvtools.github.io/xchan/reference/print.xchan_tracer.md)
-  : Print method for xchan_tracer objects
-
 - [`print(`*`<xs_profile>`*`)`](https://fluvtools.github.io/xchan/reference/print.xs_profile.md)
   : Print method for xs_profile objects
 

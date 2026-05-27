@@ -29,5 +29,6 @@ A line segment spanning from bank to bank.
 
 ## Note
 
-This function is the precursor to generating cross sections with
-`xt_generate_xsc()`.
+Used by
+[`xt_generate_plan()`](https://fluvtools.github.io/xchan/reference/xt_generate_plan.md)
+(via `span_banks_engine()`).
