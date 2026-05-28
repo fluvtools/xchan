@@ -63,7 +63,7 @@ inject_Squamish_islands <- function(
     stop("Package 'xchan' is required.")
   }
   if (is.null(bankline)) {
-    bankline <- xchan::Squamish_bankline
+    bankline <- xchan::squamish_bankline
   }
   if (!inherits(bankline, "sfc")) {
     stop("`bankline` must be an sfc polygon geometry.")
@@ -174,7 +174,7 @@ inject_Squamish_island <- function(
 
 # ---- quick play examples ----
 # library(xchan)
-# source("excluded/Squamish_island_sandbox.R")
+# source("excluded/squamish_island_sandbox.R")
 #
 # Single long/narrow island:
 one <- inject_Squamish_island(
@@ -193,7 +193,7 @@ two <- inject_Squamish_islands(
 )
 length(two$overlap_sections) # should usually be > 0
 
-plot(Squamish_bankline, col = "grey90", border = "grey50")
+plot(squamish_bankline, col = "grey90", border = "grey50")
 plot(two$bankline_with_islands, add = TRUE, col = "#9ecae1", border = "#3182bd")
 plot(two$islands, add = TRUE, col = "#fdd0a2", border = "#e6550d")
 plot(

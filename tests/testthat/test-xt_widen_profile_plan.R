@@ -1,10 +1,10 @@
 test_that("xt_widen keeps plan and profile widths aligned on demo channel", {
   skip_if_not_installed("terra")
 
-  squamish <- xt_generate_plan(Squamish_bankline, n = 10)
+  squamish <- xt_generate_plan(squamish_bankline, n = 10)
   squamish <- xt_generate_profile(
     squamish,
-    terra::unwrap(Squamish_dem),
+    terra::unwrap(squamish_dem),
     sample_freq = 10
   )
 

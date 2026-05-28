@@ -24,7 +24,7 @@
 #'
 #' @examples
 #' \donttest{
-#' ch <- xt_generate_plan(Squamish_bankline, n = 5)
+#' ch <- xt_generate_plan(squamish_bankline, n = 5)
 #' xt_distance_downstream(ch)
 #' xt_distance_upstream(ch)
 #' }

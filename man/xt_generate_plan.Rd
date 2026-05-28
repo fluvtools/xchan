@@ -116,7 +116,7 @@ already the first vertex, the segment is reversed with \code{\link[sf:geos_unary
 polygon by the axis.
 }
 \examples{
-bl <- sf::st_sfc(Squamish_bankline, crs = 3005)
+bl <- sf::st_sfc(quamish_bankline, crs = 3005)
 channel <- xt_generate_plan(bl, n = 20)
 
 # With a custom axis (e.g. user-defined line along the channel)

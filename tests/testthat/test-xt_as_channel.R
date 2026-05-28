@@ -71,7 +71,7 @@ test_that("xt_as_channel.sfc builds axis from midpoints when axis is NULL", {
 })
 
 test_that("xt_as_channel stores optional bankline", {
-  bl <- sf::st_geometry(Squamish_bankline)
+  bl <- sf::st_geometry(squamish_bankline)
   ch <- xt_as_channel(c(2, 2), crs = 3005, bankline = bl)
   expect_true(sf::st_equals(xt_bankline(ch), bl, sparse = FALSE)[1L, 1L])
 })
@@ -79,7 +79,7 @@ test_that("xt_as_channel stores optional bankline", {
 test_that("xt_as_channel.xchan can update axis and bankline", {
   ch <- xt_as_channel(c(2, 2), crs = 3005)
   ax <- sf::st_sfc(sf::st_linestring(rbind(c(0, 0), c(20, 0))), crs = 3005)
-  bl <- sf::st_geometry(Squamish_bankline)
+  bl <- sf::st_geometry(squamish_bankline)
   ch2 <- xt_as_channel(ch, axis = ax, bankline = bl)
   expect_true(sf::st_equals(xt_axis(ch2), ax, sparse = FALSE)[1L, 1L])
   expect_true(sf::st_equals(xt_bankline(ch2), bl, sparse = FALSE)[1L, 1L])
