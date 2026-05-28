@@ -97,7 +97,7 @@
 #' (`orient_plan_xs_left_first()`). This does not require splitting the bank
 #' polygon by the axis.
 #' @examples
-#' bl <- sf::st_sfc(quamish_bankline, crs = 3005)
+#' bl <- sf::st_sfc(squamish_bankline, crs = 3005)
 #' channel <- xt_generate_plan(bl, n = 20)
 #'
 #' # With a custom axis (e.g. user-defined line along the channel)
@@ -710,7 +710,9 @@ shortest_opposite_bank_transect <- function(
       intersect = TRUE,
       reposition = TRUE
     )[[1]]
-    if (!transect_connects_opposite_banks(seg, bank_chains, ctx, strict = TRUE)) {
+    if (
+      !transect_connects_opposite_banks(seg, bank_chains, ctx, strict = TRUE)
+    ) {
       next
     }
     w <- as.numeric(sf::st_length(seg))
