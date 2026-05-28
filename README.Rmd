@@ -59,9 +59,9 @@ Start by loading the package and unwrapping the packaged DEM, and plotting the b
 ```{r}
 library(xchan)
 library(terra)
-dem <- unwrap(Squamish_dem)
+dem <- unwrap(squamish_dem)
 plot(dem)
-plot(Squamish_bankline, add = TRUE, col = "lightblue")
+plot(squamish_bankline, add = TRUE, col = "lightblue")
 ```
 
 
@@ -69,7 +69,7 @@ plot(Squamish_bankline, add = TRUE, col = "lightblue")
 Generate planimetric cross sections from the bankline polygon, spaced 500 m apart.
 
 ```{r squamish_plan}
-squamish <- xt_generate_plan(Squamish_bankline, spacing = 500)
+squamish <- xt_generate_plan(squamish_bankline, spacing = 100)
 plot(squamish)
 ```
 
@@ -78,7 +78,7 @@ plot(squamish)
 If your workflow requires profile cross sections, you can generate them by sampling the DEM at each planimetric cross section (`sample_freq = 10` m).
 
 ```{r}
-squamish <- xt_generate_profile(squamish, unwrap(Squamish_dem), sample_freq = 10)
+squamish <- xt_generate_profile(squamish, unwrap(squamish_dem), sample_freq = 10)
 print(squamish, n = 10)
 ```
 
