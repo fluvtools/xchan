@@ -52,17 +52,17 @@ unwrapping the packaged DEM:
 library(xchan)
 
 # Unwrap the packaged DEM to a `terra::SpatRaster` object for use in the package.
-Squamish_dem <- terra::unwrap(Squamish_dem)
+squamish_dem <- terra::unwrap(squamish_dem)
 ```
 
 Generate planimetric cross sections from the bankline polygon and trace
 a channel axis along the cross sections:
 
 ```{r}
-planimetric_cross_sections <- xt_generate_plan(Squamish_bankline, spacing = 200)
+planimetric_cross_sections <- xt_generate_plan(squamish_bankline, spacing = 200)
 centerline <- xt_trace_centerline(planimetric_cross_sections)
 
-plot(Squamish_bankline, col = "grey90", border = "grey50")
+plot(squamish_bankline, col = "grey90", border = "grey50")
 plot(planimetric_cross_sections, add = TRUE, col = "dodgerblue3")
 plot(centerline, add = TRUE, col = "cadetblue1", lwd = 2)
 ```
@@ -72,12 +72,12 @@ Sample the DEM to create profile cross sections:
 ```{r}
 profile_cross_sections <- xt_generate_profile(
   planimetric_cross_sections,
-  Squamish_dem,
+  squamish_dem,
   extent_distance = 150,
   sample_n = 151
 )
 
-plot(Squamish_bankline, col = "grey90", border = "grey50")
+plot(squamish_bankline, col = "grey90", border = "grey50")
 plot(profile_cross_sections, add = TRUE, col = "coral")
 ```
 
@@ -88,7 +88,7 @@ can be inspected directly:
 # Profile cross sections (distance-elevation):
 channel <- xt_generate_profile(
   channel = planimetric_cross_sections,
-  dem = Squamish_dem,
+  dem = squamish_dem,
   extent_distance = 150,
   sample_n = 151
 )
@@ -107,6 +107,6 @@ widened_cross_sections <- xt_widen(
   side = "right"
 )
 
-plot(Squamish_bankline)
+plot(squamish_bankline)
 plot(widened_cross_sections, add = TRUE)
 ```
