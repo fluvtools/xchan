@@ -23,8 +23,8 @@ First, make a channel for the Squamish River (same workflow as in the [Channels 
 ```{r setup}
 library(xchan)
 library(terra)
-squamish <- xt_generate_plan(Squamish_bankline, spacing = 500)
-squamish <- xt_generate_profile(squamish, unwrap(Squamish_dem), sample_freq = 10)
+squamish <- xt_generate_plan(squamish_bankline, spacing = 500)
+squamish <- xt_generate_profile(squamish, unwrap(squamish_dem), sample_freq = 10)
 plot(squamish)
 ```
 

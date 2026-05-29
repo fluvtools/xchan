@@ -1,6 +1,6 @@
 test_that("xt_trace_centerline joins midpoints in axis projection order", {
   skip_if_not_installed("sf")
-  ch <- xt_generate_plan(Squamish_bankline, n = 8)
+  ch <- xt_generate_plan(squamish_bankline, n = 8)
   plan <- channel_plan(ch)
   axis_line <- xt_axis(ch)
   mid_pts <- xchan:::plan_midpoints_sfc(plan)

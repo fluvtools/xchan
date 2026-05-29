@@ -28,7 +28,7 @@
 #' @aliases xt_arrange_upstream
 #' @examples
 #' \donttest{
-#' ch <- xt_generate_plan(Squamish_bankline, n = 15)
+#' ch <- xt_generate_plan(squamish_bankline, n = 15)
 #' ch_down <- xt_arrange_downstream(ch)
 #' ch_up <- xt_arrange_upstream(ch)
 #' }

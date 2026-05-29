@@ -40,7 +40,7 @@ test_that("print.xchan respects n and summarizes remainder", {
 
 test_that("xt_generate_plan clears section keys for print without : ID", {
   skip_if_not_installed("sf")
-  ch <- xt_generate_plan(Squamish_bankline, n = 12)
+  ch <- xt_generate_plan(squamish_bankline, n = 12)
   expect_null(xt_section_id(ch))
   out <- testthat::capture_output(print(ch, n = 4))
   expect_false(grepl(": ID", out, fixed = TRUE))
@@ -48,7 +48,7 @@ test_that("xt_generate_plan clears section keys for print without : ID", {
 
 test_that("print.xchan shows : ID when xt_section_id is non-default", {
   skip_if_not_installed("sf")
-  ch <- xt_generate_plan(Squamish_bankline, n = 5)
+  ch <- xt_generate_plan(squamish_bankline, n = 5)
   xt_section_id(ch) <- paste0("ECCE", 22 + seq_len(length(ch)))
   out <- testthat::capture_output(print(ch, n = 3))
   expect_match(out, ": ID ECCE23", fixed = TRUE)
