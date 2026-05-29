@@ -122,7 +122,7 @@ section.
 
 ``` r
 
-plot(Squamish_bankline)
+plot(squamish_bankline)
 ```
 
 ![](basic_channels_files/figure-html/unnamed-chunk-7-1.png)
@@ -138,7 +138,7 @@ sections.
 
 ``` r
 
-squamish <- xt_generate_plan(Squamish_bankline, spacing = 500)
+squamish <- xt_generate_plan(squamish_bankline, spacing = 500)
 plot(squamish)
 ```
 

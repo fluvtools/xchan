@@ -136,7 +136,7 @@ be unpacked first.
 
 library(terra)
 #> terra 1.9.27
-Squamish_dem <- unwrap(Squamish_dem)
+squamish_dem <- unwrap(squamish_dem)
 ```
 
 This can be used together with the river’s bankline polygon to first
@@ -147,8 +147,8 @@ vignette).
 
 ``` r
 
-squamish <- xt_generate_plan(Squamish_bankline, spacing = 500)
-plot(Squamish_dem)
+squamish <- xt_generate_plan(squamish_bankline, spacing = 500)
+plot(squamish_dem)
 plot(squamish, add = TRUE)
 ```
 
@@ -160,7 +160,7 @@ using 10 m sample spacing.
 
 ``` r
 
-squamish <- xt_generate_profile(squamish, Squamish_dem, sample_freq = 10)
+squamish <- xt_generate_profile(squamish, squamish_dem, sample_freq = 10)
 plot(squamish)
 ```
 

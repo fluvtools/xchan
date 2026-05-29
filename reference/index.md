@@ -2,10 +2,10 @@
 
 ## All functions
 
-- [`Squamish_bankline`](https://fluvtools.github.io/xchan/reference/Squamish_bankline.md)
+- [`squamish_bankline`](https://fluvtools.github.io/xchan/reference/Squamish_bankline.md)
   : Squamish River Bankline
 
-- [`Squamish_dem`](https://fluvtools.github.io/xchan/reference/Squamish_dem.md)
+- [`squamish_dem`](https://fluvtools.github.io/xchan/reference/Squamish_dem.md)
   : Squamish River Demo DEM
 
 - [`elevation_thalweg()`](https://fluvtools.github.io/xchan/reference/elevations.md)

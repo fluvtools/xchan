@@ -7,7 +7,7 @@ demonstration input for generating planimetric cross sections.
 ## Usage
 
 ``` r
-Squamish_bankline
+squamish_bankline
 ```
 
 ## Format
@@ -18,5 +18,5 @@ An `sfc` polygon geometry in EPSG:3005.
 
 Natural Resources Canada CanVec Hydro (`BC_Hydro_shp`). The source data
 were extracted to the Squamish River demo area and transformed to
-EPSG:3005 for package use. See `data-raw/Squamish_bankline.R` for the
+EPSG:3005 for package use. See `data-raw/squamish_bankline.R` for the
 local processing script.

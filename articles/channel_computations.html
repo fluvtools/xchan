@@ -62,7 +62,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Channel Computations</h1>
             
-            <h4 data-toc-skip class="date">2026-05-27</h4>
+            <h4 data-toc-skip class="date">2026-05-29</h4>
       
 
       <div class="d-none name"><code>channel_computations.Rmd</code></div>
@@ -81,8 +81,8 @@ vignette).</p>
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://fluvtools.github.io/xchan/">xchan</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://rspatial.org/" class="external-link">terra</a></span><span class="op">)</span></span>
 <span><span class="co">#&gt; terra 1.9.27</span></span>
-<span><span class="va">squamish</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/xt_generate_plan.html">xt_generate_plan</a></span><span class="op">(</span><span class="va">Squamish_bankline</span>, spacing <span class="op">=</span> <span class="fl">500</span><span class="op">)</span></span>
-<span><span class="va">squamish</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/xt_generate_profile.html">xt_generate_profile</a></span><span class="op">(</span><span class="va">squamish</span>, <span class="fu"><a href="https://rspatial.github.io/terra/reference/wrap.html" class="external-link">unwrap</a></span><span class="op">(</span><span class="va">Squamish_dem</span><span class="op">)</span>, sample_freq <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
+<span><span class="va">squamish</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/xt_generate_plan.html">xt_generate_plan</a></span><span class="op">(</span><span class="va">squamish_bankline</span>, spacing <span class="op">=</span> <span class="fl">500</span><span class="op">)</span></span>
+<span><span class="va">squamish</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/xt_generate_profile.html">xt_generate_profile</a></span><span class="op">(</span><span class="va">squamish</span>, <span class="fu"><a href="https://rspatial.github.io/terra/reference/wrap.html" class="external-link">unwrap</a></span><span class="op">(</span><span class="va">squamish_dem</span><span class="op">)</span>, sample_freq <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">squamish</span><span class="op">)</span></span></code></pre></div>
 <p><img src="channel_computations_files/figure-html/setup-1.png" class="r-plt" alt="" width="700"></p>
 <div class="section level2">
@@ -110,18 +110,18 @@ sections</span></p>
 references use a single point, such as the thalweg elevation.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rspatial.github.io/terra/reference/headtail.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="../reference/xt_elevation.html">xt_elevation</a></span><span class="op">(</span><span class="va">squamish</span>, reference <span class="op">=</span> <span class="fu"><a href="../reference/elevations.html">elevation_thalweg</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 28.96575 29.03833 27.89004 27.28948 26.52531 26.08511</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 28.97444 29.02441 27.96418 27.30000 26.65931 26.44665</span></span></code></pre></div>
 <p>Other references summarize multiple points with a function. For
 example, <code><a href="../reference/elevations.html">elevation_bank()</a></code> applies a function to the two
 outer banks; by default, it returns the lower of the two.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rspatial.github.io/terra/reference/headtail.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="../reference/xt_elevation.html">xt_elevation</a></span><span class="op">(</span><span class="va">squamish</span>, reference <span class="op">=</span> <span class="fu"><a href="../reference/elevations.html">elevation_bank</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 28.96575 29.03833 27.89004 27.30238 26.57464 26.61994</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 28.97444 29.02441 27.96911 27.30532 26.65931 26.44665</span></span></code></pre></div>
 <p>Another option is to summarize elevations along the wetted bed with
 <code><a href="../reference/elevations.html">elevation_bed()</a></code>. Here we take the median.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rspatial.github.io/terra/reference/headtail.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="../reference/xt_elevation.html">xt_elevation</a></span><span class="op">(</span><span class="va">squamish</span>, reference <span class="op">=</span> <span class="fu"><a href="../reference/elevations.html">elevation_bed</a></span><span class="op">(</span><span class="va">median</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 29.09387 30.84412 27.99080 27.51826 27.27586 28.36863</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 29.10169 30.83306 27.98404 27.51204 27.33734 28.34882</span></span></code></pre></div>
 <p>To learn more about the different elevation references, see the
 documentation at <code><a href="../reference/elevations.html">?elevations</a></code>.</p>
 </div>
@@ -147,8 +147,8 @@ reference.</p>
 <span>  elevation <span class="op">=</span> <span class="fu"><a href="../reference/elevations.html">elevation_thalweg</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rspatial.github.io/terra/reference/headtail.html" class="external-link">head</a></span><span class="op">(</span><span class="va">grad</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1]           NA           NA           NA -0.001326036 -0.000896632</span></span>
-<span><span class="co">#&gt; [6] -0.001059816</span></span></code></pre></div>
+<span><span class="co">#&gt; [1]            NA            NA            NA -0.0013278049 -0.0009198343</span></span>
+<span><span class="co">#&gt; [6] -0.0010791907</span></span></code></pre></div>
 <p>By default, truncated windows are not allowed, which is why the first
 three cross sections are <code>NA</code>. This behaviour can be changed
 with the <code>complete</code> argument.</p>

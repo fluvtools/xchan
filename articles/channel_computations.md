@@ -17,8 +17,8 @@ vignette).
 library(xchan)
 library(terra)
 #> terra 1.9.27
-squamish <- xt_generate_plan(Squamish_bankline, spacing = 500)
-squamish <- xt_generate_profile(squamish, unwrap(Squamish_dem), sample_freq = 10)
+squamish <- xt_generate_plan(squamish_bankline, spacing = 500)
+squamish <- xt_generate_profile(squamish, unwrap(squamish_dem), sample_freq = 10)
 plot(squamish)
 ```
 
@@ -54,7 +54,7 @@ references use a single point, such as the thalweg elevation.
 ``` r
 
 head(xt_elevation(squamish, reference = elevation_thalweg()))
-#> [1] 28.96575 29.03833 27.89004 27.28948 26.52531 26.08511
+#> [1] 28.97444 29.02441 27.96418 27.30000 26.65931 26.44665
 ```
 
 Other references summarize multiple points with a function. For example,
@@ -65,7 +65,7 @@ lower of the two.
 ``` r
 
 head(xt_elevation(squamish, reference = elevation_bank()))
-#> [1] 28.96575 29.03833 27.89004 27.30238 26.57464 26.61994
+#> [1] 28.97444 29.02441 27.96911 27.30532 26.65931 26.44665
 ```
 
 Another option is to summarize elevations along the wetted bed with
@@ -75,7 +75,7 @@ Here we take the median.
 ``` r
 
 head(xt_elevation(squamish, reference = elevation_bed(median)))
-#> [1] 29.09387 30.84412 27.99080 27.51826 27.27586 28.36863
+#> [1] 29.10169 30.83306 27.98404 27.51204 27.33734 28.34882
 ```
 
 To learn more about the different elevation references, see the
@@ -105,8 +105,8 @@ grad <- xt_gradient(
   elevation = elevation_thalweg()
 )
 head(grad)
-#> [1]           NA           NA           NA -0.001326036 -0.000896632
-#> [6] -0.001059816
+#> [1]            NA            NA            NA -0.0013278049 -0.0009198343
+#> [6] -0.0010791907
 ```
 
 By default, truncated windows are not allowed, which is why the first

@@ -62,7 +62,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Channels with Profiles</h1>
             
-            <h4 data-toc-skip class="date">2026-05-27</h4>
+            <h4 data-toc-skip class="date">2026-05-29</h4>
       
 
       <div class="d-none name"><code>channels_with_profiles.Rmd</code></div>
@@ -180,19 +180,19 @@ It needs to be unpacked first.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://rspatial.org/" class="external-link">terra</a></span><span class="op">)</span></span>
 <span><span class="co">#&gt; terra 1.9.27</span></span>
-<span><span class="va">Squamish_dem</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/wrap.html" class="external-link">unwrap</a></span><span class="op">(</span><span class="va">Squamish_dem</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">squamish_dem</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/wrap.html" class="external-link">unwrap</a></span><span class="op">(</span><span class="va">squamish_dem</span><span class="op">)</span></span></code></pre></div>
 <p>This can be used together with the river’s bankline polygon to first
 generate planimetric cross sections (as we did in the <a href="basic_channels.html"><em>Getting Started with Channels</em></a>
 vignette).</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">squamish</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/xt_generate_plan.html">xt_generate_plan</a></span><span class="op">(</span><span class="va">Squamish_bankline</span>, spacing <span class="op">=</span> <span class="fl">500</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">Squamish_dem</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">squamish</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/xt_generate_plan.html">xt_generate_plan</a></span><span class="op">(</span><span class="va">squamish_bankline</span>, spacing <span class="op">=</span> <span class="fl">500</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">squamish_dem</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">squamish</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="channels_with_profiles_files/figure-html/unnamed-chunk-7-1.png" class="r-plt" alt="" width="700"></p>
 <p>Now generate the profile cross sections with
 <code><a href="../reference/xt_generate_profile.html">xt_generate_profile()</a></code>, using 10 m sample spacing.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">squamish</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/xt_generate_profile.html">xt_generate_profile</a></span><span class="op">(</span><span class="va">squamish</span>, <span class="va">Squamish_dem</span>, sample_freq <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">squamish</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/xt_generate_profile.html">xt_generate_profile</a></span><span class="op">(</span><span class="va">squamish</span>, <span class="va">squamish_dem</span>, sample_freq <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">squamish</span><span class="op">)</span></span></code></pre></div>
 <p><img src="channels_with_profiles_files/figure-html/unnamed-chunk-8-1.png" class="r-plt" alt="" width="700"></p>
 <p>Take a look at the third cross section.</p>

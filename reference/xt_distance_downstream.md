@@ -53,7 +53,7 @@ if you need sections ordered by downstream chainage.
 
 ``` r
 # \donttest{
-ch <- xt_generate_plan(Squamish_bankline, n = 5)
+ch <- xt_generate_plan(squamish_bankline, n = 5)
 xt_distance_downstream(ch)
 #> Units: [m]
 #> [1]  1124.221  3372.663  5621.105  7869.547 10117.989

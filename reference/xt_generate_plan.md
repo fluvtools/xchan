@@ -157,7 +157,7 @@ bank polygon by the axis.
 ## Examples
 
 ``` r
-bl <- sf::st_sfc(Squamish_bankline, crs = 3005)
+bl <- sf::st_sfc(squamish_bankline, crs = 3005)
 channel <- xt_generate_plan(bl, n = 20)
 
 # With a custom axis (e.g. user-defined line along the channel)

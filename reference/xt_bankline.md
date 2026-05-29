@@ -61,7 +61,7 @@ The footprint is stored as attribute `"bankline"` on the
 ``` r
 # \donttest{
 library(sf)
-ch <- xt_generate_plan(Squamish_bankline, n = 12)
+ch <- xt_generate_plan(squamish_bankline, n = 12)
 bl <- xt_bankline(ch)
 plot(bl)
 
