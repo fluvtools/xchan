@@ -75,10 +75,18 @@ plot(squamish)
 
 
 
-If your workflow requires profile cross sections, you can generate them by sampling the DEM at each planimetric cross section (`sample_freq = 10` m).
+If your workflow requires profile cross sections, you can generate them by sampling the DEM at each planimetric cross section (`sample_freq = 10` m). The packaged Squamish DEM is LiDAR-derived and does not include submerged bathymetry, so the sampled profiles show a flat water surface rather than a channel. We insert a synthetic rectangular channel 3 m deep with `xt_dredge_to()`.
 
 ```{r}
-squamish <- xt_generate_profile(squamish, unwrap(squamish_dem), sample_freq = 10)
+squamish <- xt_generate_profile(
+  squamish,
+  unwrap(squamish_dem),
+  sample_freq = 10
+)
+squamish <- xt_dredge_to(
+  squamish,
+  bathy = bathy_rectangle(depth = 3)
+)
 print(squamish, n = 10)
 ```
 
@@ -89,7 +97,12 @@ Under the hood, a channel is just a list, as hinted at with the `print()` output
 Including profile cross sections also has the effect of extending the cross sections beyond the banks. Here is what the 10th cross section looks like in its full extent, with an exaggeration factor of 1.5.
 
 ```{r}
-plot(squamish[[10]], view = "profile", extent = "full", exaggerate = 1.5)
+plot(
+  squamish[[10]],
+  view = "profile",
+  extent = "full",
+  exaggerate = 1.5
+)
 ```
 
 
@@ -106,7 +119,11 @@ plot(widened_squamish)
 Take a look at the 10th profile cross section now:
 
 ```{r}
-plot(widened_squamish[[10]], extent = "full", exaggerate = 1.5)
+plot(
+  widened_squamish[[10]],
+  extent = "full",
+  exaggerate = 1.5
+)
 ```
 
 
@@ -122,7 +139,10 @@ head(xt_width(widened_squamish))
 Calculate the channel gradient, using the lower bank as the reference elevation.
 
 ```{r}
-grad <- xt_gradient(widened_squamish, elevation = elevation_bank(min))
+grad <- xt_gradient(
+  widened_squamish,
+  elevation = elevation_bank(min)
+)
 head(grad)
 ```
 

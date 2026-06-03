@@ -18,13 +18,14 @@ knitr::opts_chunk$set(
 
 While the [Getting Started with Channels](basic_channels.html) and [Channels with Profiles](channels_with_profiles.html) vignettes cover creating and eroding channels, this vignette covers calculations on channels.
 
-First, make a channel for the Squamish River (same workflow as in the [Channels with Profiles](channels_with_profiles.html) vignette).
+First, make a channel for the Squamish River (same workflow as in the [Channels with Profiles](channels_with_profiles.html) vignette). The packaged Squamish DEM has no bathymetry, so we dredge a 3 m deep rectangular channel after sampling.
 
 ```{r setup}
 library(xchan)
 library(terra)
 squamish <- xt_generate_plan(squamish_bankline, spacing = 500)
 squamish <- xt_generate_profile(squamish, unwrap(squamish_dem), sample_freq = 10)
+squamish <- xt_dredge_to(squamish, bathy = bathy_rectangle(depth = 3))
 plot(squamish)
 ```
 

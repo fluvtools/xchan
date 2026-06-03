@@ -8,6 +8,18 @@ units_deparse <- function(x) {
   }
 }
 
+#' Format a scalar for `cat()` in print methods
+#' @noRd
+format_print_scalar <- function(x) {
+  if (inherits(x, "units")) {
+    paste(format(as.numeric(x), trim = TRUE), units::deparse_unit(x))
+  } else if (is.numeric(x) && length(x) == 1L) {
+    format(x, trim = TRUE)
+  } else {
+    paste(deparse(x, width.cutoff = 500L, nlines = 1L), collapse = "")
+  }
+}
+
 #' Linear length unit for a channel or CRS-bearing geometry
 #'
 #' For [`xchan`] objects, uses the CRS linear unit when set; otherwise falls back

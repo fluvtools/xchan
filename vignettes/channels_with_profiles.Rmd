@@ -88,6 +88,8 @@ Sometimes LiDAR data is available in the form of a digital elevation model (DEM)
 
 LiDAR for the Squamish River comes shipped with the package as a DEM from the [**terra**](https://rspatial.org/terra/) package. It needs to be unpacked first.
 
+The Squamish DEM is LiDAR-derived and does not include submerged bathymetry: sampling it alone yields profile cross sections with a flat water surface at bank elevation rather than a channel. In the workflow below we follow `xt_generate_profile()` with `xt_dredge_to()` and a rectangular bathymetry specification (`bathy_rectangle(depth = 3)`) to insert a synthetic 3 m deep channel.
+
 ```{r}
 library(terra)
 squamish_dem <- unwrap(squamish_dem)
@@ -105,6 +107,15 @@ Now generate the profile cross sections with `xt_generate_profile()`, using 10 m
 
 ```{r}
 squamish <- xt_generate_profile(squamish, squamish_dem, sample_freq = 10)
+```
+
+Because the Squamish DEM has no bathymetry, insert a synthetic 3 m deep rectangular channel:
+
+```{r}
+squamish <- xt_dredge_to(
+  squamish,
+  bathy = bathy_rectangle(depth = 3)
+)
 plot(squamish)
 ```
 
