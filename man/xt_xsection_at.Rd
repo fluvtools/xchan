@@ -21,8 +21,9 @@ smallest chainage along \code{axis}).}
 \description{
 \code{xt_xsection_at()} extracts a single \code{\link{xsection}} by \strong{flow order}: the
 \code{i}th section when rows are sorted by increasing \code{\link[=xt_distance_downstream]{xt_distance_downstream()}}
-along the channel axis (see \code{axis}). Internal helper \code{xt_profile_at()} returns
-the embedded \code{xs_profile} for that section (requires profile geometry).
+along the channel axis (see \code{axis}). Internal helper \code{xt_profile_at()}
+returns the embedded \code{xs_profile} for that section (requires profile
+geometry).
 }
 \examples{
 channel <- xt_as_channel(rep(1, 6))

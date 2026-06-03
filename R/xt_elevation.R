@@ -2,20 +2,24 @@
 #'
 #' @param channel An [`xchan`][xchan()] or [`xsection`][xsection()] object.
 #'   Single-section inputs are wrapped for evaluation.
-#' @param reference An elevation specification from [elevation_thalweg()] and related
+#' @param reference An elevation specification from [elevation_thalweg()] and
+#'   related
 #'   helpers (class `"xchan_elevation"`).
 #' @param ... Reserved for methods (must be empty).
-#' @returns A numeric vector of elevations, one per cross section (`length()` for
+#' @returns A numeric vector of elevations, one per cross section (`length()`
+#'   for
 #'   [`xchan`], or `1` for a single [`xsection`]).
 #'
-#' **Order:** Values follow **storage order only** — position `i` is always `[[i]]` of the
-#' [`xchan()`] list. There is **no** sorting inside `xt_elevation()`. Reorder sections first
-#' (e.g. [xt_arrange_downstream()] for increasing chainage along the axis from its current start;
-#' after [xt_reverse_flow()], the stored axis is reversed so that sort follows hydrologic downstream).
+#' **Order:** Values follow **storage order only** — position `i` is always
+#' `[[i]]` of the [`xchan()`] list. There is **no** sorting inside
+#' `xt_elevation()`. Reorder sections first (e.g. [xt_arrange_downstream()] for
+#' increasing chainage along the axis from its current start; after
+#' [xt_reverse_flow()], the stored axis is reversed so that sort follows
+#' hydrologic downstream).
 #'
 #' @details
-#' Elevation specifications read each cross section's profile from the geometry container;
-#' profile geometry must exist when the chosen reference requires it.
+#' Elevation specifications read each cross section's profile from the geometry
+#' container; profile geometry must exist when the chosen reference requires it.
 #'
 #' @examples
 #' channel <- xt_as_channel(rep(1, 6))

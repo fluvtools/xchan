@@ -57,11 +57,11 @@ devtools::install_github("fluvtools/xchan")
 
 The package includes spatial data for the Squamish River in British
 Columbia: a bankline polygon and a DEM. It’s possible to create channels
-in other ways; see the [*Getting Started with
-Channels*](https://fluvtools.github.io/xchan/articles/basic_channels.html)
-and [*Channels with
-Profiles*](https://fluvtools.github.io/xchan/articles/channels_with_profiles.html)
-vignettes for more information.
+in other ways; see the [Getting Started with Channels
+vignette](https://fluvtools.github.io/xchan/articles/basic_channels.html)
+and [Channels with Profiles
+vignette](https://fluvtools.github.io/xchan/articles/channels_with_profiles.html)
+for more information.
 
 Start by loading the package and unwrapping the packaged DEM, and
 plotting the bankline polygon on top.
@@ -196,9 +196,9 @@ lines(dist, grad, type = "l")
 
 <img src="man/figures/README-unnamed-chunk-9-1.png" alt="" width="100%" />
 
-To learn more about channel computations like these, see the [*Channel
-Computations*](https://fluvtools.github.io/xchan/articles/channel_computations.html)
-vignette.
+To learn more about channel computations like these, see the [Channel
+Computations
+vignette](https://fluvtools.github.io/xchan/articles/channel_computations.html).
 
 ## xchan in the Context of Other R Packages
 

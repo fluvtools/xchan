@@ -1,18 +1,21 @@
 #' Cross-section identity keys on a channel
 #'
-#' Get or set per-section **stable keys** stored on an [`xchan`]. These keys match
-#' the `section` column when attaching tabular profiles with [xt_add_profile()].
+#' Get or set per-section **stable keys** stored on an [`xchan`]. These keys
+#' match the `section` column when attaching tabular profiles with
+#' [xt_add_profile()].
 #'
 #' @param channel An [`xchan`] object.
-#' @param value `NULL` removes stored keys (downstream functions then treat section
-#'   indices as `seq_len(length(channel))`). Otherwise an atomic vector of length
-#'   `length(channel)` with **no** `NA`s and **no** duplicates.
+#' @param value `NULL` removes stored keys (downstream functions then treat
+#'   section
+#'   indices as `seq_len(length(channel))`). Otherwise an atomic vector of
+#'   length `length(channel)` with **no** `NA`s and **no** duplicates.
 #'
 #' @details
 #' Keys are stored as attribute `"section_i"` on the [`xchan`] (the name is
 #' historical). [xchan()] initializes them to `seq_len(n)`.
 #'
-#' @returns For `xt_section_id()`, the stored vector or `NULL`. For assignment, an
+#' @returns For `xt_section_id()`, the stored vector or `NULL`. For assignment,
+#'   an
 #'   updated [`xchan`].
 #'
 #' @seealso [xt_add_profile()], [xchan()]

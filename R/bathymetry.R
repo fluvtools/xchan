@@ -20,10 +20,10 @@
 #'
 #' @section Islands and multi-channel profiles:
 #'
-#' When a cross section has more than one wetted interval (for example a mid-channel
-#' island), every span between consecutive bank contacts is dredged independently,
-#' including the island interior between inner bank pairs. The same target
-#' bathymetry is applied to each span on that section.
+#' When a cross section has more than one wetted interval (for example a
+#' mid-channel island), every span between consecutive bank contacts is dredged
+#' independently, including the island interior between inner bank pairs. The
+#' same target bathymetry is applied to each span on that section.
 #'
 #' @param depth Channel depth below `wse`. Must be non-negative.
 #' @param wse Water surface elevation (WSE) specification (class

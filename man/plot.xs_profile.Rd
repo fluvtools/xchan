@@ -25,7 +25,8 @@ sample distances (default \code{"banks"}).}
 
 \item{add}{Logical. Add to existing plot?}
 
-\item{exaggerate}{Positive numeric. \strong{Physical} vertical exaggeration: passed
+\item{exaggerate}{Positive numeric. \strong{Physical} vertical exaggeration:
+passed
 as \code{asp} to \link[graphics:plot.default]{graphics::plot.default}, so one data unit along \strong{y} is drawn
 with the same length as \code{exaggerate} data units along \strong{x} (default \code{1}
 gives true 1:1 scaling on the device). Values above 1 stretch the profile
@@ -41,9 +42,9 @@ neither. Values may lie outside the data range (empty band on that side).}
 A plot of the profile cross section
 }
 \description{
-Plot a profile cross section showing the elevation profile.
-This function is primarily for internal use or advanced users.
-Most users should work with channel objects using plot_plan() or plot_3d().
+Plot a profile cross section showing the elevation profile. This function is
+primarily for internal use or advanced users. Most users should work with
+channel objects using plot_plan() or plot_3d().
 }
 \details{
 Elevation values are not rescaled; only the plot aspect ratio changes. For

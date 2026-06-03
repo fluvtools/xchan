@@ -22,23 +22,21 @@ distance–elevation space (no CRS); \code{"3d"} for 3D multilinestrings built b
 mapping profile elevations onto plan coordinates (same CRS as the plan).}
 
 \item{extent}{\code{"banks"} restricts geometry to the bank-to-bank span in each
-representation; \code{"full"} uses the full sampled profile span (and for
-\code{what = "plan"}, map segments spanning each profile's horizontal range);
-\code{"wetted"} keeps only \strong{water} intervals between consecutive bank
-contacts (dry islands excluded), so each cross section may be a
-\code{MULTILINESTRING} when an island splits the channel. For \code{what = "plan"}
-with \code{"full"}, if there is no profile view a warning is issued and
-bank-to-bank geometries are returned instead. For \code{"wetted"} without
-profiles, water intervals are taken from plan vertices (even count,
-alternating water / land / water).}
+representation; \code{"full"} uses the full sampled profile span (and for \code{what = "plan"}, map segments spanning each profile's horizontal range);
+\code{"wetted"} keeps only \strong{water} intervals between consecutive bank contacts
+(dry islands excluded), so each cross section may be a \code{MULTILINESTRING}
+when an island splits the channel. For \code{what = "plan"} with \code{"full"}, if
+there is no profile view a warning is issued and bank-to-bank geometries
+are returned instead. For \code{"wetted"} without profiles, water intervals are
+taken from plan vertices (even count, alternating water / land / water).}
 }
 \value{
 An \code{"sfc"} object.
 }
 \description{
-Returns simple feature geometry columns for plan, profile, or 3D views of
-an \code{\link{xchan}}. Combine with \code{\link[sf:sf]{sf::st_sf()}} yourself if you need a data frame
-of attributes alongside geometry.
+Returns simple feature geometry columns for plan, profile, or 3D views of an
+\code{\link{xchan}}. Combine with \code{\link[sf:sf]{sf::st_sf()}} yourself if you need a data frame of
+attributes alongside geometry.
 }
 \examples{
 ch <- xt_as_channel(c(2, 2), crs = 3005)

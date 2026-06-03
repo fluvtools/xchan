@@ -1,10 +1,9 @@
 #' Find the erosion width for given volume to the right of a bank point
 #'
 #' Computes the change in horizontal position to the right of a given bank point
-#' `x0` such that the trapezoidal area (above the thalweg
-#' height) equals the specified erosion volume `v`. The cross section is
-#' defined by `topo`, a 2-column matrix of horizontal positions and ground
-#' elevations.
+#' `x0` such that the trapezoidal area (above the thalweg height) equals the
+#' specified erosion volume `v`. The cross section is defined by `topo`, a
+#' 2-column matrix of horizontal positions and ground elevations.
 #'
 #' Heights below the thalweg elevation contribute zero to the area, so erosion
 #' into depressions below the thalweg level does not reduce the accumulated
@@ -22,12 +21,12 @@
 #'                       zero reference level for volume calculations.
 #' @param valley Character string; volume exactly brings you to a point that
 #'        goes below the thalweg, should the returned x value stop there
-#'        ("left") or extend to the point where the elevation rises above
-#'        the thalweg again ("right", the default)? Corresponds to the left and
+#'        ("left") or extend to the point where the elevation rises above the
+#'        thalweg again ("right", the default)? Corresponds to the left and
 #'        right sides of the valley, respectively.
 #' @returns Numeric scalar giving the change in x-position to the right of `x0`
-#'         where the cumulative trapezoidal area above the thalweg height
-#'         equals `v`.
+#'         where the cumulative trapezoidal area above the thalweg height equals
+#'         `v`.
 #'
 #' @details
 #' The function proceeds from `x0` to the right, summing trapezoidal areas
@@ -35,8 +34,8 @@
 #' exceeds `v`. The final position is determined by solving exactly for the
 #' location within the last trapezoid where the target volume is achieved.
 #'
-#' The method is fully vectorized and runs in \eqn{O(n)} time, where \eqn{n}
-#' is the number of cross-section points to the right of `x0`.
+#' The method is fully vectorized and runs in \eqn{O(n)} time, where \eqn{n} is
+#' the number of cross-section points to the right of `x0`.
 #'
 #' If the requested volume cannot be satisfied within the available topography
 #' to the right of `x0`, the function throws an error rather than extrapolating

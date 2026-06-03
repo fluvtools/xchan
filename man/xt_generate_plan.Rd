@@ -34,25 +34,28 @@ and \code{at}). Plain numeric is interpreted in the \code{banks} CRS length unit
 
 \item{axis}{Channel axis as a multilinestring: the line along which cross
 sections are placed. If \code{NULL} (the default), an axis is generated
-automatically from the \strong{island-free} footprint (\code{polygon_sans_holes()})
-using the \strong{centerline} package (\code{centerline::cnt_path_guess()}).}
+automatically from the \strong{island-free} footprint
+(\code{polygon_sans_holes()}) using the \strong{centerline} package
+(\code{centerline::cnt_path_guess()}).}
 
 \item{progress}{Logical; if \code{TRUE}, display a text progress bar while
 generating planimetric cross sections.}
 }
 \value{
-An \code{\link{xchan}} with one \code{\link{xsection}} per list position, in downstream order along the sampling axis.
-Cross-section identity keys are \strong{not} set; use \code{\link[=xt_section_id]{xt_section_id()}} if you need stable
-keys (for example when joining tabular profiles with \code{\link[=xt_add_profile]{xt_add_profile()}}).
-After subsetting, restore order with \code{\link[=xt_arrange_downstream]{xt_arrange_downstream()}}. Use \code{\link[=xt_distance_downstream]{xt_distance_downstream()}}
-for distance along the axis from its start to each section (requires the axis
-from \code{\link[=xt_axis]{xt_axis()}}, which this function sets). The sampling axis is stored on the
+An \code{\link{xchan}} with one \code{\link{xsection}} per list position, in downstream
+order along the sampling axis.
+Cross-section identity keys are \strong{not} set; use \code{\link[=xt_section_id]{xt_section_id()}} if you
+need stable keys (for example when joining tabular profiles with
+\code{\link[=xt_add_profile]{xt_add_profile()}}). After subsetting, restore order with
+\code{\link[=xt_arrange_downstream]{xt_arrange_downstream()}}. Use \code{\link[=xt_distance_downstream]{xt_distance_downstream()}} for distance
+along the axis from its start to each section (requires the axis from
+\code{\link[=xt_axis]{xt_axis()}}, which this function sets). The sampling axis is stored on the
 \code{\link{xchan}} object, and the \strong{bank footprint} polygon(s) from \code{banks} on
 \code{\link[=xt_bankline]{xt_bankline()}} (for plan plotting).
 }
 \description{
-Generate a channel object with planimetric cross sections from a
-single closed polygon outlining the channel footprint (both banks).
+Generate a channel object with planimetric cross sections from a single
+closed polygon outlining the channel footprint (both banks).
 }
 \details{
 \strong{Bank geometry:} Supply the channel as one polygon (or
@@ -60,30 +63,29 @@ multipolygon) so its boundary is a closed loop around the wetted/plan
 corridor. If you only have two bank polylines, convert them to a closed
 polygon (e.g. connect upstream/downstream ends) before calling this function.
 
-Interior rings (islands) are dropped with \code{polygon_sans_holes()} for axis
-generation (when \code{axis} is \code{NULL}) and for the minimum-width transect search:
-each station gets the \strong{shortest bank-to-bank segment} through that point on
-the filled corridor, matching the original algorithm and ignoring islands by
-construction.
+Interior rings (islands) are dropped with \code{polygon_sans_holes()} for
+axis generation (when \code{axis} is \code{NULL}) and for the minimum-width transect
+search: each station gets the \strong{shortest bank-to-bank segment} through that
+point on the filled corridor, matching the original algorithm and ignoring
+islands by construction.
 
-The holed footprint (\code{banks}) is then used to \strong{refine} that transect:
-the filled chord is intersected with the polygon boundary (outer bank plus
-island outlines). Distinct intersection points are merged with the chord
-endpoints, ordered along the transect, and deduplicated, producing a plan
-\code{LINESTRING} with \strong{two or more} vertices (extra vertices where the transect
-meets island banks). Relative distances for profiles still use the chord from
-\strong{first to last} vertex (\code{transect_xy_from_relative()}).
+The holed footprint (\code{banks}) is then used to \strong{refine} that transect: the
+filled chord is intersected with the polygon boundary (outer bank plus island
+outlines). Distinct intersection points are merged with the chord endpoints,
+ordered along the transect, and deduplicated, producing a plan \code{LINESTRING}
+with \strong{two or more} vertices (extra vertices where the transect meets island
+banks). Relative distances for profiles still use the chord from \strong{first to
+last} vertex (\code{transect_xy_from_relative()}).
 
-To define the spacing of the cross sections, a channel axis is
-first calculated, and equally spaced points are sampled along that
-axis. Cross sections are calculated at these points.
+To define the spacing of the cross sections, a channel axis is first
+calculated, and equally spaced points are sampled along that axis. Cross
+sections are calculated at these points.
 
-\strong{Downstream} is the direction of increasing distance along that axis
-(the same direction used when stations are sorted by
-\code{\link[sf:st_line_project_point]{sf::st_line_project()}}). If you supply \code{axis}, downstream follows the
-storage order and digitization of that line; if the axis is generated
-automatically, downstream follows the geometry returned by the centerline
-routine.
+\strong{Downstream} is the direction of increasing distance along that axis (the
+same direction used when stations are sorted by \code{\link[sf:st_line_project_point]{sf::st_line_project()}}). If
+you supply \code{axis}, downstream follows the storage order and digitization of
+that line; if the axis is generated automatically, downstream follows the
+geometry returned by the centerline routine.
 
 \strong{Left and right bank} mean left and right when standing at the station on
 the axis and \strong{facing downstream}, in the map plane of the CRS (planar
@@ -107,11 +109,11 @@ analysis or plotting.
 the axis pointing downstream (\code{axis_unit_tangent_downstream()}). For each
 endpoint of the bank-to-bank segment we form the vector from the station to
 that endpoint and compute the 2D scalar cross product with the tangent,
-\eqn{D_x (E_y - C_y) - D_y (E_x - C_x)}{D_x*(E_y-C_y) - D_y*(E_x-C_x)}
-where \eqn{(D_x,D_y)} is the tangent and \eqn{(C_x,C_y)} / \eqn{(E_x,E_y)}
-are the station and an endpoint. Under the usual planar orientation, the
-endpoint with the \strong{larger} value lies on the \strong{left} bank. If that is not
-already the first vertex, the segment is reversed with \code{\link[sf:geos_unary]{sf::st_reverse()}}
+\eqn{D_x (E_y - C_y) - D_y (E_x - C_x)}{D_x*(E_y-C_y) - D_y*(E_x-C_x)} where
+\eqn{(D_x,D_y)} is the tangent and \eqn{(C_x,C_y)} / \eqn{(E_x,E_y)} are the
+station and an endpoint. Under the usual planar orientation, the endpoint
+with the \strong{larger} value lies on the \strong{left} bank. If that is not already
+the first vertex, the segment is reversed with \code{\link[sf:geos_unary]{sf::st_reverse()}}
 (\code{orient_plan_xs_left_first()}). This does not require splitting the bank
 polygon by the axis.
 }

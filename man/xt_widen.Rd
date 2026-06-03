@@ -18,14 +18,13 @@ xt_widen(channel, ..., dw, dv, side = "both")
 \item{...}{Must be empty (named \code{dw} / \code{dv} arguments are required).}
 
 \item{dw}{The total width to add to the channel. Positive numeric, or a
-\code{\link[units:units]{units::units()}} length object (for example
-\code{units::set_units(2, "m")}); units are converted to the channel's CRS
-length unit. Cannot be used with \code{dv}.}
+\code{\link[units:units]{units::units()}} length object (for example \code{units::set_units(2, "m")});
+units are converted to the channel's CRS length unit. Cannot be used with
+\code{dv}.}
 
 \item{dv}{The total volume to remove to widen the channel. Positive numeric,
-or a \code{\link[units:units]{units::units()}} volume object (for example
-\code{units::set_units(50, "m^3")}); units are converted to the channel's CRS
-length unit cubed. Cannot be used with \code{dw}.}
+or a \code{\link[units:units]{units::units()}} volume object (for example \code{units::set_units(50, "m^3")}); units are converted to the channel's CRS length unit cubed.
+Cannot be used with \code{dw}.}
 
 \item{side}{A side specification controlling how widening is split between
 left and right banks. Supply either a side object from \code{\link[=side_left]{side_left()}},
@@ -39,8 +38,8 @@ Object of the same class as \code{channel}, with widened sections.
 Widen cross sections
 }
 \details{
-The stored channel axis (\code{\link[=xt_axis]{xt_axis()}}) is \strong{not} updated when widening:
-plan and profile transects move, but the reach-scale axis polyline is left
+The stored channel axis (\code{\link[=xt_axis]{xt_axis()}}) is \strong{not} updated when widening: plan
+and profile transects move, but the reach-scale axis polyline is left
 unchanged. If you set the axis to something tied to the pre-widen plan (for
 example a digitized centerline), do not expect it to refit automatically to a
 new midline---that is intentional in most workflows, because the axis is used
@@ -53,7 +52,8 @@ Profile distances are re-centered after widening so that \code{distance = 0}
 remains the midpoint of the outer-bank pair.
 }
 \note{
-The ellipsis \code{...} must be empty; named \code{dw} and \code{dv} keep widening deliberate.
+The ellipsis \code{...} must be empty; named \code{dw} and \code{dv} keep widening
+deliberate.
 }
 \examples{
 channel <- xt_as_channel(rep(1, 6))

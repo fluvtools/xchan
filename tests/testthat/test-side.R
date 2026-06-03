@@ -8,8 +8,16 @@ test_that("side constructors require scalar proportions", {
 test_that("side constructors return left/right proportion lists", {
   channel <- xt_as_channel(1:4)
 
-  expect_equal(side_left(0.3), list(left = 0.3, right = 0.7), ignore_attr = TRUE)
-  expect_equal(side_right(0.3), list(left = 0.7, right = 0.3), ignore_attr = TRUE)
+  expect_equal(
+    side_left(0.3),
+    list(left = 0.3, right = 0.7),
+    ignore_attr = TRUE
+  )
+  expect_equal(
+    side_right(0.3),
+    list(left = 0.7, right = 0.3),
+    ignore_attr = TRUE
+  )
   expect_equal(
     side_both(0.3, 0.7),
     list(left = 0.3, right = 0.7),

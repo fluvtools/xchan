@@ -53,7 +53,10 @@ test_that("xt_as_channel.list errors when entries are not cross sections", {
 test_that("xt_as_channel.list errors on mixed profile presence", {
   coords <- matrix(c(-1, 10, 0, 8, 1, 10), ncol = 2, byrow = TRUE)
   prof <- xchan:::new_profile(coords, bankpoints = c(-1, 1))
-  xs1 <- xsection(matrix(c(0, -1, 0, 1), ncol = 2, byrow = TRUE), profile = prof)
+  xs1 <- xsection(
+    matrix(c(0, -1, 0, 1), ncol = 2, byrow = TRUE),
+    profile = prof
+  )
   xs2 <- xsection(matrix(c(10, -1, 10, 1), ncol = 2, byrow = TRUE))
   expect_error(xt_as_channel(list(xs1, xs2)), "either all include profile")
 })
@@ -119,7 +122,10 @@ test_that("xt_as_channel normalizes sfc to LINESTRING and respects crs", {
 test_that("xt_as_channel is stable on existing channels", {
   x <- xt_as_channel(c(8, 7, 5, 6, 5, 8))
   expect_identical(xt_as_channel(x), x)
-  expect_identical(sf::st_crs(channel_plan(xt_as_channel(x, crs = 3005))), sf::st_crs(3005))
+  expect_identical(
+    sf::st_crs(channel_plan(xt_as_channel(x, crs = 3005))),
+    sf::st_crs(3005)
+  )
 })
 
 test_that("xt_as_channel.sfc applies crs when supplied", {

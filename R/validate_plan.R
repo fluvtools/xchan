@@ -1,12 +1,13 @@
 #' Validate plan view cross sections
 #'
-#' Check if plan view cross sections (line segments) are proper for cross section analysis.
+#' Check if plan view cross sections (line segments) are proper for cross
+#' section analysis.
 #'
 #' @param plan Plan view cross sections as sfc_LINESTRING object
 #' @returns A list with validation results:
-#'   - `valid`: Logical indicating if all checks passed
-#'   - `issues`: Character vector describing any issues found
-#'   - `details`: List with detailed results for each check
+#'   - `valid`: Logical indicating if all checks passed - `issues`: Character
+#'   vector describing any issues found - `details`: List with detailed results
+#'   for each check
 #' @details This function performs basic validation on plan view cross sections:
 #'
 #' - **Basic geometry**: Ensures all geometries are valid LINESTRING objects

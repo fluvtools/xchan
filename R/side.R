@@ -1,8 +1,8 @@
 #' Side Schemes
 #'
-#' Side functions determine how much of the widening applied to a channel
-#' is allocated to the left and right banks. They return side objects as
-#' lists with `left` and `right` proportions.
+#' Side functions determine how much of the widening applied to a channel is
+#' allocated to the left and right banks. They return side objects as lists with
+#' `left` and `right` proportions.
 #'
 #' @param prop A single numeric value between 0 and 1 indicating how much
 #' of the widening to apply to the specified bank.
@@ -10,10 +10,10 @@
 #' indicating how much of the widening to apply to the left and right banks,
 #' respectively.
 #' @details
-#' While these functions are different ways of specifying the same thing,
-#' they are included for completeness. An advantage of using
-#' the `side_both()` function is that it conducts an internal
-#' check that the proportions for the left and right banks sum to 1.
+#' While these functions are different ways of specifying the same thing, they
+#' are included for completeness. An advantage of using the `side_both()`
+#' function is that it conducts an internal check that the proportions for the
+#' left and right banks sum to 1.
 #' @returns A side object that can be used in widening functions. It is a list
 #'   with numeric entries `left` and `right`.
 #' @rdname sides

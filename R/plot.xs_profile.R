@@ -1,8 +1,8 @@
 #' Plot profile cross section
 #'
-#' Plot a profile cross section showing the elevation profile.
-#' This function is primarily for internal use or advanced users.
-#' Most users should work with channel objects using plot_plan() or plot_3d().
+#' Plot a profile cross section showing the elevation profile. This function is
+#' primarily for internal use or advanced users. Most users should work with
+#' channel objects using plot_plan() or plot_3d().
 #'
 #' @param x An xs_profile object
 #' @param ... Additional arguments passed to plot
@@ -15,7 +15,8 @@
 #'   the default right edge. You may pass `from` only, `to` only, both, or
 #'   neither. Values may lie outside the data range (empty band on that side).
 #' @param add Logical. Add to existing plot?
-#' @param exaggerate Positive numeric. **Physical** vertical exaggeration: passed
+#' @param exaggerate Positive numeric. **Physical** vertical exaggeration:
+#'   passed
 #'   as `asp` to [graphics::plot.default], so one data unit along **y** is drawn
 #'   with the same length as `exaggerate` data units along **x** (default `1`
 #'   gives true 1:1 scaling on the device). Values above 1 stretch the profile
@@ -87,7 +88,10 @@ plot.xs_profile <- function(
   x0 <- if (!is.null(from)) from else rng_default[1L]
   x1 <- if (!is.null(to)) to else rng_default[2L]
   if (!(x0 < x1)) {
-    stop("Implied horizontal range is empty: need `from` < `to`.", call. = FALSE)
+    stop(
+      "Implied horizontal range is empty: need `from` < `to`.",
+      call. = FALSE
+    )
   }
 
   if (!add) {

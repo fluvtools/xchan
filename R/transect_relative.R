@@ -1,4 +1,5 @@
-# Plan transects from profile relative distances (chord from first to last vertex,
+# Plan transects from profile relative distances (chord from first to last
+#  vertex,
 # matching extend_cross_section). Relative distance 0 is frame centre; banks at
 # +/- half plan length.
 

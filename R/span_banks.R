@@ -1,7 +1,7 @@
 #' Generate a line segment from bank to bank
 #'
-#' Given a point within a channel, generate a line segment that goes from
-#' bank to bank, for a specified angle.
+#' Given a point within a channel, generate a line segment that goes from bank
+#' to bank, for a specified angle.
 #' @param pt A point within the channel.
 #' @param bankline The bankline of the channel.
 #' @param angle The angle of the line segment, in radians.

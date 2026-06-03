@@ -1,14 +1,15 @@
 #' Create 3D coordinates by mapping profile distances to plan positions
 #'
-#' Maps profile elevation data to plan-view coordinates. Horizontal positions use
-#' the same chord mapping as plan export with \code{extent = "full"} in
-#' \code{\link[=xt_as_sfc]{xt_as_sfc()}} (first to last vertex of the plan line).
+#' Maps profile elevation data to plan-view coordinates. Horizontal positions
+#' use the same chord mapping as plan export with \code{extent = "full"} in
+#' \code{\link[=xt_as_sfc]{xt_as_sfc()}} (first to last vertex of the plan
+#' line).
 #'
 #' @param plan Planimetric cross section (`LINESTRING`).
 #' @param profile Profile cross section (`xs_profile`).
 #' @param extent `"banks"` uses samples whose horizontal coordinate lies between
-#'   the outer bank distances; `"full"` uses all profile samples; `"wetted"` uses
-#'   each water interval between consecutive banks (one part per interval).
+#'   the outer bank distances; `"full"` uses all profile samples; `"wetted"`
+#'   uses each water interval between consecutive banks (one part per interval).
 #' @returns `MULTILINESTRING` with XYZ vertices (same CRS as `plan` for x,y).
 #' @noRd
 create_3d_coords <- function(

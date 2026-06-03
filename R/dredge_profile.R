@@ -31,7 +31,10 @@ build_dredged_wetted_nodes <- function(
   tol = 1e-10
 ) {
   if (d_left >= d_right) {
-    stop("Left bank distance must be less than right bank distance.", call. = FALSE)
+    stop(
+      "Left bank distance must be less than right bank distance.",
+      call. = FALSE
+    )
   }
   z_bed_left <- bed_elev_fn(d_left)
   z_bed_right <- bed_elev_fn(d_right)

@@ -6,18 +6,14 @@
 \title{Toy cross-section survey data}
 \format{
 A \code{\link[tibble:tibble]{tibble::tibble()}} with 138 rows and 4 columns:
-\describe{
-\item{id}{Integer cross-section key (\code{1}--\code{6}), matching the order of
-the cross sections.}
-\item{distance}{Chord distance along each transect (\code{units::units()} in
-metres). Distances increase from left bank toward right bank, with
-negative values on the left floodplain approach and positive values on
-the right.}
-\item{elevation}{Ground elevation at each vertex (\code{units::units()} in
-metres).}
-\item{is_bank}{Logical flag; \code{TRUE} at the left and right bank vertices
-(distances \code{0} and channel width) for each section.}
-}
+\describe{ \item{id}{Integer cross-section key (\code{1}--\code{6}), matching the order
+of the cross sections.} \item{distance}{Chord distance along each transect
+(\code{units::units()} in metres). Distances increase from left bank toward right
+bank, with negative values on the left floodplain approach and positive
+values on the right.} \item{elevation}{Ground elevation at each vertex
+(\code{units::units()} in metres).} \item{is_bank}{Logical flag; \code{TRUE} at the
+left and right bank vertices (distances \code{0} and channel width) for each
+section.} }
 }
 \source{
 Synthetically generated in \code{data-raw/profile_survey.R}.
@@ -33,8 +29,8 @@ channel.
 \details{
 Each section has 23 survey points: ten on the left approach, three
 along the channel bottom (including the thalweg), and ten on the right
-floodplain. Rows are stored in
-section order with vertices in survey chainage order.
+floodplain. Rows are stored in section order with vertices in survey chainage
+order.
 }
 \seealso{
 \code{\link[=xt_add_profile]{xt_add_profile()}}

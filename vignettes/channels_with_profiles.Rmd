@@ -17,18 +17,26 @@ knitr::opts_chunk$set(
 ```
 
 
-If your workflow requires profile cross sections, `xchan` allows this in addition to planimetric encoding. This vignette shows how to create and work with profile-enabled channels. Since making a channel with profiles first involves making a channel with planimetric geometries, we recommend first reading the [_Getting Started with Channels_](basic_channels.html) vignette.
+If your workflow requires profile cross sections, `xchan` allows this in
+addition to planimetric encoding. This vignette shows how to create and
+work with profile-enabled channels. Since making a channel with profiles
+first involves making a channel with planimetric geometries, we
+recommend first reading the [_Getting Started with
+Channels_](basic_channels.html) vignette.
 
 ```{r setup}
 library(xchan)
 ```
 
 
-There are two main ways of creating profile cross sections: by hand, and from a digital elevation model (DEM).
+There are two main ways of creating profile cross sections: by hand, and
+from a digital elevation model (DEM).
 
 ## Creating Profiles by Hand
 
-Creating profiles by hand is useful when a channel has been surveyed and the profile data is available in a tabular format. The `profile_survey` dataset is a toy example of such data.
+Creating profiles by hand is useful when a channel has been surveyed and
+the profile data is available in a tabular format. The `profile_survey`
+dataset is a toy example of such data.
 
 ```{r}
 head(profile_survey)
@@ -36,19 +44,26 @@ head(profile_survey)
 
 Note the key features of this survey:
 
-- The `id` column is the cross-section key, matching the order of the cross sections.
-- The `distance` column is the chord distance along the cross section, increasing from left bank toward right bank.
+- The `id` column is the cross-section key, matching the order of the
+cross sections.
+- The `distance` column is the chord distance along the cross section,
+increasing from left bank toward right bank.
 - The `elevation` column is the elevation at each marked `distance`.
-- The `is_bank` column is a logical flag indicating whether the vertex is a bank vertex. There must be an even number of these.
+- The `is_bank` column is a logical flag indicating whether the vertex
+is a bank vertex. There must be an even number of these.
 
-But before we can add profiles to a channel, we need to set the channel up with its planimetric arrangement. We'll just consider a straight channel; at this point, there is no need to ensure that the channel width matches the survey.
+But before we can add profiles to a channel, we need to set the channel
+up with its planimetric arrangement. We'll just consider a straight
+channel; at this point, there is no need to ensure that the channel
+width matches the survey.
 
 ```{r width-widening}
 channel <- xt_as_channel(rep(1, 6))
 channel
 ```
 
-Now we can add the profiles to the channel by specifying the required columns. 
+Now we can add the profiles to the channel by specifying the required
+columns.
 
 ```{r}
 channel <- xt_add_profile(
@@ -62,40 +77,61 @@ channel <- xt_add_profile(
 channel
 ```
 
-Note that the planimetric and profile arrangements are unlikely to have widths that match exactly. For this, the centerpoint of the planimetric and profile cross sections are aligned, and one set of banks are moved to the other set of banks. There are two options:
+Note that the planimetric and profile arrangements are unlikely to have
+widths that match exactly. For this, the centerpoint of the planimetric
+and profile cross sections are aligned, and one set of banks are moved
+to the other set of banks. There are two options:
 
-- `snap_banks_to = "profile"`: The planimetric banks snap to the profile banks. This is the default, because the survey is usually the more accurate source of information.
-- `snap_banks_to = "plan"`: The profile banks snap to the planimetric banks.
+- `snap_banks_to = "profile"`: The planimetric banks snap to the profile
+banks. This is the default, because the survey is usually the more
+accurate source of information.
+- `snap_banks_to = "plan"`: The profile banks snap to the planimetric
+banks.
 
-An important feature of profile-enabled cross sections is that __they extend outside of the banks__. Here is a planimetric view of the channel showing the full extent of the cross sections.
+An important feature of profile-enabled cross sections is that __they
+extend outside of the banks__. Here is a planimetric view of the channel
+showing the full extent of the cross sections.
 
 ```{r}
 plot(channel, extent = "full")
 ```
 
-Now it makes more sense to view individual cross sections. Grab an individual cross section by subsetting the channel list. Here is a view of the third cross section, with an exaggeration factor of 1.5.
+Now it makes more sense to view individual cross sections. Grab an
+individual cross section by subsetting the channel list. Here is a view
+of the third cross section, with an exaggeration factor of 1.5.
 
 ```{r}
 section <- channel[[3]]
 plot(section, extent = "full", exaggerate = 1.5)
 ```
 
-When plotting cross sections, you can also choose to plot the planimetric view with `what = "plan"`.
+When plotting cross sections, you can also choose to plot the
+planimetric view with `what = "plan"`.
 
 ## Creating Profiles from Spatial Data
 
-Sometimes LiDAR data is available in the form of a digital elevation model (DEM). This can be used to create profile cross sections.
+Sometimes LiDAR data is available in the form of a digital elevation
+model (DEM). This can be used to create profile cross sections.
 
-LiDAR for the Squamish River comes shipped with the package as a DEM from the [**terra**](https://rspatial.org/terra/) package. It needs to be unpacked first.
+LiDAR for the Squamish River comes shipped with the package as a DEM
+from the [**terra**](https://rspatial.org/terra/) package. It needs to
+be unpacked first.
 
-The Squamish DEM is LiDAR-derived and does not include submerged bathymetry: sampling it alone yields profile cross sections with a flat water surface at bank elevation rather than a channel. In the workflow below we follow `xt_generate_profile()` with `xt_dredge_to()` and a rectangular bathymetry specification (`bathy_rectangle(depth = 3)`) to insert a synthetic 3 m deep channel.
+The Squamish DEM is LiDAR-derived and does not include submerged
+bathymetry: sampling it alone yields profile cross sections with a flat
+water surface at bank elevation rather than a channel. In the workflow
+below we follow `xt_generate_profile()` with `xt_dredge_to()` and a
+rectangular bathymetry specification (`bathy_rectangle(depth = 3)`) to
+insert a synthetic 3 m deep channel.
 
 ```{r}
 library(terra)
 squamish_dem <- unwrap(squamish_dem)
 ```
 
-This can be used together with the river's bankline polygon to first generate planimetric cross sections (as we did in the [_Getting Started with Channels_](basic_channels.html) vignette).
+This can be used together with the river's bankline polygon to first
+generate planimetric cross sections (as we did in the [_Getting Started
+with Channels_](basic_channels.html) vignette).
 
 ```{r}
 squamish <- xt_generate_plan(squamish_bankline, spacing = 500)
@@ -103,13 +139,16 @@ plot(squamish_dem)
 plot(squamish, add = TRUE)
 ```
 
-Now generate the profile cross sections with `xt_generate_profile()`, using 10 m sample spacing.
+Now generate the profile cross sections with `xt_generate_profile()`,
+using 10 m sample spacing.
 
 ```{r}
-squamish <- xt_generate_profile(squamish, squamish_dem, sample_freq = 10)
+squamish <- xt_generate_profile(squamish, squamish_dem, sample_freq =
+10)
 ```
 
-Because the Squamish DEM has no bathymetry, insert a synthetic 3 m deep rectangular channel:
+Because the Squamish DEM has no bathymetry, insert a synthetic 3 m deep
+rectangular channel:
 
 ```{r}
 squamish <- xt_dredge_to(
@@ -128,7 +167,8 @@ plot(section, extent = "full")
 
 ## Channel Widening
 
-Channel widening now also applies to the profile cross sections. Widen the toy channel from before by a range of widths:
+Channel widening now also applies to the profile cross sections. Widen
+the toy channel from before by a range of widths:
 
 ```{r}
 channel_widened <- xt_widen(channel, dw = c(5, 3, 5, 0, 0, 4))
@@ -136,7 +176,10 @@ plot(channel_widened, col = "red")
 plot(channel, add = TRUE)
 ```
 
-For cross section profiles, this has the effect of shifting the between-channel topography on either side of the thalweg further from the thalweg, spreading out the channel bottom at the thalweg. Here is a before-and-after view of the third cross section.
+For cross section profiles, this has the effect of shifting the
+between-channel topography on either side of the thalweg further from
+the thalweg, spreading out the channel bottom at the thalweg. Here is a
+before-and-after view of the third cross section.
 
 ```{r}
 sec <- xt_xsection_at(channel, 3)
@@ -145,18 +188,23 @@ plot(sec, extent = "full")
 plot(sec_widened, extent = "full")
 ```
 
-Since a profile view is available, there is not only erosion width but also erosion _volume_.
+Since a profile view is available, there is not only erosion width but
+also erosion _volume_.
 
-We can calculate the erosion volume resulting from the above width change:
+We can calculate the erosion volume resulting from the above width
+change:
 
 ```{r}
 head(xt_erosion_volume(channel, dw = c(5, 3, 5, 0, 0, 4)))
 ```
 
-But we can also erode by volume; here is the resulting width change for the given cross-section-specific volume change (in squared units), this time allocating all volume erosion on the left side bank.
+But we can also erode by volume; here is the resulting width change for
+the given cross-section-specific volume change (in squared units), this
+time allocating all volume erosion on the left side bank.
 
 ```{r}
-head(xt_erosion_width(channel, dv = c(5, 3, 10, 0, 0, 12), side = "left"))
+head(xt_erosion_width(channel, dv = c(5, 3, 10, 0, 0, 12), side =
+"left"))
 ```
 
 If there is not enough volume to erode, an error is thrown.
@@ -164,7 +212,8 @@ If there is not enough volume to erode, an error is thrown.
 Go ahead and conduct the erosion.
 
 ```{r}
-channel_widened2 <- xt_widen(channel, dv = c(5, 3, 10, 0, 0, 12), side = "left")
+channel_widened2 <- xt_widen(channel, dv = c(5, 3, 10, 0, 0, 12), side =
+"left")
 plot(channel_widened2, col = "red")
 plot(channel, add = TRUE)
 ```
@@ -177,7 +226,8 @@ head(xt_width(channel_widened2))
 
 ## Exporting Channels
 
-With a profile encoding present, the channel can be exported according to its profiles, or in 3D.
+With a profile encoding present, the channel can be exported according
+to its profiles, or in 3D.
 
 The profile objects all appear overtop of each other:
 
@@ -186,7 +236,11 @@ profiles <- xt_as_sfc(channel, what = "profile")
 plot(profiles)
 ```
 
-The 3D encoding combines the profile and planimetric views to create a 3D arrangement. Use 3D plotting software like the [**rgl**](https://rgl.neoscenes.org/) or [**plotly**](https://plotly.com/r/) packages to view the 3D channel (not done here because these are not dependencies of the package).
+The 3D encoding combines the profile and planimetric views to create a
+3D arrangement. Use 3D plotting software like the
+[**rgl**](https://rgl.neoscenes.org/) or
+[**plotly**](https://plotly.com/r/) packages to view the 3D channel (not
+done here because these are not dependencies of the package).
 
 ```{r}
 xt_as_sfc(channel, what = "3d")

@@ -1,12 +1,9 @@
 test_that("Spanning banks works on a square", {
   library(sf)
   corners <- matrix(
-    c(0, 0,
-      1, 0,
-      1, 1,
-      0, 1,
-      0, 0),
-    ncol = 2, byrow = TRUE
+    c(0, 0, 1, 0, 1, 1, 0, 1, 0, 0),
+    ncol = 2,
+    byrow = TRUE
   )
   square <- st_polygon(list(corners))
   square_sfc <- st_sfc(square)
@@ -18,9 +15,9 @@ test_that("Spanning banks works on a square", {
   span_vertical2 <- xchan:::span_banks(middle, pi / 2, square_sfc)
   # plot(span_vertical2, add = TRUE)
   vertical <- st_linestring(matrix(
-    c(0.5, 0,
-      0.5, 1),
-    ncol = 2, byrow = TRUE
+    c(0.5, 0, 0.5, 1),
+    ncol = 2,
+    byrow = TRUE
   ))
   expect_true(
     st_equals(
@@ -43,9 +40,9 @@ test_that("Spanning banks works on a square", {
   span_diag2 <- xchan:::span_banks(middle, pi / 4, square_sfc)
   # plot(span_diag2, add = TRUE)
   diag <- st_linestring(matrix(
-    c(0, 0,
-      1, 1),
-    ncol = 2, byrow = TRUE
+    c(0, 0, 1, 1),
+    ncol = 2,
+    byrow = TRUE
   ))
   expect_true(
     st_equals(

@@ -22,8 +22,8 @@ format_print_scalar <- function(x) {
 
 #' Linear length unit for a channel or CRS-bearing geometry
 #'
-#' For [`xchan`] objects, uses the CRS linear unit when set; otherwise falls back
-#' to attribute `"length_unit"` (for example after [xt_as_channel()] with
+#' For [`xchan`] objects, uses the CRS linear unit when set; otherwise falls
+#' back to attribute `"length_unit"` (for example after [xt_as_channel()] with
 #' [units::units()] widths or [xt_add_profile()] with unit-bearing distances).
 #'
 #' @noRd
@@ -52,13 +52,13 @@ set_xchan_length_unit <- function(x, unit) {
 #' Linear unit of a CRS, as a string accepted by `units::set_units()`
 #'
 #' Returns the length unit that [sf::st_length()] would use for geometries with
-#' the same CRS as `x`. Used to convert user-supplied lengths/volumes that
-#' carry [units::units()] into bare numerics in the channel's own unit, and to
-#' attach units to numeric lengths/volumes returned by package functions.
+#' the same CRS as `x`. Used to convert user-supplied lengths/volumes that carry
+#' [units::units()] into bare numerics in the channel's own unit, and to attach
+#' units to numeric lengths/volumes returned by package functions.
 #'
 #' @param x A `sf`/`sfc` object, CRS object, or anything else `[sf::st_crs()]`
-#'   accepts. For channel-level unit lookup (including manually set units),
-#'   use `channel_length_unit()` instead.
+#'   accepts. For channel-level unit lookup (including manually set units), use
+#'   `channel_length_unit()` instead.
 #' @returns A unit symbol (for example `"m"` or `"US_survey_foot"`) suitable
 #'   for `units::set_units(..., mode = "standard")`, or `NULL` when no CRS is
 #'   set, the CRS has no defined linear unit, or the `units` package is not
@@ -93,9 +93,9 @@ crs_length_unit <- function(x) {
 
 #' Coerce a length argument to plain numeric in `target_unit`
 #'
-#' If `x` is a `units` object, convert it to `target_unit` and strip the
-#' units. If `x` is plain numeric, return it untouched (assumed to already be
-#' in `target_unit`). If `target_unit` is `NULL`, units are dropped without
+#' If `x` is a `units` object, convert it to `target_unit` and strip the units.
+#' If `x` is plain numeric, return it untouched (assumed to already be in
+#' `target_unit`). If `target_unit` is `NULL`, units are dropped without
 #' conversion (we have no reference unit to convert into; the user is
 #' responsible for consistency). `NULL` input passes through.
 #'
@@ -133,8 +133,8 @@ to_numeric_length <- function(x, target_unit = NULL, arg = "value") {
 #'
 #' Like `to_numeric_length()`, but the implied target unit is
 #' `paste0(target_unit, "^3")`. The numeric volume returned is therefore in
-#' cubic length units, so it composes correctly with widths and depths
-#' measured in `target_unit`.
+#' cubic length units, so it composes correctly with widths and depths measured
+#' in `target_unit`.
 #'
 #' @noRd
 to_numeric_volume <- function(x, target_unit = NULL, arg = "value") {
@@ -167,9 +167,9 @@ to_numeric_volume <- function(x, target_unit = NULL, arg = "value") {
 #' Attach a length unit to a numeric vector, when one is available
 #'
 #' Wraps `units::set_units()` with `NULL`-tolerant behaviour: if `unit` is
-#' `NULL` (no CRS unit known) or the `units` package is unavailable, returns
-#' `x` unchanged. Used to give length-bearing return values (for example,
-#' from `xt_width()` or `xt_distance_downstream()`) the same unit as the channel's
+#' `NULL` (no CRS unit known) or the `units` package is unavailable, returns `x`
+#' unchanged. Used to give length-bearing return values (for example, from
+#' `xt_width()` or `xt_distance_downstream()`) the same unit as the channel's
 #' coordinate system, so downstream arithmetic stays unit-checked.
 #'
 #' @noRd
@@ -186,8 +186,7 @@ with_length_units <- function(x, unit = NULL) {
 #' Attach a volume unit (`unit^3`) to a numeric vector, when available
 #'
 #' Volume convention follows the channel's length unit cubed, matching how
-#' areas/volumes accumulate from cross sectional integrals across plan
-#' geometry.
+#' areas/volumes accumulate from cross sectional integrals across plan geometry.
 #'
 #' @noRd
 with_volume_units <- function(x, unit = NULL) {

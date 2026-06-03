@@ -3,50 +3,55 @@
 #' Build `xs_profile` objects from chord-distance / elevation columns (and bank
 #' flags), attach them to each [`xsection`], and reconcile plan vs profile
 #' bank-to-bank width using the same checks as [xt_width()] on plan and profile.
-#' Distances are **straight chord stationing** along the bank-to-bank transect (not
-#' arc length along a meandering ground path).
+#' Distances are **straight chord stationing** along the bank-to-bank transect
+#' (not arc length along a meandering ground path).
 #'
 #' @param channel An [`xchan`] or [`xsection`].
-#' @param distance,elevation Tidy-eval expressions (see `data`) for chord distance
-#'   and elevation; may be plain numeric or [units::units()] (distance is converted
-#'   with the channel CRS length unit when available). Distances are expected to
-#'   increase **from left bank toward right bank** along each transect (the same
-#'   sense as planimetric chord stationing). If your survey chainage ran the
-#'   opposite way, flip or negate the distance column before calling this function.
+#' @param distance,elevation Tidy-eval expressions (see `data`) for chord
+#'   distance
+#'   and elevation; may be plain numeric or [units::units()] (distance is
+#'   converted with the channel CRS length unit when available). Distances are
+#'   expected to increase **from left bank toward right bank** along each
+#'   transect (the same sense as planimetric chord stationing). If your survey
+#'   chainage ran the opposite way, flip or negate the distance column before
+#'   calling this function.
 #' @param section Tidy-eval expression giving a **stable cross-section key** for
-#'   each row (integer, character, etc.). Values are matched to [xt_section_id()]
-#'   when that vector exists and has length `length(channel)`; otherwise to
-#'   `seq_len(length(channel))`. Larger keys do
-#'   **not** imply downstream order here — only identity. Rows are taken in
-#'   **data frame row order** within each section (no sorting is applied by this
-#'   function).
-#' @param banks Tidy-eval logical vector: `TRUE` at bank vertices (even count per
+#'   each row (integer, character, etc.). Values are matched to
+#'   [xt_section_id()] when that vector exists and has length `length(channel)`;
+#'   otherwise to `seq_len(length(channel))`. Larger keys do **not** imply
+#'   downstream order here — only identity. Rows are taken in **data frame row
+#'   order** within each section (no sorting is applied by this function).
+#' @param banks Tidy-eval logical vector: `TRUE` at bank vertices (even count
+#'   per
 #'   section). The **outer** banks are those with minimum and maximum chord
 #'   distance among `TRUE` rows; inner `TRUE` values encode islands.
-#' @param ... Must be empty. Arguments after `...` (`data`, `snap_banks_to`) must
+#' @param ... Must be empty. Arguments after `...` (`data`, `snap_banks_to`)
+#'   must
 #'   be matched by name.
 #' @param data For [`xchan`] and [`xsection`], `NULL` (the default) evaluates
 #'   `distance`, `elevation`, `section` (for [`xchan`] only), and `banks` in the
-#'   calling environment. Otherwise a data frame (or data-mask object) whose rows
-#'   align with those vectors.
+#'   calling environment. Otherwise a data frame (or data-mask object) whose
+#'   rows align with those vectors.
 #' @param snap_banks_to If `"plan"`, outer bank **distances** in the profile are
-#'   set to **plus or minus** half the planimetric segment length (inner bank distances are
-#'   unchanged; an error is raised if an inner bank would lie outside that span).
-#'   If `"profile"`, plan segments are widened or narrowed with [xt_widen()] so
-#'   their length matches the surveyed outer bank span (symmetric split). There
-#'   is no affine stretch of interior profile distances.
+#'   set to **plus or minus** half the planimetric segment length (inner bank
+#'   distances are unchanged; an error is raised if an inner bank would lie
+#'   outside that span). If `"profile"`, plan segments are widened or narrowed
+#'   with [xt_widen()] so their length matches the surveyed outer bank span
+#'   (symmetric split). There is no affine stretch of interior profile
+#'   distances.
 #'
-#' @returns A **new** [`xchan`] or [`xsection`] with profiles attached or replaced
-#'   (the input object is not modified). For [`xchan`], **every** section receives a
-#'   new profile in one call (required for profile homogeneity).
+#' @returns A **new** [`xchan`] or [`xsection`] with profiles attached or
+#'   replaced
+#'   (the input object is not modified). For [`xchan`], **every** section
+#'   receives a new profile in one call (required for profile homogeneity).
 #'
 #' @details
-#' Each built `xs_profile` stores chord distances with **0 at the midpoint between
-#' the two outer bank distances**, vertices sorted by increasing distance (stable
-#' ordering for ties), and thalwegs re-derived from the sorted polyline. Existing
-#' profiles on a channel are always **replaced** in full. If the channel
-#' already had profiles, supply rows for **all** sections identified by
-#' [xt_section_id()] (or `seq_len(n)` when that vector is absent).
+#' Each built `xs_profile` stores chord distances with **0 at the midpoint
+#' between the two outer bank distances**, vertices sorted by increasing
+#' distance (stable ordering for ties), and thalwegs re-derived from the sorted
+#' polyline. Existing profiles on a channel are always **replaced** in full. If
+#' the channel already had profiles, supply rows for **all** sections identified
+#' by [xt_section_id()] (or `seq_len(n)` when that vector is absent).
 #'
 #' @export
 xt_add_profile <- function(channel, ...) {
@@ -206,7 +211,10 @@ xt_add_profile.xsection <- function(
     W <- as.numeric(xt_width(prof))
     dw <- W - L
     crs_use <- if (!is.null(cr)) cr else sf::NA_crs_
-    wrapped <- xchan(list(xsection(channel$plan, profile = NULL)), crs = crs_use)
+    wrapped <- xchan(
+      list(xsection(channel$plan, profile = NULL)),
+      crs = crs_use
+    )
     widened <- xt_widen(wrapped, dw = dw, side = "both")
     xsection(widened[[1]]$plan, profile = prof)
   }
@@ -301,7 +309,11 @@ build_xs_profile_from_table_rows <- function(d, z, b) {
 }
 
 #' @noRd
-snap_profile_outer_banks_to_plan_width <- function(profile, plan_width, tol = 1e-6) {
+snap_profile_outer_banks_to_plan_width <- function(
+  profile,
+  plan_width,
+  tol = 1e-6
+) {
   checkmate::assert_class(profile, "xs_profile")
   checkmate::assert_number(plan_width, lower = 0, finite = TRUE)
   h <- plan_width / 2
@@ -321,7 +333,10 @@ snap_profile_outer_banks_to_plan_width <- function(profile, plan_width, tol = 1e
       )
     }
   }
-  tw <- thalweg_indices_from_banks(profile$coordinates, get_bank_distances(profile))
+  tw <- thalweg_indices_from_banks(
+    profile$coordinates,
+    get_bank_distances(profile)
+  )
   profile$thalwegs <- tw
   profile$thalweg_elev <- min(profile$coordinates[tw, 2L])
   profile

@@ -72,9 +72,20 @@ test_that("elevation_bed excludes dry island interior (water intervals only)", {
   skip_if_not_installed("sf")
   coords <- matrix(
     c(
-      -3, 5, -2, 4, -1, 5,
-      0, 100,
-      1, 5, 2, 4, 3, 5
+      -3,
+      5,
+      -2,
+      4,
+      -1,
+      5,
+      0,
+      100,
+      1,
+      5,
+      2,
+      4,
+      3,
+      5
     ),
     ncol = 2,
     byrow = TRUE

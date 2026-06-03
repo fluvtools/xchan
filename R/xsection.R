@@ -1,7 +1,8 @@
 #' Predicate tests for \code{xchan} and \code{xsection}
 #'
 #' These functions test inheritance from a single class each. For list
-#' containers holding cross sections, see [xt_is_channel()] and [xt_is_cross_section()].
+#' containers holding cross sections, see [xt_is_channel()] and
+#' [xt_is_cross_section()].
 #'
 #' @name is.xchan
 #' @param x Any object.
@@ -105,10 +106,10 @@ assert_xchan_profile_homogeneity <- function(x) {
 #' The internal layout is deliberately exposed: each cross section is one
 #' element of the list (`[[i]]` is an [`xsection`]). You can inspect or replace
 #' sections directly, and combine them with ordinary list tools. Single-bracket
-#' subsetting (`[`) preserves **`crs`**, **`axis`**, **`bankline`**, and **`section_i`**
-#' (parent list positions used to build the subset; query or replace keys with
-#' [xt_section_id()]).
-#' Double-bracket (`[[`) returns a bare [`xsection`] by design.
+#' subsetting (`[`) preserves **`crs`**, **`axis`**, **`bankline`**, and
+#' **`section_i`** (parent list positions used to build the subset; query or
+#' replace keys with [xt_section_id()]). Double-bracket (`[[`) returns a bare
+#' [`xsection`] by design.
 #'
 #' @param sections A list of `xsection` objects.
 #' @param crs Optional CRS accepted by [sf::st_crs()].
@@ -188,7 +189,8 @@ normalize_xchan_subset_positions <- function(n, i) {
 #' @param i Indices selecting cross sections by position.
 #' @param ... Must be empty.
 #' @describeIn xchan Subset by section index; preserves \code{crs}, \code{axis},
-#' \code{bankline}, and \code{section_i} (parent list positions; see \code{\link{xt_section_id}}).
+#' \code{bankline}, and \code{section_i} (parent list positions; see
+#' \code{\link{xt_section_id}}).
 #' @export
 `[.xchan` <- function(x, i, ...) {
   rlang::check_dots_empty()

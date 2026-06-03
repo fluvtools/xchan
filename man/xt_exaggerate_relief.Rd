@@ -20,8 +20,8 @@ elevations.
 }
 \description{
 Applies a vertical exaggeration factor to profile elevations, measured as
-height above each profile's minimum elevation (thalweg baseline). Use this
-to improve visual interpretation in profile and 3D views.
+height above each profile's minimum elevation (thalweg baseline). Use this to
+improve visual interpretation in profile and 3D views.
 }
 \examples{
 channel <- xt_as_channel(rep(1, 6))

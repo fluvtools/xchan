@@ -86,7 +86,13 @@ test_that("xt_add_profile.xsection works without data", {
   d <- c(-1, 0, 1)
   z <- c(5, 4, 5)
   b <- c(TRUE, FALSE, TRUE)
-  out <- xt_add_profile(xs, distance = d, elevation = z, banks = b, snap_banks_to = "plan")
+  out <- xt_add_profile(
+    xs,
+    distance = d,
+    elevation = z,
+    banks = b,
+    snap_banks_to = "plan"
+  )
   expect_equal(as.numeric(xt_width(out)), 2)
 })
 

@@ -13,7 +13,14 @@ print.xchan_bathymetry <- function(x, ...) {
     for (i in seq_along(params)) {
       param_name <- names(params)[i]
       param_value <- params[[i]]
-      cat("  * ", param_name, ": ", format_print_scalar(param_value), "\n", sep = "")
+      cat(
+        "  * ",
+        param_name,
+        ": ",
+        format_print_scalar(param_value),
+        "\n",
+        sep = ""
+      )
     }
   }
 

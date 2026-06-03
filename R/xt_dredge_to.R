@@ -9,9 +9,9 @@
 #'   toward the target bathymetry.
 #'
 #' @details
-#' Dredging modifies every span between consecutive bank contacts on each profile
-#' cross section to match the supplied bathymetry specification. Where the
-#' existing bed is higher than the target, material is removed; where the
+#' Dredging modifies every span between consecutive bank contacts on each
+#' profile cross section to match the supplied bathymetry specification. Where
+#' the existing bed is higher than the target, material is removed; where the
 #' existing channel is deeper than the target, the bed is raised. Outer bank
 #' positions and elevations are unchanged.
 #'
@@ -21,8 +21,8 @@
 #'
 #' This is useful when profile cross sections were sampled from a DEM that does
 #' not represent submerged topography (for example LIDAR): the river may appear
-#' as a flat surface at bank elevation rather than a channel. Supplying synthetic
-#' target bathymetry inserts a channel geometry for analysis.
+#' as a flat surface at bank elevation rather than a channel. Supplying
+#' synthetic target bathymetry inserts a channel geometry for analysis.
 #'
 #' @examples
 #' channel <- xt_as_channel(rep(10, 3))

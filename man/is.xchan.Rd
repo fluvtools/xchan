@@ -20,7 +20,8 @@ is_xsection(x)
 }
 \description{
 These functions test inheritance from a single class each. For list
-containers holding cross sections, see \code{\link[=xt_is_channel]{xt_is_channel()}} and \code{\link[=xt_is_cross_section]{xt_is_cross_section()}}.
+containers holding cross sections, see \code{\link[=xt_is_channel]{xt_is_channel()}} and
+\code{\link[=xt_is_cross_section]{xt_is_cross_section()}}.
 }
 \examples{
 \donttest{

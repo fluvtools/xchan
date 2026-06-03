@@ -230,7 +230,8 @@ test_that("manual units from profile_survey register without CRS", {
 
 test_that("xt_gradient stays unitless even when CRS carries units", {
   # Build a synthetic CRS-aware channel with a stepped thalweg so a real
-  # gradient comes out. Use elevation_thalweg() (lowest profile vertex per section).
+  # gradient comes out. Use elevation_thalweg() (lowest profile vertex per
+  #  section).
   make_profile <- function(elev_offset) {
     xchan:::new_profile(
       coords = matrix(

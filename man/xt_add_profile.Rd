@@ -32,57 +32,62 @@ xt_add_profile(channel, ...)
 \arguments{
 \item{channel}{An \code{\link{xchan}} or \code{\link{xsection}}.}
 
-\item{...}{Must be empty. Arguments after \code{...} (\code{data}, \code{snap_banks_to}) must
+\item{...}{Must be empty. Arguments after \code{...} (\code{data}, \code{snap_banks_to})
+must
 be matched by name.}
 
-\item{distance, elevation}{Tidy-eval expressions (see \code{data}) for chord distance
-and elevation; may be plain numeric or \code{\link[units:units]{units::units()}} (distance is converted
-with the channel CRS length unit when available). Distances are expected to
-increase \strong{from left bank toward right bank} along each transect (the same
-sense as planimetric chord stationing). If your survey chainage ran the
-opposite way, flip or negate the distance column before calling this function.}
+\item{distance, elevation}{Tidy-eval expressions (see \code{data}) for chord
+distance
+and elevation; may be plain numeric or \code{\link[units:units]{units::units()}} (distance is
+converted with the channel CRS length unit when available). Distances are
+expected to increase \strong{from left bank toward right bank} along each
+transect (the same sense as planimetric chord stationing). If your survey
+chainage ran the opposite way, flip or negate the distance column before
+calling this function.}
 
 \item{section}{Tidy-eval expression giving a \strong{stable cross-section key} for
-each row (integer, character, etc.). Values are matched to \code{\link[=xt_section_id]{xt_section_id()}}
-when that vector exists and has length \code{length(channel)}; otherwise to
-\code{seq_len(length(channel))}. Larger keys do
-\strong{not} imply downstream order here — only identity. Rows are taken in
-\strong{data frame row order} within each section (no sorting is applied by this
-function).}
+each row (integer, character, etc.). Values are matched to
+\code{\link[=xt_section_id]{xt_section_id()}} when that vector exists and has length \code{length(channel)};
+otherwise to \code{seq_len(length(channel))}. Larger keys do \strong{not} imply
+downstream order here — only identity. Rows are taken in \strong{data frame row
+order} within each section (no sorting is applied by this function).}
 
-\item{banks}{Tidy-eval logical vector: \code{TRUE} at bank vertices (even count per
+\item{banks}{Tidy-eval logical vector: \code{TRUE} at bank vertices (even count
+per
 section). The \strong{outer} banks are those with minimum and maximum chord
 distance among \code{TRUE} rows; inner \code{TRUE} values encode islands.}
 
 \item{data}{For \code{\link{xchan}} and \code{\link{xsection}}, \code{NULL} (the default) evaluates
 \code{distance}, \code{elevation}, \code{section} (for \code{\link{xchan}} only), and \code{banks} in the
-calling environment. Otherwise a data frame (or data-mask object) whose rows
-align with those vectors.}
+calling environment. Otherwise a data frame (or data-mask object) whose
+rows align with those vectors.}
 
 \item{snap_banks_to}{If \code{"plan"}, outer bank \strong{distances} in the profile are
-set to \strong{plus or minus} half the planimetric segment length (inner bank distances are
-unchanged; an error is raised if an inner bank would lie outside that span).
-If \code{"profile"}, plan segments are widened or narrowed with \code{\link[=xt_widen]{xt_widen()}} so
-their length matches the surveyed outer bank span (symmetric split). There
-is no affine stretch of interior profile distances.}
+set to \strong{plus or minus} half the planimetric segment length (inner bank
+distances are unchanged; an error is raised if an inner bank would lie
+outside that span). If \code{"profile"}, plan segments are widened or narrowed
+with \code{\link[=xt_widen]{xt_widen()}} so their length matches the surveyed outer bank span
+(symmetric split). There is no affine stretch of interior profile
+distances.}
 }
 \value{
-A \strong{new} \code{\link{xchan}} or \code{\link{xsection}} with profiles attached or replaced
-(the input object is not modified). For \code{\link{xchan}}, \strong{every} section receives a
-new profile in one call (required for profile homogeneity).
+A \strong{new} \code{\link{xchan}} or \code{\link{xsection}} with profiles attached or
+replaced
+(the input object is not modified). For \code{\link{xchan}}, \strong{every} section
+receives a new profile in one call (required for profile homogeneity).
 }
 \description{
 Build \code{xs_profile} objects from chord-distance / elevation columns (and bank
 flags), attach them to each \code{\link{xsection}}, and reconcile plan vs profile
 bank-to-bank width using the same checks as \code{\link[=xt_width]{xt_width()}} on plan and profile.
-Distances are \strong{straight chord stationing} along the bank-to-bank transect (not
-arc length along a meandering ground path).
+Distances are \strong{straight chord stationing} along the bank-to-bank transect
+(not arc length along a meandering ground path).
 }
 \details{
-Each built \code{xs_profile} stores chord distances with \strong{0 at the midpoint between
-the two outer bank distances}, vertices sorted by increasing distance (stable
-ordering for ties), and thalwegs re-derived from the sorted polyline. Existing
-profiles on a channel are always \strong{replaced} in full. If the channel
-already had profiles, supply rows for \strong{all} sections identified by
-\code{\link[=xt_section_id]{xt_section_id()}} (or \code{seq_len(n)} when that vector is absent).
+Each built \code{xs_profile} stores chord distances with \strong{0 at the midpoint
+between the two outer bank distances}, vertices sorted by increasing
+distance (stable ordering for ties), and thalwegs re-derived from the sorted
+polyline. Existing profiles on a channel are always \strong{replaced} in full. If
+the channel already had profiles, supply rows for \strong{all} sections identified
+by \code{\link[=xt_section_id]{xt_section_id()}} (or \code{seq_len(n)} when that vector is absent).
 }

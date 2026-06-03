@@ -7,9 +7,8 @@ coords_all <- function(profile) {
 
 #' Inject points into a profile cross section matrix
 #'
-#' Inject a point into a 2D cross section matrix,
-#' potentially splitting a linesegment into two
-#' if x doesn't already land on a node.
+#' Inject a point into a 2D cross section matrix, potentially splitting a
+#' linesegment into two if x doesn't already land on a node.
 #'
 #' @param profile Cross section profile.
 #' @param x Numeric vector; distance along cross section to add a new node to.

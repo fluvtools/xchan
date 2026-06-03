@@ -4,9 +4,9 @@
 #' @param n Maximum number of cross sections to print, in **list order** (same
 #'   as `[[1]]`, `[[2]]`, …). When a channel axis is available ([xt_axis()]),
 #'   each line is prefixed with that section’s **upstream-to-downstream** index
-#'   among the sections being printed (\code{1} = most upstream, \code{n} =
-#'   most downstream); otherwise indices are \code{1} … \code{n} in list order.
-#'   If [xt_section_id()] is set to a vector of length \code{length(x)} and it is
+#'   among the sections being printed (\code{1} = most upstream, \code{n} = most
+#'   downstream); otherwise indices are \code{1} … \code{n} in list order. If
+#'   [xt_section_id()] is set to a vector of length \code{length(x)} and it is
 #'   **not** exactly the consecutive integers \code{1}, \code{2}, …, \code{n} in
 #'   list order, each printed line also includes \verb{: ID <key>} for that list
 #'   position’s key. The default is `6`. Use `Inf` to print every section.
@@ -35,7 +35,10 @@ print.xchan <- function(x, ..., n = 6) {
     for (k in seq_len(n_show)) {
       wi <- w[k]
       if (inherits(wi, "units")) {
-        w_str <- paste(format(as.numeric(wi), trim = TRUE), units::deparse_unit(wi))
+        w_str <- paste(
+          format(as.numeric(wi), trim = TRUE),
+          units::deparse_unit(wi)
+        )
       } else {
         w_str <- paste0(format(as.numeric(wi), trim = TRUE), " (-)")
       }

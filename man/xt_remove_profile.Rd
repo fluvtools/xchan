@@ -25,9 +25,9 @@ xt_remove_profile(x, ...)
 }
 \description{
 Drops \code{xs_profile} data from each \code{\link{xsection}} in an \code{\link{xchan}}, or from a
-single \code{\link{xsection}}. Planimetric geometry and channel CRS are unchanged.
-Use \code{\link[=xt_as_sfc]{xt_as_sfc()}} with \code{what = "profile"} when you need profile linestrings
-as \code{sfc} before removing them.
+single \code{\link{xsection}}. Planimetric geometry and channel CRS are unchanged. Use
+\code{\link[=xt_as_sfc]{xt_as_sfc()}} with \code{what = "profile"} when you need profile linestrings as
+\code{sfc} before removing them.
 }
 \examples{
 ch <- xt_as_channel(c(2, 2), crs = 3005)

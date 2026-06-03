@@ -13,16 +13,14 @@
 #'
 #' @returns
 #' For [`xchan`]: a numeric vector with one width per cross section, carrying
-#'   [units::units()] when the channel has a CRS with a defined linear unit
-#'   (for example metres), or when a length unit was set manually (for example
-#'   via [units::units()] widths or profile distances). When no unit is known
-#'   the result is plain numeric.
-#' For [`xsection`]: a non-negative numeric scalar. If attribute `"crs"` is
-#'   set on `x` (unusual; the container [`xchan`] holds CRS instead), the result
-#'   may carry [units::units()] like a channel with that CRS; otherwise plain
-#'   numeric.
-#' For `xs_profile`: a non-negative numeric scalar (no CRS context, so plain
-#'   numeric).
+#' [units::units()] when the channel has a CRS with a defined linear unit (for
+#' example metres), or when a length unit was set manually (for example via
+#' [units::units()] widths or profile distances). When no unit is known the
+#' result is plain numeric. For [`xsection`]: a non-negative numeric scalar. If
+#' attribute `"crs"` is set on `x` (unusual; the container [`xchan`] holds CRS
+#' instead), the result may carry [units::units()] like a channel with that CRS;
+#' otherwise plain numeric. For `xs_profile`: a non-negative numeric scalar (no
+#' CRS context, so plain numeric).
 #'
 #' @examples
 #' channel <- xt_as_channel(rep(1, 6))
@@ -108,7 +106,10 @@ validate_plan_profile_widths <- function(channel, tol = 1e-6) {
   if (length(plan) != length(profile)) {
     stop(
       "Planimetric and profile views must have the same length (got ",
-      length(plan), " and ", length(profile), ").",
+      length(plan),
+      " and ",
+      length(profile),
+      ").",
       call. = FALSE
     )
   }

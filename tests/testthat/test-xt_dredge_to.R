@@ -101,9 +101,20 @@ test_that("xt_dredge_to dredges water spans and island interiors", {
   skip_if_not_installed("sf")
   coords <- matrix(
     c(
-      -3, 10, -2, 9, -1, 10,
-      0, 100,
-      1, 10, 2, 9, 3, 10
+      -3,
+      10,
+      -2,
+      9,
+      -1,
+      10,
+      0,
+      100,
+      1,
+      10,
+      2,
+      9,
+      3,
+      10
     ),
     ncol = 2,
     byrow = TRUE

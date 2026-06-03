@@ -17,8 +17,8 @@ span_banks(pt, angle, bankline)
 A line segment spanning from bank to bank.
 }
 \description{
-Given a point within a channel, generate a line segment that goes from
-bank to bank, for a specified angle.
+Given a point within a channel, generate a line segment that goes from bank
+to bank, for a specified angle.
 }
 \note{
 Used by \code{\link[=xt_generate_plan]{xt_generate_plan()}} (via \code{span_banks_engine()}).

@@ -6,25 +6,23 @@
 #' (the right bank will have `1 - prop_left` of the change in width).
 #' @returns An eroded version of the input 2D cross section.
 #' @details
-#' Profile erosion follows three rules (applied on each bank via [flip_profile()]
-#' for the opposite side):
+#' Profile erosion follows three rules (applied on each bank via
+#' [flip_profile()] for the opposite side):
 #'
 #' 1. Ground between the old and new bank positions is removed (the old bank
-#'    point is removed as well).
-#' 2. The **left-side channel** (topography between the left bank and the
-#'    leftmost thalweg) slides left by `dw`, preserving its shape. The opposite
-#'    bank is fixed.
-#' 3. The span between the leftmost and rightmost thalwegs widens by `dw` on the
-#'    eroded side; the new strip is filled with a flat channel bottom at the
-#'    thalweg elevation.
+#' point is removed as well). 2. The **left-side channel** (topography between
+#' the left bank and the leftmost thalweg) slides left by `dw`, preserving its
+#' shape. The opposite bank is fixed. 3. The span between the leftmost and
+#' rightmost thalwegs widens by `dw` on the eroded side; the new strip is filled
+#' with a flat channel bottom at the thalweg elevation.
 #'
 #' A vertical bank face is placed at the new bank: its elevation is taken from
 #' the pre-erosion ground surface at that distance (linear interpolation along
 #' the profile). Material below the thalweg elevation in the eroded strip does
 #' not count toward [xt_erosion_volume()].
 #'
-#' Eroding into a floodplain depression below the thalweg yields a warning and
-#' a cliff down to the channel; eroding into higher ground yields a cliff that
+#' Eroding into a floodplain depression below the thalweg yields a warning and a
+#' cliff down to the channel; eroding into higher ground yields a cliff that
 #' rises above the channel.
 #' @noRd
 widen_profile <- function(

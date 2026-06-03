@@ -1,15 +1,15 @@
 #' Calculate Erosion Width from Volume Change
 #'
 #' This function calculates the erosion width for each cross-section in a
-#' channel given a specified volume change, distributing the change according
-#' to a given scheme.
+#' channel given a specified volume change, distributing the change according to
+#' a given scheme.
 #'
 #' @inheritParams xt_widen
 #' @param dv Volume of erosion; single positive value or vector matching the
-#'   number of cross sections. Plain numeric is interpreted in the channel's
-#'   CRS length unit cubed; a [units::units()] volume object is converted
-#'   automatically (for example
-#'   `units::set_units(c(20, 30), "L")` against a metric channel).
+#'   number of cross sections. Plain numeric is interpreted in the channel's CRS
+#'   length unit cubed; a [units::units()] volume object is converted
+#'   automatically (for example `units::set_units(c(20, 30), "L")` against a
+#'   metric channel).
 #' @returns A numeric vector of erosion widths for each cross-section in the
 #'   channel, carrying [units::units()] when the channel has a CRS with a
 #'   defined linear unit.

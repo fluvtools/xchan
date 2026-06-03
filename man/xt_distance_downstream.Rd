@@ -12,30 +12,34 @@ xt_distance_upstream(channel, axis = NULL)
 \arguments{
 \item{channel}{An \code{\link{xchan}} with planimetric cross sections.}
 
-\item{axis}{Optional \strong{LINESTRING} (\code{sfc} / \code{sfg}). If supplied, distances are
+\item{axis}{Optional \strong{LINESTRING} (\code{sfc} / \code{sfg}). If supplied, distances
+are
 measured along this line; otherwise \code{xt_axis(channel)} is used; if that is
-\code{NULL}, an error is raised (set an axis with \code{xt_axis(channel) <- ...} or use
-\code{\link[=xt_generate_plan]{xt_generate_plan()}}).}
+\code{NULL}, an error is raised (set an axis with \code{xt_axis(channel) <- ...} or
+use \code{\link[=xt_generate_plan]{xt_generate_plan()}}).}
 }
 \value{
-A numeric vector of length \code{length(channel)} (same section order as \code{channel}). The
+A numeric vector of length \code{length(channel)} (same section order as
+\code{channel}). The
 result carries \code{\link[units:units]{units::units()}} when the channel has a defined length unit
 (from its CRS or from manual unit-bearing widths/profile input); plain
 numeric otherwise.
 }
 \description{
-\strong{\code{xt_distance_downstream()}} returns distance measured along the axis \strong{from its start}
-to the intersection of the axis with each cross section’s \strong{extended} bank-to-bank chord
-(the line through the first and last plan vertices, extended if needed so it meets the
-axis). If that infinite line does not intersect the axis, the chainage of the \strong{nearest}
-point on the axis to the bank midpoint is used instead. \strong{\code{xt_distance_upstream()}} returns
-distance along the axis \strong{from that station to the end} of the axis (equivalently:
-axis length minus downstream distance). Together they satisfy
-\code{xt_distance_downstream(x) + xt_distance_upstream(x) == axis_length} at each section when
-lengths are numeric.
+\strong{\code{xt_distance_downstream()}} returns distance measured along the axis
+\strong{from its start} to the intersection of the axis with each cross section’s
+\strong{extended} bank-to-bank chord (the line through the first and last plan
+vertices, extended if needed so it meets the axis). If that infinite line
+does not intersect the axis, the chainage of the \strong{nearest} point on the
+axis to the bank midpoint is used instead. \strong{\code{xt_distance_upstream()}}
+returns distance along the axis \strong{from that station to the end} of the axis
+(equivalently: axis length minus downstream distance). Together they satisfy
+\code{xt_distance_downstream(x) + xt_distance_upstream(x) == axis_length} at each
+section when lengths are numeric.
 }
 \note{
-Use \code{\link[=xt_arrange_downstream]{xt_arrange_downstream()}} if you need sections ordered by downstream chainage.
+Use \code{\link[=xt_arrange_downstream]{xt_arrange_downstream()}} if you need sections ordered by
+downstream chainage.
 }
 \examples{
 \donttest{

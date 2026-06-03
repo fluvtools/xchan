@@ -17,8 +17,8 @@ xt_is_cross_section(x)
 }
 \description{
 \code{xt_is_channel()} is \code{TRUE} for the cross-section list container
-(\code{xchan}). \code{xt_is_cross_section()}
-tests for a single cross section (same check as \code{\link[=is.xsection]{is.xsection()}}).
+(\code{xchan}). \code{xt_is_cross_section()} tests for a single cross section
+(same check as \code{\link[=is.xsection]{is.xsection()}}).
 }
 \examples{
 \donttest{
