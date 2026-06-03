@@ -46,11 +46,11 @@ devtools::install_github("fluvtools/xchan")
 
 The package includes spatial data for the Squamish River in British
 Columbia: a bankline polygon and a DEM. It’s possible to create channels
-in other ways; see the [*Getting Started with
-Channels*](https://fluvtools.github.io/xchan/articles/basic_channels.html)
-and [*Channels with
-Profiles*](https://fluvtools.github.io/xchan/articles/channels_with_profiles.html)
-vignettes for more information.
+in other ways; see the [Getting Started with Channels
+vignette](https://fluvtools.github.io/xchan/articles/basic_channels.html)
+and [Channels with Profiles
+vignette](https://fluvtools.github.io/xchan/articles/channels_with_profiles.html)
+for more information.
 
 Start by loading the package and unwrapping the packaged DEM, and
 plotting the bankline polygon on top.
@@ -59,7 +59,7 @@ plotting the bankline polygon on top.
 
 library(xchan)
 library(terra)
-#> terra 1.8.60
+#> terra 1.9.27
 #> 
 #> Attaching package: 'terra'
 #> The following objects are masked from 'package:testthat':
@@ -85,11 +85,23 @@ plot(squamish)
 
 If your workflow requires profile cross sections, you can generate them
 by sampling the DEM at each planimetric cross section
-(`sample_freq = 10` m).
+(`sample_freq = 10` m). The packaged Squamish DEM is LiDAR-derived and
+does not include submerged bathymetry, so the sampled profiles show a
+flat water surface rather than a channel. We insert a synthetic
+rectangular channel 3 m deep with
+[`xt_dredge_to()`](https://fluvtools.github.io/xchan/reference/xt_dredge_to.md).
 
 ``` r
 
-squamish <- xt_generate_profile(squamish, unwrap(squamish_dem), sample_freq = 10)
+squamish <- xt_generate_profile(
+  squamish,
+  unwrap(squamish_dem),
+  sample_freq = 10
+)
+squamish <- xt_dredge_to(
+  squamish,
+  bathy = bathy_rectangle(depth = 3)
+)
 print(squamish, n = 10)
 #> xchan channel with 112 cross sections.
 #> CRS: EPSG:3005 
@@ -116,7 +128,12 @@ looks like in its full extent, with an exaggeration factor of 1.5.
 
 ``` r
 
-plot(squamish[[10]], view = "profile", extent = "full", exaggerate = 1.5)
+plot(
+  squamish[[10]],
+  view = "profile",
+  extent = "full",
+  exaggerate = 1.5
+)
 ```
 
 ![](reference/figures/README-unnamed-chunk-4-1.png)
@@ -135,7 +152,11 @@ Take a look at the 10th profile cross section now:
 
 ``` r
 
-plot(widened_squamish[[10]], extent = "full", exaggerate = 1.5)
+plot(
+  widened_squamish[[10]],
+  extent = "full",
+  exaggerate = 1.5
+)
 ```
 
 ![](reference/figures/README-unnamed-chunk-6-1.png)
@@ -154,10 +175,13 @@ elevation.
 
 ``` r
 
-grad <- xt_gradient(widened_squamish, elevation = elevation_bank(min))
+grad <- xt_gradient(
+  widened_squamish,
+  elevation = elevation_bank(min)
+)
 head(grad)
-#> [1]           NA -0.005046736  0.003036535  0.006475538 -0.004370093
-#> [6] -0.001966055
+#> [1]           NA -0.005046736  0.003036535  0.006796899 -0.004370093
+#> [6] -0.002287416
 ```
 
 Plot the gradient along the channel axis.
@@ -171,9 +195,9 @@ lines(dist, grad, type = "l")
 
 ![](reference/figures/README-unnamed-chunk-9-1.png)
 
-To learn more about channel computations like these, see the [*Channel
-Computations*](https://fluvtools.github.io/xchan/articles/channel_computations.html)
-vignette.
+To learn more about channel computations like these, see the [Channel
+Computations
+vignette](https://fluvtools.github.io/xchan/articles/channel_computations.html).
 
 ## xchan in the Context of Other R Packages
 
@@ -200,6 +224,10 @@ funding from [BGC Engineering Inc.](https://bgcengineering.ca/).
 
 - [`squamish_dem`](https://fluvtools.github.io/xchan/reference/Squamish_dem.md)
   : Squamish River Demo DEM
+
+- [`bathy_rectangle()`](https://fluvtools.github.io/xchan/reference/bathymetry.md)
+  [`bathy_vshape()`](https://fluvtools.github.io/xchan/reference/bathymetry.md)
+  : Bathymetry specifications for dredging profile cross sections
 
 - [`elevation_thalweg()`](https://fluvtools.github.io/xchan/reference/elevations.md)
   [`elevation_bank()`](https://fluvtools.github.io/xchan/reference/elevations.md)
@@ -234,6 +262,9 @@ funding from [BGC Engineering Inc.](https://bgcengineering.ca/).
 
 - [`print(`*`<xchan>`*`)`](https://fluvtools.github.io/xchan/reference/print.xchan.md)
   : Print a channel object
+
+- [`print(`*`<xchan_bathymetry>`*`)`](https://fluvtools.github.io/xchan/reference/print.xchan_bathymetry.md)
+  : Print method for xchan_bathymetry objects
 
 - [`print(`*`<xchan_elevation>`*`)`](https://fluvtools.github.io/xchan/reference/print.xchan_elevation.md)
   : Print method for xchan_elevation objects
@@ -294,6 +325,9 @@ funding from [BGC Engineering Inc.](https://bgcengineering.ca/).
 - [`xt_distance_downstream()`](https://fluvtools.github.io/xchan/reference/xt_distance_downstream.md)
   [`xt_distance_upstream()`](https://fluvtools.github.io/xchan/reference/xt_distance_downstream.md)
   : Distance along the channel axis to cross-section stations
+
+- [`xt_dredge_to()`](https://fluvtools.github.io/xchan/reference/xt_dredge_to.md)
+  : Dredge profile cross sections to a target bathymetry
 
 - [`xt_elevation()`](https://fluvtools.github.io/xchan/reference/xt_elevation.md)
   : Get elevation values using an elevation specification

@@ -88,18 +88,21 @@ methods return an <code><a href="xchan.html">xchan</a></code>.</p>
 <dt id="arg-crs">crs<a class="anchor" aria-label="anchor" href="#arg-crs"></a></dt>
 <dd><p>For <code>numeric</code>, <code>sfc</code>, and <code>list</code> methods:
 CRS applied to plan geometries via <code><a href="https://r-spatial.github.io/sf/reference/st_crs.html" class="external-link">sf::st_set_crs()</a></code>. <code>NULL</code> leaves
-existing CRS unchanged (for <code>list</code>, sets the container CRS on the <code><a href="xchan.html">xchan</a></code>).</p></dd>
+existing CRS unchanged (for <code>list</code>, sets the container CRS on the
+<code><a href="xchan.html">xchan</a></code>).</p></dd>
 
 
 <dt id="arg-axis">axis<a class="anchor" aria-label="anchor" href="#arg-axis"></a></dt>
-<dd><p>Optional channel axis (<code>sfc</code>/<code>sfg</code> LINESTRING, length 1); see <code><a href="xt_axis.html">xt_axis()</a></code>.
-When <code>NULL</code>, a default axis is built (synthetic spacing for <code>numeric</code> widths;
-midpoints connected in section order for <code>sfc</code>, <code>sfg</code>, and <code>list</code>). For an
-existing <code><a href="xchan.html">xchan</a></code>, <code>NULL</code> leaves the stored axis unchanged.</p></dd>
+<dd><p>Optional channel axis (<code>sfc</code>/<code>sfg</code> LINESTRING, length 1); see
+<code><a href="xt_axis.html">xt_axis()</a></code>.
+When <code>NULL</code>, a default axis is built (synthetic spacing for <code>numeric</code>
+widths; midpoints connected in section order for <code>sfc</code>, <code>sfg</code>, and <code>list</code>).
+For an existing <code><a href="xchan.html">xchan</a></code>, <code>NULL</code> leaves the stored axis unchanged.</p></dd>
 
 
 <dt id="arg-bankline">bankline<a class="anchor" aria-label="anchor" href="#arg-bankline"></a></dt>
-<dd><p>Optional bankline polygon (<code>sfc</code>/<code>sfg</code>); stored on the <code><a href="xchan.html">xchan</a></code>
+<dd><p>Optional bankline polygon (<code>sfc</code>/<code>sfg</code>); stored on the
+<code><a href="xchan.html">xchan</a></code>
 via <code><a href="xt_bankline.html">xt_bankline()</a></code>. <code>NULL</code> leaves any existing footprint unchanged.</p></dd>
 
 </dl></div>
@@ -110,8 +113,8 @@ via <code><a href="xt_bankline.html">xt_bankline()</a></code>. <code>NULL</code>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>For <strong><code>sfg</code></strong> / <strong><code>sfc</code></strong> inputs, coercion targets <strong>planimetric-only</strong>
-cross sections at this stage of package development: geometries are cast to
+    <p>For <strong><code>sfg</code></strong> / <strong><code>sfc</code></strong> inputs, coercion targets <strong>planimetric-only</strong> cross
+sections at this stage of package development: geometries are cast to
 <strong>LINESTRING</strong> bank-to-bank segments. Users should supply line geometries
 (not polygons or points). Profile views must be attached separately (for
 example with <code><a href="xchan.html">xchan()</a></code> / <code><a href="xsection.html">xsection()</a></code>).</p>
@@ -119,12 +122,12 @@ example with <code><a href="xchan.html">xchan()</a></code> / <code><a href="xsec
 are placed on <strong>vertical</strong> transects (constant \(x\), width in \(y\)) so
 the synthetic channel runs <strong>horizontally</strong> along \(x\). Each transect’s
 first vertex is the <strong>left</strong> bank and the second the <strong>right</strong> bank, facing
-downstream (increasing \(x\) along the default axis). Consecutive
-stations are spaced by <strong>twice</strong> a reference width: twice
-<code><a href="https://rdrr.io/r/stats/median.html" class="external-link">stats::median()</a></code> of <code>x</code> when that value is positive, otherwise twice
-<code>mean(x)</code>. If every width is zero, a reference width of <code>1</code> is used
-(so consecutive stations lie 2 map units apart). The same length unit applies
-as for <code>x</code> (typically metres under a projected CRS).</p>
+downstream (increasing \(x\) along the default axis). Consecutive stations
+are spaced by <strong>twice</strong> a reference width: twice <code><a href="https://rdrr.io/r/stats/median.html" class="external-link">stats::median()</a></code> of
+<code>x</code> when that value is positive, otherwise twice <code>mean(x)</code>. If
+every width is zero, a reference width of <code>1</code> is used (so consecutive
+stations lie 2 map units apart). The same length unit applies as for <code>x</code>
+(typically metres under a projected CRS).</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>

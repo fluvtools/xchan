@@ -69,15 +69,14 @@ to bank-marker styling (<code>col_bank</code>, <code>pch_bank</code>, <code>cex_
 <dt id="arg-extent">extent<a class="anchor" aria-label="anchor" href="#arg-extent"></a></dt>
 <dd><p>One of <code>"banks"</code> (default) or <code>"full"</code>.
 <code>"full"</code> draws each transect out to the ends of its profile (when profiles
-are present); uses bank-to-bank segments only if
-there is no profile geometry (with a warning). Profile bank markers are
-drawn only when <code>extent = "full"</code> and bank markers are enabled (see <code>banks</code>).</p></dd>
+are present); uses bank-to-bank segments only if there is no profile
+geometry (with a warning). Profile bank markers are drawn only when <code>extent = "full"</code> and bank markers are enabled (see <code>banks</code>).</p></dd>
 
 
 <dt id="arg-axis">axis<a class="anchor" aria-label="anchor" href="#arg-axis"></a></dt>
 <dd><p>How to draw the stored channel axis (<code><a href="xt_axis.html">xt_axis()</a></code>), when one is
-present: <code>"line"</code> (default) draws the axis as a plain line, <code>"arrows"</code> draws
-flow direction along the axis, <code>"none"</code> omits it.</p>
+present: <code>"line"</code> (default) draws the axis as a plain line, <code>"arrows"</code>
+draws flow direction along the axis, <code>"none"</code> omits it.</p>
 <p>When <code><a href="xt_bankline.html">xt_bankline()</a></code> is set and <code>add = FALSE</code>, the footprint is drawn first
 (filled polygon under transects), then cross sections and the axis overlay.</p></dd>
 
@@ -86,25 +85,28 @@ flow direction along the axis, <code>"none"</code> omits it.</p>
 <dd><p>One of <code>"auto"</code>, <code>"show"</code>, or <code>"hide"</code>: whether to draw bank
 markers on planimetric transects (endpoints, and all profile banks when
 <code>extent = "full"</code>). <code>"auto"</code> draws markers when there is no <code><a href="xt_bankline.html">xt_bankline()</a></code>
-footprint, and omits them when a footprint is present (markers are redundant
-with the polygon boundary). <code>"show"</code> / <code>"hide"</code> override that rule.</p></dd>
+footprint, and omits them when a footprint is present (markers are
+redundant with the polygon boundary). <code>"show"</code> / <code>"hide"</code> override that
+rule.</p></dd>
 
 
 <dt id="arg-add">add<a class="anchor" aria-label="anchor" href="#arg-add"></a></dt>
-<dd><p>If <code>TRUE</code>, draw on the current plot (same rules as <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">graphics::plot()</a></code>).</p></dd>
+<dd><p>If <code>TRUE</code>, draw on the current plot (same rules as
+<code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">graphics::plot()</a></code>).</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>For the plan view, when <code>add = FALSE</code> and you do not pass <code>xlim</code> / <code>ylim</code>,
 the plot limits are adjusted so the on-screen aspect is not extremely
-stretched (for example when synthetic width-only channels use a large
-default station spacing relative to transect width). Pass your own
-<code>xlim</code> and <code>ylim</code> to reproduce the raw map scale.</p>
+stretched (for example when synthetic width-only channels use a large default
+station spacing relative to transect width). Pass your own <code>xlim</code> and <code>ylim</code>
+to reproduce the raw map scale.</p>
 <p>For "profile" and "3d" views, you can specify <code>exaggerate</code> to vertically
-exaggerate the relief. For example, <code>exaggerate = 2</code> doubles the vertical scale.
-The default is <code>exaggerate = 1</code> (no exaggeration). It is strongly recommended not going beyond 3, because
-exaggeration beyond this point can distort the perception of the profile.</p>
+exaggerate the relief. For example, <code>exaggerate = 2</code> doubles the vertical
+scale. The default is <code>exaggerate = 1</code> (no exaggeration). It is strongly
+recommended not going beyond 3, because exaggeration beyond this point can
+distort the perception of the profile.</p>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

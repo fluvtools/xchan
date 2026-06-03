@@ -8,6 +8,10 @@
 - [`squamish_dem`](https://fluvtools.github.io/xchan/reference/Squamish_dem.md)
   : Squamish River Demo DEM
 
+- [`bathy_rectangle()`](https://fluvtools.github.io/xchan/reference/bathymetry.md)
+  [`bathy_vshape()`](https://fluvtools.github.io/xchan/reference/bathymetry.md)
+  : Bathymetry specifications for dredging profile cross sections
+
 - [`elevation_thalweg()`](https://fluvtools.github.io/xchan/reference/elevations.md)
   [`elevation_bank()`](https://fluvtools.github.io/xchan/reference/elevations.md)
   [`elevation_bank_left()`](https://fluvtools.github.io/xchan/reference/elevations.md)
@@ -41,6 +45,9 @@
 
 - [`print(`*`<xchan>`*`)`](https://fluvtools.github.io/xchan/reference/print.xchan.md)
   : Print a channel object
+
+- [`print(`*`<xchan_bathymetry>`*`)`](https://fluvtools.github.io/xchan/reference/print.xchan_bathymetry.md)
+  : Print method for xchan_bathymetry objects
 
 - [`print(`*`<xchan_elevation>`*`)`](https://fluvtools.github.io/xchan/reference/print.xchan_elevation.md)
   : Print method for xchan_elevation objects
@@ -101,6 +108,9 @@
 - [`xt_distance_downstream()`](https://fluvtools.github.io/xchan/reference/xt_distance_downstream.md)
   [`xt_distance_upstream()`](https://fluvtools.github.io/xchan/reference/xt_distance_downstream.md)
   : Distance along the channel axis to cross-section stations
+
+- [`xt_dredge_to()`](https://fluvtools.github.io/xchan/reference/xt_dredge_to.md)
+  : Dredge profile cross sections to a target bathymetry
 
 - [`xt_elevation()`](https://fluvtools.github.io/xchan/reference/xt_elevation.md)
   : Get elevation values using an elevation specification

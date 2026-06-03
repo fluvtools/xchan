@@ -87,16 +87,14 @@ right banks (the same convention as <code><a href="xt_generate_profile.html">xt_
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>For <code><a href="xchan.html">xchan</a></code>: a numeric vector with one width per cross section, carrying
-<code><a href="https://r-quantities.github.io/units/reference/units.html" class="external-link">units::units()</a></code> when the channel has a CRS with a defined linear unit
-(for example metres), or when a length unit was set manually (for example
-via <code><a href="https://r-quantities.github.io/units/reference/units.html" class="external-link">units::units()</a></code> widths or profile distances). When no unit is known
-the result is plain numeric.
-For <code><a href="xsection.html">xsection</a></code>: a non-negative numeric scalar. If attribute <code>"crs"</code> is
-set on <code>x</code> (unusual; the container <code><a href="xchan.html">xchan</a></code> holds CRS instead), the result
-may carry <code><a href="https://r-quantities.github.io/units/reference/units.html" class="external-link">units::units()</a></code> like a channel with that CRS; otherwise plain
-numeric.
-For <code>xs_profile</code>: a non-negative numeric scalar (no CRS context, so plain
-numeric).</p>
+<code><a href="https://r-quantities.github.io/units/reference/units.html" class="external-link">units::units()</a></code> when the channel has a CRS with a defined linear unit (for
+example metres), or when a length unit was set manually (for example via
+<code><a href="https://r-quantities.github.io/units/reference/units.html" class="external-link">units::units()</a></code> widths or profile distances). When no unit is known the
+result is plain numeric. For <code><a href="xsection.html">xsection</a></code>: a non-negative numeric scalar. If
+attribute <code>"crs"</code> is set on <code>x</code> (unusual; the container <code><a href="xchan.html">xchan</a></code> holds CRS
+instead), the result may carry <code><a href="https://r-quantities.github.io/units/reference/units.html" class="external-link">units::units()</a></code> like a channel with that CRS;
+otherwise plain numeric. For <code>xs_profile</code>: a non-negative numeric scalar (no
+CRS context, so plain numeric).</p>
     </div>
 
     <div class="section level2">

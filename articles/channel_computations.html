@@ -62,7 +62,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Channel Computations</h1>
             
-            <h4 data-toc-skip class="date">2026-05-29</h4>
+            <h4 data-toc-skip class="date">2026-06-03</h4>
       
 
       <div class="d-none name"><code>channel_computations.Rmd</code></div>
@@ -76,20 +76,23 @@ Profiles</a> vignettes cover creating and eroding channels, this
 vignette covers calculations on channels.</p>
 <p>First, make a channel for the Squamish River (same workflow as in the
 <a href="channels_with_profiles.html">Channels with Profiles</a>
-vignette).</p>
+vignette). The packaged Squamish DEM has no bathymetry, so we dredge a 3
+m deep rectangular channel after sampling.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://fluvtools.github.io/xchan/">xchan</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://rspatial.org/" class="external-link">terra</a></span><span class="op">)</span></span>
 <span><span class="co">#&gt; terra 1.9.27</span></span>
 <span><span class="va">squamish</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/xt_generate_plan.html">xt_generate_plan</a></span><span class="op">(</span><span class="va">squamish_bankline</span>, spacing <span class="op">=</span> <span class="fl">500</span><span class="op">)</span></span>
-<span><span class="va">squamish</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/xt_generate_profile.html">xt_generate_profile</a></span><span class="op">(</span><span class="va">squamish</span>, <span class="fu"><a href="https://rspatial.github.io/terra/reference/wrap.html" class="external-link">unwrap</a></span><span class="op">(</span><span class="va">squamish_dem</span><span class="op">)</span>, sample_freq <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
+<span><span class="va">squamish</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/xt_generate_profile.html">xt_generate_profile</a></span><span class="op">(</span><span class="va">squamish</span>, <span class="fu"><a href="https://rspatial.github.io/terra/reference/wrap.html" class="external-link">unwrap</a></span><span class="op">(</span><span class="va">squamish_dem</span><span class="op">)</span>,</span>
+<span>sample_freq <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
+<span><span class="va">squamish</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/xt_dredge_to.html">xt_dredge_to</a></span><span class="op">(</span><span class="va">squamish</span>, bathy <span class="op">=</span> <span class="fu"><a href="../reference/bathymetry.html">bathy_rectangle</a></span><span class="op">(</span>depth <span class="op">=</span> <span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">squamish</span><span class="op">)</span></span></code></pre></div>
 <p><img src="channel_computations_files/figure-html/setup-1.png" class="r-plt" alt="" width="700"></p>
 <div class="section level2">
 <h2 id="distance-downstream">Distance Downstream<a class="anchor" aria-label="anchor" href="#distance-downstream"></a>
 </h2>
-<p><span class="badge rounded-pill text-bg-secondary">Planimetric cross
-sections only</span></p>
+<p><span class="badge rounded-pill text-bg-secondary"> Planimetric only
+</span></p>
 <p>Downstream distances can be calculated along the channel axis, where
 “0” is the canonical distance for the most upstream cross section.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
@@ -104,13 +107,13 @@ argument if you wanted to use a different axis than the stored one.</p>
 <div class="section level2">
 <h2 id="elevations">Elevations<a class="anchor" aria-label="anchor" href="#elevations"></a>
 </h2>
-<p><span class="badge rounded-pill text-bg-secondary">Profile cross
-sections</span></p>
+<p><span class="badge rounded-pill text-bg-secondary"> Profile only
+</span></p>
 <p>Channel elevation can be defined in a few different ways. Some
 references use a single point, such as the thalweg elevation.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rspatial.github.io/terra/reference/headtail.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="../reference/xt_elevation.html">xt_elevation</a></span><span class="op">(</span><span class="va">squamish</span>, reference <span class="op">=</span> <span class="fu"><a href="../reference/elevations.html">elevation_thalweg</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 28.97444 29.02441 27.96418 27.30000 26.65931 26.44665</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 25.97444 26.02441 24.96911 24.30532 23.65931 23.44665</span></span></code></pre></div>
 <p>Other references summarize multiple points with a function. For
 example, <code><a href="../reference/elevations.html">elevation_bank()</a></code> applies a function to the two
 outer banks; by default, it returns the lower of the two.</p>
@@ -121,15 +124,15 @@ outer banks; by default, it returns the lower of the two.</p>
 <code><a href="../reference/elevations.html">elevation_bed()</a></code>. Here we take the median.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rspatial.github.io/terra/reference/headtail.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="../reference/xt_elevation.html">xt_elevation</a></span><span class="op">(</span><span class="va">squamish</span>, reference <span class="op">=</span> <span class="fu"><a href="../reference/elevations.html">elevation_bed</a></span><span class="op">(</span><span class="va">median</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 29.10169 30.83306 27.98404 27.51204 27.33734 28.34882</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 27.47444 27.52441 26.46911 25.80532 25.15931 24.94665</span></span></code></pre></div>
 <p>To learn more about the different elevation references, see the
 documentation at <code><a href="../reference/elevations.html">?elevations</a></code>.</p>
 </div>
 <div class="section level2">
 <h2 id="gradient">Gradient<a class="anchor" aria-label="anchor" href="#gradient"></a>
 </h2>
-<p><span class="badge rounded-pill text-bg-secondary">Profile cross
-sections</span></p>
+<p><span class="badge rounded-pill text-bg-secondary"> Profile only
+</span></p>
 <p>A useful way of approximating flow gradient is differencing some
 aspect of the topography between cross sections along the channel axis.
 The <code><a href="../reference/xt_gradient.html">xt_gradient()</a></code> function calculates this differential
@@ -147,8 +150,8 @@ reference.</p>
 <span>  elevation <span class="op">=</span> <span class="fu"><a href="../reference/elevations.html">elevation_thalweg</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rspatial.github.io/terra/reference/headtail.html" class="external-link">head</a></span><span class="op">(</span><span class="va">grad</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1]            NA            NA            NA -0.0013278049 -0.0009198343</span></span>
-<span><span class="co">#&gt; [6] -0.0010791907</span></span></code></pre></div>
+<span><span class="co">#&gt; [1]            NA            NA            NA -0.0013246862 -0.0006744382</span></span>
+<span><span class="co">#&gt; [6] -0.0010700127</span></span></code></pre></div>
 <p>By default, truncated windows are not allowed, which is why the first
 three cross sections are <code>NA</code>. This behaviour can be changed
 with the <code>complete</code> argument.</p>

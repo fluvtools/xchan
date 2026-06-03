@@ -54,11 +54,14 @@ xt_gradient(
   window spans at least two distinct stations (otherwise `NA`).
 
   If `FALSE`, require a **full** window: station `i` is only computed
-  when `i - before >= 1` and `i + after <= n`. Otherwise the value is
-  `NA`. So with `before = 1` and `after = 1`, only interior stations
-  `2, ..., n-1` are filled; you get exactly **one** `NA` at the front
-  (first station) and **one** at the end (last station), not two at
-  either boundary.
+  when \`i
+
+  - before \>= 1`and`i + after \<=
+    n`. Otherwise the value is `NA`. So with `before = 1`and`after =
+    1`, only interior stations `2, ...,
+    n-1`are filled; you get exactly **one**`NA\` at the front (first
+    station) and **one** at the end (last station), not two at either
+    boundary.
 
 - elevation:
 

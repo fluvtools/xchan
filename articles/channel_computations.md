@@ -10,7 +10,8 @@ calculations on channels.
 First, make a channel for the Squamish River (same workflow as in the
 [Channels with
 Profiles](https://fluvtools.github.io/xchan/articles/channels_with_profiles.md)
-vignette).
+vignette). The packaged Squamish DEM has no bathymetry, so we dredge a 3
+m deep rectangular channel after sampling.
 
 ``` r
 
@@ -18,7 +19,9 @@ library(xchan)
 library(terra)
 #> terra 1.9.27
 squamish <- xt_generate_plan(squamish_bankline, spacing = 500)
-squamish <- xt_generate_profile(squamish, unwrap(squamish_dem), sample_freq = 10)
+squamish <- xt_generate_profile(squamish, unwrap(squamish_dem),
+sample_freq = 10)
+squamish <- xt_dredge_to(squamish, bathy = bathy_rectangle(depth = 3))
 plot(squamish)
 ```
 
@@ -26,7 +29,7 @@ plot(squamish)
 
 ## Distance Downstream
 
-Planimetric cross sections only
+Planimetric only
 
 Downstream distances can be calculated along the channel axis, where “0”
 is the canonical distance for the most upstream cross section.
@@ -46,7 +49,7 @@ than the stored one.
 
 ## Elevations
 
-Profile cross sections
+Profile only
 
 Channel elevation can be defined in a few different ways. Some
 references use a single point, such as the thalweg elevation.
@@ -54,7 +57,7 @@ references use a single point, such as the thalweg elevation.
 ``` r
 
 head(xt_elevation(squamish, reference = elevation_thalweg()))
-#> [1] 28.97444 29.02441 27.96418 27.30000 26.65931 26.44665
+#> [1] 25.97444 26.02441 24.96911 24.30532 23.65931 23.44665
 ```
 
 Other references summarize multiple points with a function. For example,
@@ -75,7 +78,7 @@ Here we take the median.
 ``` r
 
 head(xt_elevation(squamish, reference = elevation_bed(median)))
-#> [1] 29.10169 30.83306 27.98404 27.51204 27.33734 28.34882
+#> [1] 27.47444 27.52441 26.46911 25.80532 25.15931 24.94665
 ```
 
 To learn more about the different elevation references, see the
@@ -84,7 +87,7 @@ documentation at
 
 ## Gradient
 
-Profile cross sections
+Profile only
 
 A useful way of approximating flow gradient is differencing some aspect
 of the topography between cross sections along the channel axis. The
@@ -105,8 +108,8 @@ grad <- xt_gradient(
   elevation = elevation_thalweg()
 )
 head(grad)
-#> [1]            NA            NA            NA -0.0013278049 -0.0009198343
-#> [6] -0.0010791907
+#> [1]            NA            NA            NA -0.0013246862 -0.0006744382
+#> [6] -0.0010700127
 ```
 
 By default, truncated windows are not allowed, which is why the first

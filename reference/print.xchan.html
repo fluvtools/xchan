@@ -62,9 +62,9 @@
 <dd><p>Maximum number of cross sections to print, in <strong>list order</strong> (same
 as <code>[[1]]</code>, <code>[[2]]</code>, …). When a channel axis is available (<code><a href="xt_axis.html">xt_axis()</a></code>),
 each line is prefixed with that section’s <strong>upstream-to-downstream</strong> index
-among the sections being printed (<code>1</code> = most upstream, <code>n</code> =
-most downstream); otherwise indices are <code>1</code> … <code>n</code> in list order.
-If <code><a href="xt_section_id.html">xt_section_id()</a></code> is set to a vector of length <code>length(x)</code> and it is
+among the sections being printed (<code>1</code> = most upstream, <code>n</code> = most
+downstream); otherwise indices are <code>1</code> … <code>n</code> in list order. If
+<code><a href="xt_section_id.html">xt_section_id()</a></code> is set to a vector of length <code>length(x)</code> and it is
 <strong>not</strong> exactly the consecutive integers <code>1</code>, <code>2</code>, …, <code>n</code> in
 list order, each printed line also includes <code>: ID &lt;key&gt;</code> for that list
 position’s key. The default is <code>6</code>. Use <code>Inf</code> to print every section.</p></dd>

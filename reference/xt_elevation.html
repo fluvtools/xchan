@@ -64,7 +64,8 @@ Single-section inputs are wrapped for evaluation.</p></dd>
 
 
 <dt id="arg-reference">reference<a class="anchor" aria-label="anchor" href="#arg-reference"></a></dt>
-<dd><p>An elevation specification from <code><a href="elevations.html">elevation_thalweg()</a></code> and related
+<dd><p>An elevation specification from <code><a href="elevations.html">elevation_thalweg()</a></code> and
+related
 helpers (class <code>"xchan_elevation"</code>).</p></dd>
 
 
@@ -74,17 +75,20 @@ helpers (class <code>"xchan_elevation"</code>).</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A numeric vector of elevations, one per cross section (<code><a href="https://rdrr.io/r/base/length.html" class="external-link">length()</a></code> for
+    <p>A numeric vector of elevations, one per cross section (<code><a href="https://rdrr.io/r/base/length.html" class="external-link">length()</a></code>
+for
 <code><a href="xchan.html">xchan</a></code>, or <code>1</code> for a single <code><a href="xsection.html">xsection</a></code>).</p>
-<p><strong>Order:</strong> Values follow <strong>storage order only</strong> — position <code>i</code> is always <code>[[i]]</code> of the
-<code><a href="xchan.html">xchan()</a></code> list. There is <strong>no</strong> sorting inside <code>xt_elevation()</code>. Reorder sections first
-(e.g. <code><a href="xt_arrange_downstream.html">xt_arrange_downstream()</a></code> for increasing chainage along the axis from its current start;
-after <code><a href="xt_reverse_flow.html">xt_reverse_flow()</a></code>, the stored axis is reversed so that sort follows hydrologic downstream).</p>
+<p><strong>Order:</strong> Values follow <strong>storage order only</strong> — position <code>i</code> is always
+<code>[[i]]</code> of the <code><a href="xchan.html">xchan()</a></code> list. There is <strong>no</strong> sorting inside
+<code>xt_elevation()</code>. Reorder sections first (e.g. <code><a href="xt_arrange_downstream.html">xt_arrange_downstream()</a></code> for
+increasing chainage along the axis from its current start; after
+<code><a href="xt_reverse_flow.html">xt_reverse_flow()</a></code>, the stored axis is reversed so that sort follows
+hydrologic downstream).</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>Elevation specifications read each cross section's profile from the geometry container;
-profile geometry must exist when the chosen reference requires it.</p>
+    <p>Elevation specifications read each cross section's profile from the geometry
+container; profile geometry must exist when the chosen reference requires it.</p>
     </div>
 
     <div class="section level2">

@@ -28,19 +28,15 @@ elevation_bed(.f = mean, ...)
 
   Numeric summary function applied per cross section. Each call uses a
   single numeric vector `x` as the first argument to `.f` (not separate
-  left/right arguments); further arguments are forwarded from `...`:
-
-  - `elevation_bank()` — `x` has length 2: outer **left** then **right**
-    bank elevations (`c(z_left, z_right)`). Default base::min returns
-    the lower bank elevation;
-    [base::mean](https://rdrr.io/r/base/mean.html) averages the two
-    banks.
-
-  - `elevation_bed()` — `x` is the vector of elevation (`z`) values at
-    **encoded** profile vertices on the **wetted bed** (within each
-    water interval between banks; islands excluded). Default
-    [base::mean](https://rdrr.io/r/base/mean.html) is an unweighted mean
-    of those values.
+  left/right arguments); further arguments are forwarded from `...`: \*
+  `elevation_bank()` — `x` has length 2: outer **left** then **right**
+  bank elevations (`c(z_left, z_right)`). Default base::min returns the
+  lower bank elevation; [base::mean](https://rdrr.io/r/base/mean.html)
+  averages the two banks. \* `elevation_bed()` — `x` is the vector of
+  elevation (`z`) values at **encoded** profile vertices on the **wetted
+  bed** (within each water interval between banks; islands excluded).
+  Default [base::mean](https://rdrr.io/r/base/mean.html) is an
+  unweighted mean of those values.
 
 - ...:
 

@@ -132,6 +132,16 @@ LiDAR for the Squamish River comes shipped with the package as a DEM
 from the [**terra**](https://rspatial.org/terra/) package. It needs to
 be unpacked first.
 
+The Squamish DEM is LiDAR-derived and does not include submerged
+bathymetry: sampling it alone yields profile cross sections with a flat
+water surface at bank elevation rather than a channel. In the workflow
+below we follow
+[`xt_generate_profile()`](https://fluvtools.github.io/xchan/reference/xt_generate_profile.md)
+with
+[`xt_dredge_to()`](https://fluvtools.github.io/xchan/reference/xt_dredge_to.md)
+and a rectangular bathymetry specification
+(`bathy_rectangle(depth = 3)`) to insert a synthetic 3 m deep channel.
+
 ``` r
 
 library(terra)
@@ -160,11 +170,23 @@ using 10 m sample spacing.
 
 ``` r
 
-squamish <- xt_generate_profile(squamish, squamish_dem, sample_freq = 10)
+squamish <- xt_generate_profile(squamish, squamish_dem, sample_freq =
+10)
+```
+
+Because the Squamish DEM has no bathymetry, insert a synthetic 3 m deep
+rectangular channel:
+
+``` r
+
+squamish <- xt_dredge_to(
+  squamish,
+  bathy = bathy_rectangle(depth = 3)
+)
 plot(squamish)
 ```
 
-![](channels_with_profiles_files/figure-html/unnamed-chunk-8-1.png)
+![](channels_with_profiles_files/figure-html/unnamed-chunk-9-1.png)
 
 Take a look at the third cross section.
 
@@ -174,7 +196,7 @@ section <- xt_xsection_at(squamish, 3)
 plot(section, extent = "full")
 ```
 
-![](channels_with_profiles_files/figure-html/unnamed-chunk-9-1.png)
+![](channels_with_profiles_files/figure-html/unnamed-chunk-10-1.png)
 
 ## Channel Widening
 
@@ -188,7 +210,7 @@ plot(channel_widened, col = "red")
 plot(channel, add = TRUE)
 ```
 
-![](channels_with_profiles_files/figure-html/unnamed-chunk-10-1.png)
+![](channels_with_profiles_files/figure-html/unnamed-chunk-11-1.png)
 
 For cross section profiles, this has the effect of shifting the
 between-channel topography on either side of the thalweg further from
@@ -202,14 +224,14 @@ sec_widened <- xt_xsection_at(channel_widened, 3)
 plot(sec, extent = "full")
 ```
 
-![](channels_with_profiles_files/figure-html/unnamed-chunk-11-1.png)
+![](channels_with_profiles_files/figure-html/unnamed-chunk-12-1.png)
 
 ``` r
 
 plot(sec_widened, extent = "full")
 ```
 
-![](channels_with_profiles_files/figure-html/unnamed-chunk-11-2.png)
+![](channels_with_profiles_files/figure-html/unnamed-chunk-12-2.png)
 
 Since a profile view is available, there is not only erosion width but
 also erosion *volume*.
@@ -230,7 +252,8 @@ time allocating all volume erosion on the left side bank.
 
 ``` r
 
-head(xt_erosion_width(channel, dv = c(5, 3, 10, 0, 0, 12), side = "left"))
+head(xt_erosion_width(channel, dv = c(5, 3, 10, 0, 0, 12), side =
+"left"))
 #> Units: [m]
 #> [1] 2.043177 1.369570 2.218729 0.000000 0.000000 2.594431
 ```
@@ -241,12 +264,13 @@ Go ahead and conduct the erosion.
 
 ``` r
 
-channel_widened2 <- xt_widen(channel, dv = c(5, 3, 10, 0, 0, 12), side = "left")
+channel_widened2 <- xt_widen(channel, dv = c(5, 3, 10, 0, 0, 12), side =
+"left")
 plot(channel_widened2, col = "red")
 plot(channel, add = TRUE)
 ```
 
-![](channels_with_profiles_files/figure-html/unnamed-chunk-14-1.png)
+![](channels_with_profiles_files/figure-html/unnamed-chunk-15-1.png)
 
 Get the new cross section widths.
 
@@ -270,7 +294,7 @@ profiles <- xt_as_sfc(channel, what = "profile")
 plot(profiles)
 ```
 
-![](channels_with_profiles_files/figure-html/unnamed-chunk-16-1.png)
+![](channels_with_profiles_files/figure-html/unnamed-chunk-17-1.png)
 
 The 3D encoding combines the profile and planimetric views to create a
 3D arrangement. Use 3D plotting software like the

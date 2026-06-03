@@ -65,16 +65,15 @@
 
 <dt id="arg-dw">dw<a class="anchor" aria-label="anchor" href="#arg-dw"></a></dt>
 <dd><p>The total width to add to the channel. Positive numeric, or a
-<code><a href="https://r-quantities.github.io/units/reference/units.html" class="external-link">units::units()</a></code> length object (for example
-<code>units::set_units(2, "m")</code>); units are converted to the channel's CRS
-length unit. Cannot be used with <code>dv</code>.</p></dd>
+<code><a href="https://r-quantities.github.io/units/reference/units.html" class="external-link">units::units()</a></code> length object (for example <code>units::set_units(2, "m")</code>);
+units are converted to the channel's CRS length unit. Cannot be used with
+<code>dv</code>.</p></dd>
 
 
 <dt id="arg-dv">dv<a class="anchor" aria-label="anchor" href="#arg-dv"></a></dt>
 <dd><p>The total volume to remove to widen the channel. Positive numeric,
-or a <code><a href="https://r-quantities.github.io/units/reference/units.html" class="external-link">units::units()</a></code> volume object (for example
-<code>units::set_units(50, "m^3")</code>); units are converted to the channel's CRS
-length unit cubed. Cannot be used with <code>dw</code>.</p></dd>
+or a <code><a href="https://r-quantities.github.io/units/reference/units.html" class="external-link">units::units()</a></code> volume object (for example <code>units::set_units(50, "m^3")</code>); units are converted to the channel's CRS length unit cubed.
+Cannot be used with <code>dw</code>.</p></dd>
 
 
 <dt id="arg-side">side<a class="anchor" aria-label="anchor" href="#arg-side"></a></dt>
@@ -90,8 +89,8 @@ left and right banks. Supply either a side object from <code><a href="sides.html
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>The stored channel axis (<code><a href="xt_axis.html">xt_axis()</a></code>) is <strong>not</strong> updated when widening:
-plan and profile transects move, but the reach-scale axis polyline is left
+    <p>The stored channel axis (<code><a href="xt_axis.html">xt_axis()</a></code>) is <strong>not</strong> updated when widening: plan
+and profile transects move, but the reach-scale axis polyline is left
 unchanged. If you set the axis to something tied to the pre-widen plan (for
 example a digitized centerline), do not expect it to refit automatically to a
 new midline—that is intentional in most workflows, because the axis is used
@@ -104,7 +103,8 @@ remains the midpoint of the outer-bank pair.</p>
     </div>
     <div class="section level2">
     <h2 id="note">Note<a class="anchor" aria-label="anchor" href="#note"></a></h2>
-    <p>The ellipsis <code>...</code> must be empty; named <code>dw</code> and <code>dv</code> keep widening deliberate.</p>
+    <p>The ellipsis <code>...</code> must be empty; named <code>dw</code> and <code>dv</code> keep widening
+deliberate.</p>
     </div>
 
     <div class="section level2">

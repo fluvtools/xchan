@@ -54,23 +54,20 @@ channel.</p>
     <div class="section level2">
     <h2 id="format">Format<a class="anchor" aria-label="anchor" href="#format"></a></h2>
     <p>A <code><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble::tibble()</a></code> with 138 rows and 4 columns:</p><dl><dt>id</dt>
-<dd><p>Integer cross-section key (<code>1</code>–<code>6</code>), matching the order of
-the cross sections.</p></dd>
-
-<dt>distance</dt>
-<dd><p>Chord distance along each transect (<code><a href="https://r-quantities.github.io/units/reference/units.html" class="external-link">units::units()</a></code> in
-metres). Distances increase from left bank toward right bank, with
-negative values on the left floodplain approach and positive values on
-the right.</p></dd>
-
-<dt>elevation</dt>
-<dd><p>Ground elevation at each vertex (<code><a href="https://r-quantities.github.io/units/reference/units.html" class="external-link">units::units()</a></code> in
-metres).</p></dd>
-
-<dt>is_bank</dt>
-<dd><p>Logical flag; <code>TRUE</code> at the left and right bank vertices
-(distances <code>0</code> and channel width) for each section.</p></dd>
-
+<dd><p>Integer cross-section key (<code>1</code>–<code>6</code>), matching the order
+of the cross sections.</p></dd>
+ <dt>distance</dt>
+<dd><p>Chord distance along each transect
+(<code><a href="https://r-quantities.github.io/units/reference/units.html" class="external-link">units::units()</a></code> in metres). Distances increase from left bank toward right
+bank, with negative values on the left floodplain approach and positive
+values on the right.</p></dd>
+ <dt>elevation</dt>
+<dd><p>Ground elevation at each vertex
+(<code><a href="https://r-quantities.github.io/units/reference/units.html" class="external-link">units::units()</a></code> in metres).</p></dd>
+ <dt>is_bank</dt>
+<dd><p>Logical flag; <code>TRUE</code> at the
+left and right bank vertices (distances <code>0</code> and channel width) for each
+section.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -81,8 +78,8 @@ metres).</p></dd>
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>Each section has 23 survey points: ten on the left approach, three
 along the channel bottom (including the thalweg), and ten on the right
-floodplain. Rows are stored in
-section order with vertices in survey chainage order.</p>
+floodplain. Rows are stored in section order with vertices in survey chainage
+order.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
