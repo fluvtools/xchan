@@ -1,6 +1,7 @@
 #' Get bank coordinates from profile
 #'
-#' Extract the coordinates (distance and elevation) of bank points from a profile cross section.
+#' Extract the coordinates (distance and elevation) of bank points from a
+#' profile cross section.
 #'
 #' @param profile An xs_profile object
 #' @returns A matrix with bank coordinates (distance, elevation)
@@ -12,7 +13,8 @@ get_bank_coords <- function(profile) {
 
 #' Get thalweg coordinates from profile
 #'
-#' Extract the coordinates (distance and elevation) of thalweg points from a profile cross section.
+#' Extract the coordinates (distance and elevation) of thalweg points from a
+#' profile cross section.
 #'
 #' @param profile An xs_profile object
 #' @returns A matrix with thalweg coordinates (distance, elevation)
@@ -170,7 +172,8 @@ wetted_bed_thalweg_indices <- function(coords, bank_d, y_bed, tol = 1e-10) {
   unique(sort(c(starts[keep], ends[keep])))
 }
 
-#' Profile coordinate matrices for sf export (one list element per water interval)
+#' Profile coordinate matrices for sf export (one list element per water
+#' interval)
 #'
 #' @noRd
 profile_coord_parts_for_extent <- function(
@@ -315,7 +318,10 @@ snap_profile_bank_positions <- function(profile, left_x, right_x) {
   checkmate::assert_number(left_x, finite = TRUE)
   checkmate::assert_number(right_x, finite = TRUE)
   if (left_x >= right_x) {
-    stop("Left bank distance must be less than right bank distance.", call. = FALSE)
+    stop(
+      "Left bank distance must be less than right bank distance.",
+      call. = FALSE
+    )
   }
   coords <- profile$coordinates
   bank_d <- get_bank_distances(profile)
@@ -339,7 +345,11 @@ snap_profile_bank_positions <- function(profile, left_x, right_x) {
     },
     integer(1L)
   )
-  profile$thalwegs <- wetted_bed_thalweg_indices(coords, bank_d, profile$thalweg_elev)
+  profile$thalwegs <- wetted_bed_thalweg_indices(
+    coords,
+    bank_d,
+    profile$thalweg_elev
+  )
   profile$thalweg_elev <- min(coords[profile$thalwegs, 2])
   profile
 }

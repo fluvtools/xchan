@@ -1,8 +1,8 @@
 #' Convert channel geometry to `sfc`
 #'
-#' Returns simple feature geometry columns for plan, profile, or 3D views of
-#' an [`xchan`]. Combine with [sf::st_sf()] yourself if you need a data frame
-#' of attributes alongside geometry.
+#' Returns simple feature geometry columns for plan, profile, or 3D views of an
+#' [`xchan`]. Combine with [sf::st_sf()] yourself if you need a data frame of
+#' attributes alongside geometry.
 #'
 #' @param channel An [`xchan`] object.
 #' @param ... Must be empty.
@@ -11,15 +11,14 @@
 #'   distance–elevation space (no CRS); `"3d"` for 3D multilinestrings built by
 #'   mapping profile elevations onto plan coordinates (same CRS as the plan).
 #' @param extent `"banks"` restricts geometry to the bank-to-bank span in each
-#'   representation; `"full"` uses the full sampled profile span (and for
-#'   `what = "plan"`, map segments spanning each profile's horizontal range);
-#'   `"wetted"` keeps only **water** intervals between consecutive bank
-#'   contacts (dry islands excluded), so each cross section may be a
-#'   `MULTILINESTRING` when an island splits the channel. For `what = "plan"`
-#'   with `"full"`, if there is no profile view a warning is issued and
-#'   bank-to-bank geometries are returned instead. For `"wetted"` without
-#'   profiles, water intervals are taken from plan vertices (even count,
-#'   alternating water / land / water).
+#'   representation; `"full"` uses the full sampled profile span (and for `what
+#'   = "plan"`, map segments spanning each profile's horizontal range);
+#'   `"wetted"` keeps only **water** intervals between consecutive bank contacts
+#'   (dry islands excluded), so each cross section may be a `MULTILINESTRING`
+#'   when an island splits the channel. For `what = "plan"` with `"full"`, if
+#'   there is no profile view a warning is issued and bank-to-bank geometries
+#'   are returned instead. For `"wetted"` without profiles, water intervals are
+#'   taken from plan vertices (even count, alternating water / land / water).
 #' @returns An `"sfc"` object.
 #' @examples
 #' ch <- xt_as_channel(c(2, 2), crs = 3005)
@@ -83,7 +82,10 @@ xt_as_sfc <- function(
 
   profile <- channel_profile(channel)
   if (is.null(profile)) {
-    stop("Profile geometry is not available for this channel object.", call. = FALSE)
+    stop(
+      "Profile geometry is not available for this channel object.",
+      call. = FALSE
+    )
   }
 
   if (what == "profile") {

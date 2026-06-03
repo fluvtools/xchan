@@ -1,8 +1,8 @@
 #' Exaggerate relief in profile cross sections
 #'
 #' Applies a vertical exaggeration factor to profile elevations, measured as
-#' height above each profile's minimum elevation (thalweg baseline). Use this
-#' to improve visual interpretation in profile and 3D views.
+#' height above each profile's minimum elevation (thalweg baseline). Use this to
+#' improve visual interpretation in profile and 3D views.
 #'
 #' @param x An `xs_profile` or [`xchan`] object with profile geometry.
 #' @param times Single non-negative numeric exaggeration factor. Values above

@@ -21,6 +21,11 @@
 #' The object is stored as a wrapped `terra` raster so it can be included as
 #' package data; unwrap it with `terra::unwrap()` before use.
 #'
+#' The DEM is LiDAR-derived and does not include submerged bathymetry. Examples
+#' and tests that build Squamish profiles therefore follow
+#' [xt_generate_profile()] with [xt_dredge_to()] and [bathy_rectangle()] to
+#' insert a synthetic 3 m deep rectangular channel.
+#'
 #' @format A wrapped `terra` `SpatRaster`, projected to EPSG:3005.
 #'
 #' @source CanElevation - Canada Digital Elevation Models (HRDEM 1 m DTM).

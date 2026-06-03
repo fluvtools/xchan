@@ -12,13 +12,14 @@ validate_plan(plan)
 \value{
 A list with validation results:
 \itemize{
-\item \code{valid}: Logical indicating if all checks passed
-\item \code{issues}: Character vector describing any issues found
-\item \code{details}: List with detailed results for each check
+\item \code{valid}: Logical indicating if all checks passed - \code{issues}: Character
+vector describing any issues found - \code{details}: List with detailed results
+for each check
 }
 }
 \description{
-Check if plan view cross sections (line segments) are proper for cross section analysis.
+Check if plan view cross sections (line segments) are proper for cross
+section analysis.
 }
 \details{
 This function performs basic validation on plan view cross sections:

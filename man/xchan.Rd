@@ -35,14 +35,15 @@ attributes on the container, not repeated on each section.
 The internal layout is deliberately exposed: each cross section is one
 element of the list (\verb{[[i]]} is an \code{\link{xsection}}). You can inspect or replace
 sections directly, and combine them with ordinary list tools. Single-bracket
-subsetting (\code{[}) preserves \strong{\code{crs}}, \strong{\code{axis}}, \strong{\code{bankline}}, and \strong{\code{section_i}}
-(parent list positions used to build the subset; query or replace keys with
-\code{\link[=xt_section_id]{xt_section_id()}}).
-Double-bracket (\code{[[}) returns a bare \code{\link{xsection}} by design.
+subsetting (\code{[}) preserves \strong{\code{crs}}, \strong{\code{axis}}, \strong{\code{bankline}}, and
+\strong{\code{section_i}} (parent list positions used to build the subset; query or
+replace keys with \code{\link[=xt_section_id]{xt_section_id()}}). Double-bracket (\code{[[}) returns a bare
+\code{\link{xsection}} by design.
 }
 \section{Methods (by generic)}{
 \itemize{
 \item \code{[}: Subset by section index; preserves \code{crs}, \code{axis},
-\code{bankline}, and \code{section_i} (parent list positions; see \code{\link{xt_section_id}}).
+\code{bankline}, and \code{section_i} (parent list positions; see
+\code{\link{xt_section_id}}).
 
 }}

@@ -10,10 +10,10 @@ xt_erosion_width(channel, dv, side = "both")
 \item{channel}{An \code{\link{xchan}} or \code{\link{xsection}} object.}
 
 \item{dv}{Volume of erosion; single positive value or vector matching the
-number of cross sections. Plain numeric is interpreted in the channel's
-CRS length unit cubed; a \code{\link[units:units]{units::units()}} volume object is converted
-automatically (for example
-\code{units::set_units(c(20, 30), "L")} against a metric channel).}
+number of cross sections. Plain numeric is interpreted in the channel's CRS
+length unit cubed; a \code{\link[units:units]{units::units()}} volume object is converted
+automatically (for example \code{units::set_units(c(20, 30), "L")} against a
+metric channel).}
 
 \item{side}{A side specification controlling how widening is split between
 left and right banks. Supply either a side object from \code{\link[=side_left]{side_left()}},
@@ -27,8 +27,8 @@ defined linear unit.
 }
 \description{
 This function calculates the erosion width for each cross-section in a
-channel given a specified volume change, distributing the change according
-to a given scheme.
+channel given a specified volume change, distributing the change according to
+a given scheme.
 }
 \examples{
 channel <- xt_as_channel(rep(1, 6))

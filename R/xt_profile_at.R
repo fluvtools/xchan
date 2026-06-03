@@ -2,8 +2,9 @@
 #'
 #' `xt_xsection_at()` extracts a single [`xsection`] by **flow order**: the
 #' `i`th section when rows are sorted by increasing [xt_distance_downstream()]
-#' along the channel axis (see `axis`). Internal helper `xt_profile_at()` returns
-#' the embedded `xs_profile` for that section (requires profile geometry).
+#' along the channel axis (see `axis`). Internal helper `xt_profile_at()`
+#' returns the embedded `xs_profile` for that section (requires profile
+#' geometry).
 #'
 #' @param channel A channel object ([`xchan`]).
 #' @param i Single positive integer: position in downstream flow order (1 =

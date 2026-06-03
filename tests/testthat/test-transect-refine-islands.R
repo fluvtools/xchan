@@ -12,22 +12,32 @@ test_that("true island crossings add an even number of bank vertices", {
 
   outer <- matrix(
     c(
-      0, 0,
-      10, 0,
-      10, 6,
-      0, 6,
-      0, 0
+      0,
+      0,
+      10,
+      0,
+      10,
+      6,
+      0,
+      6,
+      0,
+      0
     ),
     ncol = 2,
     byrow = TRUE
   )
   hole <- matrix(
     c(
-      4, 1,
-      6, 1,
-      6, 3,
-      4, 3,
-      4, 1
+      4,
+      1,
+      6,
+      1,
+      6,
+      3,
+      4,
+      3,
+      4,
+      1
     ),
     ncol = 2,
     byrow = TRUE
@@ -48,22 +58,32 @@ test_that("tangent island nicks do not create extra bank vertices", {
 
   outer <- matrix(
     c(
-      0, 0,
-      10, 0,
-      10, 6,
-      0, 6,
-      0, 0
+      0,
+      0,
+      10,
+      0,
+      10,
+      6,
+      0,
+      6,
+      0,
+      0
     ),
     ncol = 2,
     byrow = TRUE
   )
   hole <- matrix(
     c(
-      5, 2,
-      6, 3,
-      5, 4,
-      4, 3,
-      5, 2
+      5,
+      2,
+      6,
+      3,
+      5,
+      4,
+      4,
+      3,
+      5,
+      2
     ),
     ncol = 2,
     byrow = TRUE

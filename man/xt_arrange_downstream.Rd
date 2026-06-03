@@ -16,29 +16,34 @@ xt_arrange_upstream(channel, axis = NULL)
 \arguments{
 \item{channel}{An \code{\link[=xchan]{xchan}} object.}
 
-\item{axis}{Optional LINESTRING (\code{sfc} / \code{sfg}) for projection ordering (same rules as
+\item{axis}{Optional LINESTRING (\code{sfc} / \code{sfg}) for projection ordering (same
+rules as
 \code{\link[=xt_distance_downstream]{xt_distance_downstream()}}).}
 }
 \value{
-An \code{\link{xchan}} with sections reordered along the axis (attributes \code{crs} and
+An \code{\link{xchan}} with sections reordered along the axis (attributes
+\code{crs} and
 \code{axis} preserved).
 }
 \description{
-\code{xt_arrange_downstream()} permutes cross sections so they follow \strong{increasing}
-projected distance along \code{axis} from the axis \strong{start} (\code{\link[=xt_distance_downstream]{xt_distance_downstream()}}). After
-\code{\link[=xt_reverse_flow]{xt_reverse_flow()}}, the stored axis (if any) is reversed, so that zero chainage is at the
-opposite end of the same geographic line — increasing distance is then hydrologic
-downstream with reversed flow. \code{xt_arrange_upstream()} uses \strong{decreasing} distance from
-the axis start.
+\code{xt_arrange_downstream()} permutes cross sections so they follow
+\strong{increasing} projected distance along \code{axis} from the axis \strong{start}
+(\code{\link[=xt_distance_downstream]{xt_distance_downstream()}}). After \code{\link[=xt_reverse_flow]{xt_reverse_flow()}}, the stored axis (if
+any) is reversed, so that zero chainage is at the opposite end of the same
+geographic line — increasing distance is then hydrologic downstream with
+reversed flow. \code{xt_arrange_upstream()} uses \strong{decreasing} distance from the
+axis start.
 }
 \details{
-Ordering uses the same chainage as \code{\link[=xt_distance_downstream]{xt_distance_downstream()}}: intersection of the
-extended bank-to-bank chord with the axis (nearest intersection to the bank midpoint when
-there are several), otherwise the nearest point on the axis to the bank midpoint.
+Ordering uses the same chainage as \code{\link[=xt_distance_downstream]{xt_distance_downstream()}}: intersection
+of the extended bank-to-bank chord with the axis (nearest intersection to the
+bank midpoint when there are several), otherwise the nearest point on the
+axis to the bank midpoint.
 
-\strong{Reverse flow:} \code{\link[=xt_reverse_flow]{xt_reverse_flow()}} does not permute sections but reverses the stored axis,
-so \code{xt_arrange_downstream()} orders sections for the new downstream direction.
-\code{\link[=elevation_bank]{elevation_bank()}} with default \code{min} is unchanged until you reorder.
+\strong{Reverse flow:} \code{\link[=xt_reverse_flow]{xt_reverse_flow()}} does not permute sections but reverses
+the stored axis, so \code{xt_arrange_downstream()} orders sections for the new
+downstream direction. \code{\link[=elevation_bank]{elevation_bank()}} with default \code{min} is unchanged
+until you reorder.
 }
 \examples{
 \donttest{

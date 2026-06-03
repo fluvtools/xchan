@@ -133,9 +133,8 @@ test_that("xt_generate_profile works on package demo DEM", {
   skip_if_not_installed("terra")
 
   channel <- xt_generate_plan(squamish_bankline, spacing = 200)
-  dem <- terra::unwrap(squamish_dem)
 
-  expect_no_error(
-    xt_generate_profile(channel, dem, sample_freq = 2)
-  )
+  out <- squamish_with_profiles(channel, sample_freq = 2)
+  expect_true(xt_has_profile(out))
+  expect_equal(length(out), length(channel))
 })

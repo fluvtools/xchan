@@ -35,14 +35,17 @@ xt_as_channel(x, ...)
 
 \item{crs}{For \code{numeric}, \code{sfc}, and \code{list} methods:
 CRS applied to plan geometries via \code{\link[sf:st_crs]{sf::st_set_crs()}}. \code{NULL} leaves
-existing CRS unchanged (for \code{list}, sets the container CRS on the \code{\link{xchan}}).}
+existing CRS unchanged (for \code{list}, sets the container CRS on the
+\code{\link{xchan}}).}
 
-\item{axis}{Optional channel axis (\code{sfc}/\code{sfg} LINESTRING, length 1); see \code{\link[=xt_axis]{xt_axis()}}.
-When \code{NULL}, a default axis is built (synthetic spacing for \code{numeric} widths;
-midpoints connected in section order for \code{sfc}, \code{sfg}, and \code{list}). For an
-existing \code{\link{xchan}}, \code{NULL} leaves the stored axis unchanged.}
+\item{axis}{Optional channel axis (\code{sfc}/\code{sfg} LINESTRING, length 1); see
+\code{\link[=xt_axis]{xt_axis()}}.
+When \code{NULL}, a default axis is built (synthetic spacing for \code{numeric}
+widths; midpoints connected in section order for \code{sfc}, \code{sfg}, and \code{list}).
+For an existing \code{\link{xchan}}, \code{NULL} leaves the stored axis unchanged.}
 
-\item{bankline}{Optional bankline polygon (\code{sfc}/\code{sfg}); stored on the \code{\link{xchan}}
+\item{bankline}{Optional bankline polygon (\code{sfc}/\code{sfg}); stored on the
+\code{\link{xchan}}
 via \code{\link[=xt_bankline]{xt_bankline()}}. \code{NULL} leaves any existing footprint unchanged.}
 }
 \value{
@@ -55,8 +58,8 @@ existing \code{\link{xchan}} into cross-section geometry. Width, \code{sfc}, and
 methods return an \code{\link{xchan}}.
 }
 \details{
-For \strong{\code{sfg}} / \strong{\code{sfc}} inputs, coercion targets \strong{planimetric-only}
-cross sections at this stage of package development: geometries are cast to
+For \strong{\code{sfg}} / \strong{\code{sfc}} inputs, coercion targets \strong{planimetric-only} cross
+sections at this stage of package development: geometries are cast to
 \strong{LINESTRING} bank-to-bank segments. Users should supply line geometries
 (not polygons or points). Profile views must be attached separately (for
 example with \code{\link[=xchan]{xchan()}} / \code{\link[=xsection]{xsection()}}).
@@ -65,12 +68,12 @@ When coercing \strong{\code{numeric}} widths without an explicit \code{axis}, cr
 are placed on \strong{vertical} transects (constant \eqn{x}, width in \eqn{y}) so
 the synthetic channel runs \strong{horizontally} along \eqn{x}. Each transect’s
 first vertex is the \strong{left} bank and the second the \strong{right} bank, facing
-downstream (increasing \eqn{x} along the default axis). Consecutive
-stations are spaced by \strong{twice} a reference width: twice
-\code{\link[stats:median]{stats::median()}} of \code{x} when that value is positive, otherwise twice
-\code{mean(x)}. If every width is zero, a reference width of \code{1} is used
-(so consecutive stations lie 2 map units apart). The same length unit applies
-as for \code{x} (typically metres under a projected CRS).
+downstream (increasing \eqn{x} along the default axis). Consecutive stations
+are spaced by \strong{twice} a reference width: twice \code{\link[stats:median]{stats::median()}} of
+\code{x} when that value is positive, otherwise twice \code{mean(x)}. If
+every width is zero, a reference width of \code{1} is used (so consecutive
+stations lie 2 map units apart). The same length unit applies as for \code{x}
+(typically metres under a projected CRS).
 }
 \examples{
 # Synthetic widths (stations spaced ~2 median widths along x by default)

@@ -1,7 +1,7 @@
 #' Flip Planimetric (1D) Cross Sections
 #'
-#' Flips planimetric cross sections end-for-end so the former right bank
-#' vertex comes first and the former left bank vertex comes last.
+#' Flips planimetric cross sections end-for-end so the former right bank vertex
+#' comes first and the former left bank vertex comes last.
 #'
 #' @param sxc Planimetric cross section (sxc) object.
 #' @returns The original cross section where each section is flipped,

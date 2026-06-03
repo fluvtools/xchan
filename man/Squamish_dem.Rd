@@ -22,4 +22,10 @@ generate profile cross sections from the \code{squamish_bankline} demo geometry.
 The object is stored as a wrapped \code{terra} raster so it can be included as
 package data; unwrap it with \code{terra::unwrap()} before use.
 }
+\details{
+The DEM is LiDAR-derived and does not include submerged bathymetry. Examples
+and tests that build Squamish profiles therefore follow
+\code{\link[=xt_generate_profile]{xt_generate_profile()}} with \code{\link[=xt_dredge_to]{xt_dredge_to()}} and \code{\link[=bathy_rectangle]{bathy_rectangle()}} to
+insert a synthetic 3 m deep rectangular channel.
+}
 \keyword{datasets}

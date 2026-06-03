@@ -1,26 +1,30 @@
 #' Distance along the channel axis to cross-section stations
 #'
 #' @description
-#' **`xt_distance_downstream()`** returns distance measured along the axis **from its start**
-#' to the intersection of the axis with each cross section’s **extended** bank-to-bank chord
-#' (the line through the first and last plan vertices, extended if needed so it meets the
-#' axis). If that infinite line does not intersect the axis, the chainage of the **nearest**
-#' point on the axis to the bank midpoint is used instead. **`xt_distance_upstream()`** returns
-#' distance along the axis **from that station to the end** of the axis (equivalently:
-#' axis length minus downstream distance). Together they satisfy
-#' `xt_distance_downstream(x) + xt_distance_upstream(x) == axis_length` at each section when
-#' lengths are numeric.
+#' **`xt_distance_downstream()`** returns distance measured along the axis
+#' **from its start** to the intersection of the axis with each cross section’s
+#' **extended** bank-to-bank chord (the line through the first and last plan
+#' vertices, extended if needed so it meets the axis). If that infinite line
+#' does not intersect the axis, the chainage of the **nearest** point on the
+#' axis to the bank midpoint is used instead. **`xt_distance_upstream()`**
+#' returns distance along the axis **from that station to the end** of the axis
+#' (equivalently: axis length minus downstream distance). Together they satisfy
+#' `xt_distance_downstream(x) + xt_distance_upstream(x) == axis_length` at each
+#' section when lengths are numeric.
 #'
 #' @param channel An [`xchan`] with planimetric cross sections.
-#' @param axis Optional **LINESTRING** (`sfc` / `sfg`). If supplied, distances are
+#' @param axis Optional **LINESTRING** (`sfc` / `sfg`). If supplied, distances
+#'   are
 #'   measured along this line; otherwise `xt_axis(channel)` is used; if that is
-#'   `NULL`, an error is raised (set an axis with `xt_axis(channel) <- ...` or use
-#'   [xt_generate_plan()]).
-#' @returns A numeric vector of length `length(channel)` (same section order as `channel`). The
+#'   `NULL`, an error is raised (set an axis with `xt_axis(channel) <- ...` or
+#'   use [xt_generate_plan()]).
+#' @returns A numeric vector of length `length(channel)` (same section order as
+#'   `channel`). The
 #'   result carries [units::units()] when the channel has a defined length unit
 #'   (from its CRS or from manual unit-bearing widths/profile input); plain
 #'   numeric otherwise.
-#' @note Use [xt_arrange_downstream()] if you need sections ordered by downstream chainage.
+#' @note Use [xt_arrange_downstream()] if you need sections ordered by
+#' downstream chainage.
 #'
 #' @examples
 #' \donttest{

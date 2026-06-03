@@ -9,8 +9,8 @@
 #' @param ... Must be empty except where documented below.
 #'
 #' @details
-#' For **`sfg`** / **`sfc`** inputs, coercion targets **planimetric-only**
-#' cross sections at this stage of package development: geometries are cast to
+#' For **`sfg`** / **`sfc`** inputs, coercion targets **planimetric-only** cross
+#' sections at this stage of package development: geometries are cast to
 #' **LINESTRING** bank-to-bank segments. Users should supply line geometries
 #' (not polygons or points). Profile views must be attached separately (for
 #' example with [xchan()] / [xsection()]).
@@ -19,12 +19,12 @@
 #' are placed on **vertical** transects (constant \eqn{x}, width in \eqn{y}) so
 #' the synthetic channel runs **horizontally** along \eqn{x}. Each transect’s
 #' first vertex is the **left** bank and the second the **right** bank, facing
-#' downstream (increasing \eqn{x} along the default axis). Consecutive
-#' stations are spaced by **twice** a reference width: twice
-#' [stats::median()] of \code{x} when that value is positive, otherwise twice
-#' \code{mean(x)}. If every width is zero, a reference width of \code{1} is used
-#' (so consecutive stations lie 2 map units apart). The same length unit applies
-#' as for \code{x} (typically metres under a projected CRS).
+#' downstream (increasing \eqn{x} along the default axis). Consecutive stations
+#' are spaced by **twice** a reference width: twice [stats::median()] of
+#' \code{x} when that value is positive, otherwise twice \code{mean(x)}. If
+#' every width is zero, a reference width of \code{1} is used (so consecutive
+#' stations lie 2 map units apart). The same length unit applies as for \code{x}
+#' (typically metres under a projected CRS).
 #'
 #' @returns An [`xchan`] for `numeric`, `units`, `sfc`, `sfg`, `list`, and
 #'   `xchan` methods.
@@ -49,17 +49,26 @@ xt_as_channel <- function(x, ...) {
 }
 
 #' @rdname xt_as_channel
-#' @param axis Optional channel axis (`sfc`/`sfg` LINESTRING, length 1); see [xt_axis()].
-#'   When `NULL`, a default axis is built (synthetic spacing for `numeric` widths;
-#'   midpoints connected in section order for `sfc`, `sfg`, and `list`). For an
-#'   existing [`xchan`], `NULL` leaves the stored axis unchanged.
-#' @param bankline Optional bankline polygon (`sfc`/`sfg`); stored on the [`xchan`]
+#' @param axis Optional channel axis (`sfc`/`sfg` LINESTRING, length 1); see
+#'   [xt_axis()].
+#'   When `NULL`, a default axis is built (synthetic spacing for `numeric`
+#'   widths; midpoints connected in section order for `sfc`, `sfg`, and `list`).
+#'   For an existing [`xchan`], `NULL` leaves the stored axis unchanged.
+#' @param bankline Optional bankline polygon (`sfc`/`sfg`); stored on the
+#'   [`xchan`]
 #'   via [xt_bankline()]. `NULL` leaves any existing footprint unchanged.
 #' @param crs For `numeric`, `sfc`, and `list` methods:
 #'   CRS applied to plan geometries via [sf::st_set_crs()]. `NULL` leaves
-#'   existing CRS unchanged (for `list`, sets the container CRS on the [`xchan`]).
+#'   existing CRS unchanged (for `list`, sets the container CRS on the
+#'   [`xchan`]).
 #' @export
-xt_as_channel.numeric <- function(x, ..., crs = NULL, axis = NULL, bankline = NULL) {
+xt_as_channel.numeric <- function(
+  x,
+  ...,
+  crs = NULL,
+  axis = NULL,
+  bankline = NULL
+) {
   rlang::check_dots_empty()
   checkmate::assert_numeric(x, lower = 0, any.missing = FALSE)
   spacing_default <- default_numeric_channel_spacing(x)
@@ -82,7 +91,10 @@ xt_as_channel.numeric <- function(x, ..., crs = NULL, axis = NULL, bankline = NU
       plan <- sf::st_set_crs(plan, crs)
     }
     if (length(station) == 1L) {
-      axis_x <- c(station[1L] - spacing_default / 2, station[1L] + spacing_default / 2)
+      axis_x <- c(
+        station[1L] - spacing_default / 2,
+        station[1L] + spacing_default / 2
+      )
     } else {
       axis_x <- station
     }
@@ -99,14 +111,25 @@ xt_as_channel.numeric <- function(x, ..., crs = NULL, axis = NULL, bankline = NU
   }
 
   xsec <- xchan_from_plan_profile(plan, NULL)
-  xsec <- finalize_xt_as_channel(xsec, crs = sf::st_crs(plan), axis = axis_obj, bankline = bankline)
+  xsec <- finalize_xt_as_channel(
+    xsec,
+    crs = sf::st_crs(plan),
+    axis = axis_obj,
+    bankline = bankline
+  )
   validate_plan_profile_widths(xsec)
   xsec
 }
 
 #' @rdname xt_as_channel
 #' @export
-xt_as_channel.units <- function(x, ..., crs = NULL, axis = NULL, bankline = NULL) {
+xt_as_channel.units <- function(
+  x,
+  ...,
+  crs = NULL,
+  axis = NULL,
+  bankline = NULL
+) {
   rlang::check_dots_empty()
   manual_unit <- if (is.null(crs)) units_deparse(x) else NULL
   unit <- if (!is.null(crs)) crs_length_unit(crs) else manual_unit
@@ -117,14 +140,26 @@ xt_as_channel.units <- function(x, ..., crs = NULL, axis = NULL, bankline = NULL
 
 #' @rdname xt_as_channel
 #' @export
-xt_as_channel.sfg <- function(x, ..., crs = NULL, axis = NULL, bankline = NULL) {
+xt_as_channel.sfg <- function(
+  x,
+  ...,
+  crs = NULL,
+  axis = NULL,
+  bankline = NULL
+) {
   rlang::check_dots_empty()
   xt_as_channel(sf::st_sfc(x), ..., crs = crs, axis = axis, bankline = bankline)
 }
 
 #' @rdname xt_as_channel
 #' @export
-xt_as_channel.sfc <- function(x, ..., crs = NULL, axis = NULL, bankline = NULL) {
+xt_as_channel.sfc <- function(
+  x,
+  ...,
+  crs = NULL,
+  axis = NULL,
+  bankline = NULL
+) {
   rlang::check_dots_empty()
   if (!is.null(crs)) {
     x <- sf::st_set_crs(x, crs)
@@ -139,14 +174,25 @@ xt_as_channel.sfc <- function(x, ..., crs = NULL, axis = NULL, bankline = NULL) 
   } else {
     axis_from_plan_midpoints(x)
   }
-  xsec <- finalize_xt_as_channel(xsec, crs = sf::st_crs(x), axis = axis_obj, bankline = bankline)
+  xsec <- finalize_xt_as_channel(
+    xsec,
+    crs = sf::st_crs(x),
+    axis = axis_obj,
+    bankline = bankline
+  )
   validate_plan_profile_widths(xsec)
   xsec
 }
 
 #' @rdname xt_as_channel
 #' @export
-xt_as_channel.list <- function(x, ..., crs = NULL, axis = NULL, bankline = NULL) {
+xt_as_channel.list <- function(
+  x,
+  ...,
+  crs = NULL,
+  axis = NULL,
+  bankline = NULL
+) {
   rlang::check_dots_empty()
   if (length(x) == 0L) {
     out <- xchan(list(), crs = crs, axis = NULL)
@@ -170,7 +216,13 @@ xt_as_channel.list <- function(x, ..., crs = NULL, axis = NULL, bankline = NULL)
   assert_section_profiles_homogeneous(x)
   out <- xchan(x, crs = crs, axis = NULL)
   plan <- channel_plan(out)
-  crs_hint <- if (!is.null(plan)) sf::st_crs(plan) else if (!is.null(crs)) sf::st_crs(crs) else NULL
+  crs_hint <- if (!is.null(plan)) {
+    sf::st_crs(plan)
+  } else if (!is.null(crs)) {
+    sf::st_crs(crs)
+  } else {
+    NULL
+  }
   axis_obj <- if (!is.null(axis)) {
     validate_axis_sf(axis, crs_hint)
   } else if (!is.null(plan) && length(plan) > 0L) {
@@ -178,14 +230,25 @@ xt_as_channel.list <- function(x, ..., crs = NULL, axis = NULL, bankline = NULL)
   } else {
     NULL
   }
-  out <- finalize_xt_as_channel(out, crs = NULL, axis = axis_obj, bankline = bankline)
+  out <- finalize_xt_as_channel(
+    out,
+    crs = NULL,
+    axis = axis_obj,
+    bankline = bankline
+  )
   validate_plan_profile_widths(out)
   out
 }
 
 #' @rdname xt_as_channel
 #' @export
-xt_as_channel.xchan <- function(x, ..., crs = NULL, axis = NULL, bankline = NULL) {
+xt_as_channel.xchan <- function(
+  x,
+  ...,
+  crs = NULL,
+  axis = NULL,
+  bankline = NULL
+) {
   rlang::check_dots_empty()
   if (!is.null(crs)) {
     x <- `xchan_crs<-`(x, crs)
@@ -215,7 +278,12 @@ xt_as_channel.default <- function(x, ...) {
 }
 
 #' @noRd
-finalize_xt_as_channel <- function(xsec, crs = NULL, axis = NULL, bankline = NULL) {
+finalize_xt_as_channel <- function(
+  xsec,
+  crs = NULL,
+  axis = NULL,
+  bankline = NULL
+) {
   if (!is.null(crs)) {
     xsec <- `xchan_crs<-`(xsec, crs)
   }

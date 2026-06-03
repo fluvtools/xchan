@@ -25,7 +25,8 @@
 #'   Mutually exclusive with `sample_freq`.
 #' @param progress If `TRUE`, show a text progress bar while processing cross
 #'   sections (same behaviour as [xt_generate_plan()]).
-#' @returns Updated [`xchan`] with profile geometry attached to each cross section.
+#' @returns Updated [`xchan`] with profile geometry attached to each cross
+#'   section.
 #' @details This function extends the planimetric cross sections beyond the
 #'   banks to create a "frame" for erosion analysis. The extent can be specified
 #'   either as a fixed distance or as a multiplier of the channel width.
@@ -478,7 +479,8 @@ create_xs_profile <- function(profile_data, original_line) {
     stop("Not enough DEM samples to build profile cross section")
   }
 
-  # Approximate bank locations at +/- half plan width, then map to nearest indices
+  # Approximate bank locations at +/- half plan width, then map to nearest
+  #  indices
   width <- as.numeric(sf::st_length(original_line))
   left_bank_idx <- which.min(abs(coordinates[, 1] - (-width / 2)))
   right_bank_idx <- which.min(abs(coordinates[, 1] - (width / 2)))

@@ -25,13 +25,13 @@ A side object that can be used in widening functions. It is a list
 with numeric entries \code{left} and \code{right}.
 }
 \description{
-Side functions determine how much of the widening applied to a channel
-is allocated to the left and right banks. They return side objects as
-lists with \code{left} and \code{right} proportions.
+Side functions determine how much of the widening applied to a channel is
+allocated to the left and right banks. They return side objects as lists with
+\code{left} and \code{right} proportions.
 }
 \details{
-While these functions are different ways of specifying the same thing,
-they are included for completeness. An advantage of using
-the \code{side_both()} function is that it conducts an internal
-check that the proportions for the left and right banks sum to 1.
+While these functions are different ways of specifying the same thing, they
+are included for completeness. An advantage of using the \code{side_both()}
+function is that it conducts an internal check that the proportions for the
+left and right banks sum to 1.
 }

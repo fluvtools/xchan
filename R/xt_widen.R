@@ -3,23 +3,24 @@
 #' @param channel An [`xchan`] or [`xsection`] object.
 #' @param ... Must be empty (named `dw` / `dv` arguments are required).
 #' @param dw The total width to add to the channel. Positive numeric, or a
-#'   [units::units()] length object (for example
-#'   `units::set_units(2, "m")`); units are converted to the channel's CRS
-#'   length unit. Cannot be used with `dv`.
+#'   [units::units()] length object (for example `units::set_units(2, "m")`);
+#'   units are converted to the channel's CRS length unit. Cannot be used with
+#'   `dv`.
 #' @param dv The total volume to remove to widen the channel. Positive numeric,
-#'   or a [units::units()] volume object (for example
-#'   `units::set_units(50, "m^3")`); units are converted to the channel's CRS
-#'   length unit cubed. Cannot be used with `dw`.
+#'   or a [units::units()] volume object (for example `units::set_units(50,
+#'   "m^3")`); units are converted to the channel's CRS length unit cubed.
+#'   Cannot be used with `dw`.
 #' @param side A side specification controlling how widening is split between
 #'   left and right banks. Supply either a side object from [side_left()],
 #'   [side_right()], or [side_both()], or a shorthand string: `"left"`,
 #'   `"right"`, or `"both"`.
 #' @note
-#' The ellipsis `...` must be empty; named `dw` and `dv` keep widening deliberate.
+#' The ellipsis `...` must be empty; named `dw` and `dv` keep widening
+#' deliberate.
 #'
 #' @details
-#' The stored channel axis ([xt_axis()]) is **not** updated when widening:
-#' plan and profile transects move, but the reach-scale axis polyline is left
+#' The stored channel axis ([xt_axis()]) is **not** updated when widening: plan
+#' and profile transects move, but the reach-scale axis polyline is left
 #' unchanged. If you set the axis to something tied to the pre-widen plan (for
 #' example a digitized centerline), do not expect it to refit automatically to a
 #' new midline---that is intentional in most workflows, because the axis is used

@@ -4,7 +4,11 @@ test_that("xt_generate_plan stores footprint on xt_bankline()", {
   bl <- xt_bankline(ch)
   expect_s3_class(bl, "sfc")
   expect_true(all(sf::st_is(bl, c("POLYGON", "MULTIPOLYGON"))))
-  expect_true(sf::st_equals(bl, sf::st_geometry(squamish_bankline), sparse = FALSE)[
+  expect_true(sf::st_equals(
+    bl,
+    sf::st_geometry(squamish_bankline),
+    sparse = FALSE
+  )[
     1L,
     1L
   ])

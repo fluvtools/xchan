@@ -10,7 +10,8 @@ squamish_dem <- terra::project(squamish_dem, paste0("EPSG:", target_crs))
 # Reduce DEM resolution for file size compatibility,
 squamish_dem <- terra::aggregate(squamish_dem, fact = 4, fun = "mean")
 
-# SpatRaster objects do not serialize safely in package data; wrap before saving.
+# SpatRaster objects do not serialize safely in package data; wrap before
+#  saving.
 squamish_dem <- terra::wrap(squamish_dem, proxy = FALSE)
 
 usethis::use_data(squamish_dem, overwrite = TRUE)

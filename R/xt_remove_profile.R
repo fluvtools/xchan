@@ -1,9 +1,9 @@
 #' Remove profile geometry from cross sections
 #'
 #' Drops `xs_profile` data from each [`xsection`] in an [`xchan`], or from a
-#' single [`xsection`]. Planimetric geometry and channel CRS are unchanged.
-#' Use [xt_as_sfc()] with `what = "profile"` when you need profile linestrings
-#' as `sfc` before removing them.
+#' single [`xsection`]. Planimetric geometry and channel CRS are unchanged. Use
+#' [xt_as_sfc()] with `what = "profile"` when you need profile linestrings as
+#' `sfc` before removing them.
 #'
 #' @param x An [`xchan`] or [`xsection`].
 #' @param ... Must be empty.

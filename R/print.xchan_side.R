@@ -1,6 +1,7 @@
 #' Print method for xchan_side objects
 #'
-#' Prints the left/right proportions only (constructors [side_left()], etc., are equivalent).
+#' Prints the left/right proportions only (constructors [side_left()], etc., are
+#' equivalent).
 #'
 #' @param x A side object
 #' @param ... Additional arguments (ignored)

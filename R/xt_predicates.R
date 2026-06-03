@@ -1,8 +1,8 @@
 #' Predicate tests for channel geometry and cross sections
 #'
 #' \code{xt_is_channel()} is \code{TRUE} for the cross-section list container
-#' (\code{xchan}). \code{xt_is_cross_section()}
-#' tests for a single cross section (same check as [is.xsection()]).
+#' (\code{xchan}). \code{xt_is_cross_section()} tests for a single cross section
+#' (same check as [is.xsection()]).
 #'
 #' @name xt_is_channel
 #' @param x Any object.

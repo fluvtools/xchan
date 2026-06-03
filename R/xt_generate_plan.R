@@ -1,7 +1,7 @@
 #' Generate channel object from banklines
 #'
-#' Generate a channel object with planimetric cross sections from a
-#' single closed polygon outlining the channel footprint (both banks).
+#' Generate a channel object with planimetric cross sections from a single
+#' closed polygon outlining the channel footprint (both banks).
 #'
 #' @param banks Channel footprint as **one closed polygon** (`POLYGON` or
 #'   `MULTIPOLYGON`), typically as [`sf::st_sf()`], [`sf::st_sfc()`], or bare
@@ -25,16 +25,19 @@
 #'   `spacing`.
 #' @param axis Channel axis as a multilinestring: the line along which cross
 #'   sections are placed. If `NULL` (the default), an axis is generated
-#'   automatically from the **island-free** footprint (\code{polygon_sans_holes()})
-#'   using the **centerline** package (`centerline::cnt_path_guess()`).
+#'   automatically from the **island-free** footprint
+#'   (\code{polygon_sans_holes()}) using the **centerline** package
+#'   (`centerline::cnt_path_guess()`).
 #' @param progress Logical; if `TRUE`, display a text progress bar while
 #'   generating planimetric cross sections.
-#' @returns An [`xchan`] with one [`xsection`] per list position, in downstream order along the sampling axis.
-#'   Cross-section identity keys are **not** set; use [xt_section_id()] if you need stable
-#'   keys (for example when joining tabular profiles with [xt_add_profile()]).
-#'   After subsetting, restore order with [xt_arrange_downstream()]. Use [xt_distance_downstream()]
-#'   for distance along the axis from its start to each section (requires the axis
-#'   from [xt_axis()], which this function sets). The sampling axis is stored on the
+#' @returns An [`xchan`] with one [`xsection`] per list position, in downstream
+#'   order along the sampling axis.
+#'   Cross-section identity keys are **not** set; use [xt_section_id()] if you
+#'   need stable keys (for example when joining tabular profiles with
+#'   [xt_add_profile()]). After subsetting, restore order with
+#'   [xt_arrange_downstream()]. Use [xt_distance_downstream()] for distance
+#'   along the axis from its start to each section (requires the axis from
+#'   [xt_axis()], which this function sets). The sampling axis is stored on the
 #'   [`xchan`] object, and the **bank footprint** polygon(s) from `banks` on
 #'   [xt_bankline()] (for plan plotting).
 #' @details **Bank geometry:** Supply the channel as one polygon (or
@@ -42,30 +45,29 @@
 #' corridor. If you only have two bank polylines, convert them to a closed
 #' polygon (e.g. connect upstream/downstream ends) before calling this function.
 #'
-#' Interior rings (islands) are dropped with \code{polygon_sans_holes()} for axis
-#' generation (when `axis` is `NULL`) and for the minimum-width transect search:
-#' each station gets the **shortest bank-to-bank segment** through that point on
-#' the filled corridor, matching the original algorithm and ignoring islands by
-#' construction.
+#' Interior rings (islands) are dropped with \code{polygon_sans_holes()} for
+#' axis generation (when `axis` is `NULL`) and for the minimum-width transect
+#' search: each station gets the **shortest bank-to-bank segment** through that
+#' point on the filled corridor, matching the original algorithm and ignoring
+#' islands by construction.
 #'
-#' The holed footprint (`banks`) is then used to **refine** that transect:
-#' the filled chord is intersected with the polygon boundary (outer bank plus
-#' island outlines). Distinct intersection points are merged with the chord
-#' endpoints, ordered along the transect, and deduplicated, producing a plan
-#' `LINESTRING` with **two or more** vertices (extra vertices where the transect
-#' meets island banks). Relative distances for profiles still use the chord from
-#' **first to last** vertex (\code{transect_xy_from_relative()}).
+#' The holed footprint (`banks`) is then used to **refine** that transect: the
+#' filled chord is intersected with the polygon boundary (outer bank plus island
+#' outlines). Distinct intersection points are merged with the chord endpoints,
+#' ordered along the transect, and deduplicated, producing a plan `LINESTRING`
+#' with **two or more** vertices (extra vertices where the transect meets island
+#' banks). Relative distances for profiles still use the chord from **first to
+#' last** vertex (\code{transect_xy_from_relative()}).
 #'
-#' To define the spacing of the cross sections, a channel axis is
-#' first calculated, and equally spaced points are sampled along that
-#' axis. Cross sections are calculated at these points.
+#' To define the spacing of the cross sections, a channel axis is first
+#' calculated, and equally spaced points are sampled along that axis. Cross
+#' sections are calculated at these points.
 #'
-#' **Downstream** is the direction of increasing distance along that axis
-#' (the same direction used when stations are sorted by
-#' [sf::st_line_project()]). If you supply `axis`, downstream follows the
-#' storage order and digitization of that line; if the axis is generated
-#' automatically, downstream follows the geometry returned by the centerline
-#' routine.
+#' **Downstream** is the direction of increasing distance along that axis (the
+#' same direction used when stations are sorted by [sf::st_line_project()]). If
+#' you supply `axis`, downstream follows the storage order and digitization of
+#' that line; if the axis is generated automatically, downstream follows the
+#' geometry returned by the centerline routine.
 #'
 #' **Left and right bank** mean left and right when standing at the station on
 #' the axis and **facing downstream**, in the map plane of the CRS (planar
@@ -89,11 +91,11 @@
 #' the axis pointing downstream (`axis_unit_tangent_downstream()`). For each
 #' endpoint of the bank-to-bank segment we form the vector from the station to
 #' that endpoint and compute the 2D scalar cross product with the tangent,
-#' \eqn{D_x (E_y - C_y) - D_y (E_x - C_x)}{D_x*(E_y-C_y) - D_y*(E_x-C_x)}
-#' where \eqn{(D_x,D_y)} is the tangent and \eqn{(C_x,C_y)} / \eqn{(E_x,E_y)}
-#' are the station and an endpoint. Under the usual planar orientation, the
-#' endpoint with the **larger** value lies on the **left** bank. If that is not
-#' already the first vertex, the segment is reversed with [sf::st_reverse()]
+#' \eqn{D_x (E_y - C_y) - D_y (E_x - C_x)}{D_x*(E_y-C_y) - D_y*(E_x-C_x)} where
+#' \eqn{(D_x,D_y)} is the tangent and \eqn{(C_x,C_y)} / \eqn{(E_x,E_y)} are the
+#' station and an endpoint. Under the usual planar orientation, the endpoint
+#' with the **larger** value lies on the **left** bank. If that is not already
+#' the first vertex, the segment is reversed with [sf::st_reverse()]
 #' (`orient_plan_xs_left_first()`). This does not require splitting the bank
 #' polygon by the axis.
 #' @examples
@@ -218,7 +220,8 @@ xt_generate_plan <- function(
 
   attr(geoms, "left_to_right") <- TRUE
 
-  # Sampling axis for downstream order and distance geometry (see xt_distance_downstream)
+  # Sampling axis for downstream order and distance geometry (see
+  #  xt_distance_downstream)
   out <- xt_as_channel(geoms)
   xt_axis(out) <- cl
   bl <- sf::st_geometry(banks)
@@ -471,7 +474,8 @@ boundary_ring_arc <- function(ring_sfc, d0, d1) {
   sf::st_linestring(mat)
 }
 
-#' Tolerance for snapping boundary points to left/right bank chains (plan CRS units).
+#' Tolerance for snapping boundary points to left/right bank chains (plan CRS
+#' units).
 #' @noRd
 plan_bank_chain_tolerance <- function(banks) {
   bb <- sf::st_bbox(banks)
@@ -481,11 +485,12 @@ plan_bank_chain_tolerance <- function(banks) {
   max(1e-4, diag * 1e-8)
 }
 
-#' Split the outer channel boundary into left- and right-bank chains using the axis.
+#' Split the outer channel boundary into left- and right-bank chains using the
+#' axis.
 #'
-#' Uses intersections of the axis with the footprint boundary (channel ends), not
-#' extrema of vertex projections, so concave bulges do not place both chains on
-#' the same bank arc.
+#' Uses intersections of the axis with the footprint boundary (channel ends),
+#' not extrema of vertex projections, so concave bulges do not place both chains
+#' on the same bank arc.
 #' @noRd
 plan_bank_boundary_chains <- function(banks_filled, cl) {
   crs <- sf::st_crs(banks_filled)
@@ -689,7 +694,8 @@ minimum_width_transect_raw <- function(pt, banks_filled, maxd) {
   )[[1]]
 }
 
-#' Shortest bank-to-bank segment through `pt` that hits opposite boundary chains.
+#' Shortest bank-to-bank segment through `pt` that hits opposite boundary
+#' chains.
 #' @noRd
 shortest_opposite_bank_transect <- function(
   pt,
@@ -730,7 +736,8 @@ shortest_opposite_bank_transect <- function(
   best
 }
 
-#' Minimum-width transect through `pt` between opposite banks (not the same bank chain).
+#' Minimum-width transect through `pt` between opposite banks (not the same bank
+#' chain).
 #' @noRd
 minimum_width_opposite_bank_transect <- function(
   pt,
@@ -816,16 +823,17 @@ minimum_width_opposite_bank_transect <- function(
 
 #' Unit tangent along the channel axis, downstream
 #'
-#' Approximates the downstream direction on `cl` at `pt` by taking a
-#' short finite difference between two nearby interpolations along the line.
-#' Used to define left/right relative to flow when orienting cross sections.
-#' The full downstream / left–right convention is documented under **Details**
-#' in [xt_generate_plan()].
+#' Approximates the downstream direction on `cl` at `pt` by taking a short
+#' finite difference between two nearby interpolations along the line. Used to
+#' define left/right relative to flow when orienting cross sections. The full
+#' downstream / left–right convention is documented under **Details** in
+#' [xt_generate_plan()].
 #'
 #' @param cl Channel axis as `sfc` LINESTRING (or compatible).
 #' @param pt `sfc`/`sfg` POINT where the tangent is evaluated (typically a cross
 #'   section station on `cl`).
-#' @param line_length Total length of `cl` (same units as coordinates); passed so
+#' @param line_length Total length of `cl` (same units as coordinates); passed
+#'   so
 #'   the finite-difference step scales safely near endpoints.
 #' @returns Numeric vector of length two `(dx, dy)` with Euclidean norm 1, or
 #'   `(1, 0)` if the tangent is degenerate.
@@ -857,13 +865,14 @@ axis_unit_tangent_downstream <- function(cl, pt, line_length) {
 #' station to each endpoint. Under the usual map orientation, the endpoint with
 #' the larger value lies on the left when facing downstream along `tangent`. If
 #' the first vertex is not that endpoint, the line is reversed with
-#' [sf::st_reverse()].
-#' See **Details** in [xt_generate_plan()] for the convention and formula.
+#' [sf::st_reverse()]. See **Details** in [xt_generate_plan()] for the
+#' convention and formula.
 #'
 #' @param seg Bank-to-bank segment: `LINESTRING` `sfg` or length-one `sfc`.
 #' @param station_sf Station on the axis (`POINT`), same CRS as `seg`.
 #' @param tangent Unit downstream tangent from `axis_unit_tangent_downstream()`.
-#' @returns `seg`, possibly reversed so vertex order is left bank then right bank.
+#' @returns `seg`, possibly reversed so vertex order is left bank then right
+#'   bank.
 #' @noRd
 orient_plan_xs_left_first <- function(seg, station_sf, tangent) {
   m <- sf::st_coordinates(seg)

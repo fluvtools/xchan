@@ -46,7 +46,8 @@ Mutually exclusive with \code{sample_freq}.}
 sections (same behaviour as \code{\link[=xt_generate_plan]{xt_generate_plan()}}).}
 }
 \value{
-Updated \code{\link{xchan}} with profile geometry attached to each cross section.
+Updated \code{\link{xchan}} with profile geometry attached to each cross
+section.
 }
 \description{
 Generate profile cross sections for a channel object using a digital

@@ -17,48 +17,58 @@ xt_gradient(
 )
 }
 \arguments{
-\item{channel}{An \code{\link[=xchan]{xchan}} with one or more cross sections (length \code{n}).
+\item{channel}{An \code{\link[=xchan]{xchan}} with one or more cross sections (length
+\code{n}).
 With \code{n == 1}, every gradient is \code{NA} because no segment exists.}
 
 \item{...}{Must be empty.}
 
-\item{before}{Number of cross sections \strong{before} the current index to include as the
-\strong{start} of the segment (inclusive). The gradient uses elevations and axis distances
-at indices \code{i - before} and \code{i + after} when the window is valid.}
+\item{before}{Number of cross sections \strong{before} the current index to
+include as the
+\strong{start} of the segment (inclusive). The gradient uses elevations and axis
+distances at indices \code{i - before} and \code{i + after} when the window is valid.}
 
-\item{after}{Number of cross sections \strong{after} the current index to include as the
+\item{after}{Number of cross sections \strong{after} the current index to include
+as the
 \strong{end} of the segment (inclusive).}
 
-\item{complete}{If \code{TRUE}, allow \strong{truncated} windows at the upstream and downstream
-ends of the channel: for station \code{i}, the window is clipped to \verb{[1, n]} so the segment
-runs from \code{max(1, i - before)} to \code{min(n, i + after)}. Every station gets a value
-whenever that clipped window spans at least two distinct stations (otherwise \code{NA}).
+\item{complete}{If \code{TRUE}, allow \strong{truncated} windows at the upstream and
+downstream
+ends of the channel: for station \code{i}, the window is clipped to \verb{[1, n]} so
+the segment runs from \code{max(1, i - before)} to \code{min(n, i + after)}. Every
+station gets a value whenever that clipped window spans at least two
+distinct stations (otherwise \code{NA}).
 
-If \code{FALSE}, require a \strong{full} window: station \code{i} is only computed when
-\code{i - before >= 1} and \code{i + after <= n}. Otherwise the value is \code{NA}. So with
-\code{before = 1} and \code{after = 1}, only interior stations \verb{2, ..., n-1} are filled; you get
-exactly \strong{one} \code{NA} at the front (first station) and \strong{one} at the end (last station),
-not two at either boundary.}
+If \code{FALSE}, require a \strong{full} window: station \code{i} is only computed when `i
+\itemize{
+\item before >= 1\code{and}i + after <= n\verb{. Otherwise the value is }NA\verb{. So with   }before = 1\code{and}after = 1\verb{, only interior stations }2, ..., n-1\verb{are   filled; you get exactly **one**}NA` at the front (first station) and
+\strong{one} at the end (last station), not two at either boundary.
+}}
 
-\item{elevation}{Elevation specification (\code{\link[=elevation_thalweg]{elevation_thalweg()}}, \code{\link[=elevation_bank]{elevation_bank()}}, …).}
+\item{elevation}{Elevation specification (\code{\link[=elevation_thalweg]{elevation_thalweg()}},
+\code{\link[=elevation_bank]{elevation_bank()}}, …).}
 
-\item{axis}{Optional channel axis (same interpretation as \code{\link[=xt_distance_downstream]{xt_distance_downstream()}}; distances
-are computed without attaching units so the gradient ratio stays dimensionless).}
+\item{axis}{Optional channel axis (same interpretation as
+\code{\link[=xt_distance_downstream]{xt_distance_downstream()}}; distances
+are computed without attaching units so the gradient ratio stays
+dimensionless).}
 }
 \value{
-Numeric vector of gradients (length matches number of cross sections), unitless
+Numeric vector of gradients (length matches number of cross
+sections), unitless
 even when axis distances carry units.
 }
 \description{
-Compares elevations between cross sections along the channel axis (see \strong{Details}).
-A gradient is undefined for a single cross section (there is no along-channel segment),
-so there is no method for \code{\link[=xsection]{xsection}} — use at least two stations in an
-\code{\link[=xchan]{xchan}}.
+Compares elevations between cross sections along the channel axis (see
+\strong{Details}). A gradient is undefined for a single cross section (there is no
+along-channel segment), so there is no method for \code{\link[=xsection]{xsection}} —
+use at least two stations in an \code{\link[=xchan]{xchan}}.
 }
 \details{
-At each station \code{i}, the gradient is \code{(z_end - z_start) / (s_end - s_start)} where \code{z}
-comes from \code{\link[=xt_elevation]{xt_elevation()}} and \code{s} from downstream distance along the axis (same
-convention as \code{\link[=xt_distance_downstream]{xt_distance_downstream()}}, stored as plain numeric for the ratio).
+At each station \code{i}, the gradient is \code{(z_end - z_start) / (s_end - s_start)}
+where \code{z} comes from \code{\link[=xt_elevation]{xt_elevation()}} and \code{s} from downstream distance along
+the axis (same convention as \code{\link[=xt_distance_downstream]{xt_distance_downstream()}}, stored as plain
+numeric for the ratio).
 }
 \examples{
 channel <- xt_as_channel(rep(1, 6))

@@ -10,23 +10,6 @@ knitr::opts_chunk$set(eval = FALSE)
 
 This document is **not** a package vignette: it is only stored in the source tree next to R prototypes under `excluded/`. Nothing here is exported or guaranteed to work with the current API.
 
-# Dredging
-
-Rectangular dredging and related entry points were moved out of the main package. See `dredgers.R`, `xt_dredge.R`, and `print.xchan_dredger.R` in this folder.
-
-```{r dredging}
-library(xchan)
-
-# Requires profile cross-sections on the channel
-# channel_dredged <- xt_dredge(channel, dredger = dredger_rectangle(depth = 2))
-
-# rect_dredger <- dredger_rectangle(depth = 2, wse = elevation_bank())
-# channel_rect <- xt_dredge(channel, dredger = rect_dredger)
-
-# custom_dredger <- function(channel) { channel }
-# channel_custom <- xt_dredge(channel, dredger = custom_dredger)
-```
-
 # Topographic frame extension
 
 Extenders add synthetic topography beyond the banks for widening experiments. See `extenders.R`, `xt_extend_frame.R`, `xt_extend_frame_left.R`, `xt_extend_frame_right.R`, and `print.xchan_extender.R`.

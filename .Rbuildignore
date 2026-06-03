@@ -12,6 +12,7 @@
 ^[.]?air[.]toml$
 ^\.vscode$
 ^excluded$
+^promotional$
 ^Rplots\.pdf$
 ^\.positai$
 ^\.claude$

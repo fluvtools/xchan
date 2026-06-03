@@ -36,7 +36,8 @@ test_that("Width doesn't work when sf object doesn't have channel geom", {
 
 test_that("widen_plan increases path length by dw for bent plan lines", {
   # Non-collinear vertices: length must grow along the bank tangent (final
-  # segment), not the first-to-last chord, or st_length(plan) changes by the wrong amount.
+  # segment), not the first-to-last chord, or st_length(plan) changes by the
+  #  wrong amount.
   skip_if_not_installed("sf")
   plan <- sf::st_sfc(
     sf::st_linestring(rbind(c(0, 0), c(100, 0), c(100, 50))),
@@ -84,7 +85,11 @@ test_that("xt_widen side = left keeps right bank fixed", {
   xs <- widened[[1]]$profile
   lb <- get_left_bank_coords(xs)
   rb <- get_right_bank_coords(xs)
-  at_bank <- xs$coordinates[abs(xs$coordinates[, 1] - lb[1]) < 1e-10, , drop = FALSE]
+  at_bank <- xs$coordinates[
+    abs(xs$coordinates[, 1] - lb[1]) < 1e-10,
+    ,
+    drop = FALSE
+  ]
 
   expect_equal(unname(rb[2]), unname(right_before[2]))
   expect_equal(unname(rb[1]), -unname(lb[1]))
@@ -103,7 +108,11 @@ test_that("xt_widen side = both preserves the independent left-side erosion shap
     data = profile_survey
   )
 
-  left_only <- xt_widen(channel[[1]], dw = 2.5, side = "left")$profile$coordinates
+  left_only <- xt_widen(
+    channel[[1]],
+    dw = 2.5,
+    side = "left"
+  )$profile$coordinates
   both <- xt_widen(channel[[1]], dw = 5, side = "both")$profile$coordinates
 
   expect_equal(
@@ -117,18 +126,30 @@ test_that("xt_widen preserves inner banks and wetted thalwegs for island profile
   prof <- xchan:::new_profile(
     matrix(
       c(
-        1, -1,
-        2, 0,
-        3, 1,
-        4, 2,
-        5, 1,
-        6, 1,
-        7, 0,
-        8, 1,
-        9, 2,
-        10, 1,
-        11, 0.5,
-        12, 1
+        1,
+        -1,
+        2,
+        0,
+        3,
+        1,
+        4,
+        2,
+        5,
+        1,
+        6,
+        1,
+        7,
+        0,
+        8,
+        1,
+        9,
+        2,
+        10,
+        1,
+        11,
+        0.5,
+        12,
+        1
       ),
       ncol = 2,
       byrow = TRUE
@@ -138,10 +159,14 @@ test_that("xt_widen preserves inner banks and wetted thalwegs for island profile
   xs <- xsection(
     matrix(
       c(
-        6, 1,
-        8, 1,
-        10, 1,
-        12, 1
+        6,
+        1,
+        8,
+        1,
+        10,
+        1,
+        12,
+        1
       ),
       ncol = 2,
       byrow = TRUE
@@ -159,7 +184,11 @@ test_that("xt_widen preserves inner banks and wetted thalwegs for island profile
   expect_equal(unname(get_thalweg_distances(out2)), c(-3, -1))
   lb <- get_left_bank_coords(out2)
   expect_equal(unname(lb[2]), 1)
-  at_bank <- out2$coordinates[abs(out2$coordinates[, 1] - lb[1]) < 1e-10, , drop = FALSE]
+  at_bank <- out2$coordinates[
+    abs(out2$coordinates[, 1] - lb[1]) < 1e-10,
+    ,
+    drop = FALSE
+  ]
   expect_equal(nrow(at_bank), 2L)
   expect_equal(unname(at_bank[nrow(at_bank), 2]), 1)
   expect_equal(unname(at_bank[1, 2]), 2)
@@ -169,18 +198,30 @@ test_that("xt_widen into floodplain depression preserves left-side channel shape
   prof <- xchan:::new_profile(
     matrix(
       c(
-        1, -1,
-        2, 0,
-        3, 1,
-        4, 2,
-        5, 1,
-        6, 1,
-        7, 0,
-        8, 1,
-        9, 2,
-        10, 1,
-        11, 0.5,
-        12, 1
+        1,
+        -1,
+        2,
+        0,
+        3,
+        1,
+        4,
+        2,
+        5,
+        1,
+        6,
+        1,
+        7,
+        0,
+        8,
+        1,
+        9,
+        2,
+        10,
+        1,
+        11,
+        0.5,
+        12,
+        1
       ),
       ncol = 2,
       byrow = TRUE
@@ -192,7 +233,9 @@ test_that("xt_widen into floodplain depression preserves left-side channel shape
     profile = prof
   )
 
-  out <- suppressWarnings(xt_widen(xs, dw = 3.5, side = "left")$profile$coordinates)
+  out <- suppressWarnings(
+    xt_widen(xs, dw = 3.5, side = "left")$profile$coordinates
+  )
 
   expect_true(any(abs(out[, 1] - (-0.25)) < 1e-10 & abs(out[, 2]) < 1e-10))
   expect_equal(
@@ -201,7 +244,9 @@ test_that("xt_widen into floodplain depression preserves left-side channel shape
   )
   expect_equal(unname(out[abs(out[, 1] - (-3.75)) < 1e-10, ]), c(-3.75, 0))
 
-  out4 <- suppressWarnings(xt_widen(xs, dw = 4, side = "left")$profile$coordinates)
+  out4 <- suppressWarnings(
+    xt_widen(xs, dw = 4, side = "left")$profile$coordinates
+  )
   expect_equal(
     unname(out4[abs(out4[, 1] - (-5)) < 1e-10, ]),
     matrix(c(-5, 0, -5, 1), ncol = 2, byrow = TRUE)
@@ -217,13 +262,20 @@ test_that("widen_profile_left shifts the left-side channel with the bank", {
   xs <- xchan:::new_profile(
     coords = matrix(
       c(
-        -5, 10.5,
-        -4, 11,
-        -3, 11,
-        -2, 9,
-        -1, 11,
-        0, 10,
-        1, 11
+        -5,
+        10.5,
+        -4,
+        11,
+        -3,
+        11,
+        -2,
+        9,
+        -1,
+        11,
+        0,
+        10,
+        1,
+        11
       ),
       ncol = 2,
       byrow = TRUE
@@ -243,7 +295,10 @@ test_that("widen_profile_left shifts the left-side channel with the bank", {
   ]
 
   expect_equal(min(get_thalweg_distances(widened)), thal_before - dw)
-  expect_equal(sort(get_thalweg_distances(widened)), c(thal_before - dw, thal_before))
+  expect_equal(
+    sort(get_thalweg_distances(widened)),
+    c(thal_before - dw, thal_before)
+  )
   expect_equal(nrow(at_new_bank), 2L)
   expect_equal(
     sort(unname(at_new_bank[, 2])),
@@ -255,14 +310,22 @@ test_that("widen_profile lengthens the flat thalweg strip without stretching fla
   xs <- xchan:::new_profile(
     coords = matrix(
       c(
-        -4, 12,
-        -2, 11,
-        -1.5, 10,
-        -1, 9,
-        1, 9,
-        1.5, 10,
-        2, 11,
-        4, 12
+        -4,
+        12,
+        -2,
+        11,
+        -1.5,
+        10,
+        -1,
+        9,
+        1,
+        9,
+        1.5,
+        10,
+        2,
+        11,
+        4,
+        12
       ),
       ncol = 2,
       byrow = TRUE

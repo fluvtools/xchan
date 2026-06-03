@@ -3,20 +3,20 @@
 #' The **active** width is the portion of the cross section occupied by water
 #' (not dry bars or islands): the sum of **water** intervals between consecutive
 #' bank contacts. With profile geometry, bank positions come from the profile
-#' (see [xt_add_profile()] and `xs_profile`). With **planimetric geometry only**,
-#' every vertex of the plan polyline is treated as a bank contact along the
-#' transect, in order from left bank to right bank, alternating water / land /
-#' water (even vertex count). For a simple two-vertex bank-to-bank segment there
-#' are no islands and the active width equals [xt_width()].
+#' (see [xt_add_profile()] and `xs_profile`). With **planimetric geometry
+#' only**, every vertex of the plan polyline is treated as a bank contact along
+#' the transect, in order from left bank to right bank, alternating water / land
+#' / water (even vertex count). For a simple two-vertex bank-to-bank segment
+#' there are no islands and the active width equals [xt_width()].
 #'
 #' @param channel An [`xchan`], an [`xsection`], or an `xs_profile`.
 #' @returns
-#' For [`xchan`]: a numeric vector, one value per cross section. When the channel
-#'   has a defined length unit (CRS or manually set), values carry
-#'   [units::units()] like [xt_width()]; otherwise plain numeric.
-#' For [`xsection`] or `xs_profile`: a single non-negative numeric (plain
-#'   numeric unless the [`xsection`] carries a `"crs"` attribute with a linear
-#'   unit, in which case units may be attached).
+#' For [`xchan`]: a numeric vector, one value per cross section. When the
+#' channel has a defined length unit (CRS or manually set), values carry
+#' [units::units()] like [xt_width()]; otherwise plain numeric. For [`xsection`]
+#' or `xs_profile`: a single non-negative numeric (plain numeric unless the
+#' [`xsection`] carries a `"crs"` attribute with a linear unit, in which case
+#' units may be attached).
 #' @seealso [xt_width()]
 #' @export
 xt_width_active <- function(channel) {

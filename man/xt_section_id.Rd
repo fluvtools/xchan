@@ -24,17 +24,20 @@ xt_section_id(channel) <- value
 \arguments{
 \item{channel}{An \code{\link{xchan}} object.}
 
-\item{value}{\code{NULL} removes stored keys (downstream functions then treat section
-indices as \code{seq_len(length(channel))}). Otherwise an atomic vector of length
-\code{length(channel)} with \strong{no} \code{NA}s and \strong{no} duplicates.}
+\item{value}{\code{NULL} removes stored keys (downstream functions then treat
+section
+indices as \code{seq_len(length(channel))}). Otherwise an atomic vector of
+length \code{length(channel)} with \strong{no} \code{NA}s and \strong{no} duplicates.}
 }
 \value{
-For \code{xt_section_id()}, the stored vector or \code{NULL}. For assignment, an
+For \code{xt_section_id()}, the stored vector or \code{NULL}. For assignment,
+an
 updated \code{\link{xchan}}.
 }
 \description{
-Get or set per-section \strong{stable keys} stored on an \code{\link{xchan}}. These keys match
-the \code{section} column when attaching tabular profiles with \code{\link[=xt_add_profile]{xt_add_profile()}}.
+Get or set per-section \strong{stable keys} stored on an \code{\link{xchan}}. These keys
+match the \code{section} column when attaching tabular profiles with
+\code{\link[=xt_add_profile]{xt_add_profile()}}.
 }
 \details{
 Keys are stored as attribute \code{"section_i"} on the \code{\link{xchan}} (the name is

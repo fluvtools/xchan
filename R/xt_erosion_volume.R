@@ -1,18 +1,23 @@
 #' Calculate erosion volume from width change
 #'
-#' Estimates volume removed per cross section for a given total width increase `dw`,
-#' split between banks according to `side`.
+#' Estimates volume removed per cross section for a given total width increase
+#' `dw`, split between banks according to `side`.
 #'
-#' @param channel An [`xchan`][xchan()] or [`xsection`][xsection()] with profile geometry.
-#' @param dw Change in width; for [`xsection`][xsection()], a single positive value. For
-#'   [`xchan`][xchan()], a single value recycled to every section or one value per cross
-#'   section. Plain numeric uses the channel CRS length unit;
+#' @param channel An [`xchan`][xchan()] or [`xsection`][xsection()] with profile
+#'   geometry.
+#' @param dw Change in width; for [`xsection`][xsection()], a single positive
+#'   value. For
+#'   [`xchan`][xchan()], a single value recycled to every section or one value
+#'   per cross section. Plain numeric uses the channel CRS length unit;
 #'   [units::units()] lengths are converted automatically.
-#' @param side A side specification controlling how widening is split between left and right
-#'   banks: [side_left()], [side_right()], [side_both()], or `"left"`, `"right"`, `"both"`.
-#' @returns For [`xchan`][xchan()], a numeric vector of erosion volumes (one per section).
-#'   For [`xsection`][xsection()], length-one vector. Values carry [units::units()] of (CRS length
-#'   unit)^3 when a linear CRS unit is defined.
+#' @param side A side specification controlling how widening is split between
+#'   left and right
+#'   banks: [side_left()], [side_right()], [side_both()], or `"left"`,
+#'   `"right"`, `"both"`.
+#' @returns For [`xchan`][xchan()], a numeric vector of erosion volumes (one per
+#'   section).
+#'   For [`xsection`][xsection()], length-one vector. Values carry
+#'   [units::units()] of (CRS length unit)^3 when a linear CRS unit is defined.
 #' @examples
 #' channel <- xt_as_channel(rep(1, 6))
 #' channel <- xt_add_profile(

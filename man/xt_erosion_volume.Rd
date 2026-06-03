@@ -16,24 +16,29 @@ xt_erosion_volume(channel, dw, side = "both")
 \method{xt_erosion_volume}{default}(channel, dw, side = "both")
 }
 \arguments{
-\item{channel}{An \code{\link[=xchan]{xchan}} or \code{\link[=xsection]{xsection}} with profile geometry.}
+\item{channel}{An \code{\link[=xchan]{xchan}} or \code{\link[=xsection]{xsection}} with profile
+geometry.}
 
-\item{dw}{Change in width; for \code{\link[=xsection]{xsection}}, a single positive value. For
-\code{\link[=xchan]{xchan}}, a single value recycled to every section or one value per cross
-section. Plain numeric uses the channel CRS length unit;
+\item{dw}{Change in width; for \code{\link[=xsection]{xsection}}, a single positive
+value. For
+\code{\link[=xchan]{xchan}}, a single value recycled to every section or one value
+per cross section. Plain numeric uses the channel CRS length unit;
 \code{\link[units:units]{units::units()}} lengths are converted automatically.}
 
-\item{side}{A side specification controlling how widening is split between left and right
-banks: \code{\link[=side_left]{side_left()}}, \code{\link[=side_right]{side_right()}}, \code{\link[=side_both]{side_both()}}, or \code{"left"}, \code{"right"}, \code{"both"}.}
+\item{side}{A side specification controlling how widening is split between
+left and right
+banks: \code{\link[=side_left]{side_left()}}, \code{\link[=side_right]{side_right()}}, \code{\link[=side_both]{side_both()}}, or \code{"left"},
+\code{"right"}, \code{"both"}.}
 }
 \value{
-For \code{\link[=xchan]{xchan}}, a numeric vector of erosion volumes (one per section).
-For \code{\link[=xsection]{xsection}}, length-one vector. Values carry \code{\link[units:units]{units::units()}} of (CRS length
-unit)^3 when a linear CRS unit is defined.
+For \code{\link[=xchan]{xchan}}, a numeric vector of erosion volumes (one per
+section).
+For \code{\link[=xsection]{xsection}}, length-one vector. Values carry
+\code{\link[units:units]{units::units()}} of (CRS length unit)^3 when a linear CRS unit is defined.
 }
 \description{
-Estimates volume removed per cross section for a given total width increase \code{dw},
-split between banks according to \code{side}.
+Estimates volume removed per cross section for a given total width increase
+\code{dw}, split between banks according to \code{side}.
 }
 \examples{
 channel <- xt_as_channel(rep(1, 6))

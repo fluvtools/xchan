@@ -12,5 +12,6 @@
 \item{...}{Additional arguments (ignored)}
 }
 \description{
-Prints the left/right proportions only (constructors \code{\link[=side_left]{side_left()}}, etc., are equivalent).
+Prints the left/right proportions only (constructors \code{\link[=side_left]{side_left()}}, etc., are
+equivalent).
 }

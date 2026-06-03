@@ -16,7 +16,6 @@ The original profile cross section, with additional
 nodes corresponding to \code{x}, with linearly interpolated elevation.
 }
 \description{
-Inject a point into a 2D cross section matrix,
-potentially splitting a linesegment into two
-if x doesn't already land on a node.
+Inject a point into a 2D cross section matrix, potentially splitting a
+linesegment into two if x doesn't already land on a node.
 }
