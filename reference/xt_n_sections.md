@@ -19,3 +19,10 @@ xt_n_sections(channel)
 ## Value
 
 A single integer representing the number of cross sections.
+
+## Examples
+
+``` r
+xt_n_sections(xt_as_channel(c(2, 2, 3)))
+#> [1] 3
+```

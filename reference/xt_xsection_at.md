@@ -1,7 +1,7 @@
 # Get one cross section by downstream flow order
 
 `xt_xsection_at()` extracts a single
-[`xsection`](https://fluvtools.github.io/xchan/reference/xsection.md) by
+[xsection](https://fluvtools.github.io/xchan/reference/xsection.md) by
 **flow order**: the `i`th section when rows are sorted by increasing
 [`xt_distance_downstream()`](https://fluvtools.github.io/xchan/reference/xt_distance_downstream.md)
 along the channel axis (see `axis`). Internal helper `xt_profile_at()`
@@ -35,7 +35,7 @@ xt_xsection_at(channel, i, axis = NULL)
 ## Value
 
 `xt_xsection_at()`: one
-[`xsection`](https://fluvtools.github.io/xchan/reference/xsection.md).
+[xsection](https://fluvtools.github.io/xchan/reference/xsection.md).
 
 ## Examples
 

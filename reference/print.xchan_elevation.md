@@ -18,3 +18,11 @@ print(x, ...)
 - ...:
 
   Additional arguments (ignored)
+
+## Examples
+
+``` r
+print(elevation_thalweg())
+#> Elevation: thalweg 
+#> Parameters: none
+```

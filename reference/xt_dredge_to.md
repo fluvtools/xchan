@@ -22,7 +22,7 @@ xt_dredge_to(channel, bathy, ...)
 - channel:
 
   An [`xchan`](https://fluvtools.github.io/xchan/reference/xchan.md) or
-  [`xsection`](https://fluvtools.github.io/xchan/reference/xsection.md)
+  [xsection](https://fluvtools.github.io/xchan/reference/xsection.md)
   object with profile cross sections.
 
 - bathy:

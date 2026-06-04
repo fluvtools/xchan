@@ -1,25 +1,24 @@
-# Construct a single cross section (`xsection`)
+# Cross-section objects (`xsection`)
 
-`xsection` stores one planimetric transect (required) and an optional
-profile cross section. Plan geometry is stored as a numeric matrix of
-`(x, y)` pairs with rows ordered from left bank to right bank.
+One element of an
+[`xchan`](https://fluvtools.github.io/xchan/reference/xchan.md): a
+planimetric transect (`plan`, numeric matrix) and optional profile
+geometry (`profile`, an `xs_profile` object).
 
-## Usage
+## Details
 
-``` r
-xsection(plan, profile = NULL)
-```
+Users obtain `xsection` objects from
+[`xchan`](https://fluvtools.github.io/xchan/reference/xchan.md) indexing
+(`[[`),
+[`xt_xsection_at()`](https://fluvtools.github.io/xchan/reference/xt_xsection_at.md),
+or
+[`xt_as_channel()`](https://fluvtools.github.io/xchan/reference/xt_as_channel.md);
+test with
+[`is.xsection()`](https://fluvtools.github.io/xchan/reference/is.xchan.md).
 
-## Arguments
+## See also
 
-- plan:
-
-  Matrix with 2 numeric columns (`x`, `y`) and at least 2 rows.
-
-- profile:
-
-  Optional `xs_profile` object.
-
-## Value
-
-An object of class `"xsection"`.
+[`xchan()`](https://fluvtools.github.io/xchan/reference/xchan.md),
+[`is.xsection()`](https://fluvtools.github.io/xchan/reference/is.xchan.md),
+[`xt_xsection_at()`](https://fluvtools.github.io/xchan/reference/xt_xsection_at.md),
+[`plot.xsection()`](https://fluvtools.github.io/xchan/reference/plot.xsection.md)

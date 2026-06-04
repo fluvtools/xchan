@@ -1,10 +1,10 @@
 # Remove profile geometry from cross sections
 
 Drops `xs_profile` data from each
-[`xsection`](https://fluvtools.github.io/xchan/reference/xsection.md) in
+[xsection](https://fluvtools.github.io/xchan/reference/xsection.md) in
 an [`xchan`](https://fluvtools.github.io/xchan/reference/xchan.md), or
 from a single
-[`xsection`](https://fluvtools.github.io/xchan/reference/xsection.md).
+[xsection](https://fluvtools.github.io/xchan/reference/xsection.md).
 Planimetric geometry and channel CRS are unchanged. Use
 [`xt_as_sfc()`](https://fluvtools.github.io/xchan/reference/xt_as_sfc.md)
 with `what = "profile"` when you need profile linestrings as `sfc`
@@ -30,7 +30,7 @@ xt_remove_profile(x, ...)
 - x:
 
   An [`xchan`](https://fluvtools.github.io/xchan/reference/xchan.md) or
-  [`xsection`](https://fluvtools.github.io/xchan/reference/xsection.md).
+  [xsection](https://fluvtools.github.io/xchan/reference/xsection.md).
 
 - ...:
 
@@ -49,4 +49,8 @@ xt_remove_profile(ch)
 #> CRS: EPSG:3005 
 #> <xsection 1> 2 m
 #> <xsection 2> 2 m
+xt_remove_profile(ch[[1]])
+#> xsection
+#>   Plan vertices: 2 
+#>   Profile: none
 ```

@@ -139,15 +139,21 @@ raises an error.</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Sample DEM with 50 m extension beyond banks and 10 m sample spacing</span></span></span>
-<span class="r-in"><span><span class="co"># channel_with_profiles &lt;- xt_generate_profile(</span></span></span>
-<span class="r-in"><span><span class="co">#   channel, dem, extent_distance = 50, sample_freq = 10</span></span></span>
-<span class="r-in"><span><span class="co"># )</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># 2x channel width extension; sample count sets spacing along extended line</span></span></span>
-<span class="r-in"><span><span class="co"># channel_with_profiles &lt;- xt_generate_profile(</span></span></span>
-<span class="r-in"><span><span class="co">#   channel, dem, extent_multiplier = 2, sample_n = 100</span></span></span>
-<span class="r-in"><span><span class="co"># )</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># \donttest{</span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"terra"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="va">ch</span> <span class="op">&lt;-</span> <span class="fu"><a href="xt_generate_plan.html">xt_generate_plan</a></span><span class="op">(</span><span class="va">squamish_bankline</span>, n <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">dem</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/wrap.html" class="external-link">unwrap</a></span><span class="op">(</span><span class="va">squamish_dem</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu">xt_generate_profile</span><span class="op">(</span><span class="va">ch</span>, <span class="va">dem</span>, sample_freq <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> xchan channel with 5 cross sections.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> CRS: EPSG:3005 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;xsection 1&gt; 157.0357 m</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;xsection 2&gt; 233.5936 m</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;xsection 3&gt; 169.341 m</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;xsection 4&gt; 105.1754 m</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;xsection 5&gt; 96.59351 m</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> With profile view</span>
+<span class="r-in"><span><span class="co"># }</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

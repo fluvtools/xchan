@@ -20,3 +20,13 @@ print(x, ...)
 - ...:
 
   Additional arguments (ignored)
+
+## Examples
+
+``` r
+print(side_both())
+#> Side allocation specification.
+#> Proportions:
+#>   left = 0.5 
+#>   right = 0.5 
+```

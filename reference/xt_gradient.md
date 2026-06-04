@@ -3,7 +3,7 @@
 Compares elevations between cross sections along the channel axis (see
 **Details**). A gradient is undefined for a single cross section (there
 is no along-channel segment), so there is no method for
-[`xsection`](https://fluvtools.github.io/xchan/reference/xsection.md) —
+[xsection](https://fluvtools.github.io/xchan/reference/xsection.md) —
 use at least two stations in an
 [`xchan`](https://fluvtools.github.io/xchan/reference/xchan.md).
 

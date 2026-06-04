@@ -19,11 +19,8 @@
   [`elevation_bed()`](https://fluvtools.github.io/xchan/reference/elevations.md)
   : Elevation specifications for channel profiles
 
-- [`flip_profile()`](https://fluvtools.github.io/xchan/reference/flip_profile.md)
-  : Flip a profile cross section
-
-- [`inject_coords()`](https://fluvtools.github.io/xchan/reference/inject_coords.md)
-  : Inject points into a profile cross section matrix
+- [`flip_profile`](https://fluvtools.github.io/xchan/reference/flip_profile.md)
+  : Flip profile cross-section orientation (internal)
 
 - [`is.xchan()`](https://fluvtools.github.io/xchan/reference/is.xchan.md)
   [`is.xsection()`](https://fluvtools.github.io/xchan/reference/is.xchan.md)
@@ -75,10 +72,10 @@
 
   Construct a vector of cross sections (`xchan`)
 
-- [`xsection()`](https://fluvtools.github.io/xchan/reference/xsection.md)
+- [`xsection`](https://fluvtools.github.io/xchan/reference/xsection.md)
   :
 
-  Construct a single cross section (`xsection`)
+  Cross-section objects (`xsection`)
 
 - [`xt_add_profile()`](https://fluvtools.github.io/xchan/reference/xt_add_profile.md)
   : Attach or replace profile cross sections from tabular data

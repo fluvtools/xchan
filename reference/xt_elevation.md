@@ -22,7 +22,7 @@ xt_elevation(channel, reference, ...)
 - channel:
 
   An [`xchan`](https://fluvtools.github.io/xchan/reference/xchan.md) or
-  [`xsection`](https://fluvtools.github.io/xchan/reference/xsection.md)
+  [xsection](https://fluvtools.github.io/xchan/reference/xsection.md)
   object. Single-section inputs are wrapped for evaluation.
 
 - reference:
@@ -41,7 +41,7 @@ A numeric vector of elevations, one per cross section
 ([`length()`](https://rdrr.io/r/base/length.html) for
 [`xchan`](https://fluvtools.github.io/xchan/reference/xchan.md), or `1`
 for a single
-[`xsection`](https://fluvtools.github.io/xchan/reference/xsection.md)).
+[xsection](https://fluvtools.github.io/xchan/reference/xsection.md)).
 
 **Order:** Values follow **storage order only** — position `i` is always
 `[[i]]` of the

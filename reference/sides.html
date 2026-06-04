@@ -83,6 +83,31 @@ function is that it conducts an internal check that the proportions for the
 left and right banks sum to 1.</p>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">side_both</span><span class="op">(</span>prop_left <span class="op">=</span> <span class="fl">0.5</span>, prop_right <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Side allocation specification.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Proportions:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   left = 0.5 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   right = 0.5 </span>
+<span class="r-in"><span><span class="fu">side_left</span><span class="op">(</span><span class="fl">0.7</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Side allocation specification.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Proportions:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   left = 0.7 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   right = 0.3 </span>
+<span class="r-in"><span><span class="fu">side_right</span><span class="op">(</span><span class="fl">0.3</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Side allocation specification.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Proportions:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   left = 0.7 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   right = 0.3 </span>
+<span class="r-in"><span><span class="va">channel</span> <span class="op">&lt;-</span> <span class="fu"><a href="xt_as_channel.html">xt_as_channel</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="xt_widen.html">xt_widen</a></span><span class="op">(</span><span class="va">channel</span>, dw <span class="op">=</span> <span class="fl">5</span>, side <span class="op">=</span> <span class="fu">side_left</span><span class="op">(</span><span class="fl">0.75</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> xchan channel with 3 cross sections.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;xsection 1&gt; 6 (-)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;xsection 2&gt; 6 (-)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;xsection 3&gt; 6 (-)</span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

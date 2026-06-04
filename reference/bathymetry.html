@@ -120,6 +120,29 @@ same target bathymetry is applied to each span on that section.</p>
     <div class="dont-index"><p><code><a href="xt_dredge_to.html">xt_dredge_to()</a></code>, <code><a href="elevations.html">elevation_bank()</a></code></p></div>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">channel</span> <span class="op">&lt;-</span> <span class="fu"><a href="xt_as_channel.html">xt_as_channel</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">channel</span> <span class="op">&lt;-</span> <span class="fu"><a href="xt_add_profile.html">xt_add_profile</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">channel</span>,</span></span>
+<span class="r-in"><span>  distance <span class="op">=</span> <span class="va">distance</span>,</span></span>
+<span class="r-in"><span>  elevation <span class="op">=</span> <span class="va">elevation</span>,</span></span>
+<span class="r-in"><span>  section <span class="op">=</span> <span class="va">id</span>,</span></span>
+<span class="r-in"><span>  banks <span class="op">=</span> <span class="va">is_bank</span>,</span></span>
+<span class="r-in"><span>  data <span class="op">=</span> <span class="va">profile_survey</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="xt_dredge_to.html">xt_dredge_to</a></span><span class="op">(</span><span class="va">channel</span>, bathy <span class="op">=</span> <span class="fu">bathy_rectangle</span><span class="op">(</span>depth <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> xchan channel with 3 cross sections.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;xsection 1&gt; 10 m</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;xsection 2&gt; 12 m</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;xsection 3&gt; 8 m</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> With profile view</span>
+<span class="r-in"><span><span class="fu">bathy_vshape</span><span class="op">(</span>depth <span class="op">=</span> <span class="fl">2</span>, thalweg_frac <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Bathymetry specification: vshape </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   * depth: 2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   * thalweg_frac: 0.5</span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

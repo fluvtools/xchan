@@ -18,3 +18,11 @@ print(x, ...)
 - ...:
 
   Additional arguments (ignored)
+
+## Examples
+
+``` r
+print(bathy_rectangle(depth = 2))
+#> Bathymetry specification: rectangle 
+#>   * depth: 2
+```

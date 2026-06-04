@@ -32,3 +32,13 @@ print(x, ..., n = 6)
   consecutive integers `1`, `2`, …, `n` in list order, each printed line
   also includes `: ID <key>` for that list position’s key. The default
   is `6`. Use `Inf` to print every section.
+
+## Examples
+
+``` r
+print(xt_as_channel(c(10, 12, 11)))
+#> xchan channel with 3 cross sections.
+#> <xsection 1> 10 (-)
+#> <xsection 2> 12 (-)
+#> <xsection 3> 11 (-)
+```

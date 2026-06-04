@@ -23,7 +23,7 @@ xt_width_active(channel)
 - channel:
 
   An [`xchan`](https://fluvtools.github.io/xchan/reference/xchan.md), an
-  [`xsection`](https://fluvtools.github.io/xchan/reference/xsection.md),
+  [xsection](https://fluvtools.github.io/xchan/reference/xsection.md),
   or an `xs_profile`.
 
 ## Value
@@ -35,12 +35,31 @@ defined length unit (CRS or manually set), values carry
 like
 [`xt_width()`](https://fluvtools.github.io/xchan/reference/widths.md);
 otherwise plain numeric. For
-[`xsection`](https://fluvtools.github.io/xchan/reference/xsection.md) or
+[xsection](https://fluvtools.github.io/xchan/reference/xsection.md) or
 `xs_profile`: a single non-negative numeric (plain numeric unless the
-[`xsection`](https://fluvtools.github.io/xchan/reference/xsection.md)
+[xsection](https://fluvtools.github.io/xchan/reference/xsection.md)
 carries a `"crs"` attribute with a linear unit, in which case units may
 be attached).
 
 ## See also
 
 [`xt_width()`](https://fluvtools.github.io/xchan/reference/widths.md)
+
+## Examples
+
+``` r
+channel <- xt_as_channel(rep(1, 6))
+channel <- xt_add_profile(
+  channel,
+  distance = distance,
+  elevation = elevation,
+  section = id,
+  banks = is_bank,
+  data = profile_survey
+)
+xt_width_active(channel)
+#> Units: [m]
+#> [1] 10 12  8 15 11  9
+xt_width_active(channel[[1]])
+#> [1] 10
+```

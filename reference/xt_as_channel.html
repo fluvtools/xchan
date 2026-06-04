@@ -41,7 +41,7 @@ methods return an xchan."><meta property="og:image" content="https://fluvtools.g
     </div>
 
     <div class="ref-description section level2">
-    <p>Convert widths, line geometries, a list of <code><a href="xsection.html">xsection</a></code> objects, or an
+    <p>Convert widths, line geometries, a list of <a href="xsection.html">xsection</a> objects, or an
 existing <code><a href="xchan.html">xchan</a></code> into cross-section geometry. Width, <code>sfc</code>, and <code>list</code>
 methods return an <code><a href="xchan.html">xchan</a></code>.</p>
     </div>
@@ -78,7 +78,7 @@ methods return an <code><a href="xchan.html">xchan</a></code>.</p>
 
 <dl><dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
 <dd><p>Object to coerce (<code>numeric</code> vector of widths, <code>sfc</code>, <code>list</code> of
-<code><a href="xsection.html">xsection</a></code>, or existing <code><a href="xchan.html">xchan</a></code>).</p></dd>
+<a href="xsection.html">xsection</a>, or existing <code><a href="xchan.html">xchan</a></code>).</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
@@ -117,7 +117,7 @@ via <code><a href="xt_bankline.html">xt_bankline()</a></code>. <code>NULL</code>
 sections at this stage of package development: geometries are cast to
 <strong>LINESTRING</strong> bank-to-bank segments. Users should supply line geometries
 (not polygons or points). Profile views must be attached separately (for
-example with <code><a href="xchan.html">xchan()</a></code> / <code><a href="xsection.html">xsection()</a></code>).</p>
+example with <code><a href="xchan.html">xchan()</a></code> and <code>xsection</code> objects from <code>xt_as_channel()</code>).</p>
 <p>When coercing <strong><code>numeric</code></strong> widths without an explicit <code>axis</code>, cross sections
 are placed on <strong>vertical</strong> transects (constant \(x\), width in \(y\)) so
 the synthetic channel runs <strong>horizontally</strong> along \(x\). Each transect’s
@@ -131,7 +131,7 @@ stations lie 2 map units apart). The same length unit applies as for <code>x</co
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code><a href="xchan.html">xchan()</a></code>, <code><a href="xsection.html">xsection()</a></code></p></div>
+    <div class="dont-index"><p><code><a href="xchan.html">xchan()</a></code>, <code><a href="is.xchan.html">is.xsection()</a></code></p></div>
     </div>
 
     <div class="section level2">

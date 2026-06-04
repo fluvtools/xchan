@@ -46,7 +46,7 @@ Distances are straight chord stationing along the bank-to-bank transect
 
     <div class="ref-description section level2">
     <p>Build <code>xs_profile</code> objects from chord-distance / elevation columns (and bank
-flags), attach them to each <code><a href="xsection.html">xsection</a></code>, and reconcile plan vs profile
+flags), attach them to each <a href="xsection.html">xsection</a>, and reconcile plan vs profile
 bank-to-bank width using the same checks as <code><a href="widths.html">xt_width()</a></code> on plan and profile.
 Distances are <strong>straight chord stationing</strong> along the bank-to-bank transect
 (not arc length along a meandering ground path).</p>
@@ -85,7 +85,7 @@ Distances are <strong>straight chord stationing</strong> along the bank-to-bank 
 
 
 <dl><dt id="arg-channel">channel<a class="anchor" aria-label="anchor" href="#arg-channel"></a></dt>
-<dd><p>An <code><a href="xchan.html">xchan</a></code> or <code><a href="xsection.html">xsection</a></code>.</p></dd>
+<dd><p>An <code><a href="xchan.html">xchan</a></code> or <a href="xsection.html">xsection</a>.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
@@ -122,7 +122,7 @@ distance among <code>TRUE</code> rows; inner <code>TRUE</code> values encode isl
 
 
 <dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>
-<dd><p>For <code><a href="xchan.html">xchan</a></code> and <code><a href="xsection.html">xsection</a></code>, <code>NULL</code> (the default) evaluates
+<dd><p>For <code><a href="xchan.html">xchan</a></code> and <a href="xsection.html">xsection</a>, <code>NULL</code> (the default) evaluates
 <code>distance</code>, <code>elevation</code>, <code>section</code> (for <code><a href="xchan.html">xchan</a></code> only), and <code>banks</code> in the
 calling environment. Otherwise a data frame (or data-mask object) whose
 rows align with those vectors.</p></dd>
@@ -140,7 +140,7 @@ distances.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A <strong>new</strong> <code><a href="xchan.html">xchan</a></code> or <code><a href="xsection.html">xsection</a></code> with profiles attached or
+    <p>A <strong>new</strong> <code><a href="xchan.html">xchan</a></code> or <a href="xsection.html">xsection</a> with profiles attached or
 replaced
 (the input object is not modified). For <code><a href="xchan.html">xchan</a></code>, <strong>every</strong> section
 receives a new profile in one call (required for profile homogeneity).</p>
@@ -155,6 +155,29 @@ the channel already had profiles, supply rows for <strong>all</strong> sections 
 by <code><a href="xt_section_id.html">xt_section_id()</a></code> (or <code>seq_len(n)</code> when that vector is absent).</p>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">channel</span> <span class="op">&lt;-</span> <span class="fu"><a href="xt_as_channel.html">xt_as_channel</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">channel</span> <span class="op">&lt;-</span> <span class="fu">xt_add_profile</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">channel</span>,</span></span>
+<span class="r-in"><span>  distance <span class="op">=</span> <span class="va">distance</span>,</span></span>
+<span class="r-in"><span>  elevation <span class="op">=</span> <span class="va">elevation</span>,</span></span>
+<span class="r-in"><span>  section <span class="op">=</span> <span class="va">id</span>,</span></span>
+<span class="r-in"><span>  banks <span class="op">=</span> <span class="va">is_bank</span>,</span></span>
+<span class="r-in"><span>  data <span class="op">=</span> <span class="va">profile_survey</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">channel</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> xchan channel with 6 cross sections.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;xsection 1&gt; 10 m</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;xsection 2&gt; 12 m</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;xsection 3&gt; 8 m</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;xsection 4&gt; 15 m</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;xsection 5&gt; 11 m</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;xsection 6&gt; 9 m</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> With profile view</span>
+<span class="r-in"><span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

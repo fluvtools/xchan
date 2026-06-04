@@ -106,3 +106,44 @@ profile therefore affects it).
 [`xt_elevation()`](https://fluvtools.github.io/xchan/reference/xt_elevation.md),
 [`xt_gradient()`](https://fluvtools.github.io/xchan/reference/xt_gradient.md),
 [`xt_add_profile()`](https://fluvtools.github.io/xchan/reference/xt_add_profile.md)
+
+## Examples
+
+``` r
+channel <- xt_as_channel(rep(1, 6))
+channel <- xt_add_profile(
+  channel,
+  distance = distance,
+  elevation = elevation,
+  section = id,
+  banks = is_bank,
+  data = profile_survey
+)
+xt_elevation(channel, reference = elevation_thalweg())
+#> [1] -1 -1 -3 -2 -2 -3
+xt_elevation(channel, reference = elevation_bank())
+#> [1] 0 0 0 0 0 0
+xt_elevation(channel, reference = elevation_bank_left())
+#> [1] 0.5 0.5 0.5 0.5 0.5 0.5
+xt_elevation(channel, reference = elevation_bank_right())
+#> [1] 0 0 0 0 0 0
+xt_elevation(channel, reference = elevation_bed())
+#> [1] -0.1666667 -0.1666667 -0.8333333 -0.5000000 -0.5000000 -0.8333333
+elevation_thalweg()
+#> Elevation: thalweg 
+#> Parameters: none
+elevation_bank()
+#> Elevation: bank 
+#> Parameters:
+#>   .f = .Primitive("min")
+elevation_bank_left()
+#> Elevation: bank_left 
+#> Parameters: none
+elevation_bank_right()
+#> Elevation: bank_right 
+#> Parameters: none
+elevation_bed()
+#> Elevation: bed 
+#> Parameters:
+#>   .f = function (x, ...) UseMethod("mean")
+```

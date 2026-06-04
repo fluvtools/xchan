@@ -1,7 +1,7 @@
 # Coerce to a channel object (`xchan`)
 
 Convert widths, line geometries, a list of
-[`xsection`](https://fluvtools.github.io/xchan/reference/xsection.md)
+[xsection](https://fluvtools.github.io/xchan/reference/xsection.md)
 objects, or an existing
 [`xchan`](https://fluvtools.github.io/xchan/reference/xchan.md) into
 cross-section geometry. Width, `sfc`, and `list` methods return an
@@ -39,7 +39,7 @@ xt_as_channel(x, ...)
 - x:
 
   Object to coerce (`numeric` vector of widths, `sfc`, `list` of
-  [`xsection`](https://fluvtools.github.io/xchan/reference/xsection.md),
+  [xsection](https://fluvtools.github.io/xchan/reference/xsection.md),
   or existing
   [`xchan`](https://fluvtools.github.io/xchan/reference/xchan.md)).
 
@@ -85,8 +85,8 @@ cross sections at this stage of package development: geometries are cast
 to **LINESTRING** bank-to-bank segments. Users should supply line
 geometries (not polygons or points). Profile views must be attached
 separately (for example with
-[`xchan()`](https://fluvtools.github.io/xchan/reference/xchan.md) /
-[`xsection()`](https://fluvtools.github.io/xchan/reference/xsection.md)).
+[`xchan()`](https://fluvtools.github.io/xchan/reference/xchan.md) and
+`xsection` objects from `xt_as_channel()`).
 
 When coercing **`numeric`** widths without an explicit `axis`, cross
 sections are placed on **vertical** transects (constant \\x\\, width in
@@ -103,7 +103,7 @@ metres under a projected CRS).
 ## See also
 
 [`xchan()`](https://fluvtools.github.io/xchan/reference/xchan.md),
-[`xsection()`](https://fluvtools.github.io/xchan/reference/xsection.md)
+[`is.xsection()`](https://fluvtools.github.io/xchan/reference/is.xchan.md)
 
 ## Examples
 

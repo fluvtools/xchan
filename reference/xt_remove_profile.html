@@ -43,8 +43,8 @@ sfc before removing them.'><meta property="og:image" content="https://fluvtools.
     </div>
 
     <div class="ref-description section level2">
-    <p>Drops <code>xs_profile</code> data from each <code><a href="xsection.html">xsection</a></code> in an <code><a href="xchan.html">xchan</a></code>, or from a
-single <code><a href="xsection.html">xsection</a></code>. Planimetric geometry and channel CRS are unchanged. Use
+    <p>Drops <code>xs_profile</code> data from each <a href="xsection.html">xsection</a> in an <code><a href="xchan.html">xchan</a></code>, or from a
+single <a href="xsection.html">xsection</a>. Planimetric geometry and channel CRS are unchanged. Use
 <code><a href="xt_as_sfc.html">xt_as_sfc()</a></code> with <code>what = "profile"</code> when you need profile linestrings as
 <code>sfc</code> before removing them.</p>
     </div>
@@ -68,7 +68,7 @@ single <code><a href="xsection.html">xsection</a></code>. Planimetric geometry a
 
 
 <dl><dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
-<dd><p>An <code><a href="xchan.html">xchan</a></code> or <code><a href="xsection.html">xsection</a></code>.</p></dd>
+<dd><p>An <code><a href="xchan.html">xchan</a></code> or <a href="xsection.html">xsection</a>.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
@@ -88,6 +88,10 @@ single <code><a href="xsection.html">xsection</a></code>. Planimetric geometry a
 <span class="r-out co"><span class="r-pr">#&gt;</span> CRS: EPSG:3005 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> &lt;xsection 1&gt; 2 m</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> &lt;xsection 2&gt; 2 m</span>
+<span class="r-in"><span><span class="fu">xt_remove_profile</span><span class="op">(</span><span class="va">ch</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> xsection</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Plan vertices: 2 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Profile: none</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

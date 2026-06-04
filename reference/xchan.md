@@ -51,14 +51,14 @@ An object of class `"xchan"` / `"xchan_geom"`.
 
 The internal layout is deliberately exposed: each cross section is one
 element of the list (`[[i]]` is an
-[`xsection`](https://fluvtools.github.io/xchan/reference/xsection.md)).
+[xsection](https://fluvtools.github.io/xchan/reference/xsection.md)).
 You can inspect or replace sections directly, and combine them with
 ordinary list tools. Single-bracket subsetting (`[`) preserves
 **`crs`**, **`axis`**, **`bankline`**, and **`section_i`** (parent list
 positions used to build the subset; query or replace keys with
 [`xt_section_id()`](https://fluvtools.github.io/xchan/reference/xt_section_id.md)).
 Double-bracket (`[[`) returns a bare
-[`xsection`](https://fluvtools.github.io/xchan/reference/xsection.md) by
+[xsection](https://fluvtools.github.io/xchan/reference/xsection.md) by
 design.
 
 ## Methods (by generic)
@@ -66,3 +66,17 @@ design.
 - `[`: Subset by section index; preserves `crs`, `axis`, `bankline`, and
   `section_i` (parent list positions; see
   [`xt_section_id`](https://fluvtools.github.io/xchan/reference/xt_section_id.md)).
+
+## Examples
+
+``` r
+ch <- xt_as_channel(c(10, 12, 11))
+ch[1:2]
+#> xchan channel with 2 cross sections.
+#> <xsection 1> 10 (-)
+#> <xsection 2> 12 (-)
+xchan(list(ch[[1]], ch[[2]]))
+#> xchan channel with 2 cross sections.
+#> <xsection 1> 10 (-)
+#> <xsection 2> 12 (-)
+```

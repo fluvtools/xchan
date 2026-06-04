@@ -67,8 +67,7 @@ xt_generate_plan(banks, ..., n, spacing, at, axis = NULL, progress = FALSE)
 ## Value
 
 An [`xchan`](https://fluvtools.github.io/xchan/reference/xchan.md) with
-one
-[`xsection`](https://fluvtools.github.io/xchan/reference/xsection.md)
+one [xsection](https://fluvtools.github.io/xchan/reference/xsection.md)
 per list position, in downstream order along the sampling axis.
 Cross-section identity keys are **not** set; use
 [`xt_section_id()`](https://fluvtools.github.io/xchan/reference/xt_section_id.md)

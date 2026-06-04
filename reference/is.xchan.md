@@ -41,5 +41,7 @@ is.xchan(xc)
 xs <- xc[[1]]
 is.xsection(xs)
 #> [1] TRUE
+is_xsection(xs)
+#> [1] TRUE
 # }
 ```

@@ -32,3 +32,21 @@ have `xs_profile` geometry or all omit it). If that invariant is
 violated, functions that read profile state — including
 `xt_has_profile()` for an `xchan` — raise an error naming which
 positions differ.
+
+## Examples
+
+``` r
+ch <- xt_as_channel(c(2, 2))
+xt_has_profile(ch)
+#> [1] FALSE
+ch <- xt_add_profile(
+  ch,
+  distance = distance,
+  elevation = elevation,
+  section = id,
+  banks = is_bank,
+  data = profile_survey
+)
+xt_has_profile(ch)
+#> [1] TRUE
+```

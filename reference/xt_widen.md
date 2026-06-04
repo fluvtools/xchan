@@ -19,7 +19,7 @@ xt_widen(channel, ..., dw, dv, side = "both")
 - channel:
 
   An [`xchan`](https://fluvtools.github.io/xchan/reference/xchan.md) or
-  [`xsection`](https://fluvtools.github.io/xchan/reference/xsection.md)
+  [xsection](https://fluvtools.github.io/xchan/reference/xsection.md)
   object.
 
 - ...:

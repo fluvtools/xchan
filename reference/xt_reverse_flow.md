@@ -54,3 +54,20 @@ Summaries that treat left and right symmetrically (e.g.
 [`elevation_bank()`](https://fluvtools.github.io/xchan/reference/elevations.md)
 with default `min`) are unchanged until you reorder sections (e.g.
 [`xt_arrange_downstream()`](https://fluvtools.github.io/xchan/reference/xt_arrange_downstream.md)).
+
+## Examples
+
+``` r
+ch <- xt_as_channel(c(10, 12, 11))
+ch[1]
+#> xchan channel with 1 cross sections.
+#> <xsection 1> 10 (-)
+xt_reverse_flow(ch)
+#> xchan channel with 3 cross sections.
+#> <xsection 3> 10 (-)
+#> <xsection 2> 12 (-)
+#> <xsection 1> 11 (-)
+ch[1]
+#> xchan channel with 1 cross sections.
+#> <xsection 1> 10 (-)
+```

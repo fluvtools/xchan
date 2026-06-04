@@ -2,12 +2,11 @@
 
 Build `xs_profile` objects from chord-distance / elevation columns (and
 bank flags), attach them to each
-[`xsection`](https://fluvtools.github.io/xchan/reference/xsection.md),
-and reconcile plan vs profile bank-to-bank width using the same checks
-as [`xt_width()`](https://fluvtools.github.io/xchan/reference/widths.md)
-on plan and profile. Distances are **straight chord stationing** along
-the bank-to-bank transect (not arc length along a meandering ground
-path).
+[xsection](https://fluvtools.github.io/xchan/reference/xsection.md), and
+reconcile plan vs profile bank-to-bank width using the same checks as
+[`xt_width()`](https://fluvtools.github.io/xchan/reference/widths.md) on
+plan and profile. Distances are **straight chord stationing** along the
+bank-to-bank transect (not arc length along a meandering ground path).
 
 ## Usage
 
@@ -43,7 +42,7 @@ xt_add_profile(
 - channel:
 
   An [`xchan`](https://fluvtools.github.io/xchan/reference/xchan.md) or
-  [`xsection`](https://fluvtools.github.io/xchan/reference/xsection.md).
+  [xsection](https://fluvtools.github.io/xchan/reference/xsection.md).
 
 - ...:
 
@@ -81,7 +80,7 @@ xt_add_profile(
 
   For [`xchan`](https://fluvtools.github.io/xchan/reference/xchan.md)
   and
-  [`xsection`](https://fluvtools.github.io/xchan/reference/xsection.md),
+  [xsection](https://fluvtools.github.io/xchan/reference/xsection.md),
   `NULL` (the default) evaluates `distance`, `elevation`, `section` (for
   [`xchan`](https://fluvtools.github.io/xchan/reference/xchan.md) only),
   and `banks` in the calling environment. Otherwise a data frame (or
@@ -101,9 +100,9 @@ xt_add_profile(
 
 A **new**
 [`xchan`](https://fluvtools.github.io/xchan/reference/xchan.md) or
-[`xsection`](https://fluvtools.github.io/xchan/reference/xsection.md)
-with profiles attached or replaced (the input object is not modified).
-For [`xchan`](https://fluvtools.github.io/xchan/reference/xchan.md),
+[xsection](https://fluvtools.github.io/xchan/reference/xsection.md) with
+profiles attached or replaced (the input object is not modified). For
+[`xchan`](https://fluvtools.github.io/xchan/reference/xchan.md),
 **every** section receives a new profile in one call (required for
 profile homogeneity).
 
@@ -117,3 +116,26 @@ in full. If the channel already had profiles, supply rows for **all**
 sections identified by
 [`xt_section_id()`](https://fluvtools.github.io/xchan/reference/xt_section_id.md)
 (or `seq_len(n)` when that vector is absent).
+
+## Examples
+
+``` r
+channel <- xt_as_channel(rep(1, 6))
+channel <- xt_add_profile(
+  channel,
+  distance = distance,
+  elevation = elevation,
+  section = id,
+  banks = is_bank,
+  data = profile_survey
+)
+channel
+#> xchan channel with 6 cross sections.
+#> <xsection 1> 10 m
+#> <xsection 2> 12 m
+#> <xsection 3> 8 m
+#> <xsection 4> 15 m
+#> <xsection 5> 11 m
+#> <xsection 6> 9 m
+#> With profile view
+```

@@ -146,6 +146,46 @@ affects it).</p>
     <div class="dont-index"><p><code><a href="xt_elevation.html">xt_elevation()</a></code>, <code><a href="xt_gradient.html">xt_gradient()</a></code>, <code><a href="xt_add_profile.html">xt_add_profile()</a></code></p></div>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">channel</span> <span class="op">&lt;-</span> <span class="fu"><a href="xt_as_channel.html">xt_as_channel</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">channel</span> <span class="op">&lt;-</span> <span class="fu"><a href="xt_add_profile.html">xt_add_profile</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">channel</span>,</span></span>
+<span class="r-in"><span>  distance <span class="op">=</span> <span class="va">distance</span>,</span></span>
+<span class="r-in"><span>  elevation <span class="op">=</span> <span class="va">elevation</span>,</span></span>
+<span class="r-in"><span>  section <span class="op">=</span> <span class="va">id</span>,</span></span>
+<span class="r-in"><span>  banks <span class="op">=</span> <span class="va">is_bank</span>,</span></span>
+<span class="r-in"><span>  data <span class="op">=</span> <span class="va">profile_survey</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="xt_elevation.html">xt_elevation</a></span><span class="op">(</span><span class="va">channel</span>, reference <span class="op">=</span> <span class="fu">elevation_thalweg</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -1 -1 -3 -2 -2 -3</span>
+<span class="r-in"><span><span class="fu"><a href="xt_elevation.html">xt_elevation</a></span><span class="op">(</span><span class="va">channel</span>, reference <span class="op">=</span> <span class="fu">elevation_bank</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0 0 0 0 0 0</span>
+<span class="r-in"><span><span class="fu"><a href="xt_elevation.html">xt_elevation</a></span><span class="op">(</span><span class="va">channel</span>, reference <span class="op">=</span> <span class="fu">elevation_bank_left</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.5 0.5 0.5 0.5 0.5 0.5</span>
+<span class="r-in"><span><span class="fu"><a href="xt_elevation.html">xt_elevation</a></span><span class="op">(</span><span class="va">channel</span>, reference <span class="op">=</span> <span class="fu">elevation_bank_right</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0 0 0 0 0 0</span>
+<span class="r-in"><span><span class="fu"><a href="xt_elevation.html">xt_elevation</a></span><span class="op">(</span><span class="va">channel</span>, reference <span class="op">=</span> <span class="fu">elevation_bed</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -0.1666667 -0.1666667 -0.8333333 -0.5000000 -0.5000000 -0.8333333</span>
+<span class="r-in"><span><span class="fu">elevation_thalweg</span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Elevation: thalweg </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Parameters: none</span>
+<span class="r-in"><span><span class="fu">elevation_bank</span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Elevation: bank </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Parameters:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   .f = .Primitive("min")</span>
+<span class="r-in"><span><span class="fu">elevation_bank_left</span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Elevation: bank_left </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Parameters: none</span>
+<span class="r-in"><span><span class="fu">elevation_bank_right</span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Elevation: bank_right </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Parameters: none</span>
+<span class="r-in"><span><span class="fu">elevation_bed</span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Elevation: bed </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Parameters:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   .f = function (x, ...) UseMethod("mean")</span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

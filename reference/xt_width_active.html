@@ -71,16 +71,16 @@ there are no islands and the active width equals <code><a href="widths.html">xt_
 
 
 <dl><dt id="arg-channel">channel<a class="anchor" aria-label="anchor" href="#arg-channel"></a></dt>
-<dd><p>An <code><a href="xchan.html">xchan</a></code>, an <code><a href="xsection.html">xsection</a></code>, or an <code>xs_profile</code>.</p></dd>
+<dd><p>An <code><a href="xchan.html">xchan</a></code>, an <a href="xsection.html">xsection</a>, or an <code>xs_profile</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>For <code><a href="xchan.html">xchan</a></code>: a numeric vector, one value per cross section. When the
 channel has a defined length unit (CRS or manually set), values carry
-<code><a href="https://r-quantities.github.io/units/reference/units.html" class="external-link">units::units()</a></code> like <code><a href="widths.html">xt_width()</a></code>; otherwise plain numeric. For <code><a href="xsection.html">xsection</a></code>
+<code><a href="https://r-quantities.github.io/units/reference/units.html" class="external-link">units::units()</a></code> like <code><a href="widths.html">xt_width()</a></code>; otherwise plain numeric. For <a href="xsection.html">xsection</a>
 or <code>xs_profile</code>: a single non-negative numeric (plain numeric unless the
-<code><a href="xsection.html">xsection</a></code> carries a <code>"crs"</code> attribute with a linear unit, in which case
+<a href="xsection.html">xsection</a> carries a <code>"crs"</code> attribute with a linear unit, in which case
 units may be attached).</p>
     </div>
     <div class="section level2">
@@ -88,6 +88,24 @@ units may be attached).</p>
     <div class="dont-index"><p><code><a href="widths.html">xt_width()</a></code></p></div>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">channel</span> <span class="op">&lt;-</span> <span class="fu"><a href="xt_as_channel.html">xt_as_channel</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">channel</span> <span class="op">&lt;-</span> <span class="fu"><a href="xt_add_profile.html">xt_add_profile</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">channel</span>,</span></span>
+<span class="r-in"><span>  distance <span class="op">=</span> <span class="va">distance</span>,</span></span>
+<span class="r-in"><span>  elevation <span class="op">=</span> <span class="va">elevation</span>,</span></span>
+<span class="r-in"><span>  section <span class="op">=</span> <span class="va">id</span>,</span></span>
+<span class="r-in"><span>  banks <span class="op">=</span> <span class="va">is_bank</span>,</span></span>
+<span class="r-in"><span>  data <span class="op">=</span> <span class="va">profile_survey</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">xt_width_active</span><span class="op">(</span><span class="va">channel</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Units: [m]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 10 12  8 15 11  9</span>
+<span class="r-in"><span><span class="fu">xt_width_active</span><span class="op">(</span><span class="va">channel</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 10</span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

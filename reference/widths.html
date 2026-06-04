@@ -50,7 +50,7 @@ xt_add_profile())."><meta property="og:image" content="https://fluvtools.github.
 
     <div class="ref-description section level2">
     <p><code>xt_width()</code> returns geometric width. For an <code><a href="xchan.html">xchan</a></code>, this is one value per
-cross section from planimetric line lengths. For an <code><a href="xsection.html">xsection</a></code>, it is the
+cross section from planimetric line lengths. For an <a href="xsection.html">xsection</a>, it is the
 length of that plan polyline (the same value as the corresponding element of
 <code>xt_width()</code> on the parent channel). For a single <code>xs_profile</code> object, it is
 the span along the profile horizontal axis between the outermost left and
@@ -77,7 +77,7 @@ right banks (the same convention as <code><a href="xt_generate_profile.html">xt_
 
 
 <dl><dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
-<dd><p>An <code><a href="xchan.html">xchan</a></code>, <code><a href="xsection.html">xsection</a></code>, or <code>xs_profile</code> object.</p></dd>
+<dd><p>An <code><a href="xchan.html">xchan</a></code>, <a href="xsection.html">xsection</a>, or <code>xs_profile</code> object.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
@@ -90,7 +90,7 @@ right banks (the same convention as <code><a href="xt_generate_profile.html">xt_
 <code><a href="https://r-quantities.github.io/units/reference/units.html" class="external-link">units::units()</a></code> when the channel has a CRS with a defined linear unit (for
 example metres), or when a length unit was set manually (for example via
 <code><a href="https://r-quantities.github.io/units/reference/units.html" class="external-link">units::units()</a></code> widths or profile distances). When no unit is known the
-result is plain numeric. For <code><a href="xsection.html">xsection</a></code>: a non-negative numeric scalar. If
+result is plain numeric. For <a href="xsection.html">xsection</a>: a non-negative numeric scalar. If
 attribute <code>"crs"</code> is set on <code>x</code> (unusual; the container <code><a href="xchan.html">xchan</a></code> holds CRS
 instead), the result may carry <code><a href="https://r-quantities.github.io/units/reference/units.html" class="external-link">units::units()</a></code> like a channel with that CRS;
 otherwise plain numeric. For <code>xs_profile</code>: a non-negative numeric scalar (no
@@ -108,6 +108,11 @@ CRS context, so plain numeric).</p>
 <span class="r-in"><span>  banks <span class="op">=</span> <span class="va">is_bank</span>,</span></span>
 <span class="r-in"><span>  data <span class="op">=</span> <span class="va">profile_survey</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">xt_width</span><span class="op">(</span><span class="va">channel</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Units: [m]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 10 12  8 15 11  9</span>
+<span class="r-in"><span><span class="fu">xt_width</span><span class="op">(</span><span class="va">channel</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 10</span>
 <span class="r-in"><span><span class="va">profile_object</span> <span class="op">&lt;-</span> <span class="va">channel</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">profile</span></span></span>
 <span class="r-in"><span><span class="fu">xt_width</span><span class="op">(</span><span class="va">profile_object</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 10</span>

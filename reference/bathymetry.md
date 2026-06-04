@@ -72,3 +72,27 @@ section.
 
 [`xt_dredge_to()`](https://fluvtools.github.io/xchan/reference/xt_dredge_to.md),
 [`elevation_bank()`](https://fluvtools.github.io/xchan/reference/elevations.md)
+
+## Examples
+
+``` r
+channel <- xt_as_channel(rep(10, 3))
+channel <- xt_add_profile(
+  channel,
+  distance = distance,
+  elevation = elevation,
+  section = id,
+  banks = is_bank,
+  data = profile_survey
+)
+xt_dredge_to(channel, bathy = bathy_rectangle(depth = 2))
+#> xchan channel with 3 cross sections.
+#> <xsection 1> 10 m
+#> <xsection 2> 12 m
+#> <xsection 3> 8 m
+#> With profile view
+bathy_vshape(depth = 2, thalweg_frac = 0.5)
+#> Bathymetry specification: vshape 
+#>   * depth: 2
+#>   * thalweg_frac: 0.5
+```

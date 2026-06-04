@@ -76,6 +76,23 @@ violated, functions that read profile state — including
 positions differ.</p>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">ch</span> <span class="op">&lt;-</span> <span class="fu"><a href="xt_as_channel.html">xt_as_channel</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">xt_has_profile</span><span class="op">(</span><span class="va">ch</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE</span>
+<span class="r-in"><span><span class="va">ch</span> <span class="op">&lt;-</span> <span class="fu"><a href="xt_add_profile.html">xt_add_profile</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">ch</span>,</span></span>
+<span class="r-in"><span>  distance <span class="op">=</span> <span class="va">distance</span>,</span></span>
+<span class="r-in"><span>  elevation <span class="op">=</span> <span class="va">elevation</span>,</span></span>
+<span class="r-in"><span>  section <span class="op">=</span> <span class="va">id</span>,</span></span>
+<span class="r-in"><span>  banks <span class="op">=</span> <span class="va">is_bank</span>,</span></span>
+<span class="r-in"><span>  data <span class="op">=</span> <span class="va">profile_survey</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">xt_has_profile</span><span class="op">(</span><span class="va">ch</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

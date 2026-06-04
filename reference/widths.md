@@ -3,11 +3,11 @@
 `xt_width()` returns geometric width. For an
 [`xchan`](https://fluvtools.github.io/xchan/reference/xchan.md), this is
 one value per cross section from planimetric line lengths. For an
-[`xsection`](https://fluvtools.github.io/xchan/reference/xsection.md),
-it is the length of that plan polyline (the same value as the
-corresponding element of `xt_width()` on the parent channel). For a
-single `xs_profile` object, it is the span along the profile horizontal
-axis between the outermost left and right banks (the same convention as
+[xsection](https://fluvtools.github.io/xchan/reference/xsection.md), it
+is the length of that plan polyline (the same value as the corresponding
+element of `xt_width()` on the parent channel). For a single
+`xs_profile` object, it is the span along the profile horizontal axis
+between the outermost left and right banks (the same convention as
 [`xt_generate_profile()`](https://fluvtools.github.io/xchan/reference/xt_generate_profile.md)
 and
 [`xt_add_profile()`](https://fluvtools.github.io/xchan/reference/xt_add_profile.md)).
@@ -32,7 +32,7 @@ xt_width(x, ...)
 - x:
 
   An [`xchan`](https://fluvtools.github.io/xchan/reference/xchan.md),
-  [`xsection`](https://fluvtools.github.io/xchan/reference/xsection.md),
+  [xsection](https://fluvtools.github.io/xchan/reference/xsection.md),
   or `xs_profile` object.
 
 - ...:
@@ -49,7 +49,7 @@ metres), or when a length unit was set manually (for example via
 [`units::units()`](https://r-quantities.github.io/units/reference/units.html)
 widths or profile distances). When no unit is known the result is plain
 numeric. For
-[`xsection`](https://fluvtools.github.io/xchan/reference/xsection.md): a
+[xsection](https://fluvtools.github.io/xchan/reference/xsection.md): a
 non-negative numeric scalar. If attribute `"crs"` is set on `x`
 (unusual; the container
 [`xchan`](https://fluvtools.github.io/xchan/reference/xchan.md) holds
@@ -70,6 +70,11 @@ channel <- xt_add_profile(
   banks = is_bank,
   data = profile_survey
 )
+xt_width(channel)
+#> Units: [m]
+#> [1] 10 12  8 15 11  9
+xt_width(channel[[1]])
+#> [1] 10
 profile_object <- channel[[1]]$profile
 xt_width(profile_object)
 #> [1] 10

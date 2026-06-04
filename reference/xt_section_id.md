@@ -59,10 +59,7 @@ initializes them to `seq_len(n)`.
 ## Examples
 
 ``` r
-ch <- xchan(list(
-  xsection(matrix(c(0, 0, 1, 0), ncol = 2, byrow = TRUE)),
-  xsection(matrix(c(0, 1, 1, 1), ncol = 2, byrow = TRUE))
-))
+ch <- xt_as_channel(c(10, 12))
 xt_section_id(ch)
 #> [1] 1 2
 xt_section_id(ch) <- c("A12", "B04")

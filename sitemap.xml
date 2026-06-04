@@ -13,7 +13,6 @@
 <url><loc>https://fluvtools.github.io/xchan/reference/elevations.html</loc></url>
 <url><loc>https://fluvtools.github.io/xchan/reference/flip_profile.html</loc></url>
 <url><loc>https://fluvtools.github.io/xchan/reference/index.html</loc></url>
-<url><loc>https://fluvtools.github.io/xchan/reference/inject_coords.html</loc></url>
 <url><loc>https://fluvtools.github.io/xchan/reference/is.xchan.html</loc></url>
 <url><loc>https://fluvtools.github.io/xchan/reference/plot.xchan.html</loc></url>
 <url><loc>https://fluvtools.github.io/xchan/reference/plot.xs_profile.html</loc></url>
@@ -25,8 +24,6 @@
 <url><loc>https://fluvtools.github.io/xchan/reference/print.xs_profile.html</loc></url>
 <url><loc>https://fluvtools.github.io/xchan/reference/profile_survey.html</loc></url>
 <url><loc>https://fluvtools.github.io/xchan/reference/sides.html</loc></url>
-<url><loc>https://fluvtools.github.io/xchan/reference/span_banks.html</loc></url>
-<url><loc>https://fluvtools.github.io/xchan/reference/validate_plan.html</loc></url>
 <url><loc>https://fluvtools.github.io/xchan/reference/widths.html</loc></url>
 <url><loc>https://fluvtools.github.io/xchan/reference/xchan.html</loc></url>
 <url><loc>https://fluvtools.github.io/xchan/reference/xsection.html</loc></url>
