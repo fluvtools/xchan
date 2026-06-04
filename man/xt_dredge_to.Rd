@@ -16,7 +16,7 @@ xt_dredge_to(channel, bathy, ...)
 \method{xt_dredge_to}{default}(channel, bathy, ...)
 }
 \arguments{
-\item{channel}{An \code{\link[=xchan]{xchan}} or \code{\link[=xsection]{xsection}} object with
+\item{channel}{An \code{\link[=xchan]{xchan}} or \link{xsection} object with
 profile cross sections.}
 
 \item{bathy}{A bathymetry specification from \code{\link[=bathy_rectangle]{bathy_rectangle()}} or

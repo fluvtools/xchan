@@ -17,6 +17,12 @@
 #' @returns A side object that can be used in widening functions. It is a list
 #'   with numeric entries `left` and `right`.
 #' @rdname sides
+#' @examples
+#' side_both(prop_left = 0.5, prop_right = 0.5)
+#' side_left(0.7)
+#' side_right(0.3)
+#' channel <- xt_as_channel(rep(1, 3))
+#' xt_widen(channel, dw = 5, side = side_left(0.75))
 #' @export
 side_left <- function(prop = 1) {
   checkmate::assert_number(prop, lower = 0, upper = 1)

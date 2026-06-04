@@ -14,3 +14,6 @@
 \description{
 Print method for xchan_elevation objects
 }
+\examples{
+print(elevation_thalweg())
+}

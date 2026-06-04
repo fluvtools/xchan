@@ -14,3 +14,15 @@
 \description{
 Print method for xs_profile objects
 }
+\examples{
+channel <- xt_as_channel(rep(1, 3))
+channel <- xt_add_profile(
+  channel,
+  distance = distance,
+  elevation = elevation,
+  section = id,
+  banks = is_bank,
+  data = profile_survey
+)
+print(channel[[1]]$profile)
+}

@@ -29,7 +29,7 @@ xt_as_channel(x, ...)
 }
 \arguments{
 \item{x}{Object to coerce (\code{numeric} vector of widths, \code{sfc}, \code{list} of
-\code{\link{xsection}}, or existing \code{\link{xchan}}).}
+\link{xsection}, or existing \code{\link{xchan}}).}
 
 \item{...}{Must be empty except where documented below.}
 
@@ -53,7 +53,7 @@ An \code{\link{xchan}} for \code{numeric}, \code{units}, \code{sfc}, \code{sfg},
 \code{xchan} methods.
 }
 \description{
-Convert widths, line geometries, a list of \code{\link{xsection}} objects, or an
+Convert widths, line geometries, a list of \link{xsection} objects, or an
 existing \code{\link{xchan}} into cross-section geometry. Width, \code{sfc}, and \code{list}
 methods return an \code{\link{xchan}}.
 }
@@ -62,7 +62,7 @@ For \strong{\code{sfg}} / \strong{\code{sfc}} inputs, coercion targets \strong{p
 sections at this stage of package development: geometries are cast to
 \strong{LINESTRING} bank-to-bank segments. Users should supply line geometries
 (not polygons or points). Profile views must be attached separately (for
-example with \code{\link[=xchan]{xchan()}} / \code{\link[=xsection]{xsection()}}).
+example with \code{\link[=xchan]{xchan()}} and \code{xsection} objects from \code{\link[=xt_as_channel]{xt_as_channel()}}).
 
 When coercing \strong{\code{numeric}} widths without an explicit \code{axis}, cross sections
 are placed on \strong{vertical} transects (constant \eqn{x}, width in \eqn{y}) so
@@ -89,5 +89,5 @@ xt_as_channel(seg)
 
 }
 \seealso{
-\code{\link[=xchan]{xchan()}}, \code{\link[=xsection]{xsection()}}
+\code{\link[=xchan]{xchan()}}, \code{\link[=is.xsection]{is.xsection()}}
 }

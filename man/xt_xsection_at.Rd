@@ -16,10 +16,10 @@ smallest chainage along \code{axis}).}
 \code{\link[=xt_axis]{xt_axis()}} on \code{channel}.}
 }
 \value{
-\code{xt_xsection_at()}: one \code{\link{xsection}}.
+\code{xt_xsection_at()}: one \link{xsection}.
 }
 \description{
-\code{xt_xsection_at()} extracts a single \code{\link{xsection}} by \strong{flow order}: the
+\code{xt_xsection_at()} extracts a single \link{xsection} by \strong{flow order}: the
 \code{i}th section when rows are sorted by increasing \code{\link[=xt_distance_downstream]{xt_distance_downstream()}}
 along the channel axis (see \code{axis}). Internal helper \code{xt_profile_at()}
 returns the embedded \code{xs_profile} for that section (requires profile

@@ -15,3 +15,6 @@
 Prints the left/right proportions only (constructors \code{\link[=side_left]{side_left()}}, etc., are
 equivalent).
 }
+\examples{
+print(side_both())
+}

@@ -7,7 +7,7 @@
 xt_erosion_width(channel, dv, side = "both")
 }
 \arguments{
-\item{channel}{An \code{\link{xchan}} or \code{\link{xsection}} object.}
+\item{channel}{An \code{\link{xchan}} or \link{xsection} object.}
 
 \item{dv}{Volume of erosion; single positive value or vector matching the
 number of cross sections. Plain numeric is interpreted in the channel's CRS

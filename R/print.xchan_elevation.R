@@ -2,6 +2,8 @@
 #'
 #' @param x An elevation object
 #' @param ... Additional arguments (ignored)
+#' @examples
+#' print(elevation_thalweg())
 #' @exportS3Method base::print
 print.xchan_elevation <- function(x, ...) {
   cat("Elevation:", attr(x, "name"), "\n")

@@ -1,16 +1,17 @@
 #' Remove profile geometry from cross sections
 #'
-#' Drops `xs_profile` data from each [`xsection`] in an [`xchan`], or from a
-#' single [`xsection`]. Planimetric geometry and channel CRS are unchanged. Use
+#' Drops `xs_profile` data from each [xsection] in an [`xchan`], or from a
+#' single [xsection]. Planimetric geometry and channel CRS are unchanged. Use
 #' [xt_as_sfc()] with `what = "profile"` when you need profile linestrings as
 #' `sfc` before removing them.
 #'
-#' @param x An [`xchan`] or [`xsection`].
+#' @param x An [`xchan`] or [xsection].
 #' @param ... Must be empty.
 #' @returns `x` with profile components set to `NULL`.
 #' @examples
 #' ch <- xt_as_channel(c(2, 2), crs = 3005)
 #' xt_remove_profile(ch)
+#' xt_remove_profile(ch[[1]])
 #' @export
 xt_remove_profile <- function(x, ...) {
   UseMethod("xt_remove_profile")

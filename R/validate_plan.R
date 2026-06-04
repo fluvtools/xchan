@@ -13,6 +13,7 @@
 #' - **Basic geometry**: Ensures all geometries are valid LINESTRING objects
 #'
 #' @keywords internal
+#' @noRd
 validate_plan <- function(plan) {
   if (!inherits(plan, "sfc_LINESTRING")) {
     return(list(

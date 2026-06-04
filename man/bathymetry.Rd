@@ -64,6 +64,19 @@ independently, including the island interior between inner bank pairs. The
 same target bathymetry is applied to each span on that section.
 }
 
+\examples{
+channel <- xt_as_channel(rep(10, 3))
+channel <- xt_add_profile(
+  channel,
+  distance = distance,
+  elevation = elevation,
+  section = id,
+  banks = is_bank,
+  data = profile_survey
+)
+xt_dredge_to(channel, bathy = bathy_rectangle(depth = 2))
+bathy_vshape(depth = 2, thalweg_frac = 0.5)
+}
 \seealso{
 \code{\link[=xt_dredge_to]{xt_dredge_to()}}, \code{\link[=elevation_bank]{elevation_bank()}}
 }

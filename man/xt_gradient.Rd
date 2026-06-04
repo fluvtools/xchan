@@ -61,7 +61,7 @@ even when axis distances carry units.
 \description{
 Compares elevations between cross sections along the channel axis (see
 \strong{Details}). A gradient is undefined for a single cross section (there is no
-along-channel segment), so there is no method for \code{\link[=xsection]{xsection}} —
+along-channel segment), so there is no method for \link{xsection} —
 use at least two stations in an \code{\link[=xchan]{xchan}}.
 }
 \details{

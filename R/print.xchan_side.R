@@ -5,6 +5,8 @@
 #'
 #' @param x A side object
 #' @param ... Additional arguments (ignored)
+#' @examples
+#' print(side_both())
 #' @exportS3Method base::print
 print.xchan_side <- function(x, ...) {
   cat("Side allocation specification.\n")

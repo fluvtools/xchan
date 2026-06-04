@@ -29,6 +29,7 @@ xc <- xt_as_channel(c(10, 12, 11))
 is.xchan(xc)
 xs <- xc[[1]]
 is.xsection(xs)
+is_xsection(xs)
 }
 
 }

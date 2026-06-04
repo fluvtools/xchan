@@ -8,6 +8,7 @@
 #' @return A line segment spanning from bank to bank.
 #' @keywords internal
 #' @note Used by [xt_generate_plan()] (via `span_banks_engine()`).
+#' @noRd
 span_banks <- function(pt, angle, bankline) {
   bb <- sf::st_bbox(bankline)
   maxd <- sqrt(

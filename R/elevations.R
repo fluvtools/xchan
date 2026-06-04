@@ -53,6 +53,26 @@
 #' @rdname elevations
 #' @aliases elevations
 #' @seealso [xt_elevation()], [xt_gradient()], [xt_add_profile()]
+#' @examples
+#' channel <- xt_as_channel(rep(1, 6))
+#' channel <- xt_add_profile(
+#'   channel,
+#'   distance = distance,
+#'   elevation = elevation,
+#'   section = id,
+#'   banks = is_bank,
+#'   data = profile_survey
+#' )
+#' xt_elevation(channel, reference = elevation_thalweg())
+#' xt_elevation(channel, reference = elevation_bank())
+#' xt_elevation(channel, reference = elevation_bank_left())
+#' xt_elevation(channel, reference = elevation_bank_right())
+#' xt_elevation(channel, reference = elevation_bed())
+#' elevation_thalweg()
+#' elevation_bank()
+#' elevation_bank_left()
+#' elevation_bank_right()
+#' elevation_bed()
 #' @export
 elevation_thalweg <- function() {
   fun <- function(channel) {

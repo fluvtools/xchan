@@ -15,3 +15,6 @@ A single integer representing the number of cross sections.
 \description{
 A generic function to determine the number of cross sections in an object.
 }
+\examples{
+xt_n_sections(xt_as_channel(c(2, 2, 3)))
+}

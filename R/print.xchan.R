@@ -11,6 +11,8 @@
 #'   list order, each printed line also includes \verb{: ID <key>} for that list
 #'   position’s key. The default is `6`. Use `Inf` to print every section.
 #' @param ... Ignored.
+#' @examples
+#' print(xt_as_channel(c(10, 12, 11)))
 #' @exportS3Method base::print
 print.xchan <- function(x, ..., n = 6) {
   rlang::check_dots_empty()

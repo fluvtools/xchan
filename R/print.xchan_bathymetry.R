@@ -2,6 +2,8 @@
 #'
 #' @param x A bathymetry specification
 #' @param ... Additional arguments (ignored)
+#' @examples
+#' print(bathy_rectangle(depth = 2))
 #' @exportS3Method base::print
 print.xchan_bathymetry <- function(x, ...) {
   rlang::check_dots_empty()

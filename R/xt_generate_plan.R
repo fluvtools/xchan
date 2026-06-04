@@ -30,7 +30,7 @@
 #'   (`centerline::cnt_path_guess()`).
 #' @param progress Logical; if `TRUE`, display a text progress bar while
 #'   generating planimetric cross sections.
-#' @returns An [`xchan`] with one [`xsection`] per list position, in downstream
+#' @returns An [`xchan`] with one [xsection] per list position, in downstream
 #'   order along the sampling axis.
 #'   Cross-section identity keys are **not** set; use [xt_section_id()] if you
 #'   need stable keys (for example when joining tabular profiles with

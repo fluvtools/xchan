@@ -34,6 +34,17 @@
 #' scale. The default is `exaggerate = 1` (no exaggeration). It is strongly
 #' recommended not going beyond 3, because exaggeration beyond this point can
 #' distort the perception of the profile.
+#' @examples
+#' channel <- xt_as_channel(rep(1, 6))
+#' channel <- xt_add_profile(
+#'   channel,
+#'   distance = distance,
+#'   elevation = elevation,
+#'   section = id,
+#'   banks = is_bank,
+#'   data = profile_survey
+#' )
+#' plot(channel, extent = "full")
 #' @export
 plot.xchan <- function(
   x,

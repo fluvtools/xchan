@@ -1,11 +1,11 @@
 #' Coerce to a channel object (`xchan`)
 #'
-#' Convert widths, line geometries, a list of [`xsection`] objects, or an
+#' Convert widths, line geometries, a list of [xsection] objects, or an
 #' existing [`xchan`] into cross-section geometry. Width, `sfc`, and `list`
 #' methods return an [`xchan`].
 #'
 #' @param x Object to coerce (`numeric` vector of widths, `sfc`, `list` of
-#'   [`xsection`], or existing [`xchan`]).
+#'   [xsection], or existing [`xchan`]).
 #' @param ... Must be empty except where documented below.
 #'
 #' @details
@@ -13,7 +13,7 @@
 #' sections at this stage of package development: geometries are cast to
 #' **LINESTRING** bank-to-bank segments. Users should supply line geometries
 #' (not polygons or points). Profile views must be attached separately (for
-#' example with [xchan()] / [xsection()]).
+#' example with [xchan()] and `xsection` objects from [xt_as_channel()]).
 #'
 #' When coercing **`numeric`** widths without an explicit `axis`, cross sections
 #' are placed on **vertical** transects (constant \eqn{x}, width in \eqn{y}) so
@@ -29,7 +29,7 @@
 #' @returns An [`xchan`] for `numeric`, `units`, `sfc`, `sfg`, `list`, and
 #'   `xchan` methods.
 #'
-#' @seealso [xchan()], [xsection()]
+#' @seealso [xchan()], [is.xsection()]
 #'
 #' @examples
 #' # Synthetic widths (stations spaced ~2 median widths along x by default)

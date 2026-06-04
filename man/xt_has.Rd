@@ -29,3 +29,16 @@ violated, functions that read profile state — including
 \code{xt_has_profile()} for an \code{xchan} — raise an error naming which
 positions differ.
 }
+\examples{
+ch <- xt_as_channel(c(2, 2))
+xt_has_profile(ch)
+ch <- xt_add_profile(
+  ch,
+  distance = distance,
+  elevation = elevation,
+  section = id,
+  banks = is_bank,
+  data = profile_survey
+)
+xt_has_profile(ch)
+}

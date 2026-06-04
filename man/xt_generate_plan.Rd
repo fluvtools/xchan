@@ -42,7 +42,7 @@ automatically from the \strong{island-free} footprint
 generating planimetric cross sections.}
 }
 \value{
-An \code{\link{xchan}} with one \code{\link{xsection}} per list position, in downstream
+An \code{\link{xchan}} with one \link{xsection} per list position, in downstream
 order along the sampling axis.
 Cross-section identity keys are \strong{not} set; use \code{\link[=xt_section_id]{xt_section_id()}} if you
 need stable keys (for example when joining tabular profiles with

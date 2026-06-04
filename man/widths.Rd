@@ -16,7 +16,7 @@ xt_width(x, ...)
 \method{xt_width}{xs_profile}(x, ...)
 }
 \arguments{
-\item{x}{An \code{\link{xchan}}, \code{\link{xsection}}, or \code{xs_profile} object.}
+\item{x}{An \code{\link{xchan}}, \link{xsection}, or \code{xs_profile} object.}
 
 \item{...}{Unused (reserved for methods).}
 }
@@ -25,7 +25,7 @@ For \code{\link{xchan}}: a numeric vector with one width per cross section, carr
 \code{\link[units:units]{units::units()}} when the channel has a CRS with a defined linear unit (for
 example metres), or when a length unit was set manually (for example via
 \code{\link[units:units]{units::units()}} widths or profile distances). When no unit is known the
-result is plain numeric. For \code{\link{xsection}}: a non-negative numeric scalar. If
+result is plain numeric. For \link{xsection}: a non-negative numeric scalar. If
 attribute \code{"crs"} is set on \code{x} (unusual; the container \code{\link{xchan}} holds CRS
 instead), the result may carry \code{\link[units:units]{units::units()}} like a channel with that CRS;
 otherwise plain numeric. For \code{xs_profile}: a non-negative numeric scalar (no
@@ -33,7 +33,7 @@ CRS context, so plain numeric).
 }
 \description{
 \code{xt_width()} returns geometric width. For an \code{\link{xchan}}, this is one value per
-cross section from planimetric line lengths. For an \code{\link{xsection}}, it is the
+cross section from planimetric line lengths. For an \link{xsection}, it is the
 length of that plan polyline (the same value as the corresponding element of
 \code{\link[=xt_width]{xt_width()}} on the parent channel). For a single \code{xs_profile} object, it is
 the span along the profile horizontal axis between the outermost left and
@@ -50,6 +50,8 @@ channel <- xt_add_profile(
   banks = is_bank,
   data = profile_survey
 )
+xt_width(channel)
+xt_width(channel[[1]])
 profile_object <- channel[[1]]$profile
 xt_width(profile_object)
 

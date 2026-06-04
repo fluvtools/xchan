@@ -7,14 +7,14 @@
 xt_width_active(channel)
 }
 \arguments{
-\item{channel}{An \code{\link{xchan}}, an \code{\link{xsection}}, or an \code{xs_profile}.}
+\item{channel}{An \code{\link{xchan}}, an \link{xsection}, or an \code{xs_profile}.}
 }
 \value{
 For \code{\link{xchan}}: a numeric vector, one value per cross section. When the
 channel has a defined length unit (CRS or manually set), values carry
-\code{\link[units:units]{units::units()}} like \code{\link[=xt_width]{xt_width()}}; otherwise plain numeric. For \code{\link{xsection}}
+\code{\link[units:units]{units::units()}} like \code{\link[=xt_width]{xt_width()}}; otherwise plain numeric. For \link{xsection}
 or \code{xs_profile}: a single non-negative numeric (plain numeric unless the
-\code{\link{xsection}} carries a \code{"crs"} attribute with a linear unit, in which case
+\link{xsection} carries a \code{"crs"} attribute with a linear unit, in which case
 units may be attached).
 }
 \description{
@@ -26,6 +26,19 @@ only}, every vertex of the plan polyline is treated as a bank contact along
 the transect, in order from left bank to right bank, alternating water / land
 / water (even vertex count). For a simple two-vertex bank-to-bank segment
 there are no islands and the active width equals \code{\link[=xt_width]{xt_width()}}.
+}
+\examples{
+channel <- xt_as_channel(rep(1, 6))
+channel <- xt_add_profile(
+  channel,
+  distance = distance,
+  elevation = elevation,
+  section = id,
+  banks = is_bank,
+  data = profile_survey
+)
+xt_width_active(channel)
+xt_width_active(channel[[1]])
 }
 \seealso{
 \code{\link[=xt_width]{xt_width()}}

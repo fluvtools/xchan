@@ -14,3 +14,6 @@
 \description{
 Print method for xchan_bathymetry objects
 }
+\examples{
+print(bathy_rectangle(depth = 2))
+}

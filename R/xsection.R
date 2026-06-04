@@ -16,6 +16,7 @@
 #' is.xchan(xc)
 #' xs <- xc[[1]]
 #' is.xsection(xs)
+#' is_xsection(xs)
 #' }
 #'
 #' @export
@@ -39,10 +40,15 @@ is_xsection <- function(x) {
 #' cross section. Plan geometry is stored as a numeric matrix of `(x, y)` pairs
 #' with rows ordered from left bank to right bank.
 #'
+#' This constructor is for package-internal use. Users obtain `xsection` objects
+#' from [`xchan`][xchan()] indexing (`[[`), [xt_xsection_at()], and
+#' [xt_as_channel()]; see [is.xsection()] to test the class.
+#'
 #' @param plan Matrix with 2 numeric columns (`x`, `y`) and at least 2 rows.
 #' @param profile Optional `xs_profile` object.
 #' @returns An object of class `"xsection"`.
-#' @export
+#' @keywords internal
+#' @noRd
 xsection <- function(plan, profile = NULL) {
   checkmate::assert_matrix(
     plan,
@@ -104,18 +110,22 @@ assert_xchan_profile_homogeneity <- function(x) {
 #' attributes on the container, not repeated on each section.
 #'
 #' The internal layout is deliberately exposed: each cross section is one
-#' element of the list (`[[i]]` is an [`xsection`]). You can inspect or replace
+#' element of the list (`[[i]]` is an [xsection]). You can inspect or replace
 #' sections directly, and combine them with ordinary list tools. Single-bracket
 #' subsetting (`[`) preserves **`crs`**, **`axis`**, **`bankline`**, and
 #' **`section_i`** (parent list positions used to build the subset; query or
 #' replace keys with [xt_section_id()]). Double-bracket (`[[`) returns a bare
-#' [`xsection`] by design.
+#' [xsection] by design.
 #'
 #' @param sections A list of `xsection` objects.
 #' @param crs Optional CRS accepted by [sf::st_crs()].
 #' @param axis Optional reach-scale axis as a single `LINESTRING` (`sfc` or
 #'   `sfg`), same CRS as the plan geometry; see [xt_axis()].
 #' @returns An object of class `"xchan"` / `"xchan_geom"`.
+#' @examples
+#' ch <- xt_as_channel(c(10, 12, 11))
+#' ch[1:2]
+#' xchan(list(ch[[1]], ch[[2]]))
 #' @export
 xchan <- function(sections, crs = NULL, axis = NULL) {
   if (!is.list(sections)) {

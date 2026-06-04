@@ -30,7 +30,7 @@ xt_add_profile(channel, ...)
 )
 }
 \arguments{
-\item{channel}{An \code{\link{xchan}} or \code{\link{xsection}}.}
+\item{channel}{An \code{\link{xchan}} or \link{xsection}.}
 
 \item{...}{Must be empty. Arguments after \code{...} (\code{data}, \code{snap_banks_to})
 must
@@ -57,7 +57,7 @@ per
 section). The \strong{outer} banks are those with minimum and maximum chord
 distance among \code{TRUE} rows; inner \code{TRUE} values encode islands.}
 
-\item{data}{For \code{\link{xchan}} and \code{\link{xsection}}, \code{NULL} (the default) evaluates
+\item{data}{For \code{\link{xchan}} and \link{xsection}, \code{NULL} (the default) evaluates
 \code{distance}, \code{elevation}, \code{section} (for \code{\link{xchan}} only), and \code{banks} in the
 calling environment. Otherwise a data frame (or data-mask object) whose
 rows align with those vectors.}
@@ -71,14 +71,14 @@ with \code{\link[=xt_widen]{xt_widen()}} so their length matches the surveyed ou
 distances.}
 }
 \value{
-A \strong{new} \code{\link{xchan}} or \code{\link{xsection}} with profiles attached or
+A \strong{new} \code{\link{xchan}} or \link{xsection} with profiles attached or
 replaced
 (the input object is not modified). For \code{\link{xchan}}, \strong{every} section
 receives a new profile in one call (required for profile homogeneity).
 }
 \description{
 Build \code{xs_profile} objects from chord-distance / elevation columns (and bank
-flags), attach them to each \code{\link{xsection}}, and reconcile plan vs profile
+flags), attach them to each \link{xsection}, and reconcile plan vs profile
 bank-to-bank width using the same checks as \code{\link[=xt_width]{xt_width()}} on plan and profile.
 Distances are \strong{straight chord stationing} along the bank-to-bank transect
 (not arc length along a meandering ground path).
@@ -90,4 +90,17 @@ distance (stable ordering for ties), and thalwegs re-derived from the sorted
 polyline. Existing profiles on a channel are always \strong{replaced} in full. If
 the channel already had profiles, supply rows for \strong{all} sections identified
 by \code{\link[=xt_section_id]{xt_section_id()}} (or \code{seq_len(n)} when that vector is absent).
+}
+\examples{
+channel <- xt_as_channel(rep(1, 6))
+channel <- xt_add_profile(
+  channel,
+  distance = distance,
+  elevation = elevation,
+  section = id,
+  banks = is_bank,
+  data = profile_survey
+)
+channel
+
 }

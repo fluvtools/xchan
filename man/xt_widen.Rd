@@ -13,7 +13,7 @@ xt_widen(channel, ..., dw, dv, side = "both")
 \method{xt_widen}{xsection}(channel, ..., dw, dv, side = "both")
 }
 \arguments{
-\item{channel}{An \code{\link{xchan}} or \code{\link{xsection}} object.}
+\item{channel}{An \code{\link{xchan}} or \link{xsection} object.}
 
 \item{...}{Must be empty (named \code{dw} / \code{dv} arguments are required).}
 

@@ -26,6 +26,11 @@
 #' [elevation_bank()] with
 #' default `min`) are unchanged until you reorder sections (e.g.
 #' [xt_arrange_downstream()]).
+#' @examples
+#' ch <- xt_as_channel(c(10, 12, 11))
+#' ch[1]
+#' xt_reverse_flow(ch)
+#' ch[1]
 #' @export
 xt_reverse_flow <- function(channel) {
   checkmate::assert_class(channel, "xchan")

@@ -1,6 +1,6 @@
 #' Widen cross sections
 #'
-#' @param channel An [`xchan`] or [`xsection`] object.
+#' @param channel An [`xchan`] or [xsection] object.
 #' @param ... Must be empty (named `dw` / `dv` arguments are required).
 #' @param dw The total width to add to the channel. Positive numeric, or a
 #'   [units::units()] length object (for example `units::set_units(2, "m")`);

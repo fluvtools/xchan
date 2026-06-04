@@ -40,3 +40,9 @@ Summaries that treat left and right symmetrically (e.g.
 default \code{min}) are unchanged until you reorder sections (e.g.
 \code{\link[=xt_arrange_downstream]{xt_arrange_downstream()}}).
 }
+\examples{
+ch <- xt_as_channel(c(10, 12, 11))
+ch[1]
+xt_reverse_flow(ch)
+ch[1]
+}

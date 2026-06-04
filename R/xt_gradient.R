@@ -2,7 +2,7 @@
 #'
 #' Compares elevations between cross sections along the channel axis (see
 #' **Details**). A gradient is undefined for a single cross section (there is no
-#' along-channel segment), so there is no method for [`xsection`][xsection()] —
+#' along-channel segment), so there is no method for [xsection] —
 #' use at least two stations in an [`xchan`][xchan()].
 #'
 #' @param channel An [`xchan`][xchan()] with one or more cross sections (length

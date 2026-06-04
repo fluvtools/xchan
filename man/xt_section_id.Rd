@@ -44,10 +44,7 @@ Keys are stored as attribute \code{"section_i"} on the \code{\link{xchan}} (the 
 historical). \code{\link[=xchan]{xchan()}} initializes them to \code{seq_len(n)}.
 }
 \examples{
-ch <- xchan(list(
-  xsection(matrix(c(0, 0, 1, 0), ncol = 2, byrow = TRUE)),
-  xsection(matrix(c(0, 1, 1, 1), ncol = 2, byrow = TRUE))
-))
+ch <- xt_as_channel(c(10, 12))
 xt_section_id(ch)
 xt_section_id(ch) <- c("A12", "B04")
 xt_section_id(ch)

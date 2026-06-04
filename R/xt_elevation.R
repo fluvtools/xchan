@@ -1,6 +1,6 @@
 #' Get elevation values using an elevation specification
 #'
-#' @param channel An [`xchan`][xchan()] or [`xsection`][xsection()] object.
+#' @param channel An [`xchan`][xchan()] or [xsection] object.
 #'   Single-section inputs are wrapped for evaluation.
 #' @param reference An elevation specification from [elevation_thalweg()] and
 #'   related
@@ -8,7 +8,7 @@
 #' @param ... Reserved for methods (must be empty).
 #' @returns A numeric vector of elevations, one per cross section (`length()`
 #'   for
-#'   [`xchan`], or `1` for a single [`xsection`]).
+#'   [`xchan`], or `1` for a single [xsection]).
 #'
 #' **Order:** Values follow **storage order only** — position `i` is always
 #' `[[i]]` of the [`xchan()`] list. There is **no** sorting inside

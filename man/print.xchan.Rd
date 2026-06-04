@@ -24,3 +24,6 @@ position’s key. The default is \code{6}. Use \code{Inf} to print every section
 \description{
 Print a channel object
 }
+\examples{
+print(xt_as_channel(c(10, 12, 11)))
+}

@@ -1,12 +1,12 @@
 #' Attach or replace profile cross sections from tabular data
 #'
 #' Build `xs_profile` objects from chord-distance / elevation columns (and bank
-#' flags), attach them to each [`xsection`], and reconcile plan vs profile
+#' flags), attach them to each [xsection], and reconcile plan vs profile
 #' bank-to-bank width using the same checks as [xt_width()] on plan and profile.
 #' Distances are **straight chord stationing** along the bank-to-bank transect
 #' (not arc length along a meandering ground path).
 #'
-#' @param channel An [`xchan`] or [`xsection`].
+#' @param channel An [`xchan`] or [xsection].
 #' @param distance,elevation Tidy-eval expressions (see `data`) for chord
 #'   distance
 #'   and elevation; may be plain numeric or [units::units()] (distance is
@@ -28,7 +28,7 @@
 #' @param ... Must be empty. Arguments after `...` (`data`, `snap_banks_to`)
 #'   must
 #'   be matched by name.
-#' @param data For [`xchan`] and [`xsection`], `NULL` (the default) evaluates
+#' @param data For [`xchan`] and [xsection], `NULL` (the default) evaluates
 #'   `distance`, `elevation`, `section` (for [`xchan`] only), and `banks` in the
 #'   calling environment. Otherwise a data frame (or data-mask object) whose
 #'   rows align with those vectors.
@@ -40,7 +40,7 @@
 #'   (symmetric split). There is no affine stretch of interior profile
 #'   distances.
 #'
-#' @returns A **new** [`xchan`] or [`xsection`] with profiles attached or
+#' @returns A **new** [`xchan`] or [xsection] with profiles attached or
 #'   replaced
 #'   (the input object is not modified). For [`xchan`], **every** section
 #'   receives a new profile in one call (required for profile homogeneity).
@@ -52,6 +52,18 @@
 #' polyline. Existing profiles on a channel are always **replaced** in full. If
 #' the channel already had profiles, supply rows for **all** sections identified
 #' by [xt_section_id()] (or `seq_len(n)` when that vector is absent).
+#'
+#' @examples
+#' channel <- xt_as_channel(rep(1, 6))
+#' channel <- xt_add_profile(
+#'   channel,
+#'   distance = distance,
+#'   elevation = elevation,
+#'   section = id,
+#'   banks = is_bank,
+#'   data = profile_survey
+#' )
+#' channel
 #'
 #' @export
 xt_add_profile <- function(channel, ...) {

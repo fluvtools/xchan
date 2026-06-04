@@ -1,14 +1,14 @@
 #' Width of cross sections
 #'
 #' `xt_width()` returns geometric width. For an [`xchan`], this is one value per
-#' cross section from planimetric line lengths. For an [`xsection`], it is the
+#' cross section from planimetric line lengths. For an [xsection], it is the
 #' length of that plan polyline (the same value as the corresponding element of
 #' [xt_width()] on the parent channel). For a single `xs_profile` object, it is
 #' the span along the profile horizontal axis between the outermost left and
 #' right banks (the same convention as [xt_generate_profile()] and
 #' [xt_add_profile()]).
 #'
-#' @param x An [`xchan`], [`xsection`], or `xs_profile` object.
+#' @param x An [`xchan`], [xsection], or `xs_profile` object.
 #' @param ... Unused (reserved for methods).
 #'
 #' @returns
@@ -16,7 +16,7 @@
 #' [units::units()] when the channel has a CRS with a defined linear unit (for
 #' example metres), or when a length unit was set manually (for example via
 #' [units::units()] widths or profile distances). When no unit is known the
-#' result is plain numeric. For [`xsection`]: a non-negative numeric scalar. If
+#' result is plain numeric. For [xsection]: a non-negative numeric scalar. If
 #' attribute `"crs"` is set on `x` (unusual; the container [`xchan`] holds CRS
 #' instead), the result may carry [units::units()] like a channel with that CRS;
 #' otherwise plain numeric. For `xs_profile`: a non-negative numeric scalar (no
@@ -32,6 +32,8 @@
 #'   banks = is_bank,
 #'   data = profile_survey
 #' )
+#' xt_width(channel)
+#' xt_width(channel[[1]])
 #' profile_object <- channel[[1]]$profile
 #' xt_width(profile_object)
 #'

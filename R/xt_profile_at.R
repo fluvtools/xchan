@@ -1,6 +1,6 @@
 #' Get one cross section by downstream flow order
 #'
-#' `xt_xsection_at()` extracts a single [`xsection`] by **flow order**: the
+#' `xt_xsection_at()` extracts a single [xsection] by **flow order**: the
 #' `i`th section when rows are sorted by increasing [xt_distance_downstream()]
 #' along the channel axis (see `axis`). Internal helper `xt_profile_at()`
 #' returns the embedded `xs_profile` for that section (requires profile
@@ -11,7 +11,7 @@
 #'   smallest chainage along `axis`).
 #' @param axis Optional LINESTRING axis (`sfc` / `sfg`); if `NULL`, uses
 #'   [xt_axis()] on `channel`.
-#' @returns `xt_xsection_at()`: one [`xsection`].
+#' @returns `xt_xsection_at()`: one [xsection].
 #'
 #' @name xt_xsection_at
 #' @examples

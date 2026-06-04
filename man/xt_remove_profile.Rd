@@ -16,7 +16,7 @@ xt_remove_profile(x, ...)
 \method{xt_remove_profile}{default}(x, ...)
 }
 \arguments{
-\item{x}{An \code{\link{xchan}} or \code{\link{xsection}}.}
+\item{x}{An \code{\link{xchan}} or \link{xsection}.}
 
 \item{...}{Must be empty.}
 }
@@ -24,12 +24,13 @@ xt_remove_profile(x, ...)
 \code{x} with profile components set to \code{NULL}.
 }
 \description{
-Drops \code{xs_profile} data from each \code{\link{xsection}} in an \code{\link{xchan}}, or from a
-single \code{\link{xsection}}. Planimetric geometry and channel CRS are unchanged. Use
+Drops \code{xs_profile} data from each \link{xsection} in an \code{\link{xchan}}, or from a
+single \link{xsection}. Planimetric geometry and channel CRS are unchanged. Use
 \code{\link[=xt_as_sfc]{xt_as_sfc()}} with \code{what = "profile"} when you need profile linestrings as
 \code{sfc} before removing them.
 }
 \examples{
 ch <- xt_as_channel(c(2, 2), crs = 3005)
 xt_remove_profile(ch)
+xt_remove_profile(ch[[1]])
 }

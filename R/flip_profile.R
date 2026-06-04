@@ -7,6 +7,7 @@
 #' @returns The original profile cross section with the left and right
 #' sides switched. The distance values (along the cross section) are flipped in
 #' sign.
+#' @noRd
 flip_profile <- function(profile) {
   checkmate::assert_class(profile, "xs_profile")
   te_orig <- profile$thalweg_elev

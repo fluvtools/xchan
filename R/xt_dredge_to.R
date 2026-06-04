@@ -1,6 +1,6 @@
 #' Dredge profile cross sections to a target bathymetry
 #'
-#' @param channel An [`xchan`][xchan()] or [`xsection`][xsection()] object with
+#' @param channel An [`xchan`][xchan()] or [xsection] object with
 #'   profile cross sections.
 #' @param bathy A bathymetry specification from [bathy_rectangle()] or
 #'   [bathy_vshape()].

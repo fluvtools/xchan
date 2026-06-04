@@ -39,6 +39,18 @@
 #' @rdname bathymetry
 #' @aliases bathymetry
 #' @seealso [xt_dredge_to()], [elevation_bank()]
+#' @examples
+#' channel <- xt_as_channel(rep(10, 3))
+#' channel <- xt_add_profile(
+#'   channel,
+#'   distance = distance,
+#'   elevation = elevation,
+#'   section = id,
+#'   banks = is_bank,
+#'   data = profile_survey
+#' )
+#' xt_dredge_to(channel, bathy = bathy_rectangle(depth = 2))
+#' bathy_vshape(depth = 2, thalweg_frac = 0.5)
 #' @export
 bathy_rectangle <- function(depth, wse = elevation_bank()) {
   checkmate::assert_number(depth, lower = 0)

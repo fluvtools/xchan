@@ -16,7 +16,7 @@ xt_elevation(channel, reference, ...)
 \method{xt_elevation}{default}(channel, reference, ...)
 }
 \arguments{
-\item{channel}{An \code{\link[=xchan]{xchan}} or \code{\link[=xsection]{xsection}} object.
+\item{channel}{An \code{\link[=xchan]{xchan}} or \link{xsection} object.
 Single-section inputs are wrapped for evaluation.}
 
 \item{reference}{An elevation specification from \code{\link[=elevation_thalweg]{elevation_thalweg()}} and
@@ -28,7 +28,7 @@ helpers (class \code{"xchan_elevation"}).}
 \value{
 A numeric vector of elevations, one per cross section (\code{length()}
 for
-\code{\link{xchan}}, or \code{1} for a single \code{\link{xsection}}).
+\code{\link{xchan}}, or \code{1} for a single \link{xsection}).
 
 \strong{Order:} Values follow \strong{storage order only} — position \code{i} is always
 \verb{[[i]]} of the \code{\link[=xchan]{xchan()}} list. There is \strong{no} sorting inside

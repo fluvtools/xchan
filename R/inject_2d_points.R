@@ -14,6 +14,7 @@ coords_all <- function(profile) {
 #' @param x Numeric vector; distance along cross section to add a new node to.
 #' @returns The original profile cross section, with additional
 #' nodes corresponding to `x`, with linearly interpolated elevation.
+#' @noRd
 inject_coords <- function(profile, x) {
   is_profile <- inherits(profile, "xs_profile")
   if (is_profile) {

@@ -7,7 +7,7 @@
 #' @returns An eroded version of the input 2D cross section.
 #' @details
 #' Profile erosion follows three rules (applied on each bank via
-#' [flip_profile()] for the opposite side):
+#' `flip_profile()` for the opposite side):
 #'
 #' 1. Ground between the old and new bank positions is removed (the old bank
 #' point is removed as well). 2. The **left-side channel** (topography between

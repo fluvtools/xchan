@@ -33,12 +33,12 @@ attributes on the container, not repeated on each section.
 }
 \details{
 The internal layout is deliberately exposed: each cross section is one
-element of the list (\verb{[[i]]} is an \code{\link{xsection}}). You can inspect or replace
+element of the list (\verb{[[i]]} is an \link{xsection}). You can inspect or replace
 sections directly, and combine them with ordinary list tools. Single-bracket
 subsetting (\code{[}) preserves \strong{\code{crs}}, \strong{\code{axis}}, \strong{\code{bankline}}, and
 \strong{\code{section_i}} (parent list positions used to build the subset; query or
 replace keys with \code{\link[=xt_section_id]{xt_section_id()}}). Double-bracket (\code{[[}) returns a bare
-\code{\link{xsection}} by design.
+\link{xsection} by design.
 }
 \section{Methods (by generic)}{
 \itemize{
@@ -47,3 +47,8 @@ replace keys with \code{\link[=xt_section_id]{xt_section_id()}}). Double-bracket
 \code{\link{xt_section_id}}).
 
 }}
+\examples{
+ch <- xt_as_channel(c(10, 12, 11))
+ch[1:2]
+xchan(list(ch[[1]], ch[[2]]))
+}

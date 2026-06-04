@@ -79,13 +79,11 @@ gaps still raise an error. Any sample outside the raster bounding box
 raises an error.
 }
 \examples{
-# Sample DEM with 50 m extension beyond banks and 10 m sample spacing
-# channel_with_profiles <- xt_generate_profile(
-#   channel, dem, extent_distance = 50, sample_freq = 10
-# )
-
-# 2x channel width extension; sample count sets spacing along extended line
-# channel_with_profiles <- xt_generate_profile(
-#   channel, dem, extent_multiplier = 2, sample_n = 100
-# )
+\donttest{
+if (requireNamespace("terra", quietly = TRUE)) {
+  ch <- xt_generate_plan(squamish_bankline, n = 5)
+  dem <- terra::unwrap(squamish_dem)
+  xt_generate_profile(ch, dem, sample_freq = 10)
+}
+}
 }

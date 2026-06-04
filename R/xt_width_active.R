@@ -9,15 +9,27 @@
 #' / water (even vertex count). For a simple two-vertex bank-to-bank segment
 #' there are no islands and the active width equals [xt_width()].
 #'
-#' @param channel An [`xchan`], an [`xsection`], or an `xs_profile`.
+#' @param channel An [`xchan`], an [xsection], or an `xs_profile`.
 #' @returns
 #' For [`xchan`]: a numeric vector, one value per cross section. When the
 #' channel has a defined length unit (CRS or manually set), values carry
-#' [units::units()] like [xt_width()]; otherwise plain numeric. For [`xsection`]
+#' [units::units()] like [xt_width()]; otherwise plain numeric. For [xsection]
 #' or `xs_profile`: a single non-negative numeric (plain numeric unless the
-#' [`xsection`] carries a `"crs"` attribute with a linear unit, in which case
+#' [xsection] carries a `"crs"` attribute with a linear unit, in which case
 #' units may be attached).
 #' @seealso [xt_width()]
+#' @examples
+#' channel <- xt_as_channel(rep(1, 6))
+#' channel <- xt_add_profile(
+#'   channel,
+#'   distance = distance,
+#'   elevation = elevation,
+#'   section = id,
+#'   banks = is_bank,
+#'   data = profile_survey
+#' )
+#' xt_width_active(channel)
+#' xt_width_active(channel[[1]])
 #' @export
 xt_width_active <- function(channel) {
   UseMethod("xt_width_active")

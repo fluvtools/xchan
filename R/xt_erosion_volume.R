@@ -3,9 +3,9 @@
 #' Estimates volume removed per cross section for a given total width increase
 #' `dw`, split between banks according to `side`.
 #'
-#' @param channel An [`xchan`][xchan()] or [`xsection`][xsection()] with profile
+#' @param channel An [`xchan`][xchan()] or [xsection] with profile
 #'   geometry.
-#' @param dw Change in width; for [`xsection`][xsection()], a single positive
+#' @param dw Change in width; for [xsection], a single positive
 #'   value. For
 #'   [`xchan`][xchan()], a single value recycled to every section or one value
 #'   per cross section. Plain numeric uses the channel CRS length unit;
@@ -16,7 +16,7 @@
 #'   `"right"`, `"both"`.
 #' @returns For [`xchan`][xchan()], a numeric vector of erosion volumes (one per
 #'   section).
-#'   For [`xsection`][xsection()], length-one vector. Values carry
+#'   For [xsection], length-one vector. Values carry
 #'   [units::units()] of (CRS length unit)^3 when a linear CRS unit is defined.
 #' @examples
 #' channel <- xt_as_channel(rep(1, 6))
