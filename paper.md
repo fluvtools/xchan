@@ -205,8 +205,7 @@ software and manuscript.
 
 # Acknowledgments
 
-The authors thank BGC Engineering Inc. for funding this work, Brett Eaton and
-Sarah Davidson for guiding the package's design and utility, and Heba Abdelmoaty
+The authors thank BGC Engineering Inc. for funding this work and Heba Abdelmoaty
 for contributing to algorithm design. We also thank the developers of the `sf`,
 `terra`, `units`, `centerline`, and `slider` packages, whose tools and design
 ideas made `xchan` possible.
