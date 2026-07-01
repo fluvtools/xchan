@@ -7,8 +7,10 @@
 ^docs$
 ^pkgdown$
 ^data-raw$
-^joss-paper\.(Rmd|html|pdf)$
+^paper\.md$
 ^paper\.bib$
+^paper\.pdf$
+^paper-figures$
 ^[.]?air[.]toml$
 ^\.vscode$
 ^excluded$
