@@ -42,7 +42,7 @@ geometry can be reconstructed.
 
 From this representation, `xchan` lets users build channels from nominal widths,
 from arbitrary line segments, from a bankline polygon, or from surveyed and
-digital-elevation-model (DEM) data; widen (erode) channels by a target width or
+digital elevation model (DEM) data; widen (erode) channels by a target width or
 volume; and compute geometric attributes such as width, elevation, and gradient.
 The package draws its design from the `sf` package [@pebesma2018simple]: a single
 cross section (class `xsection`) is analogous to an `sf` geometry, a channel
@@ -57,7 +57,7 @@ the wider R spatial stack—`sf`, `terra` [@hijmans2023terra], and `centerline`
 Cross sections are the common currency of fluvial geomorphology and river
 engineering, yet the operations surrounding them—generating cross sections
 along a bankline, attaching surveyed or DEM-derived profiles, eroding banks, and
-computing width or gradient—are typically assembled from ad hoc GIS steps and
+computing width or gradient—are typically assembled from ad-hoc GIS steps and
 one-off scripts. These workflows are slow to reproduce and difficult to embed in
 a larger analysis.
 
