@@ -68,7 +68,8 @@ plot(
   extent = "full",
   exaggerate = EXAG,
   from = -150,
-  to = 150
+  to = 150,
+  legend = FALSE
 )
 par(op)
 dev.off()

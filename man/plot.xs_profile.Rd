@@ -11,7 +11,8 @@
   add = FALSE,
   exaggerate = 1,
   from = NULL,
-  to = NULL
+  to = NULL,
+  legend = TRUE
 )
 }
 \arguments{
@@ -37,6 +38,11 @@ profile). The plotted range starts at \code{from} when given, otherwise at the
 default left edge for \code{extent}; it ends at \code{to} when given, otherwise at
 the default right edge. You may pass \code{from} only, \code{to} only, both, or
 neither. Values may lie outside the data range (empty band on that side).}
+
+\item{legend}{Logical. Draw the legend identifying the profile line, bank
+points, and thalweg points? Defaults to \code{TRUE}. Set \code{FALSE} to omit it
+(e.g. for figures where the elements are self-explanatory). Ignored when
+\code{add = TRUE}.}
 }
 \value{
 A plot of the profile cross section

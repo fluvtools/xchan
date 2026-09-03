@@ -15,6 +15,10 @@
 #'   the default right edge. You may pass `from` only, `to` only, both, or
 #'   neither. Values may lie outside the data range (empty band on that side).
 #' @param add Logical. Add to existing plot?
+#' @param legend Logical. Draw the legend identifying the profile line, bank
+#'   points, and thalweg points? Defaults to `TRUE`. Set `FALSE` to omit it
+#'   (e.g. for figures where the elements are self-explanatory). Ignored when
+#'   `add = TRUE`.
 #' @param exaggerate Positive numeric. **Physical** vertical exaggeration:
 #'   passed
 #'   as `asp` to [graphics::plot.default], so one data unit along **y** is drawn
@@ -64,9 +68,11 @@ plot.xs_profile <- function(
   add = FALSE,
   exaggerate = 1,
   from = NULL,
-  to = NULL
+  to = NULL,
+  legend = TRUE
 ) {
   extent <- match.arg(extent)
+  checkmate::assert_flag(legend)
   checkmate::assert_number(exaggerate, lower = 0, finite = TRUE)
   if (exaggerate <= 0) {
     stop("`exaggerate` must be positive.", call. = FALSE)
@@ -140,12 +146,14 @@ plot.xs_profile <- function(
   )
 
   # Add legend
-  graphics::legend(
-    "topright",
-    legend = c("Profile", "Banks", "Thalwegs"),
-    col = c("black", "red", "blue"),
-    lty = c(1, NA, NA),
-    pch = c(NA, 19, 17),
-    cex = 0.8
-  )
+  if (isTRUE(legend) && !add) {
+    graphics::legend(
+      "topright",
+      legend = c("Profile", "Banks", "Thalwegs"),
+      col = c("black", "red", "blue"),
+      lty = c(1, NA, NA),
+      pch = c(NA, 19, 17),
+      cex = 0.8
+    )
+  }
 }
