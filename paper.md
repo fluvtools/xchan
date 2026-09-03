@@ -41,8 +41,8 @@ lightweight three-dimensional encoding of the channel from which derived
 geometry can be reconstructed.
 
 From this representation, `xchan` lets users build channels from nominal widths,
-from arbitrary line segments, from a bankline polygon, or from surveyed and
-digital-elevation-model (DEM) data; widen (erode) channels by a target width or
+from arbitrary line segments, from a bankline polygon, or from surveyed data or
+digital elevation model (DEM) data; widen (erode) channels by a target width or
 volume; and compute geometric attributes such as width, elevation, and gradient.
 The package draws its design from the `sf` package [@pebesma2018simple]: a single
 cross section (class `xsection`) is analogous to an `sf` geometry, a channel
@@ -57,7 +57,7 @@ the wider R spatial stack—`sf`, `terra` [@hijmans2023terra], and `centerline`
 Cross sections are the common currency of fluvial geomorphology and river
 engineering, yet the operations surrounding them—generating cross sections
 along a bankline, attaching surveyed or DEM-derived profiles, eroding banks, and
-computing width or gradient—are typically assembled from ad hoc GIS steps and
+computing width or gradient—are typically assembled from ad-hoc GIS steps and
 one-off scripts. These workflows are slow to reproduce and difficult to embed in
 a larger analysis.
 
@@ -109,7 +109,7 @@ visible.\label{fig:profile}](paper-figures/squamish_profile.png){ width=75% }
 
 A channel is represented as an ordinary list of `xsection` objects rather than as
 an opaque "channel" object. This is a deliberate choice: it lets a tabular column
-of cross-sections live alongside columns of per-section attributes—reach
+of cross sections live alongside columns of per-section attributes—reach
 identifiers, roughness, grain size—in a standard data frame or tibble. Channel-level metadata
 that is genuinely shared (the coordinate reference system, the channel axis, an
 optional bankline polygon) is stored as attributes on the list and preserved
@@ -133,7 +133,7 @@ Erosion is expressed as channel widening, requested either as a change in width
 (`dw`) or, when profiles are present, as a change in cross-sectional area
 (volume per unit length, `dv`); `xt_erosion_width()` and `xt_erosion_volume()`
 convert between the two. The widening rule is intentionally simple: the
-left-side channel and the right-side channel are slid outward rigidly, preserving
+left and right sides of the channel are slid outward rigidly, preserving
 their shape, exactly as if the channel had rectangular walls. Material between the
 old and new bank positions is removed and the channel bottom is extended at the
 thalweg elevation. Treating the bank-to-thalweg shape as immaterial during
@@ -198,8 +198,8 @@ gradient <- xt_gradient(widened, elevation = elevation_bank(min))
 
 # AI usage disclosure
 
-Generative AI tools were used to assist with drafting package documentation, code and
-this paper with close instruction by the authors. All AI-assisted output was
+Generative AI tools were used to assist with drafting package documentation, code, and
+this paper under close instruction from the authors. All AI-assisted output was
 reviewed, edited, and tested by the authors, who are responsible for the final
 software and manuscript.
 
