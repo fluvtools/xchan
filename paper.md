@@ -70,7 +70,7 @@ scriptable object that can be created, modified, measured, and re-created
 programmatically. `xchan` provides exactly this cross-section-first object and a
 consistent set of verbs that operate on it.
 
-Existing R tools cover neighbouring concerns but not this one. `sf` and `terra`
+Existing R tools cover similar concerns but not this one. `sf` and `terra`
 provide excellent general vector and raster primitives, and `centerline` extracts
 a centerline from a closed polygon, but none offers a channel abstraction that
 binds plan and profile geometry per cross section or the erosion and
