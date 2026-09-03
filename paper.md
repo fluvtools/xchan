@@ -17,6 +17,8 @@ authors:
     affiliation: 2
   - name: Jane Wang
     affiliation: 2
+  - name: Sarah Davidson
+    affiliation: 2
 affiliations:
   - name: C2E Lab, Department of Civil and Environmental Engineering (DICA), Politecnico di Milano, Italy
     index: 1
@@ -205,7 +207,8 @@ software and manuscript.
 
 # Acknowledgments
 
-The authors thank BGC Engineering Inc. for funding this work and Heba Abdelmoaty
+The authors thank BGC Engineering Inc. for funding this work; Brett Eaton for his
+design insight on the package API; and Heba Abdelmoaty
 for contributing to algorithm design. We also thank the developers of the `sf`,
 `terra`, `units`, `centerline`, and `slider` packages, whose tools and design
 ideas made `xchan` possible.
