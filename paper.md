@@ -85,18 +85,24 @@ modified, and compared across many sections in a reproducible way.
 
 ## Encoding a channel by its cross sections
 
-Each cross section bundles a planimetric transect—a bank-to-bank line on the
-map—with an optional profile. Arrayed along a channel, the planimetric
-transects alone give a faithful plan view (\autoref{fig:plan}).
-Keeping the profile optional matters: many tasks (laying out cross sections,
+Each cross section bundles a planimetric (or "plan-view") cross section—a bank-to-bank line on the
+map—with an optional profile cross section that specifies topography/bathymetry.
+\autoref{fig:plan} shows planimetric cross sections making up a channel for a segment of the
+Squamish River in British Columbia, Canada.
+Keeping the profile[^1] optional matters: many tasks (laying out cross sections,
 measuring planform width, exporting line geometry) need only the plan view, and
 the profile is attached only when a vertical description is required. Although
-the two views are treated independently internally—they can be created,
+the two views (planimetric and profile) are treated independently internally—they can be created,
 flipped, and widened separately—they are bundled into a single `xsection` so
-that a cross section is a coherent unit. A useful consequence of carrying
+that a cross section is a coherent unit.
+
+A useful consequence of including
 profiles is that they extend *beyond* the banks into the surrounding floodplain
 (\autoref{fig:profile}), which is what allows erosion to consume neighbouring
-topography.
+topography. Cross section objects keep note of the channel banks so that the
+channel can be distinguished from the surrounding topography.
+
+[^1]: Throughout, "profile" refers to cross-sectional profile rather than other constructs like the longitudinal profile.
 
 ![Planimetric cross sections generated along the Squamish River, British
 Columbia, from a bankline polygon.\label{fig:plan}](paper-figures/squamish_plan.png){ width=60% }
